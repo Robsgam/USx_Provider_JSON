@@ -59,7 +59,7 @@ $provDirs = @(Get-ChildItem (Join-Path $repoRoot 'providers') -Directory |
 Out-Line ''
 Out-Line ('=' * 96)
 Out-Line '  MISSION STATUS -- lifecycle completeness per provider (ENGINEERING_STANDARD 5.1)'
-Out-Line ("  " + (Get-Date -Format 'yyyy-MM-dd HH:mm') + "   target: $TARGET_NUM of 20 providers complete on all six stages")
+Out-Line ("  " + (Get-Date -Format 'yyyy-MM-dd HH:mm') + "   target: $TARGET_NUM of 20 providers complete on enforce + all six stages")
 Out-Line ('=' * 96)
 
 if (-not $provDirs.Count) {
@@ -74,6 +74,34 @@ foreach ($d in $provDirs) {
     $json = Get-ProviderRootJson -ProvDir $d.FullName -Provider $p
     $ver  = ''
     if ($json) { $m = [regex]::Match((Split-Path $json -Leaf), '_v([0-9]+\.[0-9]+)\.json$'); if ($m.Success) { $ver = $m.Groups[1].Value } }
+
+    # ---- stage 0 GATES: `enforce -Provider <P>` must report 0 FAIL **and** 0 WARN.
+    # ADDED 2026-08-31, and it is the hole that made this metric overstate for weeks. Rob:
+    # "be sure we aren't just rewiring to pass but rewiring to make it right."
+    #   ENGINEERING_STANDARD 5.1 defined the metric as "all 6 stages of section 2 green", while
+    #   section 5's FIRST condition for finished is `enforce.ps1 -Provider <NAME>` exiting 0. Those
+    #   are different tests, and nothing reconciled them: stage 1 reads VALIDATOR_REPORT, which was
+    #   0 FAIL / 0 WARN on FL_FCIC, HI_HCJDC_OFML, IL_LEADS_OFML and NJ_NJCJIS all through
+    #   2026-08-31 while all four were `BLOCKED` by a PENDING_UPDATES flag. This metric called them
+    #   LIFECYCLE-COMPLETE. A number that disagrees with the owning gate is worse than no number.
+    # WHY IT IS RUN LIVE rather than read from a report: enforce writes NO per-provider artifact, so
+    #   there is nothing committed to read -- the same reason stages 2 and 3 run live (see below).
+    #   It costs ~30s per provider. That is the honest price of the metric being true.
+    # THERE IS DELIBERATELY NO -SkipGates SWITCH. An escape hatch on the one stage that reads the
+    #   authoritative gate is how this metric would quietly go back to overstating, and it is exactly
+    #   what "rewiring to pass" would look like. If the run is too slow, run it less often.
+    # THE VERDICT LINE IS PARSED, NOT THE EXIT CODE. On 2026-08-31 I read `$?` from a pipeline and
+    #   got grep's status instead of enforce's; enforce also exits 0 while printing PASSED WITH
+    #   WARNINGS. Absence of a verdict line is NOT-MET, never MET -- a step that did not run has
+    #   not passed.
+    $s0 = $false; $s0why = 'enforce produced no verdict line'
+    $enf = & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $toolDir 'enforce.ps1') -Provider $p -SkipGit 2>&1
+    $verdict = @($enf | Where-Object { "$_" -match '(ENFORCED|BLOCKED|PASSED WITH WARNINGS):' } | Select-Object -Last 1)
+    if ($verdict.Count) {
+        $vl = "$($verdict[0])"
+        if ($vl -match 'ENFORCED:\s*\d+\s*PASS\s*/\s*0\s*FAIL\s*/\s*0\s*WARN') { $s0 = $true }
+        else { $s0why = ($vl.Trim() -replace '\s+', ' ') }
+    }
 
     # ---- stage 1 BUILD: the validator report records 0 FAIL / 0 WARN for the ACTIVE version.
     $s1 = $false; $s1why = 'no VALIDATOR_REPORT'
@@ -161,15 +189,18 @@ foreach ($d in $provDirs) {
         }
     } else { $s6why = 'no IMPORT_LEDGER.md' }
 
-    $met   = @($s1,$s2,$s3,$s4,$s5,$s6)
-    $names = @('build','spec','reach','test','jira','import')
-    $whys  = @($s1why,$s2why,$s3why,$s4why,$s5why,$s6why)
+    # GATES FIRST, and that ORDER is deliberate. ENGINEERING_STANDARD 5 lists `enforce` exit 0 as its
+    # first condition, and a provider whose own gate is BLOCKED should be reported as blocked THERE --
+    # not at some later stage whose evidence the failing gate may itself undermine.
+    $met   = @($s0,$s1,$s2,$s3,$s4,$s5,$s6)
+    $names = @('gates','build','spec','reach','test','jira','import')
+    $whys  = @($s0why,$s1why,$s2why,$s3why,$s4why,$s5why,$s6why)
     $first = -1
-    for ($i = 0; $i -lt 6; $i++) { if (-not $met[$i]) { $first = $i; break } }
+    for ($i = 0; $i -lt 7; $i++) { if (-not $met[$i]) { $first = $i; break } }
 
     $rows += [pscustomobject]@{
         Provider = $p; Ver = $ver; Parked = [bool]$st.Parked
-        Stages   = (0..5 | ForEach-Object { if ($met[$_]) { 'X' } else { '.' } }) -join ''
+        Stages   = (0..6 | ForEach-Object { if ($met[$_]) { 'X' } else { '.' } }) -join ''
         Count    = @($met | Where-Object { $_ }).Count
         Complete = ($first -lt 0)
         Blocker  = if ($first -lt 0) { '' } else { "$($names[$first]): $($whys[$first])" }
@@ -177,12 +208,12 @@ foreach ($d in $provDirs) {
 }
 
 Out-Line ''
-Out-Line ('  {0,-22} {1,-6} {2,-9} {3}' -f 'PROVIDER','VER','B S R T J I','FIRST UNMET STAGE (the only thing to do next)')
+Out-Line ('  {0,-22} {1,-6} {2,-14} {3}' -f 'PROVIDER','VER','G B S R T J I','FIRST UNMET STAGE (the only thing to do next)')
 Out-Line ('  ' + ('-' * 92))
 foreach ($r in ($rows | Sort-Object @{E='Complete';D=$true}, @{E='Count';D=$true}, 'Provider')) {
     $sig = ($r.Stages.ToCharArray() -join ' ')
     $col = if ($r.Complete) { 'Green' } elseif ($r.Count -ge 4) { 'Yellow' } else { 'Gray' }
-    Out-Line ('  {0,-22} {1,-6} {2,-9} {3}' -f $r.Provider, "v$($r.Ver)", $sig, $(if ($r.Complete) { 'COMPLETE -- all six stages' } else { $r.Blocker })) $col
+    Out-Line ('  {0,-22} {1,-6} {2,-14} {3}' -f $r.Provider, "v$($r.Ver)", $sig, $(if ($r.Complete) { 'COMPLETE -- gates + all six stages' } else { $r.Blocker })) $col
 }
 
 $done = @($rows | Where-Object { $_.Complete }).Count
@@ -225,7 +256,8 @@ if ($byStage) {
     }
 }
 Out-Line ''
-Out-Line '  Stage key: B=build(validator 0F/0W)  S=spec(devdoc combinations)  R=reach(all combos reachable)'
+Out-Line '  Stage key: G=gates(enforce -Provider: 0 FAIL AND 0 WARN, run LIVE -- ENGINEERING_STANDARD 5 bullet 1)'
+Out-Line '             B=build(validator 0F/0W)  S=spec(devdoc combinations)  R=reach(all combos reachable)'
 Out-Line '             T=test(tenant ALL-PASS)   J=jira(POSTED marker)       I=import(ledger accounts for version)'
 Out-Line '  Every number here is read from the owning authority. If one disagrees with its gate, the GATE is right.'
 Out-Line ('=' * 96)

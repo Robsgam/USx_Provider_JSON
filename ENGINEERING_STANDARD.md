@@ -188,16 +188,34 @@ All of the following, simultaneously, with no exceptions granted by narrative:
   own discriminator and lacks its sibling's.
 - `audit_gate_efficacy -Provider <NAME>`: **0 SURVIVED, 0 INVALID.**
 - Stages 5 and 6 recorded — Jira names the version, ledger accounts for the version.
-- A human has looked at the rendered form (`audit_form_review`), pre- and post-test.
 
 Anything less is in progress, and must be reported as in progress.
+
+**Every condition above is MECHANICALLY CHECKABLE, and that is now a property of this list rather than
+a coincidence.** The human gate — a person having looked at the rendered form — was the seventh bullet
+here until 2026-08-31 and has moved to **§5.2**. It was not dropped and it was not weakened; it was in
+the wrong list. See §5.2 for why leaving it here made this section unsatisfiable by construction.
 
 ### 5.1 The portfolio metric — what "95%" means (Rob's ruling, 2026-08-18)
 
 Section 5 defines finished for ONE provider. The portfolio number is simply the count of providers
 that meet it:
 
-> **95% = 19 of 20 providers LIFECYCLE-COMPLETE** (all 6 stages of §2 green).
+> **95% = 19 of 20 providers LIFECYCLE-COMPLETE** — all 6 stages of §2 green **AND
+> `enforce -Provider <NAME>` reporting 0 FAIL and 0 WARN** (§5 bullet 1).
+
+**THE `enforce` CLAUSE WAS ADDED 2026-08-31, AND ITS ABSENCE WAS A REAL DEFECT, not a wording gap.**
+§5's first condition has always been that `enforce` exits 0, but this metric was defined on the six
+§2 stages alone — and `report_mission_status` implemented the metric, not §5. Stage 1 read
+`VALIDATOR_REPORT`, which said `0 FAIL / 0 WARN` for **FL_FCIC, HI_HCJDC_OFML, IL_LEADS_OFML and
+NJ_NJCJIS** while all four were `BLOCKED` by a `PENDING_UPDATES` flag. The metric reported them
+LIFECYCLE-COMPLETE and did so for ten days. **A portfolio number that disagrees with the owning gate
+is worse than no number**, because it is the one figure people quote without re-deriving.
+The tool now runs `enforce -Provider <P> -SkipGit` **live** per provider and parses its **verdict
+line** — not its exit code, which is 0 even for `PASSED WITH WARNINGS`. There is deliberately **no
+skip switch**: an escape hatch on the stage that reads the authoritative gate is precisely how this
+would silently revert to overstating. The cost is ~30s per provider and that is the honest price.
+Absence of a verdict line counts as NOT MET; a step that did not run has not passed.
 >
 > **THE NUMBER IS NOW COMPUTED, NOT CLAIMED — run `tools\report_mission_status.ps1`.**
 > Measured 2026-08-19: **9 of 20 = 45%**. It read 6/20 = 30% when this section was written on
@@ -229,17 +247,70 @@ gate, the GATE is right and the aggregator has a bug. Underlying sources: `portf
 
 ---
 
+### 5.2 The human gate — a person has looked at the rendered form
+
+**This is a REQUIREMENT, not a nicety.** No provider goes in front of a department until a human has
+looked at the rendered form, before and after testing. Every label, card-title and layout defect found
+in 2026-07 was caught by eye, not by tooling — `audit_layout_flow` exists because of that history and
+still only mechanises 7 of 9 rules.
+
+**It is deliberately NOT in §5's list, and this is the reasoning — not an exemption.**
+Until 2026-08-31 it was §5's seventh bullet, and on that day the whole finished-set was measured
+against it: **0 of 13 providers had a review recorded at their current version.** Six had no record at
+all (AZ, MD, NM, OH, OR, TN); the other seven were behind, some by many versions — FL reviewed at
+v7.12 against v7.24, TX v4.12 against v4.22, NY v4.16 against v4.26, HI v4.14 against v4.20, NJ v4.14
+against v4.17, CA_CLETS v2.22 against v2.27, IL v2.7 against v2.8.
+
+So §5, read literally, said **zero providers were finished — permanently.** Not because the work was
+undone, but because §5 mixed two kinds of condition:
+
+- The other six are **mechanically checkable**: a tool decides, and a green result is evidence.
+- This one is **a human act**, and `audit_form_review` is ADVISORY *on purpose* — CLAUDE.md is
+  explicit that it must never be manufacturable to satisfy a gate, and that nobody should be prompted
+  for it. `[INFO] not reviewed` is its designed steady state.
+
+A list whose members are checked by different kinds of authority cannot be evaluated as one
+conjunction. Leaving it in produced a standard that **could not be met and therefore was not read** —
+the same failure mode as a gate that cannot fail, arrived at from the opposite direction.
+
+**WHAT DID *NOT* CHANGE, so nobody reads this as a relaxation:**
+- The review is still owed on every provider, and `audit_form_review` still reports whether the
+  CURRENT build was reviewed. Its output is still printed by `enforce` PHASE 2k on every run.
+- It is still **never** to be prompted for, and never to be recorded by anyone other than the reviewer.
+  `audit_form_review.ps1 -Record -Reviewer <name>` exists to capture the act, never to assert it.
+- **No tool may ever treat the absence of a review as satisfied.** Silence here means unknown, not OK.
+
+**What changed is only which list it lives in**: §5 is now the mechanical definition of finished, and
+this section is the human one. A provider can satisfy §5 completely and still not be ready to put in
+front of a department. Both statements are true at once, and pretending otherwise is what made the
+old §5 unusable.
+
+**Do not "fix" this by adding a mechanised proxy.** A tool that infers a review happened — from a
+timestamp, a commit, a report regeneration — would manufacture exactly the evidence this section
+exists to keep honest.
+
 ## 6. Deferred work, with the data preserved
 
 Recorded so it is not re-derived. Deferred by decision, not forgotten.
 
-### 6.1 Mutation coverage is 1 provider deep (Rob 2026-07-30: "leave #3 alone but save the data")
+### 6.1 Mutation coverage is NOT 1 provider deep any more — corrected 2026-08-31
 
-`audit_gate_efficacy.ps1` proves **15 defect classes** on **TX_TLETS only**. The other 19 providers'
-gates are therefore *unproven*, and by LAW 2 their PASS is not yet evidence — the gates are the same
-code, but the mutation table is TX-shaped (it names TX keyRefs: `DPSIStickerNumber`, `CPLName`,
-`RQVehicleIdentificationNumber`, `QGNCICNumber`, and TX fieldIds `LicensePlateTypeCode`,
-`stickerNumber`). Running it elsewhere needs a per-provider mutation map, not a new harness.
+⚠️ **THIS SECTION SAID "1 PROVIDER DEEP — TX_TLETS ONLY" AND WAS STALE, understating real coverage.**
+Corrected because **§5 bullet 5 is judged against this section**, so a wrong figure here mis-scores
+every provider. Measured 2026-08-31 by counting provider names in `audit_gate_efficacy.ps1`'s
+catalogue: **five providers now carry mutation maps** — `TX_TLETS` (13 references), `NJ_NJCJIS` (9),
+`FL_FCIC` (7), `NY_NYSPIN_EJUSTICE` (3), `AZ_AZDPS` (2) — **plus a provider-agnostic subset that runs
+anywhere**: `MD_METERS` appears in none of those maps and scored **8/8 killed, 0 survived** in its
+`build_phase1` run that day. `build_phase1` step 6 runs the catalogued harness per provider and step
+6b runs unaimed random fuzz, so a fresh provider is not unmeasured.
+
+**What remains true, and is the part worth keeping:** the harness is still deepest on TX, the maps are
+still hand-authored, and by LAW 2 a provider's PASS is evidence only for the classes a mutant has
+actually been killed on there. The 15-class depth below is TX's, not the portfolio's — the TX table
+names TX keyRefs (`DPSIStickerNumber`, `CPLName`, `RQVehicleIdentificationNumber`, `QGNCICNumber`) and
+TX fieldIds (`LicensePlateTypeCode`, `stickerNumber`), so extending depth to another provider still
+needs a per-provider map rather than a new harness. Rob's 2026-07-30 ruling (*"leave #3 alone but save
+the data"*) stands: do not chase portfolio-wide mutation depth as an objective.
 
 The 15 proven classes: prefill-routing-field, dup-targetfield-request, demote-set-to-any,
 promote-any-to-set, poisoned-condition, drop-identifier-guardrail, vehiclemake-as-input,
