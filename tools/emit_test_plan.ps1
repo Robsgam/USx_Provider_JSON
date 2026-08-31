@@ -677,7 +677,28 @@ $seenFill = @{}
 $kept2    = New-Object System.Collections.Generic.List[object]
 $dupes    = New-Object System.Collections.Generic.List[string]
 foreach ($t in $tests) {
-    $sig = "$($t.entity)|" + ((@($t.fills | ForEach-Object { "$($_.fieldId)=$($_.value)" }) | Sort-Object) -join '&')
+    # NORMALISE OUT A FILL THAT MERELY RESTATES THE FORM DEFAULT (added 2026-08-31).
+    #   The form ships that value whether or not the driver types it, so two tests differing ONLY by
+    #   such a fill submit the IDENTICAL form state and produce the IDENTICAL wire -- yet their raw
+    #   fill-sets differ, so the byte-identical-fill check above could not see them and both survived.
+    #   FOUND ON HI_HCJDC_OFML v4.20 after the plan-dedupe pickup: `M55L_guardrail_vs_M55S` (2 fills)
+    #   and `M55L_guardrail_vs_RQV` (the same 2 plus `vehicleTypeCode=1`) were kept as distinct tests,
+    #   while HI's Vehicle form default IS `vehicleTypeCode=1` -- so the driver submitted the same
+    #   thing twice and audit_log_inflation attack A still reported 1 clone group after the pickup
+    #   cleared the other. The plan and that gate must agree BY CONSTRUCTION; this closes the gap.
+    #   A fill carrying a DIFFERENT value than the default is a REAL distinction and is KEPT --
+    #   a toggle test is required to differ from the default (feedback_toggle_tests_differ_from_default),
+    #   so normalising on fieldId alone would have destroyed exactly the tests that matter.
+    #   GUARD: if normalising empties the signature, fall back to the raw fill-set. An all-defaults
+    #   test must not collapse onto every other all-defaults test across different combos.
+    $fdE = $formDefaultsByEntity[$t.entity]
+    $sigFills = @()
+    foreach ($f in @($t.fills)) {
+        if ($fdE -and $fdE.Contains($f.fieldId) -and "$($fdE[$f.fieldId])" -eq "$($f.value)") { continue }
+        $sigFills += "$($f.fieldId)=$($f.value)"
+    }
+    if ($sigFills.Count -eq 0) { $sigFills = @($t.fills | ForEach-Object { "$($_.fieldId)=$($_.value)" }) }
+    $sig = "$($t.entity)|" + ((@($sigFills) | Sort-Object) -join '&')
     if ($seenFill.ContainsKey($sig)) {
         $dupes.Add("$($t.comboKeyRef)$(if($t.anyField){"_af_$($t.anyField)"}) [$($t.kind)] -- byte-identical fill to $($seenFill[$sig])")
         continue
