@@ -19,7 +19,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | FL_FCIC | v7.24 | ALL-PASS (118 logs) |
 | HI_HCJDC_OFML | v4.20 | ALL-PASS (50 logs) |
 | IL_LEADS_OFML | v2.8 | ALL-PASS (44 logs) |
-| MD_METERS | v2.3 | ALL-PASS (46 logs) |
+| MD_METERS | v2.4 | NEVER-TESTED -- 47 test(s) owed |
 | NJ_NJCJIS | v4.17 | ALL-PASS (41 logs) |
 | NM_NMLETS_OFML | v2.7 | ALL-PASS (36 logs) |
 | NY_NYSPIN_EJUSTICE | v4.26 | ALL-PASS (65 logs) |
@@ -36,26 +36,24 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ---
 
-## NEXT PHYSICAL ACTION
 
-**IMPORT + SWEEP ONE OF 6 -- it is the ONLY thing that moves 12/20, and it needs Rob at the tenant.**
-⛔ **JIRA IS HELD and ALL MD_METERS WORK IS HELD** (Rob 2026-08-31). MD is swept, ALL-PASS 46/46,
-imported and ledger-recorded, blocked ONLY at stage 5 by that hold; its v2.3 release line is drafted
-in `docs/tracking/DEX_TICKET.md` and NOT posted, and its DL State question (section 5e) is parked.
-Do not pick either up unasked.
+**MD_METERS v2.4 NEEDS RE-IMPORT + A FULL RE-SWEEP (46 logs archived).** Rob took the DL State
+decision 2026-08-31; the build is done and gate-clean, so this is now HIS tenant action, not mine.
+⛔ **JIRA STILL HELD** -- MD's drafted release line in `docs/tracking/DEX_TICKET.md` must be
+REWRITTEN for v2.4 before any post; do not post the v2.3 text.
 
-**The queue** (`report_import_owed.ps1`) -- CA_CLETS_OCATS, CA_CONTRA_COSTA,
+**Then IMPORT + SWEEP ONE OF 6** (`report_import_owed.ps1`) -- CA_CLETS_OCATS, CA_CONTRA_COSTA,
 CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, LA_LEMS. All gate-clean, all blocked at stage 4.
 **IMPORT FIRST, THEN PICKLIST CAPTURE** (Rob 2026-08-28) -- the console script scrapes the RENDERED
 form. The capture precedes CHOOSING TEST VALUES; that is why CA_VENTURA cannot fix its hollow toggle.
 
-**MISSION 12 of 20**: 6 blocked at test, 1 (MD) at jira.
+**MISSION 11 of 20** -- MD dropped out of complete when v2.4 archived its package. 7 blocked at test.
 
 ## ROB'S CALLS, NOT MINE
 
-- **MD_METERS DL State** -- section 5e, three options, all v2.4 (archives 46 logs).
-  **FL_FCIC owes NOTHING** -- I reported `ExpandedNameSearchCode` as an unrecorded gap and RETRACTED it;
-  Rob: *"for fl i thought we parked that."* See 5b.
+- **MD_METERS DL State: TAKEN 2026-08-31, shipped in v2.4.** State is the discriminator. I DEVIATED
+  from the option's literal wording (it said `ZLDR.N + RegistrationState EXISTS`) because simulation
+  proved that kills the plain in-state name search; see the v2.4 BUILD_NOTES. **FL_FCIC owes NOTHING.**
 - **CA_CONTRA_COSTA JAWS/SuperQuery** -- the portfolio's only remaining fidelity findings (4 UNDER /
   3 OVER, verbatim in its BUILD_NOTES). Hold the SWEEP, not the import.
 - **LA_LEMS BoatQuery `QB{reg}` vs `BQ{reg}`** -- in LA's registry, not taken.
@@ -75,7 +73,7 @@ form. The capture precedes CHOOSING TEST VALUES; that is why CA_VENTURA cannot f
   **empty SQVR scaffolds 6 -> 3** (CA_SLO, CA_VENTURA, CA_eSUN -- **all never-tested**, so NO
   lifecycle-complete provider carries one) and **PROVISIONAL extracts 9 -> 6**, of which
   **MD_METERS is the only tenant-verified one left** and MD is held. Docs only: no bump, no re-sweep.
-  Still OPEN and Rob's: MD DL State (5e).
+  MD DL State (5e) is now CLOSED -- taken and shipped in v2.4.
 - **CA_VENTURA hollow toggle**: `LicensePlateTypeCode` toggles to its own form default. Needs
   TEST_VALUE_OVERRIDES -- choose the value AFTER its picklist capture.
 - **6 providers owe the one-time picklist capture** + TX_TLETS_CCH (parked).

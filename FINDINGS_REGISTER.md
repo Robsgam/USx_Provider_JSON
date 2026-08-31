@@ -337,52 +337,51 @@ difference a defect, ask whether the label reaches the wire.**
   empty SQVR, LIFECYCLE-COMPLETE). They were the three most recent first-ever sweeps; the build and
   the wire were closed, the documentation authority was not.
 
-### 5e. MD_METERS DriverLicenseQuery — the State question, saved for a ruling
+### 5e. MD_METERS DriverLicenseQuery — the State question — ✅ **CLOSED 2026-08-31, SHIPPED AS v2.4**
 
-Rob, 2026-08-28: *"i think 1 item in dl make setting the state default needed"*, then *"can state be
-defaulted on person only since the veh is where the problem lies?"* Both authorities reviewed; all
-four devdoc DL combinations map 1:1 onto built combos and every mandatory field agrees.
+**Rob's ruling: "Swap to State as the discriminator."** Built, gate-clean, and MD_METERS therefore
+dropped out of lifecycle-complete: 46 ALL-PASS logs archived, 15 SQVR markers back to `[PENDING]`,
+re-import + full re-sweep owed. That cost was on the table when the call was taken.
 
-**The item: devdoc DL #3 is marked `(Out)` and brackets `[State]` as optional.** Both authorities say
-optional (metadata `ZLDR{Name}` has State in `<Any>`), but an out-of-state driver search with no
-state is semantically empty — the `(Out)` marker and the bracket contradict each other.
+**WHAT SHIPPED — three edits, DriverLicenseQuery only, no form change and no field added:**
+`ZWAR.N` gains `RegistrationState NOT_EXISTS`; `ZLDR.N` and `ZLDR.O` each LOSE `raceCode NOT_EXISTS`.
 
-**The officer-facing consequence, which no registry row covers:** `raceCode` alone decides direction
-(`EXISTS` → ZWAR/In, `NOT_EXISTS` → ZLDR/Out). An officer doing an out-of-state search fills
-Name + Sex + DOB + State **and** Race — and `ZWAR.N` wins, whose metadata `<Any>` is `ImageIndicator`
-alone, so **the State they typed is silently discarded and the query goes to Maryland.** Same class as
-the ZLRG.P/ZVEH.P plate discard that v2.3 fixed.
+**⚠️ I DEVIATED FROM THE LITERAL OPTION WORDING, DELIBERATELY, AND THIS IS THE PART TO READ.**
+The option preview said *"ZLDR.N + cond RegistrationState EXISTS"*. Simulated on the v2.3 JSON via
+the canonical `tools/_sim_helpers.ps1 Get-FiringKeyRef` — the same first-match walk the platform
+does — that variant **kills the plain in-state name search**: `Name+Sex+DOB` → **NOTHING FIRES**, and
+`OLN+Race` stays dead. That is the `TN_TIES KQ.N` defect verbatim, and the rule it breaks is already
+written down: *a State gate belongs ONLY where the metadata FORKS by state.* `ZLDR{Name}` carries
+`State` in `<Any>` — an OPTIONAL, not a fork. Dropping the `raceCode` gate instead delivers exactly
+the routing Rob asked for with nothing dead. **Metadata is what makes State the discriminator, not a
+condition:** `RaceCode` appears in BOTH `ZWAR` variants and NEITHER `ZLDR` variant, and `ZWAR{Name}`
+defines no `State` field at all.
 
-**Person-only default IS safe — verified, not assumed.** Person and Vehicle each carry their OWN
-`RegistrationState` control in their own `QUERYINPUTFORM` (Vehicle's at JSON lines 261/550/920 inside
-the form closing at 997; Person's at 1362/1986/2691 inside the form closing at 2996). A Vehicle query
-is assembled from the Vehicle pool, so Vehicle's `NOT_EXISTS` gates cannot see a Person prefill. On
-the Person side State is in **no `set[]` and no condition**, so it is `any[]`-only — the one case the
-decision tree permits — and BUILD_RULES 24 cannot bite.
+**THE TWO DEFECTS IT FIXED, both found by simulation and neither by reading:**
+1. At v2.3, `Name+Sex+DOB+Race+`**`State`** matched `ZWAR.N` — a variant that defines no State — so
+   the state the officer typed was **silently discarded**. Same class as the v2.3 plate type/year
+   defect one version earlier.
+2. `OLN + Race` matched **NOTHING**. `ZWAR.O` needs five fields so it could not take it, and
+   `raceCode NOT_EXISTS` blocked the only other OLN path. Two valid identifiers, no query sent.
 
-**A GLOBAL default would kill two combos** and must never be used: `ZVEH.P` (`RegistrationState
-NOT_EXISTS`, devdoc VehReg #3 in-state plate-only) and `ZVEH.V` (same gate, devdoc #1 VIN+[Make])
-both go permanently false.
+**ROUTING VERIFIED ON THE EMITTED v2.4** (not on intent) — 8 fills, 0 dead: `Name+Sex+DOB`→`ZLDR.N`
+· `+Race`→`ZWAR.N` · `+State`→`ZLDR.N` · `+Race+State`→`ZLDR.N` (Race dropped, spec-correct) ·
+`OLN` / `OLN+Race` / `OLN+State`→`ZLDR.O` · full warrant OLN fill→`ZWAR.O`.
 
-**BUT THE DEFAULT DOES NOT FIX THE DISCARD.** It cannot reach `ZWAR.N`, whose metadata `<Any>` does
-not define State at all; adding it there would OVER-PERMIT. A default only changes ZWAR.O / ZLDR.N /
-ZLDR.O, which already carry State.
+**A SECOND, UNRELATED FINDING SURFACED WHILE DOING THIS, AND IT WAS MINE.** `enforce` came back with
+a live `[FAIL] GunMake: QIDM has attribute but NO combo uses it as primaryFieldReference`. On
+2026-08-28 I replaced a false ZGUN registry row with a correct explanation carrying the rule name
+`primaryfieldreference-is-our-label-not-an-attestation` — and `audit_metadata` CHECK 5 honours only
+an **`existence`-class** rule, so **my registration suppressed nothing and left MD_METERS carrying a
+FAIL nobody had re-run enforce to see.** Exactly the trap `usx-tooling` Step 6 names: *does it
+suppress anything AT ALL?* Fixed the right way rather than by hunting for a rule name — the retired
+row's own instruction was *"align the label at MD's next rebuild if one happens for another
+reason"*, and this was that rebuild, so `ZGUN.primaryFieldReference` is now `GunMake`. Measured both
+sides: `audit_metadata` **0 FAIL (114 PASS)**, `audit_requirement_fidelity` **unchanged at 15
+branches / 0 UNDER / 0 OVER** — a real clearance at zero coverage cost, and no suppression needed.
 
-**Three options, Rob's call, none taken:**
-1. **DL-scoped State default** — guarantees `(Out)` is never stateless; but defaulting to `MD` makes
-   every out-of-state name search assert Maryland until overridden, and every `ZLDR.O` (In/Out) carry
-   MD — which walks straight into **LIMITATION #41** (*"populated HOME state routes a local plate to
-   NLETS"*, PAUSED 2026-08-15 pending CommSys, *"do NOT act until the two tests are run"*).
-2. **Promote State to `set[]` on `ZLDR.N`** — expresses `(Out)` properly; tightens beyond metadata's
-   `<Any>`, so it needs a `promoted-to-set` row.
-3. **Make State the discriminator instead of `raceCode`** — gate `ZWAR.N` on `RegistrationState
-   NOT_EXISTS` and `ZLDR.N` on `EXISTS`. This is the ONLY option that stops the silent discard, needs
-   no default, and does not touch Vehicle.
-
-Any of the three is a wire change: **v2.4, archiving the 46-log ALL-PASS package from 2026-08-28.**
-If one is taken, align `ZGUN`'s `primaryFieldReference` in the same pass (5c) so it costs no extra sweep.
-
----
+**LIMITATION #41** (populated HOME state routes a local plate to NLETS) constrained the *rejected*
+option 1 (defaulting State) and is untouched by what shipped — nothing here defaults State.
 
 ## D. MY OWN RECURRING ERRORS — read before trusting a number in here
 

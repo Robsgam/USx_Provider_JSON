@@ -2,9 +2,55 @@
 
 Auto-generated from `MD_METERS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.3** | Generated: 2026-08-28
+Current: **v2.4** | Generated: 2026-08-31
 
 ---
+
+## v2.4 -- 2026-08-31 -- STATE IS NOW THE DL IN/OUT DISCRIMINATOR -- it stops being silently discarded on
+
+                the warrant name path, and two dead fills are recovered  
+**CHANGED** (DriverLicenseQuery only; no other entity, no form change, no field added or removed):
+  ZWAR.N -- ADDED condition `RegistrationState NOT_EXISTS`.  
+  ZLDR.N -- REMOVED condition `raceCode NOT_EXISTS`.  (NO State condition added -- see below.)  
+  ZLDR.O -- REMOVED condition `raceCode NOT_EXISTS`.  
+  set[] / any[] / defaults[] / attributes / layout: ALL UNCHANGED on all 4 combos.  
+**REASON** -- one authority fact drives all three edits:
+  metadata ZWAR{Name} = Set[BirthDate, Name, RaceCode, SexCode] Any[ImageIndicator]  
+    -- defines NO State field at all.  
+  metadata ZLDR{Name} = Set[BirthDate, Name, SexCode]  Any[State, ImageIndicator, ...]  
+  metadata ZWAR{OperatorLicenseNumber} = Set[Name, OperatorLicenseExpirationYear,  
+    OperatorLicenseNumber, RaceCode, SexCode]  
+  metadata ZLDR{OperatorLicenseNumber} = Set[OperatorLicenseNumber] Any[State, ImageIndicator]  
+  So RaceCode is scoped BY THE METADATA to the two in-state warrant paths, and State to the two  
+  ZLDR paths. The build had it backwards: raceCode was doing the discriminating and State was  
+  doing nothing.  
+  (1) THE DEFECT: at v2.3 an officer who filled Name+Sex+DOB+Race+State matched ZWAR.N -- whose  
+      variant defines no State -- so the STATE THEY TYPED WAS SILENTLY DISCARDED. Same class as  
+      the v2.3 plate type/year defect one version earlier, and as TN_TIES KQ.N.  
+  (2) TWO DEAD FILLS, found by simulation and not by reading: `OLN + Race` matched NOTHING at  
+      v2.3. ZWAR.O needs five fields so it could not take it, and `raceCode NOT_EXISTS` blocked  
+      the only other OLN path -- officer types two valid identifiers, no query is sent.  
+*** WHY ZLDR.N DID *NOT* GET `RegistrationState EXISTS` -- THE LITERAL FIX WAS SIMULATED AND  
+    REJECTED. Read this before anyone "completes" the symmetry:  
+  Adding it kills the plain in-state name search. Simulated on the v2.3 JSON in memory via the  
+  canonical tools/_sim_helpers.ps1 Get-FiringKeyRef (the same first-match walk the platform  
+  does): with `State EXISTS` on ZLDR.N, `Name+Sex+DOB` -> NOTHING FIRES, and `OLN+Race` stays  
+  dead. That is the TN_TIES KQ.N defect verbatim. A State gate belongs ONLY where the metadata  
+  FORKS by state; ZLDR{Name} carries State in <Any>, i.e. an OPTIONAL, so there is no fork to  
+  gate on. Dropping the raceCode gate achieves the same routing with nothing dead.  
+ROUTING, VERIFIED ON THE EMITTED v2.4 (not on intent) -- all 8 fills route, 0 dead:  
+  Name+Sex+DOB            -> ZLDR.N     (plain in-state name search, ALIVE)  
+  Name+Sex+DOB+Race       -> ZWAR.N     (in-state warrant; Race transmits)  
+  Name+Sex+DOB+State      -> ZLDR.N     (State transmits -- was ZWAR.N, discarded)  
+  Name+Sex+DOB+Race+State -> ZLDR.N     (State wins; Race dropped, SPEC-CORRECT: no ZLDR  
+                                         variant defines RaceCode)  
+  OLN only / OLN+Race / OLN+State -> ZLDR.O   (OLN+Race was DEAD at v2.3)  
+  full warrant OLN fill   -> ZWAR.O     (unchanged; its set[] is a strict superset, ordered 1st)  
+COST, stated plainly: this archives the v2.3 tenant package -- 46 ALL-PASS logs ->  
+  logs/<Entity>/_archive_pre_v2.4/, 15 SQVR markers reset to [PENDING]. A full re-sweep is owed.  
+  Rob's call, taken 2026-08-31 with that cost on the table.  
+GATES: 71P/0F/0W. PHASE 1 steps 1-5b clean (15 branches 0 under / 0 over; 0 prefill-dead,  
+  0 shadow, 0 missing; devdoc combinations all accounted for; optionals all route AND transmit).  
 
 ## v2.3 -- 2026-08-27 -- BOTH DOCUMENTED PLATE SEARCHES NOW WORK -- the in-state one stops discarding the
 

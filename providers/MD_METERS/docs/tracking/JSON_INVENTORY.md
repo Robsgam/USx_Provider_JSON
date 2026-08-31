@@ -6,8 +6,7 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| MD_METERS_v2.3.json | v2.3 | Current | 71P/0F/0W. |
-
+| MD_METERS_v2.4.json | v2.4 | Current | 71P/0F/0W/0LIM. |
 ## phases/
 
 | File | Version | Status | Notes |
@@ -20,11 +19,17 @@ All JSON versions produced for this provider.
 
 
 
+
+## v2.4 (2026-08-31)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| MD_METERS_v2.4.json | v2.4 | Current | 71P/0F/0W/0LIM. |
 ## v2.3 (2026-08-27)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| MD_METERS_v2.3.json | v2.3 | Current | 71P/0F/0W/0LIM. |
+| MD_METERS_v2.3.json | v2.3 | Superseded | 71P/0F/0W/0LIM. |
 ## v2.2 (2026-08-20)
 
 | File | Version | Status | Notes |

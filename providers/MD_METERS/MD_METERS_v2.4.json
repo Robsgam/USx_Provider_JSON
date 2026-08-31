@@ -6196,6 +6196,12 @@
                                                                                                                                       "OperatorLicenseNumber"
                                                                                                                                   ],
                                                                                                                         "operator":  "NOT_EXISTS"
+                                                                                                                    },
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "RegistrationState"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
                                                                                                                     }
                                                                                                                 ]
                                                                                              },
@@ -6229,12 +6235,6 @@
                                                                                                                                       "OperatorLicenseNumber"
                                                                                                                                   ],
                                                                                                                         "operator":  "NOT_EXISTS"
-                                                                                                                    },
-                                                                                                                    {
-                                                                                                                        "field":  [
-                                                                                                                                      "raceCode"
-                                                                                                                                  ],
-                                                                                                                        "operator":  "NOT_EXISTS"
                                                                                                                     }
                                                                                                                 ]
                                                                                              },
@@ -6256,22 +6256,14 @@
                                                                                                                       "field":  "ImageIndicator",
                                                                                                                       "value":  "Y"
                                                                                                                   }
-                                                                                                              ],
-                                                                                                 "conditions":  [
-                                                                                                                    {
-                                                                                                                        "field":  [
-                                                                                                                                      "raceCode"
-                                                                                                                                  ],
-                                                                                                                        "operator":  "NOT_EXISTS"
-                                                                                                                    }
-                                                                                                                ]
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "OperatorLicenseNumber",
                                                                             "keyReference":  "ZLDR.O",
                                                                             "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "DriverLicenseQuery -- ZWAR.O/ZWAR.N (warrant), ZLDR.N/ZLDR.O (DL). OLN\u003eName + RaceCode isolation guardrails.",
+                                                   "description":  "DriverLicenseQuery -- ZWAR.O/ZWAR.N (warrant), ZLDR.N/ZLDR.O (DL). OLN\u003eName guardrail; RegistrationState NOT_EXISTS on ZWAR.N makes State the in/out discriminator (v2.4).",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "MD_METERS_DriverLicenseQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -6453,7 +6445,7 @@
 
                                                                                                          ]
                                                                                              },
-                                                                            "primaryFieldReference":  "GunSerialNumber",
+                                                                            "primaryFieldReference":  "GunMake",
                                                                             "keyReference":  "ZGUN",
                                                                             "state":  "In/Out"
                                                                         }
@@ -6600,7 +6592,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for MD_METERS v2.3 -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), DH-suffix, OOS EXISTS/NOT_EXISTS gates + identifier-priority guardrails",
+                        "description":  "Provider configuration for MD_METERS v2.4 -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), DH-suffix, OOS EXISTS/NOT_EXISTS gates + identifier-priority guardrails",
                         "name":  "MD_METERS",
                         "type":  "BUNDLE",
                         "provider":  "MD_METERS"

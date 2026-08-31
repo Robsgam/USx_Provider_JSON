@@ -22,7 +22,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_md_meters.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.3'
+$Version     = '2.4'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\MD_METERS_v${Version}.json"
@@ -180,7 +180,12 @@ $dlQuery = [PSCustomObject]@{
             keyReference          = 'ZWAR.O'
             state                 = 'In/Out'
         }
-        # ZWAR.N -- warrant Name search (DOB+Name+Race+Sex set)
+        # ZWAR.N -- warrant Name search (DOB+Name+Race+Sex set). v2.4: + RegistrationState NOT_EXISTS.
+        #   THE STATE GATE GOES *HERE*, ON THE IN-STATE VARIANT, AND NOWHERE ELSE. Metadata
+        #   ZWAR{Name} = Set[BirthDate, Name, RaceCode, SexCode] Any[ImageIndicator] -- it defines NO
+        #   State field at all, so an officer who fills State on this path had it SILENTLY DISCARDED
+        #   at v2.3 (simulated: Name+Sex+DOB+Race+State -> ZWAR.N, State dropped). Gating the combo on
+        #   the ABSENCE of State pushes that fill onto ZLDR.N, which does define Any[State].
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('BirthDate','NameLast','NameFirst','raceCode','SexCode'); any = @('ImageIndicator','NameMiddle','NameSuffix')
@@ -188,39 +193,58 @@ $dlQuery = [PSCustomObject]@{
                 conditions = @(
                     [PSCustomObject]@{ field = @('raceCode');              operator = 'EXISTS' }
                     [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('RegistrationState');     operator = 'NOT_EXISTS' }
                 )
             }
             primaryFieldReference = 'Name'
             keyReference          = 'ZWAR.N'
             state                 = 'In/Out'
         }
-        # ZLDR.N -- DL by Name+DOB+Sex (no Race -> distinguishes from ZWAR.N)
+        # ZLDR.N -- DL by Name+DOB+Sex. v2.4: the `raceCode NOT_EXISTS` gate is REMOVED.
+        #   *** DO NOT ADD `RegistrationState EXISTS` HERE. IT WAS TRIED AND IT KILLS A CORE SEARCH. ***
+        #   Metadata ZLDR{Name} carries State in <Any> -- an OPTIONAL, not a state FORK -- and
+        #   usx-build Step 3 is explicit: a State gate belongs only where the metadata forks by state.
+        #   Simulated both ways before choosing (v2.3 JSON, in memory, via _sim_helpers Get-FiringKeyRef):
+        #     with `State EXISTS` here : Name+Sex+DOB (plain in-state name search) -> ** DEAD **, and
+        #                               OLN+Race -> ** DEAD **
+        #     with the gate simply gone: every one of 7 fills routes, and State now transmits
+        #   That dead-search outcome is the TN_TIES KQ.N defect verbatim, which is already recorded in
+        #   the skill and in TN's own history. Dropping the raceCode gate instead is what makes State
+        #   the effective in/out discriminator: race present + no State -> ZWAR.N (in-state, race
+        #   transmits); State present -> ZWAR.N is gated out and ZLDR.N takes it, State transmits and
+        #   raceCode is dropped -- which is SPEC-CORRECT, because RaceCode appears in BOTH ZWAR variants
+        #   and NEITHER ZLDR variant, i.e. metadata itself scopes RaceCode to the in-state paths.
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('BirthDate','NameLast','NameFirst','SexCode'); any = @('RegistrationState','ImageIndicator','NameMiddle','NameSuffix')
                 defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
                 conditions = @(
                     [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
-                    [PSCustomObject]@{ field = @('raceCode');              operator = 'NOT_EXISTS' }
                 )
             }
             primaryFieldReference = 'Name'
             keyReference          = 'ZLDR.N'
             state                 = 'In/Out'
         }
-        # ZLDR.O -- DL by OLN (no Race -> distinguishes from ZWAR.O)
+        # ZLDR.O -- DL by OLN. v2.4: `raceCode NOT_EXISTS` REMOVED -- it was creating a DEAD FILL.
+        #   Found by simulation, not by reading: at v2.3 an `OLN + Race` fill matched NOTHING. ZWAR.O
+        #   needs five fields (Name, OLNExpirationYear, OLN, RaceCode, SexCode) so it could not take it,
+        #   and this gate blocked the only other OLN path. Officer types two valid identifiers, no query
+        #   fires. Removing the gate routes it to ZLDR.O; raceCode is dropped, which is spec-correct
+        #   (metadata ZLDR{OperatorLicenseNumber} = Set[OLN] Any[State, ImageIndicator] -- no RaceCode).
+        #   Ordering still separates the pair: ZWAR.O's set[] is a strict superset and it is ordered
+        #   first, so a full warrant fill still reaches it.
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('OperatorLicenseNumber'); any = @('RegistrationState','ImageIndicator')
                 defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
-                conditions = @([PSCustomObject]@{ field = @('raceCode'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'ZLDR.O'
             state                 = 'In/Out'
         }
     )
-    description     = 'DriverLicenseQuery -- ZWAR.O/ZWAR.N (warrant), ZLDR.N/ZLDR.O (DL). OLN>Name + RaceCode isolation guardrails.'
+    description     = 'DriverLicenseQuery -- ZWAR.O/ZWAR.N (warrant), ZLDR.N/ZLDR.O (DL). OLN>Name guardrail; RegistrationState NOT_EXISTS on ZWAR.N makes State the in/out discriminator (v2.4).'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'MD_METERS_DriverLicenseQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -301,8 +325,24 @@ $gunQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
+            # primaryFieldReference = 'GunMake' -- ALIGNED TO THE METADATA at v2.4 (was 'GunSerialNumber').
+            #   NOT a wire change: primaryFieldReference is platform-internal, the same class as
+            #   keyReference, and keyReference is PROVEN to reach the wire zero times. It matters only
+            #   to OUR OWN tooling, which uses it to pick which metadata alternative a built combo
+            #   implements. Metadata GunQuery holds exactly ONE combination and it is indexed GunMake:
+            #     <Combination keyReference="ZGUN" primaryFieldReference="GunMake">
+            #       Set[GunCaliber, GunMake, GunSerialNumber]   (all three mandatory, no <Any>)
+            #   -- an exact field-set match for what is built here. Declaring GunSerialNumber instead
+            #   left audit_metadata CHECK 5 reporting a FAIL ("GunMake: QIDM has attribute but NO combo
+            #   uses it as primaryFieldReference"), which is a TRUE statement about a label and not a
+            #   defect in the request. Aligning is free here because v2.4 was already bumping for the
+            #   DL State fix; do NOT bump for a label alone.
+            #   *** DO NOT BUILD A SECOND 'ZGUN.M' GUN-BY-MAKE COMBO. *** A retired 2026-06-23 registry
+            #   row instructed exactly that, having mistaken primaryFieldReference for a looser
+            #   requirement set. The metadata defines no such combination, and one built with a set[]
+            #   identical to ZGUN would be dead on arrival (no fill could separate them).
             requirements          = [PSCustomObject]@{ set = @('gunCaliber','firearmMake','serialNumber'); any = @() }
-            primaryFieldReference = 'GunSerialNumber'
+            primaryFieldReference = 'GunMake'
             keyReference          = 'ZGUN'
             state                 = 'In/Out'
         }

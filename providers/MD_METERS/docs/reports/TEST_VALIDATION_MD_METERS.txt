@@ -1,27 +1,27 @@
 ﻿================================================================
   Build Report: MD_METERS
-  Source: MD_METERS_v2.3.json
-  Generated: 2026-08-27 13:53
+  Source: MD_METERS_v2.4.json
+  Generated: 2026-08-31 12:50
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX <-> JSON CONSISTENCY -- MD_METERS_v2.3
+TEST MATRIX <-> JSON CONSISTENCY -- MD_METERS_v2.4
 ============================================================
-Source: MD_METERS_v2.3.json
+Source: MD_METERS_v2.4.json
 Matrix: MD_METERS_TEST_MATRIX.txt
-Generated: 2026-08-27
+Generated: 2026-08-31
 
 SCOPE: This confirms each matrix row's expected combo fires for its
 data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
 It does NOT prove the combo is a provider-supported query: that is
 checked separately against the devdoc by audit_supported_queries.ps1.
 
-ENTITY: PERSON (18 tests -- 2 cards, 6 combos)
+ENTITY: PERSON (16 tests -- 2 cards, 6 combos)
   T1  Person     [PASS] (structural check)
-  T2  Person     [PASS] any[] fields verified: RegistrationState, ImageIndicator, NameMiddle, NameSuffix
+  T2  Person     [PASS] any[] fields verified: RegistrationState, ImageIndicator
   T3  Person     [PASS] (structural check)
-  T4  Person     [PASS] any[] fields verified: RegistrationState, ImageIndicator
+  T4  Person     [PASS] any[] fields verified: RegistrationState, ImageIndicator, NameMiddle, NameSuffix
   T5  Person     [PASS] (structural check)
   T6  Person     [PASS] any[] fields verified: RegistrationState, ImageIndicator, NameMiddle, NameSuffix
   T7  Person     [PASS] (structural check)
@@ -33,31 +33,29 @@ ENTITY: PERSON (18 tests -- 2 cards, 6 combos)
   T13  Person     [PASS] (structural check)
   T14  Person     [PASS] (structural check)
   T15  Person     [PASS] (structural check)
-  T16  Person     [PASS] (structural check)
-  T17  Person     [PASS] (structural check)
-  T18  Person     [PASS] queriesToDeselect verified
+  T16  Person     [PASS] queriesToDeselect verified
 ENTITY: VEHICLE (10 tests -- 1 card, 4 combos)
+  T17  Vehicle    [PASS] (structural check)
+  T18  Vehicle    [PASS] any[] fields verified: RegistrationState, ImageIndicator
   T19  Vehicle    [PASS] (structural check)
-  T20  Vehicle    [PASS] any[] fields verified: RegistrationState, ImageIndicator
+  T20  Vehicle    [PASS] any[] fields verified: ImageIndicator
   T21  Vehicle    [PASS] (structural check)
-  T22  Vehicle    [PASS] any[] fields verified: ImageIndicator
+  T22  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, ImageIndicator
   T23  Vehicle    [PASS] (structural check)
-  T24  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, ImageIndicator
+  T24  Vehicle    [PASS] any[] fields verified: RegistrationState, ImageIndicator
   T25  Vehicle    [PASS] (structural check)
-  T26  Vehicle    [PASS] any[] fields verified: RegistrationState, ImageIndicator
-  T27  Vehicle    [PASS] (structural check)
-  T28  Vehicle    [PASS] (structural check)
+  T26  Vehicle    [PASS] (structural check)
 ENTITY: BOAT (5 tests -- 1 card, 2 combos)
+  T27  Boat       [PASS] (structural check)
+  T28  Boat       [PASS] any[] fields verified: ImageIndicator
   T29  Boat       [PASS] (structural check)
   T30  Boat       [PASS] any[] fields verified: ImageIndicator
   T31  Boat       [PASS] (structural check)
-  T32  Boat       [PASS] any[] fields verified: ImageIndicator
-  T33  Boat       [PASS] (structural check)
 ENTITY: FIREARM (1 tests -- 1 card, 1 combo)
-  T34  Firearm    [PASS] GunQuery fires (ZGUN)
+  T32  Firearm    [PASS] GunQuery fires (ZGUN)
 ENTITY: ARTICLE (1 tests -- 1 card, 1 combo)
-  T35  Article    [PASS] ArticleSingleQuery fires (ZART)
+  T33  Article    [PASS] ArticleSingleQuery fires (ZART)
 
-SUMMARY: 35/35 PASS, 0 FAIL
+SUMMARY: 33/33 PASS, 0 FAIL
 
 
