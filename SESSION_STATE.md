@@ -17,10 +17,10 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | AZ_AZDPS | v3.12 | ALL-PASS (53 logs) |
 | CA_CLETS | v2.27 | ALL-PASS (99 logs) |
 | FL_FCIC | v7.24 | ALL-PASS (104 logs) |
-| HI_HCJDC_OFML | v4.20 | ALL-PASS (50 logs) |
-| IL_LEADS_OFML | v2.8 | ALL-PASS (44 logs) |
+| HI_HCJDC_OFML | v4.20 | ALL-PASS (49 logs) |
+| IL_LEADS_OFML | v2.8 | ALL-PASS (43 logs) |
 | MD_METERS | v2.4 | ALL-PASS (47 logs) |
-| NJ_NJCJIS | v4.17 | ALL-PASS (41 logs) |
+| NJ_NJCJIS | v4.17 | ALL-PASS (39 logs) |
 | NM_NMLETS_OFML | v2.7 | ALL-PASS (36 logs) |
 | NY_NYSPIN_EJUSTICE | v4.26 | ALL-PASS (65 logs) |
 | OH_LEADS | v2.11 | ALL-PASS (65 logs) |

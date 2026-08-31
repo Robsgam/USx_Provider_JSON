@@ -15,4 +15,21 @@
 #   ArticleSingleQuery, so "every entity" is FOUR here. Safe to prefill: the field is any[]-only on
 #   all 8 combos, 0 set[], 0 conditions. TX_TLETS T6 gate cleared -- the IL devdoc carries no
 #   conditional-requirement wording at all. Full reasoning in the v2.4 BUILD_NOTES entry.
-[FLAG:plan-dedupe-vacuous-tests] emit_test_plan.ps1 gained two plan-only filters 2026-08-21: (1) DUPLICATE -- drop a test whose (entity, fill-set) is byte-identical to an earlier one, which makes the generator agree with audit_log_inflation attack A by construction; (2) NO-CONTEST GUARDRAIL -- drop a guardrail whose fill adds no competing identifier over the winner's own combo test, because the pair differs only by a presence condition and the loser can never match. YOUR PLAN WILL SHRINK when you regenerate; measured non-destructively on 2026-08-21: AZ -5, CA_CLETS -11, CA_SLO -1, CA_VENTURA -2, FL -14, HI -1, IL -1, LA -1, MD -3, NJ -2, TN -1, TX_TLETS_CCH -4. NO COVERAGE IS LOST -- identical fill means identical wire, and NY held 16/16 combos at 100% across the change. NOT DONE FOR YOU ON PURPOSE: if you are tenant-verified, regenerating now makes your existing logs ORPHAN (more logs than plan tests) and drops you out of ALL-PASS, which is why this is a flag and not a sweep. Do it at your OWN next rebuild, and archive the superseded duplicate logs in the same pass (NY put them in logs/<Entity>/_archive_dedupe_v<ver>/). Reference: NY_NYSPIN_EJUSTICE v4.26, 73 -> 65 tests, inflation A 8 -> 0, four log gates 65/65. (flagged 2026-08-21)
+# [FLAG:plan-dedupe-vacuous-tests]  TAKEN AND DONE 2026-08-31 -- not deferred, not waived.
+#   Plan regenerated at the CURRENT version (44 -> 43 tests), 1 now-unmatched log(s) archived to
+#   logs/<Entity>/_archive_dedupe_v2.8/. Result 43 plan / 43 logs, four log gates 43/43 each
+#   (6c content, 6d metadata, 2i attribution, plan completeness ALL-PASS 5/5), and
+#   audit_log_inflation attack A -> 0 clone group(s). ALL-PASS PRESERVED.
+#   NO version bump and NO re-sweep were needed: emit_test_plan only rewrites the plan file, and
+#   reset_test_package fires on a VERSION change -- this was not one. The JSON was not touched.
+#   PROVEN SAFE BEFORE ACTING -- new plan written to SCRATCH first and the script ABORTS on any of:
+#   empty/non-shrinking plan, a combo losing all coverage, an orphan without an identical-wire twin,
+#   or a new-plan label with no log. Results here: combo coverage unchanged; identical-wire twin
+#   found for every archived log (QA_any == QA_af_ownerAppliedNumber); every new-plan label already had a log.
+#   WHY IT MATTERED: at 44 the package claimed 44 distinct tests while 1 were the SAME request
+#   driven twice under two labels. The honest count is 43 and that is now on the board.
+#   ROOT CAUSE: the generator emits a test per (combo x dimension) -- base, all-any-filled,
+#   each-any-individually, each guardrail. On a combo with exactly ONE any[] field, "all any" and
+#   "that one any field" are the SAME fill, so two dimensions emit an identical test.
+#   (original flag text retained below for the record)
+# [FLAG:plan-dedupe-vacuous-tests] emit_test_plan.ps1 gained two plan-only filters 2026-08-21: (1) DUPLICATE -- drop a test whose (entity, fill-set) is byte-identical to an earlier one, which makes the generator agree with audit_log_inflation attack A by construction; (2) NO-CONTEST GUARDRAIL -- drop a guardrail whose fill adds no competing identifier over the winner's own combo test, because the pair differs only by a presence condition and the loser can never match. YOUR PLAN WILL SHRINK when you regenerate; measured non-destructively on 2026-08-21: AZ -5, CA_CLETS -11, CA_SLO -1, CA_VENTURA -2, FL -14, HI -1, IL -1, LA -1, MD -3, NJ -2, TN -1, TX_TLETS_CCH -4. NO COVERAGE IS LOST -- identical fill means identical wire, and NY held 16/16 combos at 100% across the change. NOT DONE FOR YOU ON PURPOSE: if you are tenant-verified, regenerating now makes your existing logs ORPHAN (more logs than plan tests) and drops you out of ALL-PASS, which is why this is a flag and not a sweep. Do it at your OWN next rebuild, and archive the superseded duplicate logs in the same pass (NY put them in logs/<Entity>/_archive_dedupe_v<ver>/). Reference: NY_NYSPIN_EJUSTICE v4.26, 73 -> 65 tests, inflation A 8 -> 0, four log gates 65/65. (flagged 2026-08-21)

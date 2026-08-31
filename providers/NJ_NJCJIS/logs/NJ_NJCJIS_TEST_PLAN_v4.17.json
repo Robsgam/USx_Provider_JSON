@@ -3,7 +3,7 @@
     "version":  "4.17",
     "tier":  "Full",
     "note":  "Full pass (tiers removed 2026-07-01): every combo + individual any[] per field + all-any[] together + guardrail tests. render/negative are manual one-time checks done at initial provider build only and are NOT part of the recurring test matrix (2026-07-01). The driver auto-submits all four kinds (combo/any-field/any/guardrail, 2026-07-01) -- guardrail fills[] already contains BOTH competing identifier fields, so it captures formState/RMS the same as any other test, no manual popup-capture workaround needed.",
-    "testCount":  41,
+    "testCount":  39,
     "formDefaults":  {
                          "Vehicle":  {
                                          "LicensePlateTypeCode":  "PC",
@@ -774,29 +774,6 @@
                   },
                   {
                       "n":  34,
-                      "entity":  "Article",
-                      "query":  "ArticleSingleQuery",
-                      "comboKeyRef":  "QA",
-                      "expectedKeyRef":  "QA",
-                      "kind":  "any",
-                      "tier":  "Full",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "ArticleSerialNumber",
-                                        "value":  "ART99999"
-                                    },
-                                    {
-                                        "fieldId":  "ArticleTypeCode",
-                                        "value":  "BBICYCL"
-                                    },
-                                    {
-                                        "fieldId":  "ImageIndicator",
-                                        "value":  "N"
-                                    }
-                                ]
-                  },
-                  {
-                      "n":  35,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "QB",
@@ -809,7 +786,7 @@
                                 }
                   },
                   {
-                      "n":  36,
+                      "n":  35,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "QB",
@@ -829,26 +806,7 @@
                                 ]
                   },
                   {
-                      "n":  37,
-                      "entity":  "Boat",
-                      "query":  "BoatQuery",
-                      "comboKeyRef":  "QB",
-                      "expectedKeyRef":  "QB",
-                      "kind":  "any",
-                      "tier":  "Full",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "RegistrationNumber",
-                                        "value":  "FL1234AB"
-                                    },
-                                    {
-                                        "fieldId":  "ImageIndicator",
-                                        "value":  "N"
-                                    }
-                                ]
-                  },
-                  {
-                      "n":  38,
+                      "n":  36,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "QBN",
@@ -861,7 +819,7 @@
                                 }
                   },
                   {
-                      "n":  39,
+                      "n":  37,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "QBN",
@@ -881,7 +839,7 @@
                                 ]
                   },
                   {
-                      "n":  40,
+                      "n":  38,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "QBN",
@@ -901,7 +859,7 @@
                                 ]
                   },
                   {
-                      "n":  41,
+                      "n":  39,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "QBN",
