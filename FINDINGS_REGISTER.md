@@ -571,3 +571,82 @@ the shape that means *your probe is broken*, so I looked rather than reporting i
   failure into an **empty `MD_METERS_v2.2.json` in the provider root** — a one-JSON-in-root violation
   that would have failed `enforce`. Caught and removed in the same action. Use the commit where the file
   **existed**, and never let `2>/dev/null` swallow a `git show` that writes a file.
+
+---
+
+## 7. AUDIT OF THE 13 "DONE" PROVIDERS vs ENGINEERING_STANDARD §5 — 2026-08-31
+
+Rob: *"recheck all 13 'done' providers for accuracy and consistency ... double check the engineering
+standard and see how it looks."* Every number below is from a tool run today, not from this file.
+
+### 7a. WHAT IS ACTUALLY CLEAN ON ALL 13 — the majority, and worth stating so the findings read in scale
+POSTED marker names the current version **13/13** · registry currency **0 stale** (263 rows, 70
+checkable) · BUILD_NOTES fidelity **0 generic** · suppression scope **0 over-broad** · tool portability
+**280 cells, 0 unportable** · PS-5.1 parse **118/0** · artifact provenance **F 0 / U 0 / O 0** ·
+variant sync, iterate-phase gate, hypothesis quarantine, log-content integrity all PASS. The **21
+stale reports** exist but every one is on a NEVER-TESTED provider (CA_VENTURA 7, LA_LEMS 7,
+TX_TLETS_CCH 7) — **none on the 13**. Portfolio enforce: **689 PASS / 4 FAIL / 3 WARN**.
+
+### 7b. ⛔ FOUR OF THE 13 FAIL THEIR OWN `enforce` GATE — so §5 bullet 1 holds on NINE, not thirteen
+`FL_FCIC`, `HI_HCJDC_OFML`, `IL_LEADS_OFML`, `NJ_NJCJIS`. Verified directly:
+`enforce -Provider FL_FCIC` → **BLOCKED: 45 PASS / 1 FAIL**. All four are blocked by the same
+`[FLAG:plan-dedupe-vacuous-tests]` in `PENDING_UPDATES.txt`, and **that flag contradicts itself**:
+
+> *"NOT DONE FOR YOU ON PURPOSE: if you are tenant-verified, regenerating now makes your existing logs
+> ORPHAN … and drops you out of ALL-PASS, which is why this is a flag and not a sweep."*
+
+…while the mechanism it rides on emits `PENDING_UPDATES.txt has unresolved items (**rebuild before
+testing**)` and blocks enforce PHASE 1. So the flag instructs deferral and simultaneously blocks the
+gate that defines "done", on providers that are **already tested and passed**. It is a deadlock, not a
+backlog: nothing these four can do clears it except the rebuild the flag tells them not to do.
+**This is also the mechanical reason the mission metric and §5 disagree** — `report_mission_status`
+stage 1 reads `VALIDATOR_REPORT` (0F/0W, true on all 13) and never consults `enforce`.
+**ROB'S CALL, three options, I did not pick one:** (i) scope enforce PHASE 1 so a flag does not block a
+provider already ALL-PASS at its current version; (ii) comment the flag out with the deferral reason —
+the convention these very files already use ("Lines without a leading `#` block enforce"), and what
+HI/IL/NJ each did for the earlier `ncic-image` flag — **but that makes `audit_reverse_propagation` read
+it as resolved when it is not**, so it needs a REVERSE_PROPAGATION_LOG row saying "deliberately
+deferred"; (iii) accept that the honest count is 9 and let the metric say so.
+I did **not** clear four providers' flags: that is a 4-provider write against one-provider-at-a-time,
+and it changes what the repo tracks as owed.
+
+### 7c. §5 BULLET 7 IS UNMET ON 13 OF 13 — no provider has a form review at its current version
+6 have **no record at all** (AZ, MD, NM, OH, OR, TN); the other 7 are **behind**: FL reviewed at v7.12
+vs v7.24 · TX v4.12 vs v4.22 · NY v4.16 vs v4.26 · HI v4.14 vs v4.20 · NJ v4.14 vs v4.17 · CA_CLETS
+v2.22 vs v2.27 · IL v2.7 vs v2.8. **This is NOT a defect to fix by writing records** — CLAUDE.md is
+explicit that the review is a human act, advisory on purpose, must not be manufacturable to satisfy a
+gate, and must never be prompted for. So §5 bullet 7 can never pass mechanically, which means **as
+written, §5 says ZERO providers are finished.** Either the bullet is qualified or the metric is.
+
+### 7d. `MD_METERS` IS THE SOLE `PROVISIONAL` DEVDOC EXTRACT AMONG THE 13
+The other 12 read `CONFIRMED`. MD's `SUPPORTED_QUERIES.txt` is derived FROM the JSON combos, so its
+query list is confirmed against the build and not against the devdoc's Basic list — circular authority,
+the exact condition closed on NM / OR_LEDS / TN_TIES on 2026-08-31. Its own ledger row already flags it
+as owed. Docs-only, no bump, no re-sweep.
+
+### 7e. `DEX_TICKET_ARCHIVE.md` MISSING ON `MD_METERS` AND `OR_LEDS` (11/13 have it)
+The **only** unexplained divergence from `audit_provider_uniformity` (13 providers x 66 tokens, 5 areas
+clean, 7 explained). **The reason it was deferred has expired:** it was left because Jira was held and
+creating OR's alone could not clear the FAIL while MD was the other half. Both have now posted
+(OR 807713 on 2026-08-28, MD 808820 today), so it is cheap and actionable.
+
+### 7f. THE STANDARD ITSELF — two problems, and they are the reason 7b/7c were invisible
+1. **§5 and §5.1 do not measure the same thing.** §5 lists **seven** conditions for "finished"; §5.1
+   defines the portfolio metric as "all **6 stages** of §2 green" and `report_mission_status` implements
+   §5.1. Bullets 5 (per-provider gate efficacy) and 7 (form review) sit **outside** the metric that is
+   supposed to represent §5 — so a provider can be LIFECYCLE-COMPLETE while failing "finished". Today:
+   metric **13**, §5 bullet 1 **9**, §5 bullet 7 **0**.
+2. **§6.1 IS STALE.** It states mutation coverage is *"1 provider deep — `audit_gate_efficacy` proves 15
+   defect classes on TX_TLETS only"*. The catalogue now names **five** providers (TX 13 refs, NJ 9, FL 7,
+   NY 3, AZ 2) **plus a provider-agnostic subset**: `MD_METERS` appears in none of those maps and scored
+   **8/8 killed, 0 survived** in today's `build_phase1`. The claim understates real coverage, which
+   matters because §5 bullet 5 is judged against it.
+
+### 7g. PROCESS NOTE ON THIS AUDIT
+`audit_provider_linkage` FAILs on 12 providers (68 cross-provider comment references). Deliberately NOT
+counted as a finding here: it is ADVISORY by design, comment provenance has no wire impact, and
+CLAUDE.md says it is cleaned at each provider's own rebuild and is never a blocking flag.
+Also: my `enforce -Provider FL_FCIC | grep ... ; echo $?` printed `0` because `$?` captured **grep's**
+exit status, not enforce's. The `BLOCKED: 45 PASS / 1 FAIL` line is the evidence; the exit code I
+printed was meaningless. Third time this session a pipeline exit status has misled me — `grep | head`
+did it twice earlier. **Read the tool's own verdict line, never the pipeline's status.**
