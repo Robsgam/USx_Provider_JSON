@@ -38,15 +38,13 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**MD_METERS v2.3 is SWEPT and waiting on TWO decisions from Rob, both recorded, neither taken.**
-ALL-PASS 46/46, four log gates 46/46, `enforce -Provider MD_METERS` 43P/0F/0W, ledger records the
-install, SQVR populated, picklists captured.
-1. **Jira** -- a v2.3 release line is DRAFTED in `providers/MD_METERS/docs/tracking/DEX_TICKET.md`
-   and NOT posted. DEX-987 (found by JQL; was recorded nowhere in the repo) has zero comments.
-2. **DriverLicenseQuery State** -- three options in `FINDINGS_REGISTER.md` **section 5e**. Any of them
-   is v2.4 and archives the 46-log package.
+**IMPORT + SWEEP ONE OF 6 -- it is the ONLY thing that moves 12/20, and it needs Rob at the tenant.**
+⛔ **JIRA IS HELD and ALL MD_METERS WORK IS HELD** (Rob 2026-08-31). MD is swept, ALL-PASS 46/46,
+imported and ledger-recorded, blocked ONLY at stage 5 by that hold; its v2.3 release line is drafted
+in `docs/tracking/DEX_TICKET.md` and NOT posted, and its DL State question (section 5e) is parked.
+Do not pick either up unasked.
 
-**THEN: import + sweep the next of 6** (`report_import_owed.ps1`) -- CA_CLETS_OCATS, CA_CONTRA_COSTA,
+**The queue** (`report_import_owed.ps1`) -- CA_CLETS_OCATS, CA_CONTRA_COSTA,
 CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, LA_LEMS. All gate-clean, all blocked at stage 4.
 **IMPORT FIRST, THEN PICKLIST CAPTURE** (Rob 2026-08-28) -- the console script scrapes the RENDERED
 form. The capture precedes CHOOSING TEST VALUES; that is why CA_VENTURA cannot fix its hollow toggle.
@@ -65,18 +63,19 @@ form. The capture precedes CHOOSING TEST VALUES; that is why CA_VENTURA cannot f
 
 ## OPEN FINDINGS -- detail lives in `FINDINGS_REGISTER.md`, do NOT restate it here
 
-- **2026-08-28 SWEEP -> section 5. THE IN-SCOPE ANSWER IS ZERO -- nothing was on the table from the
-  unreachable-optional class.** My "59 unreachable fields / 8 providers" counted fields on
-  combinations we never build; Rob: *"you aren't counting non basic supported queries section of
-  metadata."* Re-scoped per COMBINATION: 22 sit on keyRefs we do not build (out of scope), 37 on
-  built combos and every one is `State2`-`State5` (out of scope) or NM's registered
-  `FormORI`/`RelatedHitSearchIndicator`. MD's row was still worth adding but was NOT "the one
-  unrecorded item". What survives is structural: **193 of 263 registry rows (73%) are unverifiable** by
-  `audit_registry_currency` (7 providers have zero checkable rows) -- and the first row opened by hand
-  in that zone was FALSE. **8 of 20 `SUPPORTED_QUERIES` extracts PROVISIONAL; 5 carry an empty SQVR
-  scaffold its gate passes** -- OR / TN in both AND lifecycle-complete. **NM closed both 08-31**
-  (extract verified vs devdoc -> `CONFIRMED`/GATING, SQVR 13 markers; enforce 44 -> **45 PASS** as
-  PHASE 2e became a real gate). Still OPEN and Rob's: MD DL State (5e).
+- **2026-08-28 SWEEP -> section 5. IN-SCOPE ANSWER: ZERO** -- nothing was on the table from the
+  unreachable-optional class. My "59 fields / 8 providers" counted combinations we never build (Rob:
+  *"you aren't counting non basic supported queries section of metadata"*). What survives is
+  structural: **194 of 264 registry rows (73%) are unverifiable** by `audit_registry_currency`, 7
+  providers at zero checkable rows -- and the first row opened by hand in that zone was FALSE.
+- **DOC-AUTHORITY DEBT CLOSED ON THE FINISHED SET, 2026-08-31.** NM, OR_LEDS and TN_TIES each had an
+  empty SQVR scaffold AND a circular `PROVISIONAL` extract while lifecycle-complete; all three now
+  carry a verified `CONFIRMED` extract (GATING, not INFO) and a populated SQVR. Each went **45 -> 46
+  PASS** (NM 44 -> 45) purely because PHASE 2e became a real gate. Measured after:
+  **empty SQVR scaffolds 6 -> 3** (CA_SLO, CA_VENTURA, CA_eSUN -- **all never-tested**, so NO
+  lifecycle-complete provider carries one) and **PROVISIONAL extracts 9 -> 6**, of which
+  **MD_METERS is the only tenant-verified one left** and MD is held. Docs only: no bump, no re-sweep.
+  Still OPEN and Rob's: MD DL State (5e).
 - **CA_VENTURA hollow toggle**: `LicensePlateTypeCode` toggles to its own form default. Needs
   TEST_VALUE_OVERRIDES -- choose the value AFTER its picklist capture.
 - **6 providers owe the one-time picklist capture** + TX_TLETS_CCH (parked).
