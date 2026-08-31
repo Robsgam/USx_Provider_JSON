@@ -1,0 +1,93 @@
+﻿================================================================
+TEST LOG: MD_METERS Person DriverLicenseQuery
+Combo: ZWAR.O_af_NameMiddle (ZWAR.O_af_NameMiddle (auto))
+Date: 2026-08-31 13:36:22
+Result: PASS
+JSON Version: 2.4
+Entity Fingerprint: 059bbe4276b96ee66bdd0ba11917f1c579132b95ea33eede3c53e63241242bd1
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"Y","NameFirst":"JOHN","NameLast":"DOE","NameMiddle":"A","OperatorLicenseExpirationYear":"2028","OperatorLicenseNumber":"D999888777","SexCode":"Male","raceCode":"W"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M1CD655BVZJWCH9RJ20ANA9T">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01M1CD655BVZJWCH9RJ20ANA9T</Id>
+            <RaceCode>W</RaceCode>
+            <ImageIndicator>Y</ImageIndicator>
+            <OperatorLicenseExpirationYear>2028</OperatorLicenseExpirationYear>
+            <SexCode>M</SexCode>
+            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+            <Name>DOE, JOHN A</Name>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "dlNumber":  "D999888777",
+                         "sexAttrId":  "69509992802",
+                         "lastName":  "DOE",
+                         "firstName":  "JOHN"
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M1CD655BVZJWCH9RJ20ANA9T
+  RaceCode                       W
+  ImageIndicator                 Y
+  OperatorLicenseExpirationYear  2028
+  SexCode                        M
+  OperatorLicenseNumber          D999888777
+  Name                           DOE, JOHN A
+
+NOTES
+-----
+Automated capture (txId 01M1CD655BVZJWCH9RJ20ANA9T). kind=any-field; anyField=NameMiddle; expectedKeyRef=ZWAR.O; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

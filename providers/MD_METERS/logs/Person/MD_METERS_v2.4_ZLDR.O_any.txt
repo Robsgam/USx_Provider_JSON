@@ -1,0 +1,85 @@
+﻿================================================================
+TEST LOG: MD_METERS Person DriverLicenseQuery
+Combo: ZLDR.O_any (ZLDR.O_any (auto))
+Date: 2026-08-31 13:36:15
+Result: PASS
+JSON Version: 2.4
+Entity Fingerprint: 059bbe4276b96ee66bdd0ba11917f1c579132b95ea33eede3c53e63241242bd1
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"N","OperatorLicenseNumber":"D999888777","RegistrationState":"Georgia"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M1CD9G2VHX6TYWSPM1RW6V06">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01M1CD9G2VHX6TYWSPM1RW6V06</Id>
+            <ImageIndicator>N</ImageIndicator>
+            <State>GA</State>
+            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "dlNumber":  "D999888777",
+                         "registrationStateAttrId":  "69509988795"
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M1CD9G2VHX6TYWSPM1RW6V06
+  ImageIndicator                 N
+  State                          GA
+  OperatorLicenseNumber          D999888777
+
+NOTES
+-----
+Automated capture (txId 01M1CD9G2VHX6TYWSPM1RW6V06). kind=any; anyField=; expectedKeyRef=ZLDR.O; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

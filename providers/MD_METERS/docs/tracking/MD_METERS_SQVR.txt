@@ -1,4 +1,4 @@
-MD_METERS SUPPORTED QUERY VALIDATION REPORT
+﻿MD_METERS SUPPORTED QUERY VALIDATION REPORT
 ===============================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-08-31
@@ -66,37 +66,37 @@ provider. Four log gates all 46/46: 6c content, 6d metadata, 2i attribution (the
 fired), plan completeness. Combo coverage 100% (14/14 combos hold >= 1 log).
 
 Vehicle -- VehicleRegistrationQuery (4 combos, 11 logs)
-  [PENDING] ZLRG.P  set=[LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear]
+  [CONFIRMED] ZLRG.P  set=[LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear]
                       any=[RegistrationState, ImageIndicator]                        3 logs, PASS
-  [PENDING] ZLRG.V  set=[VehicleIdentificationNumber]
+  [CONFIRMED] ZLRG.V  set=[VehicleIdentificationNumber]
                       any=[RegistrationState, ImageIndicator]                        1 log,  PASS
-  [PENDING] ZVEH.V  set=[VehicleIdentificationNumber]
+  [CONFIRMED] ZVEH.V  set=[VehicleIdentificationNumber]
                       any=[VehicleMakeCode, ImageIndicator]                          4 logs, PASS
-  [PENDING] ZVEH.P  set=[LicensePlateNumber] any=[ImageIndicator]                  3 logs, PASS
+  [CONFIRMED] ZVEH.P  set=[LicensePlateNumber] any=[ImageIndicator]                  3 logs, PASS
     Identifier priority PROVEN: ZVEH.P_guardrail_vs_ZLRG.V fills plate AND VIN with DIFFERENT
     values and ZVEH.P wins -- so the pair is a real contest, not a degenerate guardrail
     (audit_log_inflation attack D).
 
 Person -- DriverLicenseQuery (4 combos, 19 logs)
-  [PENDING] ZWAR.O  set=[NameLast, NameFirst, OperatorLicenseExpirationYear,
+  [CONFIRMED] ZWAR.O  set=[NameLast, NameFirst, OperatorLicenseExpirationYear,
                            OperatorLicenseNumber, raceCode, SexCode]
                       any=[RegistrationState, ImageIndicator, NameMiddle, NameSuffix] 5 logs, PASS
-  [PENDING] ZWAR.N  set=[BirthDate, NameLast, NameFirst, raceCode, SexCode]
+  [CONFIRMED] ZWAR.N  set=[BirthDate, NameLast, NameFirst, raceCode, SexCode]
                       any=[ImageIndicator, NameMiddle, NameSuffix]                    5 logs, PASS
-  [PENDING] ZLDR.N  set=[BirthDate, NameLast, NameFirst, SexCode]
+  [CONFIRMED] ZLDR.N  set=[BirthDate, NameLast, NameFirst, SexCode]
                       any=[RegistrationState, ImageIndicator, NameMiddle, NameSuffix] 5 logs, PASS
-  [PENDING] ZLDR.O  set=[OperatorLicenseNumber] any=[RegistrationState,
+  [CONFIRMED] ZLDR.O  set=[OperatorLicenseNumber] any=[RegistrationState,
                            ImageIndicator]                                            4 logs, PASS
     OLN > Name priority PROVEN: ZLDR.O_guardrail_vs_ZLDR.N.
 
 Person -- DriverHistoryQuery (2 combos, 8 logs)
-  [PENDING] ZDRV.N  set=[BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH]
+  [CONFIRMED] ZDRV.N  set=[BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH]
                       any=[ImageIndicator, NameMiddleDH, NameSuffixDH]                5 logs, PASS
-  [PENDING] ZDRV.O  set=[OperatorLicenseNumberDH] any=[ImageIndicator]              3 logs, PASS
+  [CONFIRMED] ZDRV.O  set=[OperatorLicenseNumberDH] any=[ImageIndicator]              3 logs, PASS
     OLN > Name priority PROVEN on the DH pool too: ZDRV.O_guardrail_vs_ZDRV.N.
 
 Firearm -- GunQuery (1 combo, 1 log)
-  [PENDING] ZGUN    set=[gunCaliber, firearmMake, serialNumber]                     1 log,  PASS
+  [CONFIRMED] ZGUN    set=[gunCaliber, firearmMake, serialNumber]                     1 log,  PASS
     firearmMake=IMI is LIVE-PROVEN HERE, not inferred from another provider. The one-time picklist
     capture WARNed "value 'IMI' not in the captured subset (300 of a larger list) -- inconclusive"
     because the tenant list is alphabetical and the DOM capture cut at "BDB - Bader & Brothers".
@@ -106,11 +106,11 @@ Firearm -- GunQuery (1 combo, 1 log)
     would have greened a WARN by swapping a working code for an obscure one.
 
 Article -- ArticleSingleQuery (1 combo, 1 log)
-  [PENDING] ZART    set=[serialNumber, articleTypeCode]                             1 log,  PASS
+  [CONFIRMED] ZART    set=[serialNumber, articleTypeCode]                             1 log,  PASS
 
 Boat -- BoatQuery (2 combos, 6 logs)
-  [PENDING] ZBOA.H  set=[BoatHullIdNumber] any=[RegistrationNumber, ImageIndicator] 4 logs, PASS
-  [PENDING] ZBOA.R  set=[RegistrationNumber] any=[ImageIndicator]                   2 logs, PASS
+  [CONFIRMED] ZBOA.H  set=[BoatHullIdNumber] any=[RegistrationNumber, ImageIndicator] 4 logs, PASS
+  [CONFIRMED] ZBOA.R  set=[RegistrationNumber] any=[ImageIndicator]                   2 logs, PASS
     Hull > Registration priority is structural here: ZBOA.H carries RegistrationNumber in any[], so
     filling both fires ZBOA.H by set[] specificity.
 

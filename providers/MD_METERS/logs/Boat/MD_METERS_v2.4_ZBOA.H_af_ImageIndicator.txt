@@ -1,0 +1,72 @@
+﻿================================================================
+TEST LOG: MD_METERS Boat BoatQuery
+Combo: ZBOA.H_af_ImageIndicator (ZBOA.H_af_ImageIndicator (auto))
+Date: 2026-08-31 13:36:08
+Result: PASS
+JSON Version: 2.4
+Entity Fingerprint: 812ca830f7f931e78dd18bad125eea46dfb38cb50df2e12673555b7be6ca4737
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BoatHullIdNumber":"FL1234AB56H7","ImageIndicator":"N"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M1CDQMTYJ9043670CWHF7D66">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01M1CDQMTYJ9043670CWHF7D66</Id>
+            <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+            <ImageIndicator>N</ImageIndicator>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M1CDQMTYJ9043670CWHF7D66
+  BoatHullIdNumber               FL1234AB56H7
+  ImageIndicator                 N
+
+NOTES
+-----
+Automated capture (txId 01M1CDQMTYJ9043670CWHF7D66). kind=any-field; anyField=ImageIndicator; expectedKeyRef=ZBOA.H; firedMessageType=BoatQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

@@ -1,0 +1,96 @@
+﻿================================================================
+TEST LOG: MD_METERS Person DriverLicenseQuery
+Combo: ZWAR.O_any (ZWAR.O_any (auto))
+Date: 2026-08-31 13:36:20
+Result: PASS
+JSON Version: 2.4
+Entity Fingerprint: 059bbe4276b96ee66bdd0ba11917f1c579132b95ea33eede3c53e63241242bd1
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"N","NameFirst":"JOHN","NameLast":"DOE","NameMiddle":"A","NameSuffix":"JR","OperatorLicenseExpirationYear":"2028","OperatorLicenseNumber":"D999888777","RegistrationState":"Georgia","SexCode":"Male","raceCode":"W"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M1CD6J1VTNZ2H01P4DCF76YA">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01M1CD6J1VTNZ2H01P4DCF76YA</Id>
+            <RaceCode>W</RaceCode>
+            <ImageIndicator>N</ImageIndicator>
+            <State>GA</State>
+            <OperatorLicenseExpirationYear>2028</OperatorLicenseExpirationYear>
+            <SexCode>M</SexCode>
+            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+            <Name>DOE, JOHN A JR</Name>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "dlNumber":  "D999888777",
+                         "sexAttrId":  "69509992802",
+                         "registrationStateAttrId":  "69509988795",
+                         "lastName":  "DOE",
+                         "firstName":  "JOHN"
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M1CD6J1VTNZ2H01P4DCF76YA
+  RaceCode                       W
+  ImageIndicator                 N
+  State                          GA
+  OperatorLicenseExpirationYear  2028
+  SexCode                        M
+  OperatorLicenseNumber          D999888777
+  Name                           DOE, JOHN A JR
+
+NOTES
+-----
+Automated capture (txId 01M1CD6J1VTNZ2H01P4DCF76YA). kind=any; anyField=; expectedKeyRef=ZWAR.O; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
