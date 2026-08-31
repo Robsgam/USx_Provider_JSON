@@ -1,9 +1,22 @@
 # MD_METERS — DEX ticket
 
 **Ticket: [DEX-987](https://mark43.atlassian.net/browse/DEX-987) — "[MD - METERS] USx Provider Build"**
-Opened 2026-03-23 · status **Backlog** · project DEX
+Opened 2026-03-23 by Gordon Hallof · status **In Progress** · project DEX (CJIS/USx/DEx Implementation) · Task / P3 / label `USx` · **unassigned** · tenant `https://usx-md-meters.mark43.com`
 
-**Current: v2.3 — tenant-verified ALL-PASS 5/5 (46 logs, 46 PASS / 0 FAIL) on 2026-08-28.**
+**Current: v2.4 — tenant-verified ALL-PASS 5/5 (47 logs, 47 PASS / 0 FAIL) on 2026-08-31.** v2.3 (46 logs) is
+SUPERSEDED, its package archived to `logs/<Entity>/_archive_pre_v2.4/` and RETAINED as history.
+
+**LIVE TICKET STATE READ FROM JIRA 2026-08-31 (not from this file): 0 comments, status In Progress.**
+Three facts here were STALE or MISSING and were corrected from the ticket itself, which is why reading
+it beat trusting the file: (1) this line said status **Backlog** — Jira says **In Progress** (ticket
+`updated` 2026-08-28T14:12, the day of the v2.3 sweep); (2) the version was v2.3; (3) the ticket
+DESCRIPTION carries the tenant URL `https://USx-MD-METERS.MARK43.COM`, and `IMPORT_LEDGER.md` had
+carried `*URL not recorded — ASK*` for MD — the ONLY provider row missing one. Now recorded as
+`usx-md-meters.mark43.com`, matching the portfolio convention.
+
+⚠️ **THERE IS NO STORED DRAFT. The claim below that a release line "has been DRAFTED" refers to a
+draft made in conversation and never written to this file, so it is GONE.** Any post must be drafted
+fresh for v2.4 and approved before it goes out. Do not treat the sentence below as a ready artifact.
 
 ## How this ticket was found (2026-08-28)
 
