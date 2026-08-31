@@ -5,7 +5,7 @@
 > every number from `portfolio_status.ps1` / `enforce.ps1`, never from memory.
 
 <!-- BEGIN GENERATED: tools\sync_session_state.ps1 -- do not hand-edit below this line -->
-**Last updated:** 2026-08-28 (generated) | **Branch:** `main`
+**Last updated:** 2026-08-31 (generated) | **Branch:** `main`
 
 ## Tenant-test state -- GENERATED, do not hand-edit
 
@@ -73,9 +73,10 @@ form. The capture precedes CHOOSING TEST VALUES; that is why CA_VENTURA cannot f
   `FormORI`/`RelatedHitSearchIndicator`. MD's row was still worth adding but was NOT "the one
   unrecorded item". What survives is structural: **193 of 263 registry rows (73%) are unverifiable** by
   `audit_registry_currency` (7 providers have zero checkable rows) -- and the first row opened by hand
-  in that zone was FALSE. **9 of 20 `SUPPORTED_QUERIES` extracts are PROVISIONAL + derived-from-JSON.
-  6 carry an empty SQVR scaffold that its gate passes.** NM / OR / TN are in all three lists AND are
-  LIFECYCLE-COMPLETE. Still OPEN and Rob's: MD DL State (5e).
+  in that zone was FALSE. **8 of 20 `SUPPORTED_QUERIES` extracts PROVISIONAL; 5 carry an empty SQVR
+  scaffold its gate passes** -- OR / TN in both AND lifecycle-complete. **NM closed both 08-31**
+  (extract verified vs devdoc -> `CONFIRMED`/GATING, SQVR 13 markers; enforce 44 -> **45 PASS** as
+  PHASE 2e became a real gate). Still OPEN and Rob's: MD DL State (5e).
 - **CA_VENTURA hollow toggle**: `LicensePlateTypeCode` toggles to its own form default. Needs
   TEST_VALUE_OVERRIDES -- choose the value AFTER its picklist capture.
 - **6 providers owe the one-time picklist capture** + TX_TLETS_CCH (parked).

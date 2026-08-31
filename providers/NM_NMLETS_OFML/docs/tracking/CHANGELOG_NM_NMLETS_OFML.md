@@ -2,7 +2,7 @@
 
 Auto-generated from `NM_NMLETS_OFML_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.7** | Generated: 2026-08-27
+Current: **v2.7** | Generated: 2026-08-31
 
 ---
 

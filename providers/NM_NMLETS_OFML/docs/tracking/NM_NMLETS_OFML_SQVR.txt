@@ -1,13 +1,145 @@
-NM_NMLETS_OFMLSUPPORTED QUERY VALIDATION REPORT
-===============================================
+NM_NMLETS_OFML SUPPORTED QUERY VALIDATION REPORT
+====================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-Last updated: 2026-08-27
+Last updated: 2026-08-31
 JSON version: v2.7
+Validator: 65 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
+Total combos: 13 CommSys (5 QIDMs)
+  Counted from the emitted JSON via audit_test_coverage.ps1 ("Total CommSys combos: 13"), NOT from
+  audit_combo_reachability's "N checked" or audit_query_trace's "11 metadata combinations" -- those
+  report what was COMPARED and run lower. If a rebuild changes the combo count this line MUST move
+  with it, or audit_sqvr_integrity CHECK 2 compares a stale assertion against the JSON.
 
-QUERIES (pending metadata review)
-==================================
-  (populate from devdoc "Basic Queries Supported" after metadata review)
+POPULATED 2026-08-31, and the reason is the point. Both sections below were unfilled template text
+  ("populate after build") on a provider that is TENANT-VERIFIED ALL-PASS 36/36 and
+  LIFECYCLE-COMPLETE on all six stages -- and every automated gate read GREEN:
+  `enforce -Provider NM_NMLETS_OFML` exits 0 at 44 PASS / 0 FAIL / 0 WARN, and PHASE 2j printed
+  "[PASS] NM_NMLETS_OFML -- SQVR consistent with the JSON". That PASS was VACUOUS:
+  audit_sqvr_integrity checks that SQVR-named keyRefs exist in the JSON and that stated totals match,
+  so a file naming NOTHING and asserting NO total leaves only the version string genuinely checked.
+  A gate cannot fail on an empty file. audit_test_coverage CHECK 4 said so plainly -- "SQVR Match: NO
+  ... fewer SQVR [CONFIRMED] than tested combos" -- but nothing in enforce reads that tool, so its
+  finding had nowhere to land. Same remedy and reasoning as IL_LEADS_OFML (2026-08-18) and
+  MD_METERS (2026-08-28). NM was one of SIX providers still carrying the empty scaffold, three of them
+  lifecycle-complete (NM, OR_LEDS, TN_TIES -- the three most recent first-ever sweeps: the wire was
+  closed, the documentation authority was not).
+  Everything below is DERIVED, not recalled: combos + set[]/any[] from the emitted
+  NM_NMLETS_OFML_v2.7.json via audit_test_coverage, query scope from
+  docs/reference/NM_NMLETS_OFML_SUPPORTED_QUERIES.txt (now STATUS: CONFIRMED, verified pair-by-pair
+  against the devdoc on 2026-08-31), and log counts by grouping logs/<Entity>/NM_NMLETS_OFML_v2.7_*
+  on their combo label with each RESULT line read from the log itself.
 
-QUERY PATHS
-===========
-  (populate after build -- one PENDING or CONFIRMED per combo)
+QUERIES (devdoc "Basic Queries Supported" lines 17-290 -- CONFIRMED, all 6 BUILT)
+================================================================================
+    ArticleSingleQuery       -> Article  / QIDM label "Article"
+    BoatQuery                -> Boat     / QIDM label "Boat"
+    DriverHistoryQuery       -> Person   / QIDM label "Driver History"
+    DriverLicenseQuery       -> Person   / QIDM label "Driver License"
+    GunQuery                 -> Firearm  / QIDM label "Firearm"
+    VehicleRegistrationQuery -> Vehicle  / QIDM label "Vehicle Registration"
+  All six are built; none is skipped. audit_supported_queries CHECK 0 confirms all 6 built
+  transactions are devdoc-authorized. OUT OF BASIC SCOPE and NOT gaps: the CCH package
+  (CCHCriminalHistoryAQ/FQ/IQ/QH/QR/QWI/ZR) under "Transactions Supported", and the WMPI family
+  (MissingPerson, NletsSexOffender, ProtectionOrder, SexOffender, UnidentifiedPerson) under
+  "Expanded Transactions Supported".
+
+  DATA-MINED (devdoc line 15): NCIC (QA, QB, QG, QV, QW) and DMV (Person and Vehicle). The state runs
+  these off our single request and their tags return in the response, so building no separate
+  stolen/wanted query is CORRECT. This is why QB.H, QB.R and QV.V exist as mined-named combos -- the
+  devdoc's own combination total is 10 while the JSON carries 13.
+
+  THE DL/DH GRAMMAR, so nobody re-derives it: metadata DriverLicenseQuery holds ONE combination,
+  keyRef QUERY, shaped
+      Set[ Choice[ OperatorLicenseNumber | Set[SexCode, BirthDate, Name] ],
+           PurposeCode, Attention, Any[State, ImageIndicator] ]
+  A <Choice> inside <Set> means exactly one branch is mandatory, and set[] has no OR -- so it MUST
+  become one combination per branch (LIMITATION #21). Branch 1 -> DL.OLN, branch 2 (a nested <Set>,
+  i.e. a mandatory GROUP) -> DL.NAME. PurposeCode is metadata-MANDATORY and sits in set[] on both.
+  Attention is metadata-MANDATORY but is SUPPLIED BY THE PLATFORM HANDLER, not the officer, so it
+  rides in any[] -- registered on both combos as `demoted-to-any` in ACCEPTED_DIVERGENCES.
+  ⚠️ CONSEQUENCE, EXPECTED, NOT A DEFECT: audit_query_trace reports DriverLicenseQuery as
+  "0/1 built ... [MISSING] QUERY set[PurposeCode,Attention,SexCode,BirthDate,Name]". That is the
+  CHOICE-SPLIT ARTEFACT -- metadata has one un-split combination and we built two single-branch
+  combos, so containment cannot match either one to the two-branch Choice. audit_devdoc_combinations
+  (the per-combination devdoc->built gate) PASSES with no notes, and audit_requirement_fidelity
+  reports 0 UNDER / 0 OVER. Do not "fix" this by collapsing DL.NAME and DL.OLN back together.
+
+QUERY PATHS -- 13 of 13 CONFIRMED at v2.7 (36 logs, 36 PASS / 0 FAIL)
+=====================================================================
+Tenant-verified ALL-PASS 5/5 on 2026-08-27 (v2.6 swept 2026-08-21 was the first-ever sweep of this
+provider). Four log gates all 36/36: 6c content, 6d metadata, 2i attribution (the named combo is what
+fired), plan completeness. Combo coverage 100% (13/13 combos hold >= 1 log). Inflation 0/0/0/0.
+
+Vehicle -- VehicleRegistrationQuery (3 combos, 6 logs)
+  [CONFIRMED] RQ.P   set=[LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear]
+                     any=[RegistrationState]                                       4 logs, PASS
+  [CONFIRMED] RQ.V   set=[VehicleIdentificationNumber, VehicleMakeCode, vehicleYear]
+                     any=[RegistrationState]                                       1 log,  PASS
+  [CONFIRMED] QV.V   set=[VehicleIdentificationNumber, VehicleMakeCode]            1 log,  PASS
+    THE v2.7 RELEASE CHANGE lives here: RQ.P was gated `RegistrationState EXISTS` while its own
+    metadata puts State in <Any> -- an optional, not a fork -- so the devdoc's ONLY plate combination
+    was unreachable in-state and the fill fell through to QV.P, silently discarding the PREFILLED and
+    VISIBLE plate type and year. Gate removed; QV.P deleted as a routing impossibility (its set[] is a
+    strict subset and type/year are always present, so no ordering keeps both) and registered
+    `dropped-combo`. Wire-proven BOTH ways: the in-state log carries plate+type+year with NO State,
+    and RQ.P_any carries State=GA -- one combination serving both directions.
+    Identifier priority PROVEN: RQ.P_guardrail_vs_RQ.V and RQ.P_guardrail_vs_QV.V.
+
+Person -- DriverLicenseQuery (2 combos, 9 logs)
+  [CONFIRMED] DL.NAME set=[NameLast, NameFirst, BirthDate, SexCode, purposeCode]
+                      any=[RegistrationState, ImageIndicator, Attention,
+                           NameMiddle, NameSuffix]                                 5 logs, PASS
+  [CONFIRMED] DL.OLN  set=[OperatorLicenseNumber, purposeCode]
+                      any=[RegistrationState, ImageIndicator, Attention]           4 logs, PASS
+    OLN > Name priority PROVEN: DL.OLN_guardrail_vs_DL.NAME.
+    Name composite middle + suffix wire-proven on this pool (_af_NameMiddle / _af_NameSuffix), and
+    v2.7 was the first build to carry a MULTI-CHARACTER middle name -- the wire shows
+    `DOE, JOHN MICHAEL` and `DOE, JOHN MICHAEL JR`, degrading cleanly to `DOE, JOHN JR` with no
+    double space. Every prior sweep filled the single letter "A", so only a one-character middle name
+    had ever been proven; Rob caught it on the rendered form. Fixed as TEST DATA, no rebuild.
+
+Person -- DriverHistoryQuery (2 combos, 10 logs)
+  [CONFIRMED] KQ.N   set=[NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH]
+                     any=[purposeCodeDH, raceCodeDH, RegistrationState,
+                          NameMiddleDH, NameSuffixDH]                              6 logs, PASS
+  [CONFIRMED] KQ.O   set=[OperatorLicenseNumberDH]
+                     any=[purposeCodeDH, RegistrationState]                        4 logs, PASS
+    OLN > Name priority PROVEN on the isolated DH pool too: KQ.O_guardrail_vs_KQ.N.
+    DH ISOLATION: DH-suffixed fieldIds (NameLastDH/NameFirstDH/BirthDateDH/SexCodeDH/
+    OperatorLicenseNumberDH/NameMiddleDH/NameSuffixDH/purposeCodeDH/raceCodeDH) keep the DL and DH
+    field pools separate so queriesToDeselect works. The v2.6 fix is wire-proven here:
+    <PurposeCode>C</PurposeCode> now appears on BOTH DH combos as well as both DL combos -- before
+    v2.6 the DH side had purposeCodeDH in any[] with no prefill and no combo default, so a DH query
+    transmitted no purpose code at all while the DL side sent C.
+
+Firearm -- GunQuery (1 combo, 5 logs)
+  [CONFIRMED] QG     set=[serialNumber]
+                     any=[gunCaliber, firearmMake, GunModel]                       5 logs, PASS
+    Matches devdoc Gun #1 exactly: "(In/Out) GunSerialNumber, [GunCaliber, GunMake, GunModel]".
+    All three optionals wire-proven individually (_af_gunCaliber / _af_firearmMake / _af_GunModel)
+    plus _any.
+
+Article -- ArticleSingleQuery (1 combo, 1 log)
+  [CONFIRMED] QA     set=[ArticleSerialNumber, articleTypeCode]                    1 log,  PASS
+
+Boat -- BoatQuery (4 combos, 5 logs)
+  [CONFIRMED] BQ.H   set=[BoatHullIdNumber]  any=[RegistrationState]               1 log,  PASS
+  [CONFIRMED] QB.H   set=[BoatHullIdNumber]                                        2 logs, PASS
+  [CONFIRMED] BQ.R   set=[RegistrationNumber] any=[RegistrationState]              1 log,  PASS
+  [CONFIRMED] QB.R   set=[RegistrationNumber]                                      1 log,  PASS
+    IN/OUT SPLIT: BQ.* are the Nlets (out-of-state) paths carrying RegistrationState; QB.* are the
+    mined NCIC in-state paths with no State. Hull > Registration priority PROVEN:
+    QB.H_guardrail_vs_BQ.R.
+
+KNOWN LIMITS -- recorded, not defects
+=====================================
+  State2-State5 (multi-destination Nlets broadcast, up to 5 destinations) are defined as OPTIONAL by
+  both devdoc and metadata on VehReg, DH and Boat. NM builds ONE RegistrationState control, so the
+  spec-derived plan reports 24 UNREACHABLE tests for those four fields. OUT OF SCOPE by portfolio
+  decision (Rob 2026-08-02) -- multi-destination routing is not built on any provider. Twelve rows in
+  ACCEPTED_DIVERGENCES record this per (query, keyRef, field).
+  FormORI and RelatedHitSearchIndicator are metadata-defined on several combinations and are not
+  wired; both are registered.
+  L9 LAYOUT FINDING IS AN ACCEPTED OPERATOR OVERRIDE, not an oversight: raceCode sits on the DL
+  card's ROW_PER_DL_3 beside BirthDate/SexCode/purposeCode and feeds the RMS query only. By Rob's
+  directive; recorded in BUILD_NOTES. audit_layout_flow will keep reporting it as [INFO].

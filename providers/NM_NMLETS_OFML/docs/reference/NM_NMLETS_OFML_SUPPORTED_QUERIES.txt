@@ -1,9 +1,50 @@
-STATUS: PROVISIONAL
-# NM_NMLETS_OFML supported queries -- DERIVED FROM JSON COMBOS, NOT YET CONFIRMED.
-# ACTION: verify this list against the provider devdoc 'Basic Queries Supported'.
-#   - remove any line the devdoc does NOT authorize
-#   - add any devdoc-supported query intentionally not built (document as a skip)
-# Then change STATUS to CONFIRMED to turn this into a hard gate.
+STATUS: CONFIRMED
+# NM_NMLETS_OFML supported queries -- VERIFIED AGAINST THE DEVDOC 2026-08-31. This is now a HARD GATE.
+#
+# WHY THIS CHANGED. The file previously read "STATUS: PROVISIONAL ... DERIVED FROM JSON COMBOS, NOT YET
+# CONFIRMED", which is circular: a query list generated FROM the build can never reveal a query the
+# build is missing (ENGINEERING_STANDARD LAW 3 -- a check that only validates what EXISTS cannot see an
+# omission). While PROVISIONAL, audit_supported_queries downgrades every mismatch to INFO, so the
+# label-level checks were soft. That softness is the third layer that hid the AZ_AZDPS transaction-name
+# scope defect (a query built under an AzAzdps-prefixed transaction scoring [PASS] on every combo).
+#
+# HOW IT WAS VERIFIED -- pair by pair against source/NM_NMLETS_OFML_DEVDOC.txt "Basic Queries
+# Supported" (lines 17-290), reading each query's own "Possible Combinations" line, NOT the extract:
+#   Article     | ArticleSerialNumber          -> Article #1  (In/Out) ArticleSerialNumber, ArticleTypeCode
+#   Boat        | BoatHullIdNumber             -> Boat    #1  (In/Out) BoatHullIdNumber, [State]
+#   Boat        | RegistrationNumber           -> Boat    #2  (In/Out) RegistrationNumber, [State]
+#   Driver Hist | Name                         -> DH      #1  (In/Out) BirthDate, Name, SexCode, [Attention, PurposeCode, State..State5]
+#   Driver Hist | OperatorLicenseNumber        -> DH      #2  (In/Out) OperatorLicenseNumber, [Attention, PurposeCode, State..State5]
+#   Driver Lic  | Name                         -> DL      #1  (In/Out) BirthDate, Name, SexCode, [State..State5]
+#   Driver Lic  | OperatorLicenseNumber        -> DL      #2  (In/Out) OperatorLicenseNumber, [State..State5]
+#   Firearm     | GunSerialNumber              -> Gun     #1  (In/Out) GunSerialNumber, [GunCaliber, GunMake, GunModel]
+#   Veh Reg     | LicensePlateNumber           -> VehReg  #1  (In/Out) LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, [State..State5]
+#   Veh Reg     | VehicleIdentificationNumber  -> VehReg  #2  (In/Out) VehicleIdentificationNumber, [State..State5, VehicleMakeCode, ..]
+# 10 of 10 pairs devdoc-authorized. All SIX devdoc-Basic queries are BUILT; none is skipped, so there
+# is no skip to document. Devdoc combination total = 10 (1+2+2+2+1+2); the JSON carries 13 combos --
+# the extra three are QB.H, QB.R and QV.V, the DATA-MINED NCIC keyRefs (see below), each registered.
+#
+# CORROBORATED BY THE GATE'S OWN PARSE, not just by hand: audit_supported_queries reports
+#   "[PASS] CHECK 0 transaction-name scope: all 6 built transaction(s) are devdoc-authorized
+#    (compared against 6 Basic name(s))"
+#   "Devdoc 'Basic Queries Supported' ... : ArticleSingleQuery, BoatQuery, DriverHistoryQuery,
+#    DriverLicenseQuery, GunQuery, VehicleRegistrationQuery"
+# and 14 PASS / 0 FAIL / 0 WARN / 0 INFO. NOTE FOR ANYONE RE-DERIVING THIS BY HAND: a naive
+# '^[A-Za-z]+Query' grep of the Basic section returns only FIVE headings and drops BoatQuery --
+# pdftotext spacing. Trust the tool's parse over an ad-hoc grep; that trap is documented in CLAUDE.md.
+#
+# OUT OF BASIC SCOPE, therefore NOT a coverage gap in either direction (no-combo-left-behind is
+# BASIC-scoped). Listed so nobody "discovers" them as omissions:
+#   Transactions Supported (line 290+)          : CCHCriminalHistoryAQ/FQ/IQ/QH/QR/QWI/ZR queries
+#                                                 (a future NM_NMLETS_OFML_CCH variant, not this build)
+#   Expanded Transactions Supported (line 11504+): WMPIMissingPerson, WMPINletsSexOffender,
+#                                                 WMPIProtectionOrder, WMPISexOffender,
+#                                                 WMPIUnidentifiedPerson queries
+#
+# DATA-MINED (devdoc line 15): NCIC (QA, QB, QG, QV, QW) and DMV (Person and Vehicle) -- tags returned
+# from data mining. The state runs these off our single request; building no separate stolen/wanted
+# query is CORRECT, not an omission. This is why QB.H/QB.R/QV.V exist as mined-named combos.
+#
 # Format: <QueryLabel> | <PrimaryFieldReference>
 
 Article | ArticleSerialNumber
