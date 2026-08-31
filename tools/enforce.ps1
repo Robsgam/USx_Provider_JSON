@@ -1675,6 +1675,7 @@ $gateExit = $LASTEXITCODE
 # Parse the verdict-summary block: lines are "  <Provider>   <VERDICT>" (2-space indent,
 # provider token, verdict). Exclude the per-provider "GATE VERDICT:" detail and headers.
 $badProviders = @()
+$uncoveredProviders = @()
 foreach ($l in ($gateOut -split "`n")) {
     if ($l -match '^\s{2}(\S+)\s+INCONSISTENT\s*$') {
         $name = $Matches[1]
@@ -1683,9 +1684,24 @@ foreach ($l in ($gateOut -split "`n")) {
             Out "       [verdict] $name INCONSISTENT"
         }
     }
+    # UNCOVERED (added 2026-08-31) -- a TENANT-VERIFIED provider has a BUILT combo with no log and no
+    # registered existence-class exception. Reported SEPARATELY from INCONSISTENT because it is a
+    # different defect: nothing contradicts anything, the records agree, and they agree a combo was
+    # never tested. Collapsing the two would hide which one to go fix.
+    elseif ($l -match '^\s{2}(\S+)\s+UNCOVERED\s*$') {
+        $name = $Matches[1]
+        if ($name -notmatch 'GATE|VERDICT') {
+            $uncoveredProviders += $name
+            Out "       [verdict] $name UNCOVERED -- a built combo has no log and no registered exception"
+        }
+    }
 }
 if ($gateExit -eq 0) {
-    Pass "Iterate-phase gate: no INCONSISTENT providers (CLOSED or INCOMPLETE-consistent)"
+    Pass "Iterate-phase gate: no INCONSISTENT and no UNCOVERED providers (every built combo on a tenant-verified provider has a log or a registered exception)"
+} elseif ($uncoveredProviders.Count -gt 0 -and $badProviders.Count -eq 0) {
+    Fail "Iterate-phase gate: UNCOVERED provider(s) -- $($uncoveredProviders -join ', ') -- a BUILT combo has no log and no registered existence-class exception"
+} elseif ($uncoveredProviders.Count -gt 0) {
+    Fail "Iterate-phase gate: INCONSISTENT -- $($badProviders -join ', ') ; UNCOVERED -- $($uncoveredProviders -join ', ')"
 } else {
     Fail "Iterate-phase gate: INCONSISTENT provider(s) -- $($badProviders -join ', ')"
 }

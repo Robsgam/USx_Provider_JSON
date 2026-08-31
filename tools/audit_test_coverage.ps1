@@ -23,7 +23,34 @@
       INCOMPLETE-consistent -- combos still [PENDING], no contradictions. Legitimate for a
                                freshly-built / not-yet-tested provider (e.g. FL v5.0). NOT done.
       INCONSISTENT          -- a contradiction exists (see Gate-Verdict). Exit non-zero.
+      UNCOVERED             -- (2026-08-31) the provider is TENANT-VERIFIED at its current version,
+                               yet a BUILT combo has NO log and NO registered existence-class
+                               exception. Exit non-zero.
     Wired into enforce.ps1 as a blocking phase. Default (no -Gate) keeps advisory exit 0.
+
+  WHY UNCOVERED EXISTS -- the link that was measured but never gated.
+    Rob, 2026-08-31: "how do we confidently say that all providers that are swept have all the logs
+    that match every combination and no combo was left out unless explicitly told to." By gate, we
+    could not. Every OTHER link was blocking -- devdoc->built (2p), metadata->built (2n/2b),
+    built->reachable (2h), planned->logged (plan completeness), logged->truthful (6c/6d/2i) -- but
+    BUILT->PLANNED was not. A built combo that emit_test_plan generates no test for produces no test,
+    no log, and NO FAILURE, because ALL-PASS means "every PLAN test passed", not "every COMBO was
+    tested". OH_LEADS's dealer-plate ATDP had no plan test at all and was found by hand. This tool
+    already collected $untestedCombos and only PRINTED them; -Gate failed solely on INCONSISTENT, so
+    a CONSISTENTLY INCOMPLETE provider passed. Measuring is not gating.
+  SCOPE is deliberate: ALL-PASS providers only, via the shared _test_status_lib classifier. A
+    never-tested provider has zero logs, so gating it would redden 7 providers for work not yet owed
+    -- a FAIL nobody can clear, which LAW 2b calls noise.
+  EXEMPTION is the registry, existence class only (dead-combo / not-built / shadow / unbuilt /
+    dropped-combo) via the shared Get-DivergenceRuleClass. That IS "explicitly told to". FL_FCIC's
+    FBQBoatHullIdNumber / FBQRegistrationNumber are exactly this -- dead by Rob's explicit 2026-08-12
+    ruling -- so FL reads 28/30 logged, 2 registered-exempt, 0 UNCOVERED.
+  SOUND ON FILENAMES because enforce 2i (audit_log_combo_attribution) is ALREADY BLOCKING and proves
+    every log's NAMED combo is what fired; given 2i green, filename-coverage == attribution-coverage.
+    Re-replaying here would duplicate 2i (LAW 4). If 2i is ever demoted, revisit this.
+  BASELINE 2026-08-31: 19 providers scoped / 0 UNCOVERED / 0 INCONSISTENT -- it lands at ZERO, the
+    only honest way to introduce a gate. LAW 2 proven by commenting out FL's two dead-combo rows:
+    the verdict flipped INCOMPLETE-consistent -> UNCOVERED naming both combos, and back on restore.
 #>
 
 param(
@@ -43,6 +70,15 @@ $repoRoot = Split-Path $PSScriptRoot -Parent
 . "$PSScriptRoot\_combo_match.ps1"
 # Shared provenance + tier helpers (version/fingerprint stamp validation).
 . "$PSScriptRoot\_test_provenance.ps1"
+# _test_status_lib: the SAME ALL-PASS classifier portfolio_status / SESSION_STATE /
+# report_mission_status use, so the combo->log coverage gate cannot disagree with them about which
+# providers are tenant-verified and therefore owe coverage.
+. "$PSScriptRoot\_test_status_lib.ps1"
+# _divergence_rules: Get-DivergenceRuleClass -- ONE definition of "existence class"
+# (dead-combo / not-built / shadow / unbuilt / dropped-combo) shared with audit_metadata and
+# audit_requirement_fidelity, so those gates and this one can never disagree about what an
+# approved not-built decision looks like.
+. "$PSScriptRoot\_divergence_rules.ps1"
 # get_entity_fingerprints.ps1 begins with its own param($Path,$OutFile); dot-sourcing
 # it executes that param block in THIS scope and would reset our $Path/$OutFile to null.
 # Preserve and restore them around the dot-source.
@@ -551,9 +587,69 @@ foreach ($prov in ($providerJsons | Sort-Object Name)) {
             if ($sqFirstLine -match 'STATUS:\s*CONFIRMED') { $sqConfirmed = $true }
         }
 
+        # ── COMBO -> LOG COVERAGE, AS A GATE (added 2026-08-31) ────────────────────────────────────
+        # THE LINK THIS CLOSES. Rob: "how do we confidently say that all providers that are swept have
+        # all the logs that match every combination and no combo was left out unless explicitly told
+        # to." Until now: we could not, by gate. Every OTHER link in the chain was blocking --
+        # devdoc->built (2p), metadata->built (2n/2b), built->reachable (2h), planned->logged
+        # (plan completeness), logged->truthful (6c/6d/2i) -- but BUILT->PLANNED was not. A built combo
+        # that emit_test_plan generates no test for produces no test, no log, and NO FAILURE, because
+        # ALL-PASS means "every PLAN test passed", not "every COMBO was tested". It has already bitten
+        # once: OH_LEADS's dealer-plate ATDP had no plan test at all, found only by hand.
+        # This tool already computed $untestedCombos and only PRINTED them; -Gate failed solely on
+        # INCONSISTENT, so a provider that was CONSISTENTLY INCOMPLETE passed. Measuring it is not the
+        # same as gating it.
+        #
+        # SCOPED TO TENANT-VERIFIED PROVIDERS, and that scope is load-bearing, not a softener: a
+        # never-tested provider has ZERO logs, so every combo is trivially "untested" and gating it
+        # would redden 7 providers for work that is not yet owed -- turning a real gate into noise
+        # nobody can clear (LAW 2b). Uses the SAME classifier as portfolio_status / SESSION_STATE /
+        # report_mission_status, so the four cannot disagree.
+        #
+        # EXEMPTION IS THE REGISTRY, AND ONLY THE EXISTENCE CLASS. A combo carrying a
+        # dead-combo / not-built / shadow / unbuilt / dropped-combo row is a decision already taken
+        # with reasoning a stranger can evaluate; that IS "explicitly told to". Classified by
+        # Get-DivergenceRuleClass rather than a local pattern, so this gate and audit_metadata /
+        # audit_requirement_fidelity can never disagree about what an existence rule is. FL_FCIC's two
+        # Boat combos (FBQBoatHullIdNumber, FBQRegistrationNumber) are exactly this: dead by Rob's
+        # explicit 2026-08-12 decision, so FL's 10/12 Boat coverage is CORRECT and this gate says so.
+        #
+        # WHY IT IS SOUND TO MATCH ON THE LOG FILENAME rather than replaying each wire: enforce 2i
+        # (audit_log_combo_attribution) is ALREADY BLOCKING and proves every log's NAMED combo is what
+        # actually fired. Given 2i green, filename-coverage and attribution-coverage are the same set.
+        # Re-replaying here would duplicate 2i (LAW 4). If 2i is ever demoted, this reasoning dies with
+        # it -- so do not demote it without revisiting this comment.
+        $uncoveredUnexempt = @()
+        $coverageScoped    = $false
+        $exemptNames       = @()
+        $tState = $null
+        try { $tState = Get-ProviderTestState -ProvDir $provDir -Name $provName } catch { $tState = $null }
+        if ($tState -and "$($tState.State)" -eq 'ALL-PASS') {
+            $coverageScoped = $true
+            $regPath = Find-DocsPath $provDir 'tracking' "${provName}_ACCEPTED_DIVERGENCES.txt"
+            $regLines = if ($regPath -and (Test-Path $regPath)) { Get-Content -LiteralPath $regPath } else { @() }
+            foreach ($u in $untestedCombos) {
+                $kr = "$($u.KeyReference)"
+                $exempt = $false
+                foreach ($rl in $regLines) {
+                    if ($rl -match '^\s*#') { continue }
+                    $cols = $rl -split '\|'
+                    if ($cols.Count -lt 4) { continue }
+                    if ("$($cols[1])".Trim() -ne $kr) { continue }
+                    if ((Get-DivergenceRuleClass "$($cols[3])".Trim()) -eq 'existence') { $exempt = $true; break }
+                }
+                if ($exempt) { $exemptNames += $kr } else { $uncoveredUnexempt += $u }
+            }
+        }
+
         $notConfirmedNote = $null
         if ($gateReasons.Count -gt 0) {
             $verdict = "INCONSISTENT"
+        } elseif ($coverageScoped -and $uncoveredUnexempt.Count -gt 0) {
+            # A tenant-verified provider with a built combo that has no log and no registered
+            # existence-class exception. Distinct from INCONSISTENT: nothing here CONTRADICTS anything
+            # -- the records agree, and they agree that a combo was never tested.
+            $verdict = "UNCOVERED"
         } elseif ($sqvrExists -and $sqvrPending -eq 0 -and $sqvrConfirmed -gt 0 -and $sqConfirmed) {
             $verdict = "CLOSED"
         } else {
@@ -563,7 +659,7 @@ foreach ($prov in ($providerJsons | Sort-Object Name)) {
             }
         }
 
-        $vColor = switch ($verdict) { "CLOSED" { "Green" } "INCONSISTENT" { "Red" } default { "Yellow" } }
+        $vColor = switch ($verdict) { "CLOSED" { "Green" } "INCONSISTENT" { "Red" } "UNCOVERED" { "Red" } default { "Yellow" } }
         Out-Line ""
         Out-LineColor "  GATE VERDICT: $verdict" $vColor
         $tvShow = if ($testVer) { "v$testVer" } else { "(unset)" }
@@ -571,6 +667,17 @@ foreach ($prov in ($providerJsons | Sort-Object Name)) {
         Out-Line "    build v$buildVer | tier $activeTier | logs/.test_version $tvShow | combos JSON=$totalCombos matrix=$mcShow"
         Out-Line "    SQVR: $sqvrConfirmed CONFIRMED / $sqvrPending PENDING / $sqvrApprovedSkip APPROVED-SKIP | valid-backed combos: $validBackedCombos"
         foreach ($r in $gateReasons) { Out-LineColor "    - $r" "Red" }
+        if ($verdict -eq "UNCOVERED") {
+            Out-LineColor "    - $($uncoveredUnexempt.Count) BUILT combo(s) have NO log and NO registered existence-class exception:" "Red"
+            foreach ($u in $uncoveredUnexempt) { Out-LineColor "        $($u.Entity) $($u.Query) $($u.KeyReference)" "Red" }
+            Out-Line          "      Fix by testing them, or record the decision in ${provName}_ACCEPTED_DIVERGENCES.txt with an"
+            Out-Line          "      existence-class rule (dead-combo / not-built / shadow) and a reason a stranger can evaluate."
+        }
+        if ($coverageScoped) {
+            Out-Line "    combo->log coverage: $($totalCombos - $untestedCombos.Count)/$totalCombos logged, $($exemptNames.Count) registered-exempt$(if($exemptNames.Count){" ($($exemptNames -join ', '))"}), $($uncoveredUnexempt.Count) UNCOVERED"
+        } else {
+            Out-Line "    combo->log coverage: NOT SCOPED -- provider is not ALL-PASS at its current version, so no coverage is owed yet"
+        }
         if ($notConfirmedNote) { Out-LineColor "    - $notConfirmedNote" "Yellow" }
         if ($provenanceNotes.Count -gt 0 -and $verdict -eq 'INCONSISTENT') {
             foreach ($n in ($provenanceNotes | Select-Object -First 12)) { Out-LineColor "      x $n" "DarkYellow" }
@@ -673,9 +780,10 @@ if ($Gate) {
     Out-LineColor "========================================" "Cyan"
 
     $inconsistent = @($summaryRows | Where-Object { $_.Verdict -eq "INCONSISTENT" })
+    $uncovered    = @($summaryRows | Where-Object { $_.Verdict -eq "UNCOVERED" })
     foreach ($row in ($summaryRows | Sort-Object Provider)) {
         if (-not $row.Verdict) { continue }
-        $c = switch ($row.Verdict) { "CLOSED" { "Green" } "INCONSISTENT" { "Red" } default { "Yellow" } }
+        $c = switch ($row.Verdict) { "CLOSED" { "Green" } "INCONSISTENT" { "Red" } "UNCOVERED" { "Red" } default { "Yellow" } }
         Out-LineColor ("  {0,-24} {1}" -f $row.Provider, $row.Verdict) $c
     }
 
@@ -683,13 +791,33 @@ if ($Gate) {
         $output.ToString() | Out-File -FilePath $OutFile -Encoding utf8
     }
 
+    # PRINT THE DENOMINATOR. A gate that reports "0 problems" without saying how many providers it
+    # actually SCOPED is the vacuous pass this repo keeps finding (ENGINEERING_STANDARD 4.3):
+    # audit_sqvr_integrity CHECK 2 compared NOTHING on 17 of 20 while printing PASS.
+    $scopedCount = @($summaryRows | Where-Object { $_.Verdict }).Count
     Out-Line ""
-    if ($inconsistent.Count -gt 0) {
-        Out-LineColor "  GATE: BLOCKED -- $($inconsistent.Count) provider(s) INCONSISTENT" "Red"
-        Out-Line "  Fix the contradictions above before declaring any provider tested/DONE."
+    Out-Line "  SCOPE: $scopedCount provider(s) received a verdict; combo->log coverage is gated only on"
+    Out-Line "         providers that are ALL-PASS at their current version (a never-tested provider owes none)."
+    if ($scopedCount -eq 0) {
+        Out-LineColor "  [NO-VERDICT] no provider was evaluated -- this is NOT a pass" "Red"
+        exit 1
+    }
+
+    Out-Line ""
+    if ($inconsistent.Count -gt 0 -or $uncovered.Count -gt 0) {
+        if ($inconsistent.Count -gt 0) {
+            Out-LineColor "  GATE: BLOCKED -- $($inconsistent.Count) provider(s) INCONSISTENT" "Red"
+            Out-Line "  Fix the contradictions above before declaring any provider tested/DONE."
+        }
+        if ($uncovered.Count -gt 0) {
+            Out-LineColor "  GATE: BLOCKED -- $($uncovered.Count) provider(s) UNCOVERED (a BUILT combo has no log and no registered exception)" "Red"
+            Out-Line "  Either test the named combo(s), or record the decision in the provider's ACCEPTED_DIVERGENCES"
+            Out-Line "  with an existence-class rule and a reason a stranger can evaluate. Do NOT clear this by"
+            Out-Line "  deleting the combo -- 'we do not leave out queries because it is hard' (Rob, AZ_AZDPS)."
+        }
         exit 1
     } else {
-        Out-LineColor "  GATE: PASS -- no INCONSISTENT providers (CLOSED or INCOMPLETE-consistent)" "Green"
+        Out-LineColor "  GATE: PASS -- no INCONSISTENT and no UNCOVERED providers" "Green"
         exit 0
     }
 }

@@ -184,7 +184,7 @@ All of the following, simultaneously, with no exceptions granted by narrative:
   `<P>_ACCEPTED_DIVERGENCES.txt` with a reason a stranger can evaluate.
 - Every devdoc combination, **and every subset of its optionals**, either routes and transmits or is
   recorded.
-- Tenant test package: every combo has a log where it **WINS**, and every log's wire XML carries its
+- Tenant test package: every combo has a log where it **WINS** -- gated since 2026-08-31 by `audit_test_coverage -Gate` verdict `UNCOVERED`, exempting only registry existence-class rows -- and every log's wire XML carries its
   own discriminator and lacks its sibling's.
 - `audit_gate_efficacy -Provider <NAME>`: **0 SURVIVED, 0 INVALID.**
 - Stages 5 and 6 recorded — Jira names the version, ledger accounts for the version.
