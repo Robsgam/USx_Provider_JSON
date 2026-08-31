@@ -1,9 +1,65 @@
-STATUS: PROVISIONAL
-# MD_METERS supported queries -- DERIVED FROM JSON COMBOS, NOT YET CONFIRMED.
-# ACTION: verify this list against the provider devdoc 'Basic Queries Supported'.
-#   - remove any line the devdoc does NOT authorize
-#   - add any devdoc-supported query intentionally not built (document as a skip)
-# Then change STATUS to CONFIRMED to turn this into a hard gate.
+STATUS: CONFIRMED
+# MD_METERS supported queries -- VERIFIED AGAINST THE DEVDOC 2026-08-31. This is now a HARD GATE.
+#
+# WHY THIS CHANGED. The file read "STATUS: PROVISIONAL" over a list derived from the JSON's own
+# combos. That is circular: a query list generated FROM the build can never reveal a query the build
+# is missing (ENGINEERING_STANDARD LAW 3 -- a check that only validates what EXISTS cannot see an
+# omission). While PROVISIONAL, audit_supported_queries downgrades every mismatch to INFO, so the
+# label-level checks were soft. MD_METERS was the LAST tenant-verified provider carrying a
+# PROVISIONAL extract (NM_NMLETS_OFML, OR_LEDS and TN_TIES closed theirs on 2026-08-31).
+#
+# THE SOFTNESS WAS HIDING A LIVE MISMATCH, WHICH IS THE POINT OF CLOSING IT. v2.4 aligned ZGUN's
+# primaryFieldReference GunSerialNumber -> GunMake (to match the single metadata GunQuery
+# combination, which is indexed GunMake). This file still said `Firearm | GunSerialNumber`, so the
+# gate reported `[INFO] combo ZGUN: 'Firearm | GunMake' NOT in supported-query list` plus
+# `[WARN] supported 'Firearm | GunSerialNumber' has NO combo` -- both softened by PROVISIONAL and
+# therefore non-blocking. Corrected below to `Firearm | GunMake`. Devdoc GunQuery #1 makes ALL THREE
+# fields mandatory (GunCaliber, GunMake, GunSerialNumber), so the devdoc does not pick a primary --
+# the metadata does, and it says GunMake.
+#
+# HOW IT WAS VERIFIED -- pair by pair against source/MD_METERS_DEVDOC.txt "Basic Queries Supported"
+# (lines 31-196), reading each query's own "Possible Combinations" line IN FULL. Those lines WRAP in
+# the pdftotext output and a truncated read hides whole combinations -- reading only the first visual
+# line of DriverLicenseQuery hides #3 and #4, which is exactly where this provider's design lives:
+#   Article  | ArticleSerialNumber          -> Article #1 (In/Out) ArticleSerialNumber, ArticleTypeCode
+#   Boat     | BoatHullIdNumber             -> Boat    #1 (In/Out) BoatHullIdNumber
+#                                              AND #2 (In/Out) BoatHullIdNumber, RegistrationNumber
+#   Boat     | RegistrationNumber           -> Boat    #3 (In/Out) RegistrationNumber
+#   Driver H | Name                         -> DH      #1 (In) BirthDate, Name
+#   Driver H | OperatorLicenseNumber        -> DH      #2 (In) OperatorLicenseNumber
+#   Driver L | Name                         -> DL      #1 (In)  Name, SexCode, RaceCode, BirthDate, [State]
+#                                              AND #3 (Out) Name, SexCode, BirthDate, [State]
+#   Driver L | OperatorLicenseNumber        -> DL      #2 (In)  Name, SexCode, RaceCode,
+#                                                   OperatorLicenseNumber, OperatorLicenseExpirationYear, [State]
+#                                              AND #4 (In/Out) OperatorLicenseNumber, [State]
+#   Firearm  | GunMake                      -> Gun     #1 (In/Out) GunCaliber, GunMake, GunSerialNumber
+#   Veh Reg  | LicensePlateNumber           -> VehReg  #3 (In) LicensePlateNumber
+#                                              AND #4 (In/Out) LicensePlateNumber, LicensePlateTypeCode,
+#                                                   LicensePlateYear, [State]
+#   Veh Reg  | VehicleIdentificationNumber  -> VehReg  #1 (In) VehicleIdentificationNumber, [VehicleMakeCode]
+#                                              AND #2 (In/Out) VehicleIdentificationNumber, [State]
+# 10 of 10 pairs devdoc-authorized. All SIX devdoc-Basic queries are BUILT; none is skipped, so there
+# is no skip to document and CHECK 0 reports 0 INFO -- unlike OR_LEDS, whose ImageQuery is a
+# documented unbuildable skip.
+#
+# DEVDOC COMBINATION TOTAL = 15 (Article 1 + Boat 3 + DH 2 + DL 4 + Gun 1 + VehReg 4) against 14
+# built combos. The one-combination difference is NOT an omission: devdoc Boat #2
+# (BoatHullIdNumber, RegistrationNumber) is served by ZBOA.H, which carries RegistrationNumber in its
+# any[] -- so hull-only and hull+reg both route to ZBOA.H and both transmit. Verified by
+# audit_devdoc_combinations, which reports every devdoc combination accounted for.
+#
+# *** THE DEVDOC INDEPENDENTLY CORROBORATES THE v2.4 DL DESIGN, and this is worth stating because
+# the v2.4 change was argued from the METADATA alone. DL #1 is the IN-STATE name search and carries
+# RaceCode. DL #3 is the OUT-OF-STATE name search and does NOT carry RaceCode -- `(Out) Name,
+# SexCode, BirthDate, [State]`. That is precisely ZLDR.N as built at v2.4, and it is precisely the
+# search v2.3 COULD NOT REACH, because ZWAR.N (which has no State field at all) took the fill and
+# discarded the State. So the devdoc's own in/out split is RaceCode-vs-no-RaceCode with State
+# optional on both -- the same conclusion the metadata gave (RaceCode in both ZWAR variants and
+# neither ZLDR variant). Two independent authorities, same answer.
+#
+# OUT OF BASIC SCOPE, therefore not gaps in either direction: everything under the devdoc's
+# "Transactions Supported" section (Wanted/Missing Person Inquiries WMP-I, etc.).
+#
 # Format: <QueryLabel> | <PrimaryFieldReference>
 
 Article | ArticleSerialNumber
@@ -13,6 +69,6 @@ Driver History | Name
 Driver History | OperatorLicenseNumber
 Driver License | Name
 Driver License | OperatorLicenseNumber
-Firearm | GunSerialNumber
+Firearm | GunMake
 Vehicle Registration | LicensePlateNumber
 Vehicle Registration | VehicleIdentificationNumber
