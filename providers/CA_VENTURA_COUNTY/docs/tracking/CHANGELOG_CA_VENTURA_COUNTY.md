@@ -2,7 +2,7 @@
 
 Auto-generated from `CA_VENTURA_COUNTY_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.5** | Generated: 2026-08-28
+Current: **v2.5** | Generated: 2026-08-31
 
 ---
 

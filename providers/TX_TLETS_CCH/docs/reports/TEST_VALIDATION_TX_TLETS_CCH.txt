@@ -1,16 +1,16 @@
 ﻿================================================================
   Build Report: TX_TLETS_CCH
-  Source: TX_TLETS_CCH_v1.17.json
-  Generated: 2026-08-18 10:08
+  Source: TX_TLETS_CCH_v1.18.json
+  Generated: 2026-08-31 17:32
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX <-> JSON CONSISTENCY -- TX_TLETS_CCH_v1.17
+TEST MATRIX <-> JSON CONSISTENCY -- TX_TLETS_CCH_v1.18
 ============================================================
-Source: TX_TLETS_CCH_v1.17.json
+Source: TX_TLETS_CCH_v1.18.json
 Matrix: TX_TLETS_CCH_TEST_MATRIX.txt
-Generated: 2026-08-18
+Generated: 2026-08-31
 
 SCOPE: This confirms each matrix row's expected combo fires for its
 data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
@@ -49,46 +49,47 @@ ENTITY: PERSON (31 tests -- 5 cards, 21 combos -- CCHCriminalHistoryAQ/CCHCrimin
   T29  Person     [PASS] DriverHistoryQuery fires (KQOLN)
   T30  Person     [PASS] queriesToDeselect verified
   T31  Person     [PASS] priority routing: multiple combos present
-ENTITY: VEHICLE (13 tests -- 1 card, 5 combos)
+ENTITY: VEHICLE (14 tests -- 1 card, 6 combos)
   T32  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (RQLicensePlateNumber)
-  T33  Vehicle    [PASS] any[] fields verified: regionId, RegistrationState
-  T34  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (REGLicensePlateNumber)
-  T35  Vehicle    [PASS] any[] fields verified: regionId, RegistrationState
-  T36  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (RQVehicleIdentificationNumber)
-  T37  Vehicle    [PASS] any[] fields verified: regionId, RegistrationState, VehicleMakeCode, vehicleYear
-  T38  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (VINVehicleIdentificationNumber)
-  T39  Vehicle    [PASS] any[] fields verified: regionId, RegistrationState, VehicleMakeCode, vehicleYear
-  T40  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (DPSIStickerNumber)
-  T41  Vehicle    [PASS] any[] fields verified: RegistrationState
-  T42  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (RQLicensePlateNumber)
+  T33  Vehicle    [PASS] any[] fields verified: regionId
+  T34  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (QVLicensePlateNumber)
+  T35  Vehicle    [PASS] any[] fields verified: regionId
+  T36  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (REGLicensePlateNumber)
+  T37  Vehicle    [PASS] any[] fields verified: regionId
+  T38  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (RQVehicleIdentificationNumber)
+  T39  Vehicle    [PASS] any[] fields verified: regionId, VehicleMakeCode, vehicleYear
+  T40  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (VINVehicleIdentificationNumber)
+  T41  Vehicle    [PASS] any[] fields verified: regionId, VehicleMakeCode, vehicleYear
+  T42  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (DPSIStickerNumber)
   T43  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (RQLicensePlateNumber)
-  T44  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (REGLicensePlateNumber)
+  T44  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (RQLicensePlateNumber)
+  T45  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (REGLicensePlateNumber)
 ENTITY: BOAT (14 tests -- 1 card, 5 combos)
-  T45  Boat       [PASS] BoatQuery fires (BQBoatHullIdNumber)
-  T46  Boat       [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
-  T47  Boat       [PASS] BoatQuery fires (QBBoatHullIdNumber)
-  T48  Boat       [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
-  T49  Boat       [PASS] BoatQuery fires (BQRegistrationNumber)
-  T50  Boat       [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
-  T51  Boat       [PASS] BoatQuery fires (QBRegistrationNumber)
-  T52  Boat       [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
-  T53  Boat       [PASS] BoatQuery fires (QBNCICNumber)
-  T54  Boat       [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
-  T55  Boat       [PASS] BoatQuery fires (BQBoatHullIdNumber)
+  T46  Boat       [PASS] BoatQuery fires (BQBoatHullIdNumber)
+  T47  Boat       [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
+  T48  Boat       [PASS] BoatQuery fires (QBBoatHullIdNumber)
+  T49  Boat       [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
+  T50  Boat       [PASS] BoatQuery fires (BQRegistrationNumber)
+  T51  Boat       [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
+  T52  Boat       [PASS] BoatQuery fires (QBRegistrationNumber)
+  T53  Boat       [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
+  T54  Boat       [PASS] BoatQuery fires (QBNCICNumber)
+  T55  Boat       [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
   T56  Boat       [PASS] BoatQuery fires (BQBoatHullIdNumber)
-  T57  Boat       [PASS] BoatQuery fires (BQRegistrationNumber)
+  T57  Boat       [PASS] BoatQuery fires (BQBoatHullIdNumber)
   T58  Boat       [PASS] BoatQuery fires (BQRegistrationNumber)
+  T59  Boat       [PASS] BoatQuery fires (BQRegistrationNumber)
 ENTITY: FIREARM (4 tests -- 1 card, 2 combos)
-  T59  Firearm    [PASS] GunQuery fires (QGGunSerialNumber)
-  T60  Firearm    [PASS] any[] fields verified: GunCaliber, GunMake, ImageIndicator, relatedHitSearchIndicator
-  T61  Firearm    [PASS] GunQuery fires (QGNCICNumber)
-  T62  Firearm    [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
+  T60  Firearm    [PASS] GunQuery fires (QGGunSerialNumber)
+  T61  Firearm    [PASS] any[] fields verified: GunCaliber, GunMake, ImageIndicator, relatedHitSearchIndicator
+  T62  Firearm    [PASS] GunQuery fires (QGNCICNumber)
+  T63  Firearm    [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
 ENTITY: ARTICLE (4 tests -- 1 card, 2 combos)
-  T63  Article    [PASS] ArticleSingleQuery fires (QAArticleSerialNumber)
-  T64  Article    [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
-  T65  Article    [PASS] ArticleSingleQuery fires (QANCICNumber)
-  T66  Article    [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
+  T64  Article    [PASS] ArticleSingleQuery fires (QAArticleSerialNumber)
+  T65  Article    [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
+  T66  Article    [PASS] ArticleSingleQuery fires (QANCICNumber)
+  T67  Article    [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
 
-SUMMARY: 66/66 PASS, 0 FAIL
+SUMMARY: 67/67 PASS, 0 FAIL
 
 

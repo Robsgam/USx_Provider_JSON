@@ -2,7 +2,7 @@
 
 Auto-generated from `TX_TLETS_CCH_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.18** | Generated: 2026-08-27
+Current: **v1.18** | Generated: 2026-08-31
 
 ---
 

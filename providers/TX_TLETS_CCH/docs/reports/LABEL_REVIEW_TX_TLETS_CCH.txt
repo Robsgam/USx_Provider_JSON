@@ -1,4 +1,4 @@
-FIELD LABEL SUGGESTIONS -- TX_TLETS_CCH_v1.17.json
+FIELD LABEL SUGGESTIONS -- TX_TLETS_CCH_v1.18.json
 Derived from QIDM combo set[]/any[]. Structural hint only; [HUMAN] = needs semantic wording.
 fieldId (entity)               current label                      suggested role -> hint"
 --------------------------------------------------------------------------------------------------------------
@@ -27,7 +27,7 @@ ImageIndicator (Person)        NCIC Image                         (optional)
 imageIndicatorCCH (Person)     Image (CCH)                        (optional)
 ImageIndicatorDH (Person)      NCIC Image                         (optional)
 inquiryReasonCCH (Person)      Inquiry Reason (CCH)               (required)
-LicensePlateNumber (Vehicle)   Plate Number                       (required for REGLicensePlateNumber/RQLicensePlateNumber)
+LicensePlateNumber (Vehicle)   Plate Number                       (required for QVLicensePlateNumber/REGLicensePlateNumber/RQLicensePlateNumber)
 LicensePlateTypeCode (Vehicle) Plate Type                         (required for RQLicensePlateNumber)
 LicensePlateYear (Vehicle)     Plate Year                         (required for REGLicensePlateNumber/RQLicensePlateNumber)
 messageKey (Person)            CPL/DWI/RDL (optional)             (optional)
@@ -60,7 +60,7 @@ reasonCode (Person)            Reason Code                        (optional)
 reasonCodeDH (Person)          Reason Code                        (optional)
 regionId (Vehicle)             Region ID                          (optional)
 RegistrationNumber (Boat)      Registration Number                (required for BQRegistrationNumber/QBRegistrationNumber)
-RegistrationState (Vehicle)    State                              (required for BQBoatHullIdNumber/BQRegistrationNumber)   [HUMAN: value meaning / OOS]
+RegistrationState (Vehicle)    State                              (required for BQBoatHullIdNumber/BQRegistrationNumber/QVLicensePlateNumber)   [HUMAN: value meaning / OOS]
 RegistrationStateDH (Person)   State                              (optional)
 relatedHitSearchIndicator (Firearm) Stolen Check                       (optional)
 relatedHitSearchIndicatorCCH (Person) Related Hit Search (CCH)           (optional)
