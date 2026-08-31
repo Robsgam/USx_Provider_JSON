@@ -6,8 +6,7 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| AZ_AZDPS_BASE.json | v2.0 | Current | NJ cross-reference rebuild. 70P/0F/0W/4LIM. 8 CommSys QIDMs, 18 combos. |
-| AZ_AZDPS_MC.json | v2.0 | Current | MC multi-card layout. 70P/0F/0W/4LIM. |
+| AZ_AZDPS_v3.12.json | v3.12 | Current | 68P/0F/0W. |
 
 ## phases/base/
 
@@ -63,66 +62,66 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| AZ_AZDPS_v3.11.json | v3.11 | Current | 68P/0F/0W/0LIM. |
+| AZ_AZDPS_v3.11.json | v3.11 | Superseded | 68P/0F/0W/0LIM. |
 ## v3.10 (2026-08-12)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| AZ_AZDPS_v3.10.json | v3.10 | Current | 68P/0F/0W/0LIM. |
+| AZ_AZDPS_v3.10.json | v3.10 | Superseded | 68P/0F/0W/0LIM. |
 ## v3.9 (2026-08-10)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| AZ_AZDPS_v3.9.json | v3.9 | Current | 68P/0F/0W/0LIM. |
+| AZ_AZDPS_v3.9.json | v3.9 | Superseded | 68P/0F/0W/0LIM. |
 ## v3.8 (2026-08-10)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| AZ_AZDPS_v3.8.json | v3.8 | Current | 68P/0F/0W/0LIM. |
+| AZ_AZDPS_v3.8.json | v3.8 | Superseded | 68P/0F/0W/0LIM. |
 ## v3.7 (2026-08-05)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| AZ_AZDPS_v3.7.json | v3.7 | Current | 68P/0F/0W/0LIM. |
+| AZ_AZDPS_v3.7.json | v3.7 | Superseded | 68P/0F/0W/0LIM. |
 ## v3.6 (2026-08-04)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| AZ_AZDPS_v3.6.json | v3.6 | Current | 68P/0F/0W/0LIM. |
+| AZ_AZDPS_v3.6.json | v3.6 | Superseded | 68P/0F/0W/0LIM. |
 ## v3.5 (2026-08-04)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| AZ_AZDPS_v3.5.json | v3.5 | Current | 68P/0F/0W/0LIM. |
+| AZ_AZDPS_v3.5.json | v3.5 | Superseded | 68P/0F/0W/0LIM. |
 ## v3.4 (2026-08-01)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| AZ_AZDPS_v3.4.json | v3.4 | Current | 63P/0F/0W/0LIM. |
+| AZ_AZDPS_v3.4.json | v3.4 | Superseded | 63P/0F/0W/0LIM. |
 ## v3.3 (2026-07-28)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| AZ_AZDPS_v3.3.json | v3.3 | Current | 63P/0F/0W/0LIM. |
+| AZ_AZDPS_v3.3.json | v3.3 | Superseded | 63P/0F/0W/0LIM. |
 ## v3.2 (2026-07-28)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| AZ_AZDPS_v3.2.json | v3.2 | Current | 72P/0F/0W/0LIM. |
+| AZ_AZDPS_v3.2.json | v3.2 | Superseded | 72P/0F/0W/0LIM. |
 ## v3.1 (2026-07-24)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| AZ_AZDPS_v3.1.json | v3.1 | Current | 72P/0F/0W/0LIM. |
+| AZ_AZDPS_v3.1.json | v3.1 | Superseded | 72P/0F/0W/0LIM. |
 ## v3.0 (2026-07-22)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| AZ_AZDPS_v3.0.json | v3.0 | Current | 71P/0F/0W/0LIM. |
+| AZ_AZDPS_v3.0.json | v3.0 | Superseded | 71P/0F/0W/0LIM. |
 ## v2.3 (2026-05-11)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| AZ_AZDPS_BASE.json | v2.3 | Current | 71P/0F/0W/0LIM. DH-suffix fieldIds, queriesToDeselect, combo ordering. |
-| AZ_AZDPS_MC.json | v2.3 | Current | 71P/0F/0W/0LIM. MC variant. |
+| AZ_AZDPS_BASE.json | v2.3 | Superseded | 71P/0F/0W/0LIM. DH-suffix fieldIds, queriesToDeselect, combo ordering. |
+| AZ_AZDPS_MC.json | v2.3 | Superseded | 71P/0F/0W/0LIM. MC variant. |
 

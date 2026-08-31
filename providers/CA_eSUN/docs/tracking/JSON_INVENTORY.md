@@ -6,8 +6,7 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| CA_eSUN_BASE.json | v1.2 | Current BASE | 6 QIDMs, 17 combos. 70P/0F/3W/5LIM. 2026-05-07. |
-| CA_eSUN_MC.json | v1.2 | Current MC | MC multi-card + DH-suffix. 70P/0F/3W/5LIM. 2026-05-07. |
+| CA_eSUN_v2.6.json | v2.6 | Current | 75P/0F/0W. |
 
 ## phases/
 
@@ -35,36 +34,36 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| CA_eSUN_v2.5.json | v2.5 | Current | 73P/0F/0W/0LIM. |
+| CA_eSUN_v2.5.json | v2.5 | Superseded | 73P/0F/0W/0LIM. |
 ## v2.4 (2026-08-20)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| CA_eSUN_v2.4.json | v2.4 | Current | 73P/0F/0W/0LIM. |
+| CA_eSUN_v2.4.json | v2.4 | Superseded | 73P/0F/0W/0LIM. |
 ## v2.3 (2026-08-17)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| CA_eSUN_v2.3.json | v2.3 | Current | 72P/0F/0W/0LIM. |
+| CA_eSUN_v2.3.json | v2.3 | Superseded | 72P/0F/0W/0LIM. |
 ## v2.2 (2026-08-01)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| CA_eSUN_v2.2.json | v2.2 | Current | 72P/0F/0W/0LIM. |
+| CA_eSUN_v2.2.json | v2.2 | Superseded | 72P/0F/0W/0LIM. |
 ## v2.1 (2026-07-31)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| CA_eSUN_v2.1.json | v2.1 | Current | 72P/0F/0W/0LIM. |
+| CA_eSUN_v2.1.json | v2.1 | Superseded | 72P/0F/0W/0LIM. |
 ## v2.0 (2026-07-23)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| CA_eSUN_v2.0.json | v2.0 | Current | 71P/0F/0W/0LIM. |
+| CA_eSUN_v2.0.json | v2.0 | Superseded | 71P/0F/0W/0LIM. |
 ## v1.5 (2026-05-11)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| CA_eSUN_BASE.json | v1.5 | Current | 71P/0F/0W/0LIM. DH-suffix fieldIds, queriesToDeselect, combo ordering. |
-| CA_eSUN_MC.json | v1.5 | Current | 71P/0F/0W/0LIM. MC variant. |
+| CA_eSUN_BASE.json | v1.5 | Superseded | 71P/0F/0W/0LIM. DH-suffix fieldIds, queriesToDeselect, combo ordering. |
+| CA_eSUN_MC.json | v1.5 | Superseded | 71P/0F/0W/0LIM. MC variant. |
 

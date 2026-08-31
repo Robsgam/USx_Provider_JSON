@@ -6,8 +6,7 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| MD_METERS_BASE.json | v1.0 | Current BASE | 6 QIDMs, 14 combos. 67P/0F/5W/5LIM. 2026-05-07. |
-| MD_METERS_MC.json | v1.0 | Current MC | MC multi-card. 67P/0F/2W/5LIM. 2026-05-07. |
+| MD_METERS_v2.3.json | v2.3 | Current | 71P/0F/0W. |
 
 ## phases/
 
@@ -30,21 +29,21 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| MD_METERS_v2.2.json | v2.2 | Current | 70P/0F/0W/0LIM. |
+| MD_METERS_v2.2.json | v2.2 | Superseded | 70P/0F/0W/0LIM. |
 ## v2.1 (2026-08-19)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| MD_METERS_v2.1.json | v2.1 | Current | 70P/0F/0W/0LIM. |
+| MD_METERS_v2.1.json | v2.1 | Superseded | 70P/0F/0W/0LIM. |
 ## v2.0 (2026-07-23)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| MD_METERS_v2.0.json | v2.0 | Current | 69P/0F/0W/0LIM. |
+| MD_METERS_v2.0.json | v2.0 | Superseded | 69P/0F/0W/0LIM. |
 ## v1.3 (2026-05-11)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| MD_METERS_BASE.json | v1.3 | Current | 69P/0F/0W/0LIM. DH-suffix fieldIds, queriesToDeselect, combo ordering, State initialValue removed. |
-| MD_METERS_MC.json | v1.3 | Current | 69P/0F/0W/0LIM. MC variant. |
+| MD_METERS_BASE.json | v1.3 | Superseded | 69P/0F/0W/0LIM. DH-suffix fieldIds, queriesToDeselect, combo ordering, State initialValue removed. |
+| MD_METERS_MC.json | v1.3 | Superseded | 69P/0F/0W/0LIM. MC variant. |
 

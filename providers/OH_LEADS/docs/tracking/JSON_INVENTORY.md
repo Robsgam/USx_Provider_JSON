@@ -6,8 +6,7 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| OH_LEADS_BASE.json | v1.1 | Current BASE | 6 queries, 23 combos. 76P/0F/4W/4LIM. 2026-05-07. |
-| OH_LEADS_MC.json | v1.1 | Current MC | Multi-card layout (14 cards). 76P/0F/3W/4LIM. 2026-05-07. |
+| OH_LEADS_v2.11.json | v2.11 | Current | 78P/0F/0W. |
 
 ## phases/
 
@@ -40,61 +39,61 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| OH_LEADS_v2.10.json | v2.10 | Current | 78P/0F/0W/0LIM. |
+| OH_LEADS_v2.10.json | v2.10 | Superseded | 78P/0F/0W/0LIM. |
 ## v2.9 (2026-08-18)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| OH_LEADS_v2.9.json | v2.9 | Current | 78P/0F/0W/0LIM. |
+| OH_LEADS_v2.9.json | v2.9 | Superseded | 78P/0F/0W/0LIM. |
 ## v2.8 (2026-08-18)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| OH_LEADS_v2.8.json | v2.8 | Current | 78P/0F/0W/0LIM. |
+| OH_LEADS_v2.8.json | v2.8 | Superseded | 78P/0F/0W/0LIM. |
 ## v2.7 (2026-08-18)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| OH_LEADS_v2.7.json | v2.7 | Current | 78P/0F/0W/0LIM. |
+| OH_LEADS_v2.7.json | v2.7 | Superseded | 78P/0F/0W/0LIM. |
 ## v2.6 (2026-08-18)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| OH_LEADS_v2.6.json | v2.6 | Current | 78P/0F/0W/0LIM. |
+| OH_LEADS_v2.6.json | v2.6 | Superseded | 78P/0F/0W/0LIM. |
 ## v2.5 (2026-08-18)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| OH_LEADS_v2.5.json | v2.5 | Current | 80P/0F/0W/0LIM. |
+| OH_LEADS_v2.5.json | v2.5 | Superseded | 80P/0F/0W/0LIM. |
 ## v2.4 (2026-08-10)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| OH_LEADS_v2.4.json | v2.4 | Current | 80P/0F/0W/0LIM. |
+| OH_LEADS_v2.4.json | v2.4 | Superseded | 80P/0F/0W/0LIM. |
 ## v2.3 (2026-08-10)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| OH_LEADS_v2.3.json | v2.3 | Current | 78P/0F/0W/0LIM. |
+| OH_LEADS_v2.3.json | v2.3 | Superseded | 78P/0F/0W/0LIM. |
 ## v2.2 (2026-08-01)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| OH_LEADS_v2.2.json | v2.2 | Current | 77P/0F/0W/0LIM. |
+| OH_LEADS_v2.2.json | v2.2 | Superseded | 77P/0F/0W/0LIM. |
 ## v2.1 (2026-08-01)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| OH_LEADS_v2.1.json | v2.1 | Current | 77P/0F/0W/0LIM. |
+| OH_LEADS_v2.1.json | v2.1 | Superseded | 77P/0F/0W/0LIM. |
 ## v2.0 (2026-07-23)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| OH_LEADS_v2.0.json | v2.0 | Current | 76P/0F/0W/0LIM. |
+| OH_LEADS_v2.0.json | v2.0 | Superseded | 76P/0F/0W/0LIM. |
 ## v1.3 (2026-05-11)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| OH_LEADS_BASE.json | v1.3 | Current | 77P/0F/0W/0LIM. Combo ordering. |
-| OH_LEADS_MC.json | v1.3 | Current | 77P/0F/0W/0LIM. MC variant. |
+| OH_LEADS_BASE.json | v1.3 | Superseded | 77P/0F/0W/0LIM. Combo ordering. |
+| OH_LEADS_MC.json | v1.3 | Superseded | 77P/0F/0W/0LIM. MC variant. |
 

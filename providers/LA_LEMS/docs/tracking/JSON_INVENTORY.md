@@ -6,8 +6,7 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| LA_LEMS_BASE.json | v2.0 | Current BASE | Full rebuild. 48P/0F/32W/4LIM. 2026-05-05. |
-| LA_LEMS_MC.json | v2.0-mc | Current MC | Multi-card layout. 48P/0F/32W/4LIM. 2026-05-05. |
+| LA_LEMS_v3.2.json | v3.2 | Current | 65P/0F/0W. |
 
 ## phases/
 
@@ -34,12 +33,12 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| LA_LEMS_v3.1.json | v3.1 | Current | 65P/0F/0W/0LIM. |
+| LA_LEMS_v3.1.json | v3.1 | Superseded | 65P/0F/0W/0LIM. |
 ## v3.0 (2026-07-23)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| LA_LEMS_v3.0.json | v3.0 | Current | 64P/0F/0W/0LIM. |
+| LA_LEMS_v3.0.json | v3.0 | Superseded | 64P/0F/0W/0LIM. |
 ## v2.4 (2026-05-11)
 
 | File | Version | Status | Notes |
@@ -51,6 +50,6 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| LA_LEMS_BASE.json | v2.5 | Current | 63P/0F/0W/0LIM. purposeCodeDH changed to FormInput (cross-provider consistency). |
-| LA_LEMS_MC.json | v2.5 | Current | 63P/0F/0W/0LIM. MC variant (version sync). |
+| LA_LEMS_BASE.json | v2.5 | Superseded | 63P/0F/0W/0LIM. purposeCodeDH changed to FormInput (cross-provider consistency). |
+| LA_LEMS_MC.json | v2.5 | Superseded | 63P/0F/0W/0LIM. MC variant (version sync). |
 

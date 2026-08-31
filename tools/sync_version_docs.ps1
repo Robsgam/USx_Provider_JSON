@@ -272,27 +272,93 @@ if (Test-Path $invFile) {
     # Active root JSON leaf name (versioned <PROVIDER>_v<X.Y>.json, or bare/legacy)
     $activeLeaf = if ($activeJson) { Split-Path $activeJson -Leaf } else { "${Provider}.json" }
 
-    # Update ONLY the Root section (between "## Root" and the next "##")
-    if ($text -match '(?ms)(## Root[^\r\n]*\r?\n)(.*?)((?=\r?\n## )|$)') {
-        $rootHeader = $Matches[1]
-        $rootBody   = $Matches[2]
-        $provEscInv = [regex]::Escape($Provider)
+    # ------------------------------------------------------------------------------------------
+    #  SELF-HEALING STATUS COLUMN -- added 2026-08-31. THIS FILE COULD NOT ANSWER ITS OWN QUESTION.
+    #
+    #  Every new version section below was written with a hardcoded "| Current |" and NOTHING ever
+    #  demoted the previous one, so the Status column carried no information at all. Measured across
+    #  the portfolio before this fix: 341 rows read "Current" and 9 read "Superseded" -- HI_HCJDC_OFML
+    #  alone had 44 rows claiming Current, and its top block still declared v4.6 current while the
+    #  active JSON was v4.20, fourteen versions later.
+    #
+    #  The top block was ALSO never updated on some providers, for a separate and quieter reason: the
+    #  match below was anchored to '## Root' only, and 2 of 20 files head their top block '## Current'
+    #  while 3 have NO top block at all. A non-matching heading meant the update silently did nothing
+    #  -- no warning, no skip line. Now: both spellings are accepted, and a missing top block is
+    #  CREATED rather than ignored.
+    #
+    #  Why enforce did not catch any of it: PHASE 3 asks only whether the file "has v<X.Y>" anywhere,
+    #  a substring test that a 44-section history passes trivially. Same vacuous-check family as the
+    #  empty-SQVR pass.
+    #
+    #  Order matters and is deliberate: DEMOTE everything first, then re-promote the active version.
+    #  That makes the pass idempotent -- re-running at an unchanged version must leave exactly the
+    #  active rows reading Current, not demote them and stop.
+    # ------------------------------------------------------------------------------------------
+    $dryTag = if ($DryRun) { '(dry) ' } else { '' }
+    $preCurrent = ([regex]::Matches($text, '\|\s*Current\s*\|')).Count
+    $text = [regex]::Replace($text, '\|\s*Current\s*\|', '| Superseded |')
 
-        if ($hasSingle -and $score) {
-            $rootBody = $rootBody -replace "(\|\s*${provEscInv}(?:_v[\d.]+|_MC)?\.json\s*\|)\s*v[^\|]+\|\s*\w+\s*\|[^\|]*\|",
-                "`$1 v${version} | Current | $score. |"
+    # Re-promote every row that names the ACTIVE version. Matches both the top-block row and the
+    # '## v<active>' history rows, in either the single-JSON or legacy BASE/MC shape.
+    $text = [regex]::Replace($text, "(\|\s*[A-Za-z0-9_.]+\.json\s*\|\s*v${vEsc}\s*\|)\s*Superseded\s*\|", '$1 Current |')
+    $postCurrent = ([regex]::Matches($text, '\|\s*Current\s*\|')).Count
+    if ($preCurrent -ne $postCurrent) {
+        Updated "${dryTag}JSON_INVENTORY.md -- Status column normalised (Current rows ${preCurrent} -> ${postCurrent}; older versions now Superseded)"
+        $changed = $true
+    }
+
+    # Create a top block if the file has none (3 of 20 had only version sections, so no pointer to
+    # the active JSON existed at all -- the one thing a reader opens this file for).
+    if ($text -notmatch '(?m)^##\s+(Root|Current)') {
+        $topScore = if ($hasSingle -and $score) { "$score." } elseif ($baseScore) { "$baseScore." } else { '' }
+        $topBlock = @"
+## Current
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| ${activeLeaf} | v${version} | Current | $topScore |
+
+"@
+        if ($text -match '(?m)^## v\d+\.\d+') {
+            $p0 = $text.IndexOf($Matches[0])
+            $text = $text.Substring(0, $p0) + $topBlock + $text.Substring($p0)
         } else {
-            if ($baseScore) {
-                $rootBody = $rootBody -replace "(\|\s*${provEscInv}_BASE\.json\s*\|)\s*v[^\|]+\|\s*\w+\s*\|[^\|]*\|",
-                    "`$1 v${version} | Current | $baseScore. |"
-            }
-            if ($mcScore -and $hasMc) {
-                $rootBody = $rootBody -replace "(\|\s*${provEscInv}_MC\.json\s*\|)\s*v[^\|]+\|\s*\w+\s*\|[^\|]*\|",
-                    "`$1 v${version} | Current | $mcScore. |"
-            }
+            $text += "`n" + $topBlock
         }
+        Updated "${dryTag}JSON_INVENTORY.md -- created a '## Current' top block (file had no pointer to the active JSON)"
+        $changed = $true
+    }
 
-        $text = $text.Substring(0, $text.IndexOf($Matches[0])) + $rootHeader + $rootBody + $text.Substring($text.IndexOf($Matches[0]) + $Matches[0].Length)
+    # Update the top section (between "## Root"/"## Current" and the next "##")
+    #
+    #  ⚠️ THE REGEX BELOW USED TO END '((?=\r?\n## )|$)' UNDER (?ms) AND THAT MADE THIS ENTIRE BLOCK A
+    #  NO-OP ON EVERY PROVIDER, SILENTLY, FOR ITS WHOLE LIFE. Under the `m` flag `$` matches at the end
+    #  of every LINE, so the alternation succeeded immediately after the heading line and the lazy
+    #  `(.*?)` captured the EMPTY STRING. The block then "replaced" rows inside nothing, reported
+    #  `$changed = $true`, and wrote the file back unchanged in that region.
+    #  Proven 2026-08-31 by matching it against HI_HCJDC_OFML: group 2 came back empty while the same
+    #  row pattern matched 44 times in the whole file. The visible symptom was AZ_AZDPS's top block
+    #  still listing `AZ_AZDPS_BASE.json | v2.0` and `AZ_AZDPS_MC.json | v2.0` from the retired
+    #  BASE/MC era, and HI's declaring v4.6 current at v4.20. Anchor is now `\z` (end of STRING).
+    #
+    #  The body is now REBUILT rather than regex-patched. Patching assumed the block already held a row
+    #  naming this provider's active file, which is false the moment a provider is galvanized (the row
+    #  still names _BASE/_MC) or renamed. A pointer block has exactly one job -- name the active JSON --
+    #  so it is generated, not edited. Legacy BASE/MC history stays intact in the version sections.
+    if ($text -match '(?s)(##\s+(?:Root|Current)[^\r\n]*\r?\n)(.*?)((?=\r?\n## )|\z)') {
+        $whole      = $Matches[0]
+        $rootHeader = $Matches[1]
+        $topScore   = if ($hasSingle -and $score) { "$score." } elseif ($baseScore) { "$baseScore." } else { '' }
+
+        $rootBody = @"
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| ${activeLeaf} | v${version} | Current | $topScore |
+"@
+        $idx  = $text.IndexOf($whole)
+        $text = $text.Substring(0, $idx) + $rootHeader + $rootBody + $text.Substring($idx + $whole.Length)
         $changed = $true
     }
 

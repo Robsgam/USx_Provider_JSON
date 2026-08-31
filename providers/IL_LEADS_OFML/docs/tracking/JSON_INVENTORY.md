@@ -6,8 +6,7 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| IL_LEADS_OFML_BASE.json | v1.0 | Current BASE | 5 QIDMs, 9 combos. 59P/0F/7W/0LIM. 2026-05-07. |
-| IL_LEADS_OFML_MC.json | v1.0 | Current MC | MC multi-card. 59P/0F/3W/0LIM. 2026-05-07. |
+| IL_LEADS_OFML_v2.8.json | v2.8 | Current | 61P/0F/0W. |
 
 ## phases/
 
@@ -35,46 +34,46 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| IL_LEADS_OFML_v2.7.json | v2.7 | Current | 61P/0F/0W/0LIM. |
+| IL_LEADS_OFML_v2.7.json | v2.7 | Superseded | 61P/0F/0W/0LIM. |
 ## v2.6 (2026-08-13)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| IL_LEADS_OFML_v2.6.json | v2.6 | Current | 61P/0F/0W/0LIM. |
+| IL_LEADS_OFML_v2.6.json | v2.6 | Superseded | 61P/0F/0W/0LIM. |
 ## v2.5 (2026-08-13)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| IL_LEADS_OFML_v2.5.json | v2.5 | Current | 61P/0F/0W/0LIM. |
+| IL_LEADS_OFML_v2.5.json | v2.5 | Superseded | 61P/0F/0W/0LIM. |
 ## v2.4 (2026-08-13)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| IL_LEADS_OFML_v2.4.json | v2.4 | Current | 61P/0F/0W/0LIM. |
+| IL_LEADS_OFML_v2.4.json | v2.4 | Superseded | 61P/0F/0W/0LIM. |
 ## v2.3 (2026-08-12)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| IL_LEADS_OFML_v2.3.json | v2.3 | Current | 61P/0F/0W/0LIM. |
+| IL_LEADS_OFML_v2.3.json | v2.3 | Superseded | 61P/0F/0W/0LIM. |
 ## v2.2 (2026-08-07)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| IL_LEADS_OFML_v2.2.json | v2.2 | Current | 61P/0F/0W/0LIM. |
+| IL_LEADS_OFML_v2.2.json | v2.2 | Superseded | 61P/0F/0W/0LIM. |
 ## v2.1 (2026-08-07)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| IL_LEADS_OFML_v2.1.json | v2.1 | Current | 61P/0F/6W/0LIM. |
+| IL_LEADS_OFML_v2.1.json | v2.1 | Superseded | 61P/0F/6W/0LIM. |
 ## v2.0 (2026-07-23)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| IL_LEADS_OFML_v2.0.json | v2.0 | Current | 61P/0F/0W/0LIM. |
+| IL_LEADS_OFML_v2.0.json | v2.0 | Superseded | 61P/0F/0W/0LIM. |
 ## v1.1 (2026-05-11)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| IL_LEADS_OFML_BASE.json | v1.1 | Current | 61P/0F/0W/0LIM. Combo ordering, Patch 6 cleanup. |
-| IL_LEADS_OFML_MC.json | v1.1 | Current | 61P/0F/0W/0LIM. MC variant. |
+| IL_LEADS_OFML_BASE.json | v1.1 | Superseded | 61P/0F/0W/0LIM. Combo ordering, Patch 6 cleanup. |
+| IL_LEADS_OFML_MC.json | v1.1 | Superseded | 61P/0F/0W/0LIM. MC variant. |
 

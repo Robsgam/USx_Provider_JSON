@@ -6,8 +6,7 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| TN_TIES_BASE.json | v1.1 | Current BASE | 6 queries, 28 combos. 79P/0F/4W/3LIM. 2026-05-07. |
-| TN_TIES_MC.json | v1.1 | Current MC | Multi-card layout (14 cards). 79P/0F/1W/3LIM. 2026-05-07. |
+| TN_TIES_v2.6.json | v2.6 | Current | 73P/0F/0W. |
 
 ## phases/
 
@@ -35,36 +34,36 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| TN_TIES_v2.5.json | v2.5 | Current | 73P/0F/0W/0LIM. |
+| TN_TIES_v2.5.json | v2.5 | Superseded | 73P/0F/0W/0LIM. |
 ## v2.4 (2026-08-24)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| TN_TIES_v2.4.json | v2.4 | Current | 73P/0F/0W/0LIM. |
+| TN_TIES_v2.4.json | v2.4 | Superseded | 73P/0F/0W/0LIM. |
 ## v2.3 (2026-08-20)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| TN_TIES_v2.3.json | v2.3 | Current | 74P/0F/0W/0LIM. |
+| TN_TIES_v2.3.json | v2.3 | Superseded | 74P/0F/0W/0LIM. |
 ## v2.2 (2026-08-19)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| TN_TIES_v2.2.json | v2.2 | Current | 74P/0F/0W/0LIM. |
+| TN_TIES_v2.2.json | v2.2 | Superseded | 74P/0F/0W/0LIM. |
 ## v2.1 (2026-08-01)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| TN_TIES_v2.1.json | v2.1 | Current | 74P/0F/0W/0LIM. |
+| TN_TIES_v2.1.json | v2.1 | Superseded | 74P/0F/0W/0LIM. |
 ## v2.0 (2026-07-23)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| TN_TIES_v2.0.json | v2.0 | Current | 74P/0F/0W/0LIM. |
+| TN_TIES_v2.0.json | v2.0 | Superseded | 74P/0F/0W/0LIM. |
 ## v1.4 (2026-05-11)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| TN_TIES_BASE.json | v1.4 | Current | 80P/0F/0W/0LIM. DH-suffix fieldIds, queriesToDeselect, combo ordering. |
-| TN_TIES_MC.json | v1.4 | Current | 80P/0F/0W/0LIM. MC variant. |
+| TN_TIES_BASE.json | v1.4 | Superseded | 80P/0F/0W/0LIM. DH-suffix fieldIds, queriesToDeselect, combo ordering. |
+| TN_TIES_MC.json | v1.4 | Superseded | 80P/0F/0W/0LIM. MC variant. |
 

@@ -6,8 +6,7 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| CA_SAN_LUIS_OBISPO_BASE.json | v1.1 | Current BASE | 6 QIDMs, 15 combos. 63P/0F/0W/4LIM. 2026-05-07. |
-| CA_SAN_LUIS_OBISPO_MC.json | v1.1 | Current MC | MC multi-card. 63P/0F/0W/4LIM. 2026-05-07. |
+| CA_SAN_LUIS_OBISPO_v2.6.json | v2.6 | Current | 67P/0F/0W. |
 
 ## phases/
 
@@ -34,36 +33,36 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| CA_SAN_LUIS_OBISPO_v2.5.json | v2.5 | Current | 67P/0F/0W/0LIM. |
+| CA_SAN_LUIS_OBISPO_v2.5.json | v2.5 | Superseded | 67P/0F/0W/0LIM. |
 ## v2.4 (2026-08-17)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| CA_SAN_LUIS_OBISPO_v2.4.json | v2.4 | Current | 67P/0F/0W/0LIM. |
+| CA_SAN_LUIS_OBISPO_v2.4.json | v2.4 | Superseded | 67P/0F/0W/0LIM. |
 ## v2.3 (2026-08-02)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| CA_SAN_LUIS_OBISPO_v2.3.json | v2.3 | Current | 67P/0F/0W/0LIM. |
+| CA_SAN_LUIS_OBISPO_v2.3.json | v2.3 | Superseded | 67P/0F/0W/0LIM. |
 ## v2.2 (2026-08-01)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| CA_SAN_LUIS_OBISPO_v2.2.json | v2.2 | Current | 67P/0F/0W/0LIM. |
+| CA_SAN_LUIS_OBISPO_v2.2.json | v2.2 | Superseded | 67P/0F/0W/0LIM. |
 ## v2.1 (2026-07-29)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| CA_SAN_LUIS_OBISPO_v2.1.json | v2.1 | Current | 65P/0F/0W/0LIM. |
+| CA_SAN_LUIS_OBISPO_v2.1.json | v2.1 | Superseded | 65P/0F/0W/0LIM. |
 ## v2.0 (2026-07-23)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| CA_SAN_LUIS_OBISPO_v2.0.json | v2.0 | Current | 65P/0F/0W/1LIM. |
+| CA_SAN_LUIS_OBISPO_v2.0.json | v2.0 | Superseded | 65P/0F/0W/1LIM. |
 ## v1.3 (2026-05-11)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| CA_SAN_LUIS_OBISPO_BASE.json | v1.3 | Current | 65P/0F/0W/0LIM. DH-suffix fieldIds, queriesToDeselect, combo ordering. |
-| CA_SAN_LUIS_OBISPO_MC.json | v1.3 | Current | 65P/0F/0W/0LIM. MC variant. |
+| CA_SAN_LUIS_OBISPO_BASE.json | v1.3 | Superseded | 65P/0F/0W/0LIM. DH-suffix fieldIds, queriesToDeselect, combo ordering. |
+| CA_SAN_LUIS_OBISPO_MC.json | v1.3 | Superseded | 65P/0F/0W/0LIM. MC variant. |
 

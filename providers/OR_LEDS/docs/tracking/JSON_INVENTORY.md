@@ -6,8 +6,7 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| OR_LEDS_BASE.json | v1.1 | Current BASE | 5 queries, 8 combos. 58P/0F/2W/1LIM. 2026-05-07. |
-| OR_LEDS_MC.json | v1.1 | Current MC | Multi-card layout (11 cards). 58P/0F/1W/1LIM. 2026-05-07. |
+| OR_LEDS_v2.6.json | v2.6 | Current | 55P/0F/0W. |
 
 ## phases/
 
@@ -35,36 +34,36 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| OR_LEDS_v2.5.json | v2.5 | Current | 55P/0F/0W/0LIM. |
+| OR_LEDS_v2.5.json | v2.5 | Superseded | 55P/0F/0W/0LIM. |
 ## v2.4 (2026-08-19)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| OR_LEDS_v2.4.json | v2.4 | Current | 55P/0F/0W/0LIM. |
+| OR_LEDS_v2.4.json | v2.4 | Superseded | 55P/0F/0W/0LIM. |
 ## v2.3 (2026-08-17)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| OR_LEDS_v2.3.json | v2.3 | Current | 55P/0F/0W/0LIM. |
+| OR_LEDS_v2.3.json | v2.3 | Superseded | 55P/0F/0W/0LIM. |
 ## v2.2 (2026-08-02)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| OR_LEDS_v2.2.json | v2.2 | Current | 55P/0F/0W/0LIM. |
+| OR_LEDS_v2.2.json | v2.2 | Superseded | 55P/0F/0W/0LIM. |
 ## v2.1 (2026-08-01)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| OR_LEDS_v2.1.json | v2.1 | Current | 55P/0F/0W/0LIM. |
+| OR_LEDS_v2.1.json | v2.1 | Superseded | 55P/0F/0W/0LIM. |
 ## v2.0 (2026-07-23)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| OR_LEDS_v2.0.json | v2.0 | Current | 55P/0F/0W/0LIM. |
+| OR_LEDS_v2.0.json | v2.0 | Superseded | 55P/0F/0W/0LIM. |
 ## v1.3 (2026-05-11)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| OR_LEDS_BASE.json | v1.3 | Current | 58P/0F/0W/0LIM. Combo ordering, Patch 6 cleanup. |
-| OR_LEDS_MC.json | v1.3 | Current | 58P/0F/0W/0LIM. MC variant. |
+| OR_LEDS_BASE.json | v1.3 | Superseded | 58P/0F/0W/0LIM. Combo ordering, Patch 6 cleanup. |
+| OR_LEDS_MC.json | v1.3 | Superseded | 58P/0F/0W/0LIM. MC variant. |
 
