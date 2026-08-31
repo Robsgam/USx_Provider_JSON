@@ -1,9 +1,54 @@
-STATUS: PROVISIONAL
-# OR_LEDS supported queries -- DERIVED FROM JSON COMBOS, NOT YET CONFIRMED.
-# ACTION: verify this list against the provider devdoc 'Basic Queries Supported'.
-#   - remove any line the devdoc does NOT authorize
-#   - add any devdoc-supported query intentionally not built (document as a skip)
-# Then change STATUS to CONFIRMED to turn this into a hard gate.
+STATUS: CONFIRMED
+# OR_LEDS supported queries -- VERIFIED AGAINST THE DEVDOC 2026-08-31. This is now a HARD GATE.
+#
+# WHY THIS CHANGED. The file previously read "STATUS: PROVISIONAL ... DERIVED FROM JSON COMBOS, NOT
+# YET CONFIRMED", which is circular: a query list generated FROM the build can never reveal a query
+# the build is missing (ENGINEERING_STANDARD LAW 3 -- a check that only validates what EXISTS cannot
+# see an omission). While PROVISIONAL, audit_supported_queries downgrades every mismatch to INFO, so
+# the label-level checks were soft. That softness is the third layer that hid the AZ_AZDPS
+# transaction-name scope defect (a query built under an AzAzdps-prefixed transaction scoring [PASS]
+# on every combo).
+#
+# HOW IT WAS VERIFIED -- pair by pair against source/OR_LEDS_DEVDOC.txt "Basic Queries Supported"
+# (lines 17-203), reading each query's own "Possible Combinations" line, NOT the extract:
+#   Article  | ArticleSerialNumber          -> Article #1 (In/Out) ArticleSerialNumber, ArticleTypeCode, [RelatedHitSearchIndicator]
+#   Boat     | BoatHullIdNumber             -> Boat    #1 (In/Out) BoatHullIdNumber, [RegistrationNumber, State, RelatedHitSearchIndicator]
+#   Boat     | RegistrationNumber           -> Boat    #2 (In/Out) RegistrationNumber, [State, RelatedHitSearchIndicator]
+#   Driver L | Name                         -> DL      #1 (In) BirthDate, Name, [SexCode]   AND  #3 (Out) BirthDate, Name, State, [SexCode, ImageIndicator]
+#   Driver L | OperatorLicenseNumber        -> DL      #2 (In) OperatorLicenseNumber        AND  #4 (Out) OperatorLicenseNumber, State, [ImageIndicator]
+#   Firearm  | GunSerialNumber              -> Gun     #1 (In/Out) GunSerialNumber, [GunMake, GunCaliber, RelatedHitSearchIndicator]
+#   Veh Reg  | LicensePlateNumber           -> VehReg  #1 (In) LicensePlateNumber, [LicensePlateTypeCode, LicensePlateYear]  AND #3 (Out) ... State ...
+#   Veh Reg  | VehicleIdentificationNumber  -> VehReg  #2 (In) VehicleIdentificationNumber, [VehicleMakeCode, VehicleYear]
+# 8 of 8 pairs devdoc-authorized. The devdoc's four DL combinations map onto TWO (label|primaryField)
+# pairs because in-state and out-of-state differ only by State, which rides in any[] on both built
+# combos; Vehicle's in/out pair IS split (RQ.P / RQ.PO) because those two need mutually exclusive
+# EXISTS/NOT_EXISTS gates to stay reachable. See the SQVR for that reasoning.
+#
+# *** ImageQuery IS DEVDOC-BASIC AND IS DELIBERATELY ABSENT FROM THE LIST BELOW. ***
+# It is UNBUILDABLE, not deferred: the devdoc lists ImageQuery #1 "(In/Out) OperatorLicenseNumber",
+# but OR_LEDS metadata contains ZERO ImageQuery transactions -- //Transaction[@name='ImageQuery'] ->
+# 0 nodes, 0 Combinations, verified from the raw XML. Metadata is FIELD authority, so there is nothing
+# to author a combination against. Recorded in BUILD_NOTES 2026-08-11 and CLOSED, not owed.
+# WHY IT IS NOT LISTED HERE even though the template says to add documented skips: an
+# "Image | OperatorLicenseNumber" row would make CHECK 2 emit "supported ... has NO combo" -- a WARN
+# with nothing to fix, forever. CHECK 0's own message directs the skip to
+# ACCEPTED_DIVERGENCES / BUILD_NOTES, and that is where it lives. CHECK 0 compares against the
+# DEVDOC and ignores this file's STATUS, so the skip is still gated: it will keep reporting
+# "[INFO] devdoc-Basic but NOT BUILT: ImageQuery", which is the EXPECTED steady state and is
+# deliberately not silenced -- deleting the devdoc's own entry would falsify the ground truth CHECK 0
+# checks against. Contrast LA_LEMS, where ImageQuery IS metadata-defined (1 combination) and is
+# therefore a genuinely different case.
+#
+# CORROBORATED BY THE GATE'S OWN PARSE, not just by hand: audit_supported_queries reports
+#   "[PASS] CHECK 0 transaction-name scope: all 5 built transaction(s) are devdoc-authorized
+#    (compared against 6 Basic name(s))"
+#   "Devdoc 'Basic Queries Supported' ... : ArticleSingleQuery, BoatQuery, DriverLicenseQuery,
+#    GunQuery, ImageQuery, VehicleRegistrationQuery"
+# and 10 PASS / 0 FAIL / 0 WARN (1 INFO -- the ImageQuery skip above).
+#
+# NO DriverHistoryQuery on this provider -- not in the devdoc's Basic list. Do not read the
+# 4-entity+Person shape as a missing DH card.
+#
 # Format: <QueryLabel> | <PrimaryFieldReference>
 
 Article | ArticleSerialNumber

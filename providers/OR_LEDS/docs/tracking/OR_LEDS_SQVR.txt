@@ -1,13 +1,138 @@
 OR_LEDS SUPPORTED QUERY VALIDATION REPORT
 =============================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-Last updated: 2026-08-27
+Last updated: 2026-08-31
 JSON version: v2.6
+Validator: 55 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
+Total combos: 9 CommSys (5 QIDMs)
+  Counted from the emitted JSON via audit_test_coverage.ps1 ("Total CommSys combos: 9"), NOT from
+  audit_combo_reachability's "N checked" or audit_query_trace's "8 metadata combinations" -- those
+  report what was COMPARED and run lower. If a rebuild changes the combo count this line MUST move
+  with it, or audit_sqvr_integrity CHECK 2 compares a stale assertion against the JSON.
 
-QUERIES (pending metadata review)
-==================================
-  (populate from devdoc "Basic Queries Supported" after metadata review)
+POPULATED 2026-08-31, and the reason is the point. Both sections below were unfilled template text
+  ("populate after build") on a provider that is TENANT-VERIFIED ALL-PASS 27/27 and
+  LIFECYCLE-COMPLETE on all six stages -- and every automated gate read GREEN:
+  `enforce -Provider OR_LEDS` exits 0 at 45 PASS / 0 FAIL / 0 WARN, and PHASE 2j printed
+  "[PASS] OR_LEDS -- SQVR consistent with the JSON". That PASS was VACUOUS: audit_sqvr_integrity
+  checks that SQVR-named keyRefs exist in the JSON and that stated totals match, so a file naming
+  NOTHING and asserting NO total leaves only the version string genuinely checked. A gate cannot fail
+  on an empty file. audit_test_coverage CHECK 4 said so plainly -- "SQVR Match: NO ... fewer SQVR
+  [CONFIRMED] than tested combos" -- but nothing in enforce reads that tool, so its finding had
+  nowhere to land. Same remedy and reasoning as IL_LEADS_OFML (08-18), MD_METERS (08-28) and
+  NM_NMLETS_OFML (08-31). OR was one of the last providers carrying the empty scaffold, and one of
+  three that were lifecycle-complete while carrying it (OR, TN_TIES, and NM until today) -- the most
+  recent first-ever sweeps closed the wire and left the documentation authority open.
+  Everything below is DERIVED, not recalled: combos + set[]/any[] from the emitted OR_LEDS_v2.6.json
+  via audit_test_coverage, routing conditions read from scripts/build_or_leds.ps1 (the authoring
+  source of truth), query scope from docs/reference/OR_LEDS_SUPPORTED_QUERIES.txt (now
+  STATUS: CONFIRMED, verified pair-by-pair against the devdoc on 2026-08-31), and log counts by
+  grouping logs/<Entity>/OR_LEDS_v2.6_* on their combo label with each RESULT read from the log.
 
-QUERY PATHS
-===========
-  (populate after build -- one PENDING or CONFIRMED per combo)
+QUERIES (devdoc "Basic Queries Supported" lines 17-203 -- CONFIRMED, 5 of 6 BUILT)
+=================================================================================
+    ArticleSingleQuery       -> Article  / QIDM label "Article"
+    BoatQuery                -> Boat     / QIDM label "Boat"
+    DriverLicenseQuery       -> Person   / QIDM label "Driver License"
+    GunQuery                 -> Firearm  / QIDM label "Firearm"
+    VehicleRegistrationQuery -> Vehicle  / QIDM label "Vehicle Registration"
+  NO DriverHistoryQuery on this provider -- it is not in the devdoc's Basic list. Do not read the
+  4-entity+Person shape as a missing DH card.
+
+  ImageQuery -- DEVDOC-BASIC AND DELIBERATELY NOT BUILT. UNBUILDABLE, not deferred.
+    Devdoc lists it (ImageQuery #1 "(In/Out) OperatorLicenseNumber") but OR_LEDS metadata contains
+    ZERO ImageQuery transactions -- verified from the raw XML, //Transaction[@name='ImageQuery'] ->
+    0 nodes, 0 Combinations. Metadata is FIELD authority, so there is nothing to build against: a
+    combination cannot be authored for a transaction the metadata does not define. Recorded in
+    BUILD_NOTES (2026-08-11) and CLOSED, not owed. audit_supported_queries CHECK 0 will keep
+    reporting "[INFO] devdoc-Basic but NOT BUILT: ImageQuery" -- that INFO is the EXPECTED steady
+    state and is deliberately not silenced, because CHECK 0 compares against the DEVDOC and deleting
+    the devdoc's own entry would falsify the ground truth it checks. Contrast LA_LEMS, where
+    ImageQuery IS defined in metadata (1 combination) and is therefore a genuinely different case.
+    ⚠️ THIS IS ALSO WHY the extract lists only 5 query labels: adding an "Image | ..." row would make
+    CHECK 2 emit a "supported ... has NO combo" WARN with nothing to fix, so the skip is recorded in
+    BUILD_NOTES (where CHECK 0's own message directs) rather than in the extract.
+
+  OUT OF BASIC SCOPE, therefore not gaps in either direction: everything under the devdoc's
+  "Transactions Supported" and "Expanded Transactions Supported" sections.
+
+QUERY PATHS -- 9 of 9 CONFIRMED at v2.6 (27 logs, 27 PASS / 0 FAIL)
+===================================================================
+Tenant-verified ALL-PASS 5/5 on 2026-08-27 -- the FIRST EVER tenant install and FIRST EVER sweep of
+this provider. Four log gates all 27/27: 6c content, 6d metadata, 2i attribution (the named combo is
+what fired), plan completeness. Combo coverage 100% (9/9 combos hold >= 1 log). Inflation 0/0/0/0.
+No combination on this provider is prefill-dead and none is shadowed (5 ordered pairs compared).
+
+Vehicle -- VehicleRegistrationQuery (3 combos, 8 logs)
+  [CONFIRMED] RQ.PO  set=[LicensePlateNumber]
+                     any=[LicensePlateTypeCode, LicensePlateYear, RegistrationState]
+                     cond: RegistrationState EXISTS                                1 log,  PASS
+  [CONFIRMED] RQ.V   set=[VehicleIdentificationNumber] any=[RegistrationState]
+                     cond: LicensePlateNumber NOT_EXISTS                           2 logs, PASS
+  [CONFIRMED] RQ.P   set=[LicensePlateNumber]
+                     any=[LicensePlateTypeCode, LicensePlateYear]
+                     cond: RegistrationState NOT_EXISTS                            5 logs, PASS
+    THE IN/OUT SPLIT IS THE LOAD-BEARING DETAIL HERE. RQ.PO and RQ.P have IDENTICAL set[]
+    ([LicensePlateNumber]); they are separated ONLY by mutually exclusive conditions on
+    RegistrationState (EXISTS vs NOT_EXISTS), which is what keeps BOTH reachable. Consequently
+    `RegistrationState` MUST NOT be given a form `initialValue` -- a prefill makes State always
+    present, RQ.P's NOT_EXISTS gate permanently false, and the in-state plate search DEAD
+    (LIMITATION #30 / BUILD_RULES 24). The card title carries the routing hint instead.
+    Plate > VIN priority PROVEN by RQ.V's `LicensePlateNumber NOT_EXISTS` gate.
+
+Person -- DriverLicenseQuery (2 combos, 9 logs)
+  [CONFIRMED] DQ.N   set=[BirthDate, NameLast, NameFirst, SexCode]
+                     any=[RegistrationState, ImageIndicator, nameMiddle, nameSuffix]
+                     cond: OperatorLicenseNumber NOT_EXISTS                        5 logs, PASS
+  [CONFIRMED] DQ.O   set=[OperatorLicenseNumber]
+                     any=[RegistrationState, ImageIndicator]                       4 logs, PASS
+    OLN > Name priority PROVEN by DQ.N's `OperatorLicenseNumber NOT_EXISTS` gate.
+    ASYMMETRY WITH VEHICLE, AND IT IS DELIBERATE: Person has NO separate in/out keyRef pair. The
+    devdoc's four DL combinations (#1 in-state name, #2 in-state OLN, #3 out-of-state name+State,
+    #4 out-of-state OLN+State) collapse onto TWO built combos because `RegistrationState` rides in
+    `any[]` on both -- one combination serves both directions, so no EXISTS/NOT_EXISTS gate is
+    needed and none is authored. Do not "fix" this to match Vehicle's shape.
+    Name composite middle + suffix wire-proven on this pool. Note the camelCase `nameMiddle` /
+    `nameSuffix` fieldIds: middle name and suffix are NOT among the 22 CAD-integration PascalCase
+    tokens, so camelCase is correct here and is not a galvanization miss.
+
+Firearm -- GunQuery (1 combo, 4 logs)
+  [CONFIRMED] QG     set=[serialNumber] any=[gunCaliber, gunMake]                  4 logs, PASS
+    Matches devdoc Gun #1 "(In/Out) GunSerialNumber, [GunMake, GunCaliber,
+    RelatedHitSearchIndicator]". RelatedHitSearchIndicator is not wired on this provider.
+
+Article -- ArticleSingleQuery (1 combo, 1 log)
+  [CONFIRMED] QA     set=[serialNumber, articleTypeCode]                           1 log,  PASS
+    Matches devdoc Article #1 "(In/Out) ArticleSerialNumber, ArticleTypeCode,
+    [RelatedHitSearchIndicator]".
+
+Boat -- BoatQuery (2 combos, 5 logs)
+  [CONFIRMED] BQ.H   set=[BoatHullIdNumber] any=[RegistrationState]                3 logs, PASS
+  [CONFIRMED] BQ.R   set=[RegistrationNumber] any=[RegistrationState]
+                     cond: BoatHullIdNumber NOT_EXISTS                             2 logs, PASS
+    Hull > Registration priority PROVEN by BQ.R's `BoatHullIdNumber NOT_EXISTS` gate.
+    Devdoc Boat #1 brackets RegistrationNumber as an optional on the hull search; this build keeps
+    the two searches as separate combos with the guardrail, which is why filling both fires BQ.H.
+
+NOTES ON THE v2.6 RELEASE, and on two test-data fixes made BEFORE the sweep rather than after
+=============================================================================================
+  v2.6 IS LAYOUT ONLY: Vehicle became the first card. OR_LEDS was the ONLY provider of 20 opening on
+  Person -- measured across every emitted JSON -- and its own CAD_DISPATCH / FIRST_RESPONDER variants
+  were ALREADY Vehicle-first, so only its default disagreed with itself. The wire is PROVABLY
+  unchanged: every QUERYINPUTDATAMAPPING in both the OR_LEDS and RMS bundles is byte-identical to
+  v2.5.
+  TWO WEAK TESTS WERE FIXED BEFORE THIS SWEEP, both test data, no config impact:
+    (1) nameMiddle was the single letter "A" against a 30-char "Middle Name" control -- the same gap
+        Rob caught by eye on NM the same day, where it cost a re-run. The wire now carries
+        `DOE, JOHN MICHAEL` and `DOE, JOHN MICHAEL JR`, degrading cleanly to `DOE, JOHN JR`.
+    (2) the LicensePlateTypeCode toggle was `PC` -- IDENTICAL to the form default, so it proved only
+        that the default is the default. Set to `TK` FROM THE TENANT PICKLIST CAPTURE, not guessed:
+        plate-type contents are tenant data, and with no capture the gate could not have caught a
+        wrong code. Wire proves both inverted: PC x3 / TK x3, LicensePlateYear 2026 x3 / 2025 x3.
+  PICKLIST CAPTURE COMPLETED 2026-08-27, first ever: 10 dropdowns across all 5 entities, matching the
+  count predicted from the JSON before the run. Its first attempt returned
+  `LicensePlateTypeCode count=0, error=field not found in DOM`; a Vehicle-only re-run returned 64
+  options, so it was transient mount timing, NOT a rendering defect -- worth recording because the
+  alternative reading (the control never renders) would have blocked the sweep entirely.
+  Its one picklist WARN (gunMake `IMI` not in the captured 300-of-a-larger subset) is the paged-list
+  artefact AZ and TN both carried, and the driver selected IMI live during this sweep.
