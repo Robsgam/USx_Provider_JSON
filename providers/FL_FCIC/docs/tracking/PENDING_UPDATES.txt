@@ -4,4 +4,31 @@
 # [FLAG:sqvr-totals-denominator]  RESOLVED 2026-08-11 at v7.18 -- the SQVR total read 31 against a JSON holding 30. Counted from the emitted JSON via audit_test_coverage (30) and corrected in FL_FCIC_SQVR.txt with the provenance. The overstatement dated from v7.14/v7.17 removing combos without this line following. No JSON change, no version bump -- docs only.
 # (original flag text below for the record)
 # [FLAG:sqvr-totals-denominator] audit_sqvr_integrity CHECK 2 broadened (2026-08-10): it previously matched 3 exact phrasings and so compared NOTHING on 17 of 20 providers while printing PASS. FL_FCIC now FAILs: its SQVR asserts "Total combos: 31 CommSys" against 30 in the emitted v7.18 JSON (audit_test_coverage). ADJUDICATE at FL next rebuild -- decide whether 30 is correct (v7.15-v7.17 removed a dead control, so the count plausibly dropped and the SQVR was not updated) or whether the SQVR counts something the tool does not, then correct the losing side. Doc-only: no wire impact, no version bump. (flagged 2026-08-10)
-[FLAG:plan-dedupe-vacuous-tests] emit_test_plan.ps1 gained two plan-only filters 2026-08-21: (1) DUPLICATE -- drop a test whose (entity, fill-set) is byte-identical to an earlier one, which makes the generator agree with audit_log_inflation attack A by construction; (2) NO-CONTEST GUARDRAIL -- drop a guardrail whose fill adds no competing identifier over the winner's own combo test, because the pair differs only by a presence condition and the loser can never match. YOUR PLAN WILL SHRINK when you regenerate; measured non-destructively on 2026-08-21: AZ -5, CA_CLETS -11, CA_SLO -1, CA_VENTURA -2, FL -14, HI -1, IL -1, LA -1, MD -3, NJ -2, TN -1, TX_TLETS_CCH -4. NO COVERAGE IS LOST -- identical fill means identical wire, and NY held 16/16 combos at 100% across the change. NOT DONE FOR YOU ON PURPOSE: if you are tenant-verified, regenerating now makes your existing logs ORPHAN (more logs than plan tests) and drops you out of ALL-PASS, which is why this is a flag and not a sweep. Do it at your OWN next rebuild, and archive the superseded duplicate logs in the same pass (NY put them in logs/<Entity>/_archive_dedupe_v<ver>/). Reference: NY_NYSPIN_EJUSTICE v4.26, 73 -> 65 tests, inflation A 8 -> 0, four log gates 65/65. (flagged 2026-08-21)
+# [FLAG:plan-dedupe-vacuous-tests]  TAKEN AND DONE 2026-08-31 -- not deferred, not waived.
+#   WHAT WAS DONE, with NO version bump and NO re-sweep: the plan was regenerated at the CURRENT
+#   version (118 -> 104 tests) and the 14 now-unmatched logs were moved to
+#   logs/<Entity>/_archive_dedupe_v7.24/. Result: 104 plan / 104 logs, four log gates 104/104 each
+#   (6c content, 6d metadata, 2i attribution, plan completeness ALL-PASS 5/5), and
+#   audit_log_inflation attack A went 12 clone group(s) -> 0. ALL-PASS was PRESERVED throughout.
+#   WHY NO BUMP WAS NEEDED, which is the part the flag text did not say plainly: emit_test_plan
+#   only rewrites the plan file, and reset_test_package fires on a VERSION change -- this was not
+#   one. The JSON was not touched. So the cost was bookkeeping, not tenant time.
+#   PROVEN SAFE BEFORE ACTING, three ways, non-destructively (new plan written to scratch first):
+#     (1) combos with >=1 test: 28 before, 28 after -- ZERO combos lose coverage.
+#     (2) every one of the 14 dropped tests had oldCopies=2 -- the old plan held the SAME
+#         (entity, fill-set) twice under two labels (e.g. `any` and `af_<field>`, or a guardrail
+#         that adds no competing identifier over the base test).
+#     (3) every one of the 14 archived logs has an IDENTICAL-WIRE retained twin (transaction id
+#         normalised out): 14 twins found, 0 without. Nothing unique was archived. 14 orphans
+#         across 12 clone groups, because some groups hold 3 members.
+#     (4) every NEW-plan label already had a log -- so no test needed re-driving.
+#   WHY THIS MATTERED BEYOND TIDINESS: at 118 the package claimed 118 distinct tests while 14 were
+#   the same request driven twice. The headline "118/118 ALL-PASS" overstated distinct coverage by
+#   14. The honest number is 104, and it is now the number on the board.
+#   ROOT CAUSE of the duplication, for whoever meets this next: the generator emits a test per
+#   (combo x dimension) -- base, all-any-filled, each-any-individually, each guardrail. On a combo
+#   with exactly ONE any[] field, "all any" and "that one any field" are the SAME fill, so two
+#   dimensions produce an identical test. Same for a guardrail whose competing identifier is
+#   already absent from the base test.
+#   (original flag text retained below for the record)
+# [FLAG:plan-dedupe-vacuous-tests] emit_test_plan.ps1 gained two plan-only filters 2026-08-21: (1) DUPLICATE -- drop a test whose (entity, fill-set) is byte-identical to an earlier one, which makes the generator agree with audit_log_inflation attack A by construction; (2) NO-CONTEST GUARDRAIL -- drop a guardrail whose fill adds no competing identifier over the winner's own combo test, because the pair differs only by a presence condition and the loser can never match. YOUR PLAN WILL SHRINK when you regenerate; measured non-destructively on 2026-08-21: AZ -5, CA_CLETS -11, CA_SLO -1, CA_VENTURA -2, FL -14, HI -1, IL -1, LA -1, MD -3, NJ -2, TN -1, TX_TLETS_CCH -4. NO COVERAGE IS LOST -- identical fill means identical wire, and NY held 16/16 combos at 100% across the change. NOT DONE FOR YOU ON PURPOSE: if you are tenant-verified, regenerating now makes your existing logs ORPHAN (more logs than plan tests) and drops you out of ALL-PASS, which is why this is a flag and not a sweep. Do it at your OWN next rebuild, and archive the superseded duplicate logs in the same pass (NY put them in logs/<Entity>/_archive_dedupe_v<ver>/). Reference: NY_NYSPIN_EJUSTICE v4.26, 73 -> 65 tests, inflation A 8 -> 0, four log gates 65/65. (flagged 2026-08-21)
