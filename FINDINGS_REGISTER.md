@@ -431,3 +431,85 @@ Corrected to test the combo's OWN pool. LAW 2 then passed both ways: `RCAR` remo
 override, so they should keep reporting.
 
 **Rows superseded in section A above:** NY's L2 and FL's L2 are NOT defects. Do not fix them.
+
+---
+
+## 6. STATE-GATE / DEAD-FILL SWEEP — 2026-08-31, prompted by the MD_METERS v2.4 fix
+
+**Rob: "sweep the other providers for that same state gate pattern."** Done across all 20 via a new
+probe, `tools/_probes/sweep_dead_fill.ps1` (NOT wired into any orchestrator — see the recommendation
+at the end). It reuses `tools/_sim_helpers.ps1 Get-FiringKeyRef`, i.e. the same first-match walk the
+platform performs, and emits `[NO-VERDICT]` rather than a clean-looking zero when it compares nothing.
+
+**Why a sweep was warranted rather than trusting the boards: MD_METERS v2.3 was PHASE-1 GREEN while
+carrying its defect.** No existing gate asks *"does a legal-looking fill send nothing?"* —
+`audit_combo_reachability` asks whether a combo can ever win, `audit_devdoc_combinations` whether a
+devdoc path is built, `audit_query_trace` whether a metadata variant is unbuilt. A fill that satisfies
+one combo and one extra field is outside all three.
+
+**VALIDATED BOTH DIRECTIONS BEFORE BELIEVING IT** (the MD v2.3 JSON recovered from git into the
+provider dir, so `source/` sat beside it): FLAGS `ZLDR.O set[OLN] + raceCode -> NOTHING FIRES` on
+v2.3 — the exact defect found by hand — and both DL findings are GONE on v2.4.
+
+**RESULT: 20 examined / 380 combos / 746 simulated fills / 48 raw rows / 30 distinct combos.**
+Three distinct shapes, and only the first is the pattern Rob asked about:
+
+### 6a. Shape A — the LITERAL TN_TIES `KQ.N` pattern. **4 hits, ALL ALREADY ADJUDICATED. ZERO NEW.**
+State is mandatory in `set[]` (or the combo is gated `State EXISTS`), so the *in-state* version of
+that search is impossible. `CA_CLETS` / `CA_CONTRA_COSTA` / `CA_VENTURA_COUNTY` `NLTS.BQ.N`, and
+`FL_FCIC` `KQOperatorLicenseNumber`. Every one is recorded, verified at TRANSACTION granularity:
+the CLETS-family rows say *"there is no in-state boat-by-name transaction to fall through to"* and
+name the `CAIBoatRegistrationQuery` sibling trap; FL's DH is deliberately OOS-only (*"DH is OOS-only
+so State is a mandatory"*, BUILD_NOTES 464). **Nothing owed. Do not re-raise.**
+
+### 6b. Shape B — the MIRROR. **18 combos / 11 providers. THE REAL RESIDUE, and it is UNGATED.**
+An in-state-only combo gated `RegistrationState NOT_EXISTS` with no out-of-state sibling to catch the
+fill: the officer types a State and **nothing is sent at all**. This is the class MD v2.4 just fixed —
+and MD's fix only worked because `ZLDR.N` existed to receive the State-bearing fill.
+`CA_CLETS_OCATS` L1.N · `CA_SAN_LUIS_OBISPO` B2.N · `CA_VENTURA_COUNTY` IN.B2 · `CA_eSUN` L1.N,
+L1.N.DH, QW.N, QV.P · `FL_FCIC` FBQDecalNumber, FBQTitleLienInformation, FRQDecalNumber ·
+**`MD_METERS` ZVEH.P** · `NM_NMLETS_OFML` QV.V · `NY_NYSPIN_EJUSTICE` RVEH · `OH_LEADS` DN, QWA, RV ·
+`TN_TIES` DQ05, DQ06.
+
+**TRIAGE STATUS: ONE of 18 checked to spec, and it came back DEFENSIBLE.** `OH_LEADS` `DN`
+(name-only, gated `State NOT_EXISTS`): `audit_query_trace` reports DL 6/7 built with the only MISSING
+being the recorded `BMVIMS{SocialSecurityNumber}` — so OH's metadata defines **no** out-of-state
+DL-by-name transaction, and "nothing fires" is spec-correct rather than a missing combination.
+**The other 17 are UNVERIFIED CANDIDATES, not findings.** The discriminator is per combo and is the
+one from `usx-build` Step 3: *does the metadata define an out-of-state variant of this search?*
+YES → a missing combination (severity 2). NO → spec-correct, but a silent no-op the officer cannot
+distinguish from a broken form, which is a FORM problem (card-title/label), not a wire problem.
+⚠️ **There is a genuine design tension here and neither horn is free:** gate the in-state combo and a
+State-bearing fill sends NOTHING; leave it ungated and the same fill fires in-state with the **State
+silently discarded** — which is precisely the MD v2.3 defect. The only clean answer is that the
+out-of-state combo must exist, or the path must not offer a State control.
+
+### 6c. Shape C — an extra NON-STATE identifier kills the fill. **8 combos / 6 providers.**
+`CA_eSUN` RQ.V · `HI_HCJDC_OFML` M55L · `NY_NYSPIN_EJUSTICE` RVIN · `OH_LEADS` QA.N · `TX_TLETS` and
+`TX_TLETS_CCH` RQ/VIN VehicleIdentificationNumber (2 each). Shape: an identifier-priority guardrail
+(`Plate>VIN`, `Hull>Reg`, …) gates the lower-priority combo `HigherPriorityField NOT_EXISTS`, and the
+higher-priority combo needs MORE fields than were filled — so the officer with a VIN *and* a plate
+gets nothing, while the VIN alone would have worked.
+**TRIAGE: spec-consistent on the one measured.** On `TX_TLETS`, **plate-only ALSO fires nothing** —
+every TX plate variant mandates `LicensePlateYear` plus `LicensePlateTypeCode`/`financialResponsibility
+Type`/`State`, so a bare plate is not a legal request there either. The guardrail is not creating the
+hole; the metadata's mandatory plate qualifiers are. Not a wire defect. Same UX-cliff character as 6b.
+
+### 6d. WHAT I RECOMMEND, and what I did NOT do
+**Did NOT touch any of the 11 providers** — one-provider-at-a-time, and 17 of the 18 need a
+per-combo metadata adjudication that is Rob's call where an OOS variant turns out to exist.
+**Did NOT wire the probe into `enforce`/`doctor`** — it would light up 15 of 20 at once, which is the
+back-door mass rebuild `audit_layout_flow` was deliberately held out of the blocking pipeline to
+avoid. It sits in `tools/_probes/` so it is re-runnable and does not masquerade as a gate.
+**Worth promoting to a real gate once the residue is adjudicated**, because the class is currently
+invisible to every board: 30 combos across 15 providers, 8 of them tenant-verified ALL-PASS.
+
+**MY PROBE WAS WRONG FIVE TIMES BEFORE IT SAID ANYTHING TRUE, and every failure looked like a
+provider defect:** the emitted QIDM type is `QUERYINPUTDATAMAPPING` not `...DATAMAP` (→ "combos: 0");
+`Get-FiringKeyRef` is POSITIONAL `($entQidms,$formData)` and my named `-Qidm/-Filled` bound nothing
+(→ all 8 MD fills read "NOTHING FIRES" on a JSON that routes all 8); `Test-Path "$_\scripts"` yielded
+zero providers (→ `[NO-VERDICT]`, which is the only reason it did not print a clean PASS);
+`Get-ProviderRootJson` needs **both** `-ProvDir` and `-Provider`; and the metadata XML has a **default
+namespace**, so unprefixed XPath returned nothing and briefly looked like "OH defines no DL variants".
+A sixth was in my own classification: a `grep -v` on `+RegistrationState` silently dropped two Shape-C
+rows because the string also occurs inside `set[...]`. **Count on the added field, not the whole line.**
