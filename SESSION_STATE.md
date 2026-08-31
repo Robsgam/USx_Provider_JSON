@@ -19,7 +19,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | FL_FCIC | v7.24 | ALL-PASS (118 logs) |
 | HI_HCJDC_OFML | v4.20 | ALL-PASS (50 logs) |
 | IL_LEADS_OFML | v2.8 | ALL-PASS (44 logs) |
-| MD_METERS | v2.4 | NEVER-TESTED -- 47 test(s) owed |
+| MD_METERS | v2.4 | ALL-PASS (47 logs) |
 | NJ_NJCJIS | v4.17 | ALL-PASS (41 logs) |
 | NM_NMLETS_OFML | v2.7 | ALL-PASS (36 logs) |
 | NY_NYSPIN_EJUSTICE | v4.26 | ALL-PASS (65 logs) |
@@ -36,24 +36,25 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ---
 
+**IMPORT + SWEEP ONE OF 6 -- the ONLY thing that moves 12/20, and it needs Rob at the tenant.**
+⛔ **JIRA IS HELD.** MD_METERS v2.4 is imported and TENANT-VERIFIED ALL-PASS 5/5 (47 logs, 47/47 on
+all four log gates), so it is blocked ONLY at stage 5 by that hold -- and its drafted release line in
+`docs/tracking/DEX_TICKET.md` STILL DESCRIBES v2.3 and must be rewritten for v2.4 before any post.
 
-**MD_METERS v2.4 NEEDS RE-IMPORT + A FULL RE-SWEEP (46 logs archived).** Rob took the DL State
-decision 2026-08-31; the build is done and gate-clean, so this is now HIS tenant action, not mine.
-⛔ **JIRA STILL HELD** -- MD's drafted release line in `docs/tracking/DEX_TICKET.md` must be
-REWRITTEN for v2.4 before any post; do not post the v2.3 text.
-
-**Then IMPORT + SWEEP ONE OF 6** (`report_import_owed.ps1`) -- CA_CLETS_OCATS, CA_CONTRA_COSTA,
+**The queue** (`report_import_owed.ps1`) -- CA_CLETS_OCATS, CA_CONTRA_COSTA,
 CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, LA_LEMS. All gate-clean, all blocked at stage 4.
 **IMPORT FIRST, THEN PICKLIST CAPTURE** (Rob 2026-08-28) -- the console script scrapes the RENDERED
 form. The capture precedes CHOOSING TEST VALUES; that is why CA_VENTURA cannot fix its hollow toggle.
 
-**MISSION 11 of 20** -- MD dropped out of complete when v2.4 archived its package. 7 blocked at test.
+**MISSION 12 of 20**: 6 blocked at test, 1 (MD) at jira.
 
 ## ROB'S CALLS, NOT MINE
 
-- **MD_METERS DL State: TAKEN 2026-08-31, shipped in v2.4.** State is the discriminator. I DEVIATED
-  from the option's literal wording (it said `ZLDR.N + RegistrationState EXISTS`) because simulation
-  proved that kills the plain in-state name search; see the v2.4 BUILD_NOTES. **FL_FCIC owes NOTHING.**
+- **MD_METERS DL State: TAKEN, shipped in v2.4, WIRE-PROVEN 2026-08-31.** `ZLDR.N_any` carries
+  `<State>GA</State>` where v2.3 discarded it. I DEVIATED from the option's literal wording (it said
+  `ZLDR.N + RegistrationState EXISTS`) -- simulation proved that kills the plain in-state name search,
+  and the raw metadata later confirmed it (`ZLDR{Name}` has State in `<Any>`, an optional not a fork).
+  **FL_FCIC owes NOTHING.**
 - **CA_CONTRA_COSTA JAWS/SuperQuery** -- the portfolio's only remaining fidelity findings (4 UNDER /
   3 OVER, verbatim in its BUILD_NOTES). Hold the SWEEP, not the import.
 - **LA_LEMS BoatQuery `QB{reg}` vs `BQ{reg}`** -- in LA's registry, not taken.
