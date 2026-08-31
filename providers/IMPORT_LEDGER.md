@@ -227,7 +227,19 @@ done
 
 _Last reconciled: 2026-08-07._
 
-### OR_LEDS -- built, NOT YET IMPORTED (recorded 2026-08-27)
+### OR_LEDS -- built, NOT YET IMPORTED (recorded 2026-08-27) -- ❌ **SUPERSEDED 2026-08-31, THIS SECTION IS WRONG**
+
+> **OR_LEDS v2.6 IS IMPORTED AND TENANT-VERIFIED ALL-PASS 27/27 (2026-08-27), and LIFECYCLE-COMPLETE
+> on all six stages** -- see its row in section A and its DEX-992 publish in section C (release line
+> comment 807713). Everything below describes **v2.5** and says "not imported to any tenant / 0 logs
+> at any version / import v2.5 -> first 5-entity sweep". All of that is now false.
+>
+> **THIS IS THE SAME DEFECT THE TX_TLETS_CCH SECTION DIRECTLY BELOW ALREADY DOCUMENTS**, recurring
+> four days later: *"a hand-written 'not imported' note does not expire on its own, while the
+> log-derived table does update -- when the two disagree, the table wins."* It was written 2026-08-27,
+> the sweep landed the same day, and the note sat contradicting its own table for four days. Found
+> 2026-08-31 while answering "what is owed before we sweep" -- not by a gate, because no gate reads
+> prose. Left in place rather than deleted, per the same precedent: the contradiction is the lesson.
 
 - **OR_LEDS v2.5** -- built + gated, **never tenant-tested, not imported to any tenant.** 0 logs at
   any version. `enforce -Provider OR_LEDS` exits 0 at **45 PASS / 0 FAIL / 0 WARN**; PHASE 1 clean
@@ -251,6 +263,55 @@ _Last reconciled: 2026-08-07._
   state is UNPROVEN in both directions. Settle it with one A/B during the first sweep: an in-state
   plate search with the year cleared vs one with it asserted. A result either way also decides
   CA_SAN_LUIS_OBISPO's identical unregistered residue (commit 82759737).
+
+### THE SIX NEVER-IMPORTED PROVIDERS -- explicit per-version record (added 2026-08-31)
+
+`audit_lifecycle` stage 6 requires the ledger to **account for the current version** of every
+tenant-verified provider -- an install, or an explicit not-yet-imported line. It was reporting
+`[GAP] ... ledger mentions the provider but NOT v<X.Y>` for all six below, because the collapsed
+"never installed" sentence in section A names PROVIDERS but no VERSIONS, so the gate read silence.
+**Silence is the defect** -- these lines close it. Added on Rob's direction, 2026-08-31.
+
+**VERIFIED, NOT ASSUMED (2026-08-31):** every one of the six has **ZERO `.txt` test logs** at any
+version, including inside `logs/_archive_pre_v*`. CA_eSUN's six archive directories hold 16 files and
+NOT ONE is a log -- they are `TEST_PLAN_v2.0`-`v2.6`, `TEST_PLAN_SPEC_*`, `.test_state.json`,
+`.test_version` and the picklist scope, i.e. artifacts of six `reset_test_package` runs on version
+bumps. A swept provider would have `.txt` logs in there. Archive directories are NOT evidence of a
+sweep and must never be read as such.
+
+| Provider | Version | USx provider tenant | Foundation / LIVE |
+|---|---|---|---|
+| CA_CLETS_OCATS | **v2.8** | NOT IMPORTED -- 0 logs at any version | none known |
+| CA_CONTRA_COSTA | **v2.4** | NOT IMPORTED -- 0 logs at any version | none known |
+| CA_SAN_LUIS_OBISPO | **v2.6** | NOT IMPORTED -- 0 logs at any version | none known |
+| CA_VENTURA_COUNTY | **v2.5** | NOT IMPORTED -- 0 logs at any version | none known |
+| **CA_eSUN** | **v2.6** | **NOT IMPORTED -- 0 logs at any version** | ⚠️ see the warning below |
+| **LA_LEMS** | **v3.2** | **NOT IMPORTED -- 0 logs at any version** | ⚠️ see the warning below |
+
+⚠️ **CA_eSUN AND LA_LEMS: A LIVE PRODUCTION DEPLOYMENT EXISTS AND IT IS NOT OURS. DO NOT CONFLATE.**
+Rob raised this directly when these lines were requested -- *"esun was not tested or imported
+anywhere. please check that"* -- and he is right. The trap is that section B.2 records **CA_eSUN** at
+**San Diego Sheriff's Office** as **LIVE PRODUCTION**, and **LA_LEMS** at **Lafayette Parish** and
+**New Orleans PD** likewise. Read alone, those rows look like an install of ours. They are not:
+- Those are **NON-REPO, hand-built configurations with known defects** -- which is precisely why we
+  were called in. Rob, 2026-08-20: *"don't use that as a basis. we found there were errors in one of
+  the jsons so that is why we are being called in to mamange the configurations."*
+- **OUR builds -- CA_eSUN v2.6 and LA_LEMS v3.2 -- are on NO tenant of any class.** Zero logs, zero
+  imports, zero Foundation rows.
+- So a rebuild of either still costs no re-sweep, **but neither is greenfield**: real officers are
+  running defective builds of both today, which makes getting our version right more urgent than for
+  a never-deployed provider, not less. See B.1 (Lafayette diff) and B.2.
+- New Orleans PD's copy has **NOT been supplied** -- ask before answering any NOPD issue report.
+
+**STAGE 5 (Jira) IS NOT DUE ON ANY OF THE SIX** and that is correct, not an omission: stage 5 follows
+stage 4, and nothing is owed to a ticket for a version that has never passed a tenant test. None of
+the six has a `DEX_TICKET.md` yet; their DEX tickets will need locating by JQL at sweep time, the way
+DEX-987 (MD), DEX-989 (NM), DEX-992 (OR) and DEX-994 (TN) each did.
+
+**WHEN ONE IS IMPORTED, DELETE ITS ROW FROM THE TABLE ABOVE AND GIVE IT A SECTION-A ROW.** Do not
+leave a stale "NOT IMPORTED" line behind -- the section immediately above this one is OR_LEDS doing
+exactly that for four days, and the TX_TLETS_CCH section below it is the same defect from July.
+**When prose and the log-derived table disagree, the table wins.**
 
 ### TX_TLETS_CCH -- built, NOT YET IMPORTED (recorded 2026-07-30, TX_TLETS half corrected 2026-08-03)
 
