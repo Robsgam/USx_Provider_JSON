@@ -1,21 +1,21 @@
 ﻿================================================================
   Build Report: CA_CLETS_OCATS
-  Source: CA_CLETS_OCATS_v2.8.json
-  Generated: 2026-09-01 11:53
+  Source: CA_CLETS_OCATS_v2.9.json
+  Generated: 2026-09-01 13:37
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-09-01 11:53
+ Generated: 2026-09-01 13:37
 ============================================================
 
 ============================================================
  METADATA AUDIT: CA_CLETS_OCATS
 ============================================================
   XML: CA_CLETS_OCATS.xml
-  JSON: CA_CLETS_OCATS_v2.8.json
+  JSON: CA_CLETS_OCATS_v2.9.json
 
 --- CHECK 1: Query Coverage ---
   [PASS] ArticleSingleQuery: in XML and JSON
@@ -25,12 +25,11 @@ METADATA AUDIT
   [PASS] VehicleRegistrationQuery: in XML and JSON
 
 --- CHECK 2: KeyReference Validation ---
+  [PASS] 4K: exists in XML VehicleRegistrationQuery
   [PASS] AWVEHQ: exists in XML VehicleRegistrationQuery
   [PASS] VC: exists in XML VehicleRegistrationQuery
   [PASS] VP: exists in XML VehicleRegistrationQuery
   [PASS] 4V: exists in XML VehicleRegistrationQuery
-  [PASS] 4K: exists in XML VehicleRegistrationQuery
-  [PASS] 4: exists in XML VehicleRegistrationQuery
   [PASS] OCNAMQ: exists in XML DriverLicenseQuery
   [PASS] QGB: exists in XML GunQuery
   [PASS] 4B: exists in XML BoatQuery
@@ -153,8 +152,6 @@ METADATA AUDIT
   [PASS]   keyRef QGB: any field 'GunCaliber' present
   [PASS]   keyRef QGB: any field 'GunTypeCode' present
   VehicleRegistrationQuery:
-  [PASS]   keyRef 4: set field 'CaRequestPurposeCode' present
-  [PASS]   keyRef 4: set field 'LicensePlateNumber' present
   [PASS]   keyRef 4K: set field 'CaRequestPurposeCode' present
   [PASS]   keyRef 4K: set field 'LicensePlateNumber' present
   [PASS]   keyRef 4K: set field 'LicensePlateTypeCode' present
@@ -186,6 +183,7 @@ METADATA AUDIT
 --- CHECK 4d: Field promoted to set[] vs metadata any[] ---
   [NOTE]   keyRef RQ.P: 'RegistrationState' in set[] but metadata any[] -- ACCEPTED per registry
   [NOTE]   keyRef RQ.V: 'RegistrationState' in set[] but metadata any[] -- ACCEPTED per registry
+  [NOTE]   keyRef DQ.N: 'RegistrationState' in set[] but metadata any[] -- ACCEPTED per registry
   [NOTE]   keyRef DQ.O: 'RegistrationState' in set[] but metadata any[] -- ACCEPTED per registry
   [NOTE]   keyRef BQ.H: 'RegistrationState' in set[] but metadata any[] -- ACCEPTED per registry
   [NOTE]   keyRef BQ.R: 'RegistrationState' in set[] but metadata any[] -- ACCEPTED per registry
@@ -246,6 +244,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 168 PASS / 0 FAIL / 0 WARN
+Total: 165 PASS / 0 FAIL / 0 WARN
 ============================================================
 

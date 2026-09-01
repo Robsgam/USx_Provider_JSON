@@ -12,7 +12,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_clets_ocats_mc.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.8'
+$Version     = '2.9'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\CA_CLETS_OCATS_v${Version}.json"
@@ -69,7 +69,7 @@ $vehRegQuery = [PSCustomObject]@{
         # LicensePlateStateCode 2. All five are metadata-defined for this transaction, and the devdoc
         # lists the latter four as optionals on #2 -- so they are carried rather than dropped, or a
         # devdoc-legal fill would silently fail to transmit them.
-        [PSCustomObject]@{ name = 'UserId';                size = 2; sourceField = @('userId');                targetField = 'UserId' }
+        [PSCustomObject]@{ name = 'UserId'; rule = [PSCustomObject]@{ function = 'CommsysGetDexStateUserIdRuleHandler'; arguments = @('true') }; size = 2; sourceField = @('userId'); targetField = 'UserId' }
         [PSCustomObject]@{ name = 'ExactSearchIndicator';  size = 1; sourceField = @('exactSearchIndicator');  targetField = 'ExactSearchIndicator' }
         # size 1, NOT 2 (fixed v2.3). Authorization is defined EIGHT times in this XML: maxLength 2
         # under the seven OcatsWarrantQuery* transactions, and maxLength 1 under
@@ -87,6 +87,55 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'LicensePlateStateCode'; size = 2; sourceField = @('RegistrationState');     targetField = 'LicensePlateStateCode'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
+        # ── 4K MOVED AHEAD OF AWVEHQ AT v2.9, AND GATED. ─────────────────────────────────────
+        #   Caught by simulation, not by reading: after userId was automated, `plate + PlateType`
+        #   routed to AWVEHQ instead of 4K. AWVEHQ's effective set is [purpose, plate] once userId is
+        #   always present, which is a strict SUBSET of 4K's [purpose, plate, PlateTypeCode] -- so
+        #   first-match handed 4K's fill to AWVEHQ and 4K was DEAD. Not a preference: AWVEHQ's
+        #   metadata <Any> is [ExactSearchIndicator, Authorization, PageNumber, LicensePlateStateCode,
+        #   VehicleYear, VehicleMakeCode] and does NOT define LicensePlateTypeCode, so the officer's
+        #   plate type would have been SILENTLY DISCARDED on every such query.
+        #   ORDERING IS BY *VARIABLE* SPECIFICITY, which is the lesson worth keeping: 4K and AWVEHQ
+        #   both declare 3 set[] fields, so a raw field count says they tie -- but userId is
+        #   always-present, so AWVEHQ varies in only 2. Count the fields that can actually be absent.
+        #   ALSO GATED `RegistrationState NOT_EXISTS`: 4K is an in-state variant, and devdoc #6
+        #   "(Out) LicensePlateNumber, LicensePlateYear, [LicensePlateTypeCode, State]" means a plate
+        #   type can legitimately accompany an OUT-of-state search too. Ungated and ordered first, 4K
+        #   would have taken that fill from RQ.P and dropped both State and LicensePlateYear.
+        [PSCustomObject]@{
+            # 4K -- metadata Set[CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode]. Ordered ahead
+            # of 4, whose set[] is a strict subset. REACHABLE ONLY BECAUSE the LicensePlateTypeCode form
+            # prefill was removed at v2.6: with 'PC' prefilled, 4K's set collapsed to [Plate] and collided
+            # EXACTLY with 4, which no ordering can separate (BUILD_RULES 24 / the AZ DQPN case). CAD still
+            # gets PC from defaults[] here and on RQ.P -- combo defaults[] do not affect ROUTING.
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','LicensePlateNumber','LicensePlateTypeCode'); any = @(); defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }) }
+            primaryFieldReference = 'LicensePlateNumber'
+            keyReference          = '4K'
+            state                 = 'In/Out'
+        }
+        # ── RQ.P MOVED AHEAD OF AWVEHQ AT v2.9 -- ORDERING, NOT A GATE. ───────────────────────
+        #   My first v2.9 attempt gated AWVEHQ `RegistrationState NOT_EXISTS` instead, and
+        #   verify_build correctly FAILED it: "NOT_EXISTS field 'RegistrationState' is also in any[]
+        #   -- dead config (can never serialize)". It was right and I was wrong. Gating a field you
+        #   also permit in the SAME combo is self-contradictory -- the "a guardrail routes, it does
+        #   not decide what the winner transmits" argument applies to a DIFFERENT field's guardrail
+        #   (plate>VIN gates on plate and still sends VIN), never to the field being gated. And it
+        #   had a second cost: RegistrationState is the sole control feeding LicensePlateStateCode,
+        #   which metadata AWVEHQ{LicensePlateNumber} DOES define in its <Any>, so the gate silently
+        #   made a devdoc #2 optional untransmittable.
+        #   ORDERING DOES THE SAME JOB WITH NO CONTRADICTION, and usx-build Step 2 lists it first:
+        #   RQ.P REQUIRES RegistrationState in set[], so it only matches an out-of-state fill; put it
+        #   ahead of AWVEHQ and the plate paths separate themselves --
+        #       plate + State (+ prefilled Year)  -> RQ.P   (out of state)
+        #       plate alone                       -> AWVEHQ (in state; RQ.P cannot match, no State)
+        #   This is also the pattern THIS PROVIDER ALREADY USES: RQ.P/RQ.V/DQ.O/BQ.H/BQ.R all carry
+        #   RegistrationState in set[] with `promoted-to-set` rows in ACCEPTED_DIVERGENCES.
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','LicensePlateNumber','LicensePlateYear','RegistrationState'); any = @('LicensePlateTypeCode','VehicleMakeCode','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }) }
+            primaryFieldReference = 'LicensePlateNumber'
+            keyReference          = 'RQ.P'
+            state                 = 'In/Out'
+        }
         # ── AWVEHQ (v2.1) -- devdoc "Basic Query Transactions" VehicleRegistrationQuery #2:
         #      "2. (In) LicensePlateNumber, UserId, [Authorization, ExactSearchIndicator, ...]"
         #    metadata (Transaction=VehicleRegistrationQuery, keyRef AWVEHQ):
@@ -98,19 +147,46 @@ $vehRegQuery = [PSCustomObject]@{
         #    Transaction=OcatsWarrantQueryAWVEHQ (not built). Scoped by (query, keyRef).
         #    Ordered FIRST -- 3 set[] fields, and the plate-only combos below are strict subsets of
         #    it, so an ungated subset ahead of it would steal every UserId fill.
+        # v2.9 -- userId IS NOW HIDDEN + HANDLER-AUTOMATED, WHICH CHANGES THIS COMBO'S JOB.
+        #   Rob 2026-09-01: "we need to hide and automate the user id field  figure out how to use
+        #   state to route and for veh 1 and 2 combos become combined." Those are one change, because
+        #   of what the devdoc actually says:
+        #       1. (In)  LicensePlateNumber
+        #       2. (In)  LicensePlateNumber, UserId, [Authorization, ExactSearchIndicator,
+        #                LicensePlateStateCode, PageNumber, VehicleMakeCode, VehicleYear]
+        #       6. (Out) LicensePlateNumber, LicensePlateYear, [LicensePlateTypeCode, State]
+        #   #1 and #2 DIFFER ONLY BY UserId. Automate it and the officer can no longer produce a
+        #   plate fill WITHOUT it, so #1 is not lost -- it is ABSORBED. That is the merge: built '4'
+        #   (devdoc #1, metadata 4{LicensePlateNumber} with an EMPTY <Any>) is retired, and AWVEHQ is
+        #   the survivor because its metadata <Any> is a strict SUPERSET (6 optionals incl.
+        #   LicensePlateStateCode) -- so nothing an officer could send is lost by merging onto it.
+        #
+        # *** THE `RegistrationState NOT_EXISTS` GATE IS REQUIRED, NOT COSMETIC. ***
+        #   This is the "use state to route" half, and it is what makes automating userId SAFE.
+        #   With userId always present, AWVEHQ's EFFECTIVE set collapses to [purpose, plate] -- a
+        #   strict SUBSET of RQ.P's [purpose, plate, PlateYear, State]. AWVEHQ is ordered FIRST, so
+        #   UNGATED it would steal every out-of-state plate fill from RQ.P and the (Out) path would
+        #   die silently. Exactly BUILD_RULES 24 / the AZ_AZDPS DQPN case, arrived at from the other
+        #   direction: there a prefill killed the RICHER combo, here it would kill the OOS one.
+        #   THE DEVDOC ITSELF SUPPLIES THE DISCRIMINATOR: #2 is (In) and #6 is (Out), and the two
+        #   carry DIFFERENT state fields -- #2/#4 use LicensePlateStateCode, #6/#7 use State. So
+        #   UserId marks "in-state OCATS" and State marks "out-of-state Nlets"; once UserId is
+        #   automatic, State is the only thing left that can route. Same structure on Person
+        #   (DL #1 In+UserId vs DL #4 Out+[State]) -- see OCNAMQ.
+        #   RegistrationState STAYS IN any[]: metadata AWVEHQ{LicensePlateNumber} defines
+        #   LicensePlateStateCode in its <Any>, so the field is legitimately permitted here; the gate
+        #   governs WHICH COMBO FIRES, never what the winner may transmit (usx-build 6c -- those are
+        #   two different questions).
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('caRequestPurposeCode','LicensePlateNumber','userId')
                 any = @('exactSearchIndicator','authorization','pageNumber','RegistrationState','vehicleYear','VehicleMakeCode')
+                # CAD ignores form initialValue, so the feeder must be mirrored here or a
+                # CAD-originated plate query cannot satisfy the mandatory UserId.
+                defaults = @([PSCustomObject]@{ field = 'userId'; value = 'X' })
             }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'AWVEHQ'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','LicensePlateNumber','LicensePlateYear','RegistrationState'); any = @('LicensePlateTypeCode','VehicleMakeCode','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }) }
-            primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'RQ.P'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
@@ -141,26 +217,30 @@ $vehRegQuery = [PSCustomObject]@{
             keyReference          = '4V'
             state                 = 'In/Out'
         }
-        [PSCustomObject]@{
-            # 4K -- metadata Set[CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode]. Ordered ahead
-            # of 4, whose set[] is a strict subset. REACHABLE ONLY BECAUSE the LicensePlateTypeCode form
-            # prefill was removed at v2.6: with 'PC' prefilled, 4K's set collapsed to [Plate] and collided
-            # EXACTLY with 4, which no ordering can separate (BUILD_RULES 24 / the AZ DQPN case). CAD still
-            # gets PC from defaults[] here and on RQ.P -- combo defaults[] do not affect ROUTING.
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','LicensePlateNumber','LicensePlateTypeCode'); any = @(); defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }) }
-            primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = '4K'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            # 4 any[] is EMPTY to match metadata: its <Any> defines NOTHING. The five optionals it used to
-            # carry (State, PlateType, PlateYear, VehicleMake, VehicleYear) are defined by OTHER variants
-            # (RQ, QV, AWVEHQ) and were reported as OVER-PERMITTED on this branch.
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','LicensePlateNumber'); any = @() }
-            primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = '4'
-            state                 = 'In/Out'
-        }
+        # ---------------------------------------------------------------------------------------
+        # '4' (devdoc #1, metadata 4{LicensePlateNumber}) RETIRED AT v2.9 -- MERGED INTO AWVEHQ.
+        #   Rob 2026-09-01: "for veh 1 and 2 combos become combined."
+        #   THIS IS A MERGE, NOT A DELETION, and the difference is the whole justification:
+        #     devdoc #1 = (In) LicensePlateNumber
+        #     devdoc #2 = (In) LicensePlateNumber, UserId, [6 optionals]
+        #   They differ ONLY by UserId. At v2.9 userId is hidden and handler-automated, so it is
+        #   ALWAYS PRESENT and an officer can no longer produce a plate fill WITHOUT it. #1 therefore
+        #   has no reachable fill of its own -- it is absorbed by #2, not dropped.
+        #   AWVEHQ IS THE CORRECT SURVIVOR, verified from the metadata rather than chosen: its <Any>
+        #   is a strict SUPERSET of 4's (AWVEHQ permits ExactSearchIndicator, Authorization,
+        #   PageNumber, LicensePlateStateCode, VehicleYear, VehicleMakeCode; 4's <Any> defines
+        #   NOTHING). So no field an officer could send is lost by merging onto AWVEHQ -- the merge
+        #   strictly WIDENS what the in-state plate path may carry.
+        #   KEEPING BOTH WAS NOT AN OPTION. With userId always present, AWVEHQ's effective set is
+        #   [purpose, plate] -- EXACTLY 4's set. An exact collision is the one case ordering cannot
+        #   separate (BUILD_RULES 24, the AZ_AZDPS DQPN/DQP case), so 4 would have been a combo that
+        #   counts toward coverage, can carry logs, and can never fire -- which is WORSE than an
+        #   unbuilt one. Retiring it is the honest half of automating userId.
+        #   NOT REGISTERED as an accepted divergence, deliberately: an existence-class row naming a
+        #   keyRef makes audit_requirement_fidelity SKIP that keyRef's whole comparison, and '4' is
+        #   a bare keyRef that would prefix-match nothing useful. The reasoning lives here and in
+        #   BUILD_NOTES; audit_devdoc_combinations is the gate that proves #1 is still accounted for.
+        # ---------------------------------------------------------------------------------------
     )
     description        = 'VehicleRegistrationQuery -- 4 (plate), 4V (VIN), RQ (OOS plate/VIN), VP (name). MC cross-entity.'
     handlerFunction    = 'CommsysTransactionRequestHandler'
@@ -193,9 +273,51 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
         # v2.1: UserId, for the OCNAMQ combination below. maxLength 2 per this XML's own
         # <Field maxLength> -- it is a short OCATS terminal/user code, NOT a person's name or login.
-        [PSCustomObject]@{ name = 'UserId'; size = 2; sourceField = @('userId'); targetField = 'UserId' }
+        [PSCustomObject]@{ name = 'UserId'; rule = [PSCustomObject]@{ function = 'CommsysGetDexStateUserIdRuleHandler'; arguments = @('true') }; size = 2; sourceField = @('userId'); targetField = 'UserId' }
     )
     combinations = @(
+        # ── DQ.N MOVED AHEAD OF OCNAMQ AT v2.9, AND ITS STATE PROMOTED BACK INTO set[]. ──────
+        #   *** THIS REVERSES A DELIBERATE v2.8 DECISION, AND THAT IS ONLY LEGITIMATE BECAUSE THE
+        #   CONDITION BEHIND IT NO LONGER HOLDS. *** The v2.8 note (retained below) demoted
+        #   RegistrationState set[] -> any[] because promoting it made DQ.N reachable ONLY out of
+        #   state, so devdoc #4 "(mand) BirthDate, Name, SexCode [opt State]" filled WITHOUT a state
+        #   fell through to L1.N (set=[purpose, Name], any=[BirthDate, ...]) -- which does not carry
+        #   SexCode, so the officer's sex code was silently dropped. That was correct at v2.8.
+        #   WHAT CHANGED: userId is now hidden and handler-automated, so OCNAMQ -- devdoc #1
+        #   "(In) BirthDate, Name, SexCode, UserId", which DOES carry all three -- can finally match.
+        #   The in-state name+DOB+sex fill therefore lands on its OWN devdoc combination instead of
+        #   falling to L1.N, so the reason for the demotion is gone. Verified by simulation on the
+        #   emitted JSON, not by argument.
+        #   ORDERING, NOT A GATE, for the same reason as RQ.P/AWVEHQ on Vehicle: DQ.N REQUIRES State,
+        #   OCNAMQ cannot be blocked by it (State appears in neither its set[] nor its any[]), so
+        #   OCNAMQ ordered first would take the out-of-state fill and DQ.N would be dead. With DQ.N
+        #   first the two separate themselves:
+        #       name+DOB+Sex+State -> DQ.N   (out of state, devdoc #4)
+        #       name+DOB+Sex       -> OCNAMQ (in state, devdoc #1 -- DQ.N cannot match, no State)
+        #   This also restores what ACCEPTED_DIVERGENCES already asserts:
+        #   `DriverLicenseQuery | DQ.N | RegistrationState | promoted-to-set` -- a row the v2.8 build
+        #   had drifted away from while the row stayed on the books.
+        [PSCustomObject]@{
+            # v2.8: RegistrationState DEMOTED set[] -> any[] and its EXISTS gate REMOVED.
+            # Metadata DQ{Name} = Set[CaRequestPurposeCode, Name, BirthDate, SexCode] Any[State] --
+            # State is OPTIONAL there. Promoting it into set[] made this combination reachable ONLY
+            # out of state, so devdoc #4 "(mand) BirthDate, Name, SexCode [opt State]" filled without
+            # a State fell through to L1.N (set=[purposeCode, Name], any=[BirthDate, ...]) and the
+            # officer's SexCode was SILENTLY DISCARDED -- L1.N carries BirthDate in any[] but not
+            # SexCode. Same anti-pattern as TN_TIES KQ.N and NM_NMLETS_OFML RQ.P: never gate on a
+            # field the metadata merely permits.
+            # L1.N KEEPS its `RegistrationState NOT_EXISTS` gate deliberately: metadata L1{Name}
+            # does not define State at all, so without that gate a Name+State fill would match L1.N
+            # and drop the State silently. DQ.N is a strict superset of L1.N and is ordered first, so
+            # Name+DOB+Sex now reaches DQ.N while a name-only search still reaches L1.N.
+            # SCOPE: DQ.N only. DQ.O keeps RegistrationState in set[] because it is the ONLY
+            # discriminator against L1.O -- both are set[purposeCode, OperatorLicenseNumber] and
+            # demoting it would collapse them into an exact collision that ordering cannot separate.
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','NameLast','NameFirst','BirthDate','SexCode','RegistrationState'); any = @('NameMiddle','NameSuffix'); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }) }
+            primaryFieldReference = 'Name'
+            keyReference          = 'DQ.N'
+            state                 = 'In/Out'
+        }
         # ── OCNAMQ (v2.1) -- devdoc "Basic Query Transactions" DriverLicenseQuery #1:
         #      "1. (In) BirthDate, Name, SexCode, UserId"   -- all four UNBRACKETED = MANDATORY
         #    metadata (Transaction=DriverLicenseQuery, keyRef OCNAMQ):
@@ -217,33 +339,31 @@ $dlQuery = [PSCustomObject]@{
         #    requires UserId, so the two are disjoint rather than competing.
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
+                # v2.9 -- `RegistrationState NOT_EXISTS` ADDED, AND IT IS LOAD-BEARING.
+                #   userId is now hidden + handler-automated (always present), so OCNAMQ's EFFECTIVE
+                #   set collapses to [purpose, SexCode, BirthDate, Name] -- which is EXACTLY DQ.N's
+                #   set. OCNAMQ is ordered FIRST, so ungated it would take every name+DOB+sex fill
+                #   and DQ.N (devdoc #4, the OUT-OF-STATE name search) would be permanently dead.
+                #   THE DEVDOC SUPPLIES THE DISCRIMINATOR, exactly as on Vehicle:
+                #       1. (In)  BirthDate, Name, SexCode, UserId
+                #       4. (Out) BirthDate, Name, SexCode, [State]
+                #   The two are identical apart from UserId vs State -- UserId marks the in-state
+                #   OCATS path, State marks the out-of-state Nlets path. Automating UserId removes it
+                #   as a discriminator, so State becomes the only one available. This is the same
+                #   in/out fork MD_METERS v2.4 landed on DriverLicenseQuery, reached the same way.
+                #   ⚠️ DO NOT "complete the symmetry" by also gating DQ.N `RegistrationState EXISTS`
+                #   unless it is simulated first: DQ.N carries State in any[], and on TN_TIES KQ.N a
+                #   State EXISTS gate on an any[]-State variant made the whole name search
+                #   impossible. Here DQ.N is reachable simply by being AFTER a NOT_EXISTS-gated
+                #   OCNAMQ, which is the cheaper and safer arrangement.
+                # CAD ignores form initialValue, so the userId feeder is mirrored here too.
+                defaults   = @([PSCustomObject]@{ field = 'userId'; value = 'X' })
                 set        = @('caRequestPurposeCode','userId','SexCode','BirthDate','NameLast','NameFirst')
                 any        = @('NameMiddle','NameSuffix')
                 conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'Name'
             keyReference          = 'OCNAMQ'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            # v2.8: RegistrationState DEMOTED set[] -> any[] and its EXISTS gate REMOVED.
-            # Metadata DQ{Name} = Set[CaRequestPurposeCode, Name, BirthDate, SexCode] Any[State] --
-            # State is OPTIONAL there. Promoting it into set[] made this combination reachable ONLY
-            # out of state, so devdoc #4 "(mand) BirthDate, Name, SexCode [opt State]" filled without
-            # a State fell through to L1.N (set=[purposeCode, Name], any=[BirthDate, ...]) and the
-            # officer's SexCode was SILENTLY DISCARDED -- L1.N carries BirthDate in any[] but not
-            # SexCode. Same anti-pattern as TN_TIES KQ.N and NM_NMLETS_OFML RQ.P: never gate on a
-            # field the metadata merely permits.
-            # L1.N KEEPS its `RegistrationState NOT_EXISTS` gate deliberately: metadata L1{Name}
-            # does not define State at all, so without that gate a Name+State fill would match L1.N
-            # and drop the State silently. DQ.N is a strict superset of L1.N and is ordered first, so
-            # Name+DOB+Sex now reaches DQ.N while a name-only search still reaches L1.N.
-            # SCOPE: DQ.N only. DQ.O keeps RegistrationState in set[] because it is the ONLY
-            # discriminator against L1.O -- both are set[purposeCode, OperatorLicenseNumber] and
-            # demoting it would collapse them into an exact collision that ordering cannot separate.
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','NameLast','NameFirst','BirthDate','SexCode'); any = @('RegistrationState','NameMiddle','NameSuffix'); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }) }
-            primaryFieldReference = 'Name'
-            keyReference          = 'DQ.N'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
@@ -490,7 +610,7 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'BusinessIndicator_Input';    node = Sel 'businessIndicator' 'Business Owner' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_VEH_4' }
                 @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_4' }
                 @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_VEH_4' @{ initialValue = 'C' } }
-                @{ id = 'UserId_Input';               node = Inp 'userId' 'OCATS User ID' '2' 'ROW_VEH_4' }
+                @{ id = 'UserId_Input';               node = InpH 'userId' 'OCATS User ID (auto)' '2' 'ROW_VEH_4' @{ initialValue = 'X' } }
             )}
             @{ id = 'ROW_VEH_5'; cols = @('4','4','4'); fields = @(
                 @{ id = 'Authorization_Input';        node = Inp 'authorization'        'Authorization (optional)' '1' 'ROW_VEH_5' }
@@ -533,7 +653,7 @@ $perLayout = MakeLayouts @(
                 @{ id = 'BirthDate_Input';            node = Dt  'BirthDate' 'Date of Birth' 'ROW_PER_3' }
                 @{ id = 'SexCode_Input';              node = Sel 'SexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_3' }
                 @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_PER_3' @{ initialValue = 'C' } }
-                @{ id = 'UserId_Input';               node = Inp 'userId' 'OCATS User ID' '2' 'ROW_PER_3' }
+                @{ id = 'UserId_Input';               node = InpH 'userId' 'OCATS User ID (auto)' '2' 'ROW_PER_3' @{ initialValue = 'X' } }
             )}
         )
     }

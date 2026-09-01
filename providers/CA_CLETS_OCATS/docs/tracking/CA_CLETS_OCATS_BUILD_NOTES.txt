@@ -1,6 +1,80 @@
 CA_CLETS_OCATS -- Build Notes
 ==============================
 
+v2.9  2026-09-01  USER ID HIDDEN + AUTOMATED, AND STATE TAKES OVER THE ROUTING IT USED TO DO
+  DIRECTIVE (Rob 2026-09-01): "we need to hide and automate the user id field  figure out how to use
+  state to route and for veh 1 and 2 combos become combined." Those are ONE change, not three, and
+  the devdoc is why:
+      Veh #1 (In)  LicensePlateNumber
+      Veh #2 (In)  LicensePlateNumber, UserId, [Authorization, ExactSearchIndicator,
+                   LicensePlateStateCode, PageNumber, VehicleMakeCode, VehicleYear]
+      Veh #6 (Out) LicensePlateNumber, LicensePlateYear, [LicensePlateTypeCode, State]
+      DL  #1 (In)  BirthDate, Name, SexCode, UserId
+      DL  #4 (Out) BirthDate, Name, SexCode, [State]
+  #1 and #2 differ ONLY by UserId; DL #1 and #4 differ ONLY by UserId-vs-State. So UserId IS the
+  in-state marker and State is the out-of-state marker. Automate UserId and (a) #1 and #2 become the
+  same officer fill -- they MERGE -- and (b) UserId can no longer discriminate, so State must.
+  CHANGED:
+    userId -- visible FormInput -> HIDDEN feeder (InpH, initialValue 'X'), on Vehicle and Person.
+      Attribute gains rule=CommsysGetDexStateUserIdRuleHandler args=['true'] (size stays 2 per this
+      XML). Combo defaults[] userId='X' added on AWVEHQ and OCNAMQ because CAD ignores form
+      initialValue. Label -> "OCATS User ID (auto)".
+    VEHICLE -- built '4' (devdoc #1) RETIRED, merged into AWVEHQ. Order now
+      4K, RQ.P, AWVEHQ, RQ.V, VC, VP, 4V.
+    PERSON  -- DQ.N moved AHEAD of OCNAMQ and its RegistrationState promoted any[] -> set[].
+      Order now DQ.N, OCNAMQ, DQ.O, L1.N, L1.O.
+    Registered: '4' (dead-combo-userid-automated) and 'QV' (dead-combo-routing-impossible).
+    verify_build's hidden-field whitelist gained an ANCHORED '^userId$' entry with the directive.
+  *** THE HANDLER IS LIVE-PROVEN, NOT ASSUMED. *** AZ_AZDPS uses the same handler on a QUERY
+  attribute and its own build comment flagged that as an unverified HYPOTHESIS. Settled from AZ's
+  committed logs: across 53 v3.12 logs the FORM sends "dexStateUserId":"X" on 53/53 while the WIRE
+  carries <BadgeNumber>MK43RS</BadgeNumber> on 41/41 of the logs containing the element. The handler
+  replaces the feeder on a query attribute. Hypothesis retired.
+  ⚠️ OPEN RISK, RECORDED NOT HIDDEN: the handler resolves to the DEX username. On AZ that is MK43RS
+  -- SIX characters into a size-4 field, and it did NOT truncate. OCATS caps UserId at 2, so expect
+  a 6-character value on the wire. Whether OCATS accepts it is a LIVE fact this repo cannot settle;
+  the sweep will. Rob chose this option with that risk stated. If it is rejected, switch to a fixed
+  hidden initialValue carrying the agency's real 2-char operator id -- do NOT conclude the
+  combination is unbuildable.
+  *** TWO THINGS I GOT WRONG FIRST, BOTH CAUGHT BY GATES RATHER THAN BY READING: ***
+    1. I first gated AWVEHQ and OCNAMQ `RegistrationState NOT_EXISTS`. verify_build FAILED it:
+       "NOT_EXISTS field 'RegistrationState' is also in any[] -- dead config (can never serialize)".
+       It was right. Gating a field the SAME combo also permits is self-contradictory; the "a
+       guardrail routes, it does not decide what the winner transmits" rule applies to a DIFFERENT
+       field's guardrail (plate>VIN gates plate, still sends VIN), never to the gated field itself.
+       It also had a hidden cost: RegistrationState is the ONLY control feeding LicensePlateStateCode,
+       which metadata AWVEHQ DOES define in <Any>, so the gate silently made a devdoc #2 optional
+       untransmittable. Replaced with ORDERING -- which usx-build Step 2 lists first anyway -- so the
+       OOS combos (which REQUIRE State in set[]) sit ahead of the in-state ones and the paths separate
+       themselves. audit_prefill_shadow went 2 FAIL -> 0 FAIL on that change alone.
+    2. Promoting State back into DQ.N's set[] REVERSED A DOCUMENTED v2.8 DECISION, and I walked into
+       it before reading DQ.N's own comment (usx-build 6c: a reversal already written down is the
+       cheapest authority in the repo). v2.8 demoted it because promoting made DQ.N out-of-state-only,
+       so devdoc #4 filled WITHOUT a state fell through to L1.N -- which has no SexCode in its any[],
+       so the sex code was dropped. THE REVERSAL IS LEGITIMATE ONLY BECAUSE THAT CONDITION IS GONE:
+       with userId automated, OCNAMQ (devdoc #1, which carries all three of Name/DOB/Sex) can finally
+       match, so the in-state fill lands on its own combination instead of falling to L1.N. Verified,
+       not argued -- see the routing table below.
+  ROUTING VERIFIED ON THE EMITTED v2.9 via _sim_helpers Get-FiringKeyRef (12 fills, 0 mismatches,
+  form prefills included so this is what the tenant actually submits):
+    plate only                  -> AWVEHQ    plate+State+Year      -> RQ.P
+    plate+PlateType             -> 4K        VIN only              -> 4V
+    VIN+State                   -> RQ.V      owner name            -> VP
+    owner name+businessInd      -> VC        name+DOB+Sex          -> OCNAMQ
+    name+DOB+Sex+State          -> DQ.N      name only             -> L1.N
+    OLN only                    -> L1.O      OLN+State             -> DQ.O
+  GATES: validator 65P/0F/0W. reachability 19/19 all reachable. fidelity 25 branches / 0 UNDER /
+  0 OVER -- UNCHANGED across the whole change, including after the two registry rows, so nothing was
+  suppressed. query_trace 23 built / 0 PREFILL-DEAD / 0 SHADOW / 0 MISSING. prefill_shadow 0 FAIL
+  (42 pairs). wiring closure 0 breaks. verify_build hidden-field whitelist change measured across all
+  20 providers: zero others affected.
+  COST: none owed. CA_CLETS_OCATS is NOT IMPORTED and had 0 logs at any version, so the bump archived
+  nothing and no re-sweep is owed. 20 combos (was 21).
+
+v2.9  2026-09-01  Pipeline rebuild
+  CHANGED: Rebuilt via pipeline.ps1
+  REASON: Scheduled rebuild
+
 v2.8  2026-09-01  THE IN-STATE NAME SEARCH STOPS DISCARDING SEX CODE
   CHANGED (DriverLicenseQuery, DQ.N only -- every other QIDM byte-identical):
     RegistrationState DEMOTED from set[] to any[], and its `RegistrationState EXISTS` condition

@@ -43,7 +43,7 @@ Status table instead (this table's Notes column is intentionally terse).
 | 7 | LA_LEMS | v3.2 |  | 65P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 8 | CA_CLETS | v2.27 |  | 79P/0F/0W/0LIM | 0 | in-scope, single-JSON |
 | 9 | CA_VENTURA_COUNTY | v2.5 |  | 82P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
-| 10 | CA_CLETS_OCATS | v2.8 |  | 66P/0F/0W/0LIM | 1 | out of scope |
+| 10 | CA_CLETS_OCATS | v2.9 |  | 65P/0F/0W/0LIM | 1 | out of scope |
 | 11 | CA_eSUN | v2.6 |  | 75P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 12 | CA_SAN_LUIS_OBISPO | v2.6 |  | 67P/0F/0W/0LIM | 0 | out of scope |
 | 13 | IL_LEADS_OFML | v2.8 |  | 61P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
