@@ -324,10 +324,26 @@ foreach ($pn in $targets) {
 
     # ── 7. enforce ────────────────────────────────────────────────────────────────────
     $o8 = Run-Tool 'enforce.ps1' @('-Provider', $pn, '-SkipGit')
-    $m8 = [regex]::Match($o8, '(ENFORCED|BLOCKED):\s*(\d+) PASS / (\d+) FAIL / (\d+) WARN')
+    # 'PASSED WITH WARNINGS' ADDED 2026-09-01 -- it is enforce's THIRD verdict and this regex knew only
+    # two, so a legitimate outcome was reported as "DID NOT REPORT A VERDICT -- treat as FAILED".
+    # Live-caught on CA_CLETS_OCATS: enforce said `PASSED WITH WARNINGS: 43 PASS / 0 FAIL / 1 WARN`
+    # (two stale ancillary artifacts) and PHASE 1 announced the final gate had not run. THE OPPOSITE
+    # DEFECT TO THE ONE THE else-BRANCH BELOW EXISTS FOR: that one hid a step that truly did not run;
+    # this one manufactured a phantom failure from a step that ran fine. Both are verdict-parsing bugs,
+    # and both waste the reader's trust -- LAW 2 and LAW 2b are the same lesson from opposite sides.
+    # A WARN IS STILL NOT A PASS (ENGINEERING_STANDARD 5 bullet 1 requires 0 FAIL *and* 0 WARN), so it
+    # still contributes a SHORTCOMING -- it is just described accurately instead of as a non-run.
+    # The same third-verdict trap was handled explicitly in report_mission_status's gates stage the
+    # same day; this is the sibling that had not been fixed yet.
+    $m8 = [regex]::Match($o8, '(ENFORCED|BLOCKED|PASSED WITH WARNINGS):\s*(\d+) PASS / (\d+) FAIL / (\d+) WARN')
     if ($m8.Success) {
-        Out-Line ("  [7] enforce                    {0}: {1} PASS / {2} FAIL / {3} WARN" -f $m8.Groups[1].Value,$m8.Groups[2].Value,$m8.Groups[3].Value,$m8.Groups[4].Value) $(if ($m8.Groups[1].Value -eq 'ENFORCED') { 'Green' } else { 'Red' })
-        if ($m8.Groups[1].Value -ne 'ENFORCED') { $short += "ENFORCE BLOCKED: $($m8.Groups[3].Value) FAIL / $($m8.Groups[4].Value) WARN" }
+        $verd = $m8.Groups[1].Value
+        Out-Line ("  [7] enforce                    {0}: {1} PASS / {2} FAIL / {3} WARN" -f $verd,$m8.Groups[2].Value,$m8.Groups[3].Value,$m8.Groups[4].Value) $(if ($verd -eq 'ENFORCED') { 'Green' } elseif ($verd -eq 'BLOCKED') { 'Red' } else { 'Yellow' })
+        if ($verd -eq 'BLOCKED') {
+            $short += "ENFORCE BLOCKED: $($m8.Groups[3].Value) FAIL / $($m8.Groups[4].Value) WARN"
+        } elseif ($verd -ne 'ENFORCED') {
+            $short += "ENFORCE PASSED WITH WARNINGS: $($m8.Groups[4].Value) WARN -- not a pass; ENGINEERING_STANDARD 5 requires 0 FAIL AND 0 WARN. Run enforce -Provider $pn to see them."
+        }
     }
     else {
         # A STEP THAT DID NOT RUN IS NOT A PASS. There was no else here, so when enforce failed to

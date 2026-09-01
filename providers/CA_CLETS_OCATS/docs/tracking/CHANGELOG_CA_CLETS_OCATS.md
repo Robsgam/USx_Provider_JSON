@@ -2,11 +2,11 @@
 
 Auto-generated from `CA_CLETS_OCATS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.8** | Generated: 2026-08-27
+Current: **v2.8** | Generated: 2026-09-01
 
 ---
 
-## v2.8 -- 2026-08-27 -- THE IN-STATE NAME SEARCH STOPS DISCARDING SEX CODE
+## v2.8 -- 2026-09-01 -- THE IN-STATE NAME SEARCH STOPS DISCARDING SEX CODE
 
 **CHANGED** (DriverLicenseQuery, DQ.N only -- every other QIDM byte-identical):
   RegistrationState DEMOTED from set[] to any[], and its `RegistrationState EXISTS` condition  
@@ -35,7 +35,7 @@ COST: NONE beyond the rebuild. CA_CLETS_OCATS has NEVER been tenant-tested (0 lo
   so no package is archived, no re-import is owed that was not already owed, and it is on no  
   Foundation or LIVE tenant.  
 
-## v2.8 -- 2026-08-27 -- Pipeline rebuild
+## v2.8 -- 2026-09-01 -- Pipeline rebuild
 
 **CHANGED:** Rebuilt via pipeline.ps1
 **REASON:** Scheduled rebuild

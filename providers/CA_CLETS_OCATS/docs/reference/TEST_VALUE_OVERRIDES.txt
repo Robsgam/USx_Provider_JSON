@@ -1,0 +1,88 @@
+# TEST_VALUE_OVERRIDES.txt -- fieldId=value  OR  <Entity>.fieldId=value (entity-scoped wins)
+# CA_CLETS_OCATS -- created 2026-09-01, during the pre-import rebuild.
+#
+# WHY THIS FILE EXISTS: THREE BUILT COMBOS HAD NO PLAN TEST AT ALL.
+#   Measured before the fix: 21 built combos, 52 plan tests, and 3 combos with ZERO tests as either
+#   owner or expected winner:
+#       Vehicle/VehicleRegistrationQuery  AWVEHQ  set[caRequestPurposeCode, LicensePlateNumber, userId]
+#       Vehicle/VehicleRegistrationQuery  VC      set[caRequestPurposeCode, NameLast, NameFirst, businessIndicator]
+#       Person /DriverLicenseQuery        OCNAMQ  set[caRequestPurposeCode, userId, SexCode, BirthDate, NameLast, NameFirst]
+#   Cause: `userId` and `businessIndicator` have no value in Get-TestValue, and emit_test_plan cannot
+#   generate a test whose mandatory set[] it cannot fill. NO REGISTERED EXEMPTION EXISTS for any of
+#   the three, so this is not an approved skip -- it was an invisible gap.
+#
+#   THE BUILD IS NOT AT FAULT AND WAS VERIFIED SO. All three combos are fully wired: every set[]
+#   field resolves to a QIDM attribute (userId -> UserId size 2, businessIndicator -> BusinessIndicator
+#   size 1), PHASE 1 reports 25 branches / 0 UNDER / 0 OVER and 0 prefill-dead / 0 shadow / 0 missing,
+#   and reachability finds all 21 reachable. This is a TEST-DATA gap, which is why the fix is here and
+#   not in the build script.
+#
+#   WHY IT MATTERED NOW rather than later: OCATS is next for import + sweep. Left alone, the sweep
+#   would have produced no logs for these three, and the new audit_test_coverage -Gate verdict
+#   UNCOVERED (added 2026-08-31) would then BLOCK the provider -- correctly -- forcing either a
+#   re-sweep of Rob's tenant time or a registry row for combos that are perfectly good. Fixing it
+#   pre-sweep costs nothing. This is exactly the BUILT->PLANNED link that gate was built to watch, and
+#   OCATS is the first provider it has been applied to before the fact instead of after.
+#
+# ---------------------------------------------------------------------------------------------
+# userId -- BARE, not entity-scoped, and that is deliberate.
+#   It is the SAME field on both entities: FormInput, maxLength 2, targetField UserId size 2 on both
+#   VehicleRegistrationQuery/AWVEHQ and DriverLicenseQuery/OCNAMQ. Entity-scoping it would mean two
+#   lines that must be kept in step, and a third entity gaining userId later would silently miss out.
+#   The usual reason to prefer entity scope -- a value that is right for one entity and wrong for
+#   another -- does not apply.
+#   VALUE IS SYNTHETIC, per "no live data in tools". Two characters is the metadata cap.
+#   ⚠️ IF THE SWEEP REJECTS IT: OCATS may validate userId against real operator ids server-side. That
+#   is a LIVE fact this repo cannot know, and a rejection on the wire is exactly what a sweep is for.
+#   If it comes back rejected, substitute a real 2-char id from the tenant and re-run -- do NOT
+#   conclude the combo is unbuildable.
+userId=Q7
+
+# ---------------------------------------------------------------------------------------------
+# businessIndicator -- entity-scoped, because only Vehicle carries this control.
+#   VALUE AUTHORISED FROM THE CODE TABLE, NOT GUESSED: the control is a FormSelect on
+#   codeTypeCategory YES_NO_UNKNOWN, and CLAUDE.md's Code Type Pairings table records
+#   YES_NO_UNKNOWN + NCIC as Y/N only (NIBRS is the one that adds Unknown). So 'Y' is a real option
+#   and needed no tenant picklist capture to confirm -- which matters, because OCATS still owes its
+#   one-time TENANT_PICKLISTS capture and that cannot happen until after import.
+#   IT IS THE DISCRIMINATOR, WHICH IS WHY IT MUST BE FILLED AND MUST NOT BE PREFILLED. VC and VP are
+#   separated by this field alone: VC = set[purpose, NameLast, NameFirst, businessIndicator],
+#   VP = set[purpose, NameLast, NameFirst]. A form initialValue here would make VC always match and
+#   kill the plain owner-name search (BUILD_RULES 24; the skill records this exact trap for VC).
+#   VERIFIED BY SIMULATION, not reasoning -- via _probe.ps1 / Get-ProbeFiring on the emitted v2.8:
+#       purpose+NameLast+NameFirst                      -> VP
+#       purpose+NameLast+NameFirst+businessIndicator=Y   -> VC
+#   so the value routes to the intended combo and does not steal VP's fill.
+#   NO INTERACTION WITH VP's TOGGLE TESTS, also checked rather than assumed: businessIndicator is NOT
+#   in VP's any[] (which is [NameMiddle, NameSuffix]), so supplying a value here cannot cause a VP
+#   _af_ test to be generated that would silently route to VC instead.
+Vehicle.businessIndicator=Y
+
+# ---------------------------------------------------------------------------------------------
+# DELIBERATELY NOT SET: exactSearchIndicator, authorization, pageNumber (AWVEHQ any[]).
+#   emit_test_plan reports these three as trust issues -- "no test value (unmapped in Get-TestValue)"
+#   -- so no _af_ toggle test is generated for them and they will not be exercised on the wire.
+#   THAT IS A KNOWN, BOUNDED COST AND IT IS NOT THE SAME CLASS AS userId ABOVE:
+#     userId / businessIndicator were MANDATORY set[] fields, so without them THREE COMBOS HAD NO
+#     TEST AT ALL -- a hole. These three are OPTIONALS in AWVEHQ's <Any>; AWVEHQ fires and is tested
+#     without them. What is unproven is only whether each optional transmits, and the SPEC side of
+#     that is already checked: PHASE 1 step [2] reports "devdoc optional subsets all route and
+#     transmit" and audit_devdoc_optionals passes. The gap is live proof, not correctness.
+#   WHY NO VALUE WAS INVENTED -- there is NO AUTHORITY for one, and that was checked in both places:
+#     metadata CA_CLETS_OCATS.xml declares NO <ValueList> for ExactSearchIndicator, Authorization or
+#     PageNumber; the devdoc (L149-155) gives only optionality and size -- Authorization O1,
+#     ExactSearchIndicator O1, PageNumber O2 -- with no "Possible Values" column entry. Devdoc
+#     combination #2 confirms all three are bracketed optionals:
+#       2. (In) LicensePlateNumber, UserId, [Authorization, ExactSearchIndicator,
+#          LicensePlateStateCode, PageNumber, VehicleMakeCode, VehicleYear]
+#     Choosing a value would be a guess, and a guess that the tenant rejects turns into a FAILED test
+#     mid-sweep -- spending Rob's tenant time to prove nothing. The asymmetry decides it: for a
+#     mandatory field a guess is the only way to get ANY coverage, so it is worth the risk; for an
+#     optional it trades certain small coverage for a possible sweep failure.
+#   ⚠️ NOTE ON Authorization's SIZE, because this provider has already been bitten by it: it is size 1
+#     under VehicleRegistrationQuery and size 5 under the AOS section of the same devdoc (L7003).
+#     The build correctly carries 1 (QIDM Authorization size=1, control maxLength=1). Read the size
+#     INSIDE the transaction you are building -- never by a global field-name lookup.
+#   WHEN TO REVISIT: after OCATS is imported and swept once, the tenant's own behaviour is observable
+#     and the one-time TENANT_PICKLISTS capture exists. If a value can be established then, add it
+#     here and regenerate the plan -- it costs 3 extra tests and no version bump.
