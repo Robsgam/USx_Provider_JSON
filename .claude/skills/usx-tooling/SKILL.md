@@ -213,7 +213,45 @@ powershell -File tools\audit_tool_portability.ps1      # 0 unportable
 tools\enforce.ps1 -Provider <a few>                    # 0 FAIL / 0 WARN
 ```
 
-## Step 8 — PROBE HYGIENE AND HONEST VERIFICATION (added 2026-08-05)
+## Step 8 — PROBE HYGIENE. **THERE IS NOW A MECHANISM. USE IT INSTEAD OF READING THIS.**
+
+> **A PROBE IS A `.ps1` FILE THAT DOT-SOURCES `tools/_probe.ps1`. NEVER A BASH ONE-LINER.**
+> ```
+> . "$PSScriptRoot\_probe.ps1"       # from tools/ or tools/_probes/
+> ```
+
+**Read this bit even if you skip the rest.** Everything below was written 2026-08-05 after a round of
+probe failures. It is correct, it was **read** on 2026-08-31, and **every rule in it was broken that
+same session** — twelve wrong measurements, three of which briefly looked like real portfolio
+findings, one of which handed the operator apparent evidence we were deleting queries and their logs
+while he was asking exactly that question. Rob, 2026-09-01: *"every thing we have been building
+should make the error rate decrease not increase."*
+
+**The cause was not ignorance of these rules. It was that following them from inside a bash
+one-liner is awkward and writing the glob takes five seconds.** Advice without a mechanism does not
+change behaviour — the same conclusion this repo reached about flags, gates and the form review. So
+the fix is `tools/_probe.ps1`, which makes the right thing the easy thing:
+
+- `Get-ProbeProviders` / `Get-ProbeJsonPath` / `Get-ProbeQidms` / `Get-ProbePlan` / `Get-ProbeLogs` /
+  `Get-ProbeMetadata` / `Get-ProbeFiring` / `Get-ProbeDivergences` — each routed through the canonical
+  resolver or parser, so the type string, the namespace, the resolver params and the positional
+  signature **cannot** be got wrong.
+- **`Assert-ProbeNonZero` THROWS.** Put it on every count a conclusion rests on.
+- Being a `.ps1` deletes the whole boundary class by construction: no `/c/…` → `C:\c\…`, no array
+  stringification by `powershell -File`, no `$?` reading a pipe's status instead of the tool's.
+
+Measured against 2026-08-31: **10 of the 12 slips become impossible**; the other two failed loudly on
+first run. `tools/_probes/probe_selftest.ps1` re-runs all of them and **caught a real bug in the
+harness itself on its first run.**
+
+**When a probe is worth re-asking, graduate it** to `tools/_probes/<name>.ps1` with a header saying
+what it answers — as `sweep_dead_fill.ps1` and `adjudicate_state_gate.ps1` were. A throwaway that
+becomes infrastructure stops being re-derived next month.
+
+**Do NOT dot-source `_probe.ps1` from a gate or orchestrator.** A gate owns its own resolution so its
+behaviour is auditable in one file; this is scaffolding for answering questions.
+
+### The original rules (still true — the harness is how you keep them)
 
 ### 8a. A PROBE REPORTING A SYSTEMIC FINDING IS GUILTY UNTIL ITS DENOMINATOR IS SHOWN.
 

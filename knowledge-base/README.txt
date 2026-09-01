@@ -2148,3 +2148,81 @@ SKILL usx-adjudicate -- deciding what to DO about a finding (fix / register / di
     positives. Proven able to FAIL by re-injecting the ImageIndicator prefill on a replica
     inside the provider dir: 2 FAIL, naming both pairs and all three culprit prefills.
     Usage: .\audit_prefill_shadow.ps1 -Path <json> [-OutFile <path>]
+
+================================================================================
+ tools/_probe.ps1  (shared module, dot-sourced)  --  THE PROBE HARNESS
+ added 2026-09-01
+================================================================================
+WHAT IT IS
+  Primitives for answering an ad-hoc question about the portfolio without re-deriving
+  the things that are easy to get wrong. It THROWS rather than returning an empty
+  result. Not a gate; never dot-source it from a gate or orchestrator (a gate owns its
+  own resolution so its behaviour is auditable in one file).
+
+THE RULE THAT COMES WITH IT
+  A PROBE IS A .ps1 FILE THAT DOT-SOURCES THIS MODULE. NEVER A BASH ONE-LINER.
+
+WHY
+  Rob, 2026-09-01: "every thing we have been building should make the error rate
+  decrease not increase." On 2026-08-31, twelve measurements were wrong before they
+  were right and THREE briefly looked like real portfolio findings -- one handed the
+  operator apparent evidence that queries and their logs were being deleted, while he
+  was asking exactly that question.
+
+  EVERY ONE HAPPENED IN A THROWAWAY PROBE, NEVER IN A COMMITTED GATE. Gates have
+  shared resolvers, printed denominators and LAW 2 mutation proof. Probes had none --
+  and probes answer most questions. Root causes:
+    (a) THE BASH <-> POWERSHELL BOUNDARY (6). A git-bash /c/... path became C:\c\...
+        so a 118-test plan was diffed against an EMPTY file and reported "28 combos
+        lose coverage". `-Allow A,B` was stringified by `powershell -File` and matched
+        nothing. `${j//\//\}` and `$(...)` went unexpanded inside nested quotes and
+        every count read 0. `$?` after a pipe returned grep's status, not the tool's.
+        `grep | head || echo missing` could never report missing.
+    (b) RE-DERIVING WHAT THE REPO ALREADY HAS (4). The emitted QIDM type is
+        QUERYINPUTDATAMAPPING, not ...DATAMAP (-> "combos: 0"). Get-FiringKeyRef is
+        POSITIONAL; invented -Qidm/-Filled bound nothing (-> all 8 fills "NOTHING
+        FIRES" on a JSON that routes all 8). The metadata XML has a DEFAULT NAMESPACE,
+        so unprefixed XPath returns nothing (-> "OH_LEADS defines no
+        DriverLicenseQuery variants"). Provider dirs were hand-globbed (-> 0 found).
+    (c) NO ABORT ON A VACUOUS RESULT (2). Zeros were formatted into tidy tables.
+
+  THE PROSE FIX HAD ALREADY BEEN TRIED. usx-tooling Step 8 ("PROBE HYGIENE") was
+  written 2026-08-05 after the previous round, was READ on 2026-08-31, and every rule
+  in it was still broken -- because following them from a bash one-liner is awkward.
+  Advice without a mechanism does not change behaviour; the same conclusion this repo
+  reached about reverse-propagation flags, inert gates and the rendered-form review.
+  Measured: 10 of the 12 slips become IMPOSSIBLE under the harness; the other two (a
+  bad .NET format specifier, a typo) failed LOUDLY on first run.
+
+EXPORTS
+  Get-ProbeProviders [-AllPassOnly]   derived, never globbed; -AllPassOnly uses the
+                                      SAME _test_status_lib classifier as
+                                      portfolio_status / SESSION_STATE / mission status
+  Get-ProbeProviderDir / JsonPath / JsonObject / Version
+  Get-ProbeQidms / Get-ProbeCombos    correct type string; RMS bundle excluded
+  Get-ProbeFormNodes / FormDefaults   `hidden` is NODE-level, not props.hidden; nodes
+                                      sit DIRECTLY under each layout variant
+  Get-ProbeFiring                     named-param wrapper over the canonical
+                                      Get-FiringKeyRef; merges form prefills by default
+  Get-ProbePlan [-Spec]               asserts non-empty; -Spec is a DIFFERENT artifact
+  Get-ProbeLogs / Wire / LogFills     current version only, archives excluded; the wire
+                                      normaliser strips the txn id as BOTH an <Id>
+                                      element AND an id="..." attribute
+  Get-ProbeMetadata / MetadataOptionals
+                                      namespace-safe via _metadata_parse; optionals are
+                                      keyed on the FULL transaction|keyRef|primaryField
+                                      triple, because A KEYREF IS NOT A VARIANT
+  Get-ProbeDivergences                registry rows + shared Get-DivergenceRuleClass
+  Assert-ProbeNonZero                 THROWS on zero. Use on every load-bearing count.
+
+SELF-TEST
+  tools/_probes/probe_selftest.ps1 re-runs all eight historical failures and asserts
+  that the assertions throw. IT CAUGHT A REAL BUG IN THE HARNESS ON ITS FIRST RUN:
+  PowerShell unwraps a single-element array on return, so $q.Count came back $null
+  instead of 1 -- the exact false-zero the module exists to prevent. Every collection
+  now returns via Write-Output -NoEnumerate.
+
+GRADUATION
+  When a probe is worth re-asking, move it to tools/_probes/<name>.ps1 with a header
+  saying what it answers (sweep_dead_fill.ps1, adjudicate_state_gate.ps1). That is how
+  a throwaway becomes reviewed infrastructure instead of being re-derived next month.
