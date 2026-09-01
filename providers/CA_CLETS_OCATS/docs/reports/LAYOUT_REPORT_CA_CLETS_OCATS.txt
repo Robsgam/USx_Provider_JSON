@@ -1,12 +1,12 @@
 ﻿================================================================
   Build Report: CA_CLETS_OCATS
-  Source: CA_CLETS_OCATS_v2.9.json
-  Generated: 2026-09-01 13:37
+  Source: CA_CLETS_OCATS_v2.10.json
+  Generated: 2026-09-01 14:34
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== CA_CLETS_OCATS_v2.9.json ===
+=== CA_CLETS_OCATS_v2.10.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=13
   Person | entity=Person | qidm= | cards=1 fields=7
@@ -14,7 +14,7 @@ QIFs: 5
   Article | entity=Article | qidm= | cards=1 fields=5
   Boat | entity=Boat | qidm= | cards=1 fields=4
 QIDMs: 5
-  CA_CLETS_OCATS_VehicleRegistrationQuery | attrs=15 combos=7 autoSelect=True
+  CA_CLETS_OCATS_VehicleRegistrationQuery | attrs=15 combos=8 autoSelect=True
   CA_CLETS_OCATS_DriverLicenseQuery | attrs=7 combos=5 autoSelect=True
   CA_CLETS_OCATS_GunQuery | attrs=5 combos=1 autoSelect=
   CA_CLETS_OCATS_ArticleSingleQuery | attrs=6 combos=2 autoSelect=
@@ -46,7 +46,7 @@ LAYOUT DETAIL
         businessIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC)
         RegistrationState (Dropdown | attributeTypeId=STATE)
         caRequestPurposeCode (Text | maxLen=1 | default=C)
-        userId (Text | maxLen=2 | default=X)
+        userId (Text | maxLen=2)
       ROW ROW_VEH_5 [4 4 4]
         authorization (Text | maxLen=1)
         exactSearchIndicator (Text | maxLen=1)
@@ -68,7 +68,7 @@ LAYOUT DETAIL
         BirthDate (FormDate)
         SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
         caRequestPurposeCode (Text | maxLen=1 | default=C)
-        userId (Text | maxLen=2 | default=X)
+        userId (Text | maxLen=2)
 
 === Firearm ===
   name=ENTITY_Firearm | entity=Firearm | qidm=

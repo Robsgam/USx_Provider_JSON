@@ -293,21 +293,6 @@ $hiddenFieldWhitelist = @(
     # genuinely needs the dual-field fallback, add a PRECISE pattern for that fieldId with the reason
     # -- do not restore a substring match.
     '(?i)dexStateUserId',                # AUTH user id from RMS profile
-    # 2026-09-01: OCATS's own operator-id control, added on Rob's explicit directive -- "we need to
-    # hide and automate the user id field" (CA_CLETS_OCATS). SAME CLASS as dexStateUserId above: it is
-    # a hidden gate-FEEDER (initialValue 'X') whose value is replaced on the wire by
-    # CommsysGetDexStateUserIdRuleHandler, exactly as AZ_AZDPS's BadgeNumber is. That handler is
-    # LIVE-PROVEN on a QUERY attribute, not assumed: across AZ's 53 v3.12 logs the form sends
-    # "dexStateUserId":"X" on 53/53 while the wire carries <BadgeNumber>MK43RS</BadgeNumber> on 41/41
-    # of the logs that include the element.
-    # PRECISE PATTERN, ANCHORED, per the warning above about substring matches: '^userId$' only. It
-    # must NOT approve anything else containing "user", and it is deliberately NOT widened to a bare
-    # '(?i)user' -- the '(?i)state' removal three entries up is what that mistake costs.
-    # WHY HIDING THIS ONE DOES NOT REPEAT THE AZ 'state' DEFECT: hiding AZ's RegistrationStateDH pinned
-    # every DH query to Arizona because the field's VALUE chose the destination. userId chooses
-    # nothing -- it is an identity stamp. The in/out routing on OCATS is carried by RegistrationState,
-    # which stays VISIBLE and is now the sole discriminator (see the v2.9 combination comments).
-    '(?i)^userId$',                      # OCATS operator id -- hidden feeder, handler-populated (Rob 2026-09-01)
     '(?i)cadUnit|cadEvent|linkToEvent',  # CAD / First-Responder context
     # 2026-08-02: widened to the DH-suffixed spelling. DH-suffixing is the standard mechanism for
     # keeping a DriverHistory control out of the DriverLicense field pool, so a provider whose DH is

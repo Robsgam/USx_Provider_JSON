@@ -456,12 +456,11 @@
                                                                                                        "displayName":  "Input",
                                                                                                        "props":  {
                                                                                                                      "fieldId":  "userId",
-                                                                                                                     "label":  "OCATS User ID (auto)",
-                                                                                                                     "maxLength":  "2",
-                                                                                                                     "initialValue":  "X"
+                                                                                                                     "label":  "OCATS User ID",
+                                                                                                                     "maxLength":  "2"
                                                                                                                  },
                                                                                                        "isCanvas":  false,
-                                                                                                       "hidden":  true,
+                                                                                                       "hidden":  false,
                                                                                                        "nodes":  [
 
                                                                                                                  ],
@@ -1005,12 +1004,11 @@
                                                                                                             "displayName":  "Input",
                                                                                                             "props":  {
                                                                                                                           "fieldId":  "userId",
-                                                                                                                          "label":  "OCATS User ID (auto)",
-                                                                                                                          "maxLength":  "2",
-                                                                                                                          "initialValue":  "X"
+                                                                                                                          "label":  "OCATS User ID",
+                                                                                                                          "maxLength":  "2"
                                                                                                                       },
                                                                                                             "isCanvas":  false,
-                                                                                                            "hidden":  true,
+                                                                                                            "hidden":  false,
                                                                                                             "nodes":  [
 
                                                                                                                       ],
@@ -1635,12 +1633,11 @@
                                                                                                                "displayName":  "Input",
                                                                                                                "props":  {
                                                                                                                              "fieldId":  "userId",
-                                                                                                                             "label":  "OCATS User ID (auto)",
-                                                                                                                             "maxLength":  "2",
-                                                                                                                             "initialValue":  "X"
+                                                                                                                             "label":  "OCATS User ID",
+                                                                                                                             "maxLength":  "2"
                                                                                                                          },
                                                                                                                "isCanvas":  false,
-                                                                                                               "hidden":  true,
+                                                                                                               "hidden":  false,
                                                                                                                "nodes":  [
 
                                                                                                                          ],
@@ -2118,12 +2115,11 @@
                                                                                                        "displayName":  "Input",
                                                                                                        "props":  {
                                                                                                                      "fieldId":  "userId",
-                                                                                                                     "label":  "OCATS User ID (auto)",
-                                                                                                                     "maxLength":  "2",
-                                                                                                                     "initialValue":  "X"
+                                                                                                                     "label":  "OCATS User ID",
+                                                                                                                     "maxLength":  "2"
                                                                                                                  },
                                                                                                        "isCanvas":  false,
-                                                                                                       "hidden":  true,
+                                                                                                       "hidden":  false,
                                                                                                        "nodes":  [
 
                                                                                                                  ],
@@ -2471,12 +2467,11 @@
                                                                                                             "displayName":  "Input",
                                                                                                             "props":  {
                                                                                                                           "fieldId":  "userId",
-                                                                                                                          "label":  "OCATS User ID (auto)",
-                                                                                                                          "maxLength":  "2",
-                                                                                                                          "initialValue":  "X"
+                                                                                                                          "label":  "OCATS User ID",
+                                                                                                                          "maxLength":  "2"
                                                                                                                       },
                                                                                                             "isCanvas":  false,
-                                                                                                            "hidden":  true,
+                                                                                                            "hidden":  false,
                                                                                                             "nodes":  [
 
                                                                                                                       ],
@@ -2905,12 +2900,11 @@
                                                                                                                "displayName":  "Input",
                                                                                                                "props":  {
                                                                                                                              "fieldId":  "userId",
-                                                                                                                             "label":  "OCATS User ID (auto)",
-                                                                                                                             "maxLength":  "2",
-                                                                                                                             "initialValue":  "X"
+                                                                                                                             "label":  "OCATS User ID",
+                                                                                                                             "maxLength":  "2"
                                                                                                                          },
                                                                                                                "isCanvas":  false,
-                                                                                                               "hidden":  true,
+                                                                                                               "hidden":  false,
                                                                                                                "nodes":  [
 
                                                                                                                          ],
@@ -6620,12 +6614,6 @@
                                                                       },
                                                                       {
                                                                           "name":  "UserId",
-                                                                          "rule":  {
-                                                                                       "function":  "CommsysGetDexStateUserIdRuleHandler",
-                                                                                       "arguments":  [
-                                                                                                         "true"
-                                                                                                     ]
-                                                                                   },
                                                                           "size":  2,
                                                                           "sourceField":  [
                                                                                               "userId"
@@ -6672,16 +6660,17 @@
                                                                                                  "set":  [
                                                                                                              "caRequestPurposeCode",
                                                                                                              "LicensePlateNumber",
-                                                                                                             "LicensePlateTypeCode"
+                                                                                                             "userId"
                                                                                                          ],
                                                                                                  "any":  [
-
+                                                                                                             "exactSearchIndicator",
+                                                                                                             "authorization",
+                                                                                                             "pageNumber",
+                                                                                                             "RegistrationState",
+                                                                                                             "vehicleYear",
+                                                                                                             "VehicleMakeCode"
                                                                                                          ],
                                                                                                  "defaults":  [
-                                                                                                                  {
-                                                                                                                      "field":  "LicensePlateTypeCode",
-                                                                                                                      "value":  "PC"
-                                                                                                                  },
                                                                                                                   {
                                                                                                                       "field":  "caRequestPurposeCode",
                                                                                                                       "value":  "C"
@@ -6689,7 +6678,7 @@
                                                                                                               ]
                                                                                              },
                                                                             "primaryFieldReference":  "LicensePlateNumber",
-                                                                            "keyReference":  "4K",
+                                                                            "keyReference":  "AWVEHQ",
                                                                             "state":  "In/Out"
                                                                         },
                                                                         {
@@ -6722,36 +6711,6 @@
                                                                                              },
                                                                             "primaryFieldReference":  "LicensePlateNumber",
                                                                             "keyReference":  "RQ.P",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "caRequestPurposeCode",
-                                                                                                             "LicensePlateNumber",
-                                                                                                             "userId"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "exactSearchIndicator",
-                                                                                                             "authorization",
-                                                                                                             "pageNumber",
-                                                                                                             "RegistrationState",
-                                                                                                             "vehicleYear",
-                                                                                                             "VehicleMakeCode"
-                                                                                                         ],
-                                                                                                 "defaults":  [
-                                                                                                                  {
-                                                                                                                      "field":  "userId",
-                                                                                                                      "value":  "X"
-                                                                                                                  },
-                                                                                                                  {
-                                                                                                                      "field":  "caRequestPurposeCode",
-                                                                                                                      "value":  "C"
-                                                                                                                  }
-                                                                                                              ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "LicensePlateNumber",
-                                                                            "keyReference":  "AWVEHQ",
                                                                             "state":  "In/Out"
                                                                         },
                                                                         {
@@ -6868,6 +6827,51 @@
                                                                             "primaryFieldReference":  "VehicleIdentificationNumber",
                                                                             "keyReference":  "4V",
                                                                             "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "caRequestPurposeCode",
+                                                                                                             "LicensePlateNumber",
+                                                                                                             "LicensePlateTypeCode"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "LicensePlateTypeCode",
+                                                                                                                      "value":  "PC"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "LicensePlateNumber",
+                                                                            "keyReference":  "4K",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "caRequestPurposeCode",
+                                                                                                             "LicensePlateNumber"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "LicensePlateNumber",
+                                                                            "keyReference":  "4",
+                                                                            "state":  "In/Out"
                                                                         }
                                                                     ],
                                                    "description":  "VehicleRegistrationQuery -- 4 (plate), 4V (VIN), RQ (OOS plate/VIN), VP (name). MC cross-entity.",
@@ -6953,12 +6957,6 @@
                                                                       },
                                                                       {
                                                                           "name":  "UserId",
-                                                                          "rule":  {
-                                                                                       "function":  "CommsysGetDexStateUserIdRuleHandler",
-                                                                                       "arguments":  [
-                                                                                                         "true"
-                                                                                                     ]
-                                                                                   },
                                                                           "size":  2,
                                                                           "sourceField":  [
                                                                                               "userId"
@@ -6971,11 +6969,11 @@
                                                                             "requirements":  {
                                                                                                  "set":  [
                                                                                                              "caRequestPurposeCode",
-                                                                                                             "NameLast",
-                                                                                                             "NameFirst",
-                                                                                                             "BirthDate",
+                                                                                                             "userId",
                                                                                                              "SexCode",
-                                                                                                             "RegistrationState"
+                                                                                                             "BirthDate",
+                                                                                                             "NameLast",
+                                                                                                             "NameFirst"
                                                                                                          ],
                                                                                                  "any":  [
                                                                                                              "NameMiddle",
@@ -6997,30 +6995,20 @@
                                                                                                               ]
                                                                                              },
                                                                             "primaryFieldReference":  "Name",
-                                                                            "keyReference":  "DQ.N",
+                                                                            "keyReference":  "OCNAMQ",
                                                                             "state":  "In/Out"
                                                                         },
                                                                         {
                                                                             "requirements":  {
-                                                                                                 "defaults":  [
-                                                                                                                  {
-                                                                                                                      "field":  "userId",
-                                                                                                                      "value":  "X"
-                                                                                                                  },
-                                                                                                                  {
-                                                                                                                      "field":  "caRequestPurposeCode",
-                                                                                                                      "value":  "C"
-                                                                                                                  }
-                                                                                                              ],
                                                                                                  "set":  [
                                                                                                              "caRequestPurposeCode",
-                                                                                                             "userId",
-                                                                                                             "SexCode",
-                                                                                                             "BirthDate",
                                                                                                              "NameLast",
-                                                                                                             "NameFirst"
+                                                                                                             "NameFirst",
+                                                                                                             "BirthDate",
+                                                                                                             "SexCode"
                                                                                                          ],
                                                                                                  "any":  [
+                                                                                                             "RegistrationState",
                                                                                                              "NameMiddle",
                                                                                                              "NameSuffix"
                                                                                                          ],
@@ -7031,10 +7019,16 @@
                                                                                                                                   ],
                                                                                                                         "operator":  "NOT_EXISTS"
                                                                                                                     }
-                                                                                                                ]
+                                                                                                                ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "Name",
-                                                                            "keyReference":  "OCNAMQ",
+                                                                            "keyReference":  "DQ.N",
                                                                             "state":  "In/Out"
                                                                         },
                                                                         {
@@ -7498,7 +7492,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for CA_CLETS_OCATS v2.9 MC -- 5 QIDMs (VehReg + DL + Gun + Article + Boat), no DH",
+                        "description":  "Provider configuration for CA_CLETS_OCATS v2.10 MC -- 5 QIDMs (VehReg + DL + Gun + Article + Boat), no DH",
                         "name":  "CA_CLETS_OCATS",
                         "type":  "BUNDLE",
                         "provider":  "CA_CLETS_OCATS"

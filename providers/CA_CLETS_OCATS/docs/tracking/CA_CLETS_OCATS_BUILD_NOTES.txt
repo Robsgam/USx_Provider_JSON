@@ -1,6 +1,57 @@
 CA_CLETS_OCATS -- Build Notes
 ==============================
 
+v2.10  2026-09-01  WITHDRAWS v2.9 AND RESTORES THE v2.8 CONFIGURATION EXACTLY
+  Rob 2026-09-01: "revert to v2.8 shape."
+  PROVEN, NOT ASSERTED: the emitted v2.10 JSON diffs to ZERO lines against the committed v2.8 JSON
+  once the version string is normalised, and the structural comparison matches on every axis --
+  8 Vehicle combos in the original order (AWVEHQ, RQ.P, RQ.V, VC, VP, 4V, 4K, 4), 5 DL combos in the
+  original order (OCNAMQ, DQ.N, DQ.O, L1.N, L1.O), and userId VISIBLE with no initialValue on both
+  entities. Validator back to 66P/0F/0W (v2.9 read 65P because it removed a combo).
+  WHY v2.9 WAS WITHDRAWN -- the authority does not support the mechanism, and Rob caught it:
+  "user id at 2 characters is strang  review devdoc and let me know  we may be chasing this in teh
+  wrong way." He was right.
+    * The devdoc's Routing and Configuration section (L30-31) says: "The CLETS assigned User ID
+      should be placed in the <Authentication>/<UserName> field in the ConnectCIC header." Build-Auth
+      ALREADY does exactly that -- OCATS's AUTH config emits
+      UserName / sourceField dexStateUserId / rule CommsysGetDexStateUserIdRuleHandler. So the CLETS
+      User ID is already transmitted, in the documented place, by the documented mechanism. v2.9 was
+      duplicating an AUTH-header concern into a per-query field.
+    * The QUERY-level `UserId` is therefore a DIFFERENT field, and it is maxLength 2 in ALL SEVENTEEN
+      transactions that define it (checked per-transaction, so this is NOT the wrong-transaction read
+      that got Authorization wrong at v2.1 -- there the answer genuinely varied 1 vs 2 by transaction;
+      here it is uniformly 2). A 2-character alphanumeric cannot hold the DEX username the handler
+      returns -- AZ's resolves to MK43RS, six characters, and AZ's size-4 field did not truncate it.
+    * SO v2.9's AWVEHQ AND OCNAMQ WOULD HAVE SENT AN INVALID UserId, and because v2.9 had retired '4',
+      AWVEHQ was the ONLY remaining in-state plate combo. Withdrawing is the safe direction: v2.8
+      keeps '4' and leaves userId a visible control an officer can fill correctly.
+  WHAT WAS ALSO REVERTED, in the same pass, so nothing is left dangling:
+    * The two ACCEPTED_DIVERGENCES rows added for v2.9 ('4' dead-combo-userid-automated, 'QV'
+      dead-combo-routing-impossible) are COMMENTED OUT with their reasoning kept. This was MANDATORY,
+      not tidiness: an existence-class rule makes audit_requirement_fidelity SKIP that keyRef's entire
+      comparison, so leaving a `dead-combo` row naming the now-BUILT '4' would have silenced a live
+      branch while the finding count still read 0.
+    * verify_build's hidden-field whitelist entry '^userId$' was removed (git checkout). With userId
+      visible again the entry is inert, and an unnecessary whitelist entry is a hazard -- that is the
+      '(?i)state' lesson, where an over-broad entry printed "documented exception, allowed" on the
+      defect it existed to catch for four months.
+  WHAT SURVIVES FROM TODAY, because it was never dependent on the userId mechanism:
+    docs/reference/TEST_VALUE_OVERRIDES.txt (created earlier today) still supplies userId and
+    businessIndicator, so AWVEHQ, OCNAMQ and VC still get plan tests. Before that file existed, those
+    THREE BUILT COMBOS HAD NO PLAN TEST AT ALL and would have gone untested through a sweep. Plan is
+    65 tests covering all 21 combos, verified after the revert.
+  TO RECOVER v2.9, ONE FACT IS NEEDED: does the agency have a 2-character OCATS User ID, and is it
+  per-agency (a fixed hidden value) or per-officer (must stay visible)? Everything else in v2.9 was
+  verified sound -- routing 12/12 on the emitted JSON, fidelity 25 branches 0 UNDER / 0 OVER,
+  prefill_shadow 0 FAIL, reachability 19/19 -- so it is recoverable wholesale from git commit
+  875077f4 once that value is known.
+  COST: none. OCATS is NOT IMPORTED and had 0 logs at any version, so neither the v2.9 bump nor this
+  withdrawal archived anything and no re-sweep is owed.
+
+v2.10  2026-09-01  Pipeline rebuild
+  CHANGED: Rebuilt via pipeline.ps1
+  REASON: Scheduled rebuild
+
 v2.9  2026-09-01  USER ID HIDDEN + AUTOMATED, AND STATE TAKES OVER THE ROUTING IT USED TO DO
   DIRECTIVE (Rob 2026-09-01): "we need to hide and automate the user id field  figure out how to use
   state to route and for veh 1 and 2 combos become combined." Those are ONE change, not three, and
