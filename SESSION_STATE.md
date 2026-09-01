@@ -16,6 +16,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 |---|---|---|
 | AZ_AZDPS | v3.12 | ALL-PASS (53 logs) |
 | CA_CLETS | v2.27 | ALL-PASS (99 logs) |
+| CA_CLETS_OCATS | v2.11 | ALL-PASS (65 logs) |
 | FL_FCIC | v7.24 | ALL-PASS (104 logs) |
 | HI_HCJDC_OFML | v4.20 | ALL-PASS (48 logs) |
 | IL_LEADS_OFML | v2.8 | ALL-PASS (43 logs) |
@@ -27,7 +28,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | OR_LEDS | v2.6 | ALL-PASS (27 logs) |
 | TN_TIES | v2.6 | ALL-PASS (67 logs) |
 | TX_TLETS | v4.22 | ALL-PASS (98 logs) |
-| _7 others_ | -- | never tenant-tested: CA_CLETS_OCATS, CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, LA_LEMS, TX_TLETS_CCH |
+| _6 others_ | -- | never tenant-tested: CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, LA_LEMS, TX_TLETS_CCH |
 
 **Gate invariant:** `tools\enforce.ps1 -Provider <NAME>` must exit 0 -- `0 FAIL / 0 WARN`.
 No PASS count is recorded here on purpose: it moves every time a gate is added, so an
@@ -36,19 +37,19 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ---
 
-**IMPORT + SWEEP ONE OF 6 -- the ONLY thing that moves 13/20, and it needs Rob at the tenant.**
-**MD_METERS IS DONE: LIFECYCLE-COMPLETE at v2.4** -- all six stages, `POSTED: v2.4 comment 808820` on
-DEX-987 (its first ever comment); ledger records the import, JSON attachment and catalog update.
-⛔ **JIRA REMAINS HELD** -- MD's approval was for MD ONLY and does not carry.
+**CA_CLETS_OCATS SWEPT 2026-09-01 -- ALL-PASS 5/5 (65 logs), 4 log gates 65/65, stage 6 recorded.**
+**ONLY STAGE 5 REMAINS** -- DEX-980 is `Blocked` with zero comments; release line drafted, awaiting Rob.
+**MD_METERS IS LIFECYCLE-COMPLETE at v2.4** -- `POSTED: v2.4 comment 808820` on DEX-987.
+⛔ **JIRA REMAINS HELD** -- approval is ONE PROVIDER AT A TIME and never carries.
 
-**The queue** (`report_import_owed.ps1`) -- CA_CLETS_OCATS, CA_CONTRA_COSTA,
-CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, LA_LEMS. All gate-clean, all blocked at stage 4.
+**The queue** (`report_import_owed.ps1`) -- CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO,
+CA_VENTURA_COUNTY, LA_LEMS. All gate-clean, all blocked at stage 4 (test).
 **IMPORT FIRST, THEN PICKLIST CAPTURE** (Rob 2026-08-28) -- the console script scrapes the RENDERED
 form. The capture precedes CHOOSING TEST VALUES; that is why CA_VENTURA cannot fix its hollow toggle.
 
-**MISSION 13 of 20 = 65%** (`report_mission_status`; 13 of 19 eligible -- TX_TLETS_CCH is PARKED). All
-6 remaining are blocked at the SAME stage, test, with build/spec/reachability met on every one -- so
-the whole gap is one activity, not six problems.
+**MISSION 13 of 20** (`report_mission_status`; 13 of 19 eligible -- TX_TLETS_CCH is PARKED). OCATS is
+NOT counted yet -- lifecycle-complete needs all six stages and its Jira post is owed. The 5 remaining
+are blocked at the SAME stage, so the gap is one activity, not five problems.
 
 ## ROB'S CALLS, NOT MINE
 
@@ -59,7 +60,6 @@ the whole gap is one activity, not six problems.
 - **CA_CONTRA_COSTA JAWS/SuperQuery** -- the portfolio's only remaining fidelity findings (4 UNDER /
   3 OVER, verbatim in its BUILD_NOTES). Hold the SWEEP, not the import.
 - **LA_LEMS BoatQuery `QB{reg}` vs `BQ{reg}`** -- in LA's registry, not taken.
-- **eSUN 228KB tenant export** in pushed history at `8273a87f` -- removal needs a force-push.
 - **eSUN 228KB tenant export** in pushed history at `8273a87f` -- removal needs a force-push.
 
 ## OPEN FINDINGS -- detail lives in `FINDINGS_REGISTER.md`, do NOT restate it here
@@ -79,7 +79,7 @@ the whole gap is one activity, not six problems.
   MD DL State (5e) is now CLOSED -- taken and shipped in v2.4.
 - **CA_VENTURA hollow toggle**: `LicensePlateTypeCode` toggles to its own form default. Needs
   TEST_VALUE_OVERRIDES -- choose the value AFTER its picklist capture.
-- **6 providers owe the one-time picklist capture** + TX_TLETS_CCH (parked).
+- **5 providers owe the one-time picklist capture** + TX_TLETS_CCH (parked); OCATS captured 5/5 at v2.11.
 - **3 providers carry stale ancillary artifacts** (CA_VENTURA, LA_LEMS, TX_TLETS_CCH); clear via
   `build_report -IncludeExtended` at each one's own turn. No wire impact.
 - **LIMITATION #41** (populated HOME state routes a local plate to NLETS) -- paused pending CommSys.
