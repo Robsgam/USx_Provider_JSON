@@ -4,7 +4,9 @@
 Opened 2026-03-23 by Gordon Hallof · project DEX (CJIS/USx/DEx Implementation) · label `USx` ·
 **unassigned** · **status `Blocked`**
 
-**Current: v2.8 — NOT imported, NEVER tenant-tested (0 logs at any version).**
+**Current: v2.11 — IMPORTED and TENANT-VERIFIED ALL-PASS 5/5 (65 logs, 65 PASS / 0 FAIL) 2026-09-01.**
+Ticket state re-read from Jira the same day: still **`Blocked`**, still **0 comments**, still
+unassigned, last updated 2026-04-01. A release line is **DRAFTED BELOW and awaiting Rob's approval.**
 
 ## ⚠️ THE TICKET STATUS IS `Blocked`, AND THAT IS NOT LIKE THE OTHERS
 
@@ -33,9 +35,58 @@ in — all opened 2026-03-23 and unrecorded until someone went looking.
 **NOTHING HAS BEEN POSTED TO DEX-980. It has zero comments.** Verified from the ticket, not assumed.
 
 Jira updates are **HELD** (2026-07-31) and the hold lifts **one provider at a time** — an approval for
-another provider never carries. There is also **nothing to post yet**: a release line reports
-tenant-verified counts and OCATS has none. `audit_lifecycle` stage 5 correctly reports this provider
-as *not yet due* rather than as a GAP, because it is not tenant-verified.
+another provider never carries. MD_METERS was approved on 2026-08-31 for MD_METERS ONLY.
+
+**As of 2026-09-01 there IS something to post** — v2.11 is tenant-verified — so `audit_lifecycle`
+stage 5 now reports a real `[GAP]` rather than *not yet due*. That GAP is correct and must stay open
+until Rob approves. **Two things need his decision, and they are separate:** (1) the comment body
+below, and (2) whether a ticket in **`Blocked`** status should receive a release line at all — the
+repo still does not know why it is blocked.
+
+## DRAFT RELEASE LINE — v2.11 — AWAITING APPROVAL, NOT POSTED
+
+Four sections per `knowledge-base/JIRA_COMMENT_TEMPLATE.txt`. Every number tool-derived
+(`report_test_status`, `audit_test_coverage`, VALIDATOR_REPORT, live `enforce`, `audit_log_inflation`).
+No tenant/attachment/catalog detail — those live in `IMPORT_LEDGER.md` sections B and C (Rob,
+2026-08-03).
+
+    🤖 Auto-update from the ConnectCIC provider-JSON repo — generated from the build and
+    gate artifacts (BUILD_NOTES, the four log gates, `audit_log_inflation`, `enforce`).
+
+    **CA_CLETS_OCATS v2.11 — TENANT-VERIFIED**
+
+    **1. Scope**
+    Versions covered: v2.9–v2.11. Configuration changed: yes. Supersedes: initial post —
+    this is the first comment on DEX-980.
+
+    **2. Changed**
+    - Article Type dropdown rendered EMPTY and is now populated: `ArticleTypeCode` paired
+      `NCIC_ARTICLE_TYPE` with `codeTypeSource='CA_CLETS_OCATS'`, which resolves to no
+      table, so the control offered zero options and could not be filled. Corrected to
+      `codeTypeSource='CA_CLETS'`.
+    - v2.9 (userId hidden + auto-populated, State taking over DL/Vehicle routing, devdoc
+      Veh #1+#2 merged) was BUILT AND WITHDRAWN. v2.10 is byte-identical to v2.8. The
+      CLETS User ID already travels in the transaction envelope, so hiding the field
+      solved nothing and cost two devdoc combinations.
+    - Test data only, no configuration impact: `userId` and `businessIndicator` gained
+      values, recovering three built combinations (`AWVEHQ`, `VC`, `OCNAMQ`) that had no
+      generated test at all and therefore could never have been driven.
+
+    **3. Verified on the wire**
+    Vehicle 25 / Person 18 / Firearm 5 / Article 10 / Boat 7 = 65
+    Article Type reaches the wire for the first time — the driver opened the control and
+    selected `BBICYCL - Bicycle` on all four Article tests that carry it, where v2.10
+    offered an empty list. `firearmMake='IMI'` also selected live, which settles the
+    picklist truncation WARN that could only ever be answered by a fill. All three
+    identifier-priority guardrails held: plate over VIN, OLN over name, hull over
+    registration number.
+
+    **4. Gates**
+    validator 66P/0F/0W · four log gates 65/65 (content, metadata, attribution, plan
+    completeness 5/5) · inflation 0/0/0/0 · enforce 46 PASS / 0 provider-scoped
+    FAIL-or-WARN · 21 combos, all reachable
+
+    **RELEASE LINE — v2.11 is verified and ready.**
 
 When a release line is eventually approved, post as a NEW comment (2026-08-17 reversal: *"post as a
 new comment and leave the other comments there"*), then record here, flush-left:
@@ -49,6 +100,11 @@ ID is the one fact the repo cannot derive from itself.
 
 ## History
 
-No version of CA_CLETS_OCATS has ever been installed on a tenant or swept, so there is no history to
-anchor. A history-anchor comment would enumerate build-only versions and tell a reader nothing — the
-same call made for OR_LEDS and MD_METERS.
+**v2.11 is the FIRST EVER tenant install and FIRST EVER sweep for this provider** (2026-09-01,
+65 logs). Nothing before it was ever installed, so there is no superseded package and no prior
+counts a reader could confuse with the current ones.
+
+**No history-anchor comment is warranted** — the same call made for OR_LEDS and MD_METERS. An anchor
+exists to stop a reader mistaking an old release line for current state, and DEX-980 has none: the
+drafted v2.11 comment will be the ticket's first. Enumerating v2.1–v2.10 would list build-only
+versions that never reached a tenant and tell a reader nothing.
