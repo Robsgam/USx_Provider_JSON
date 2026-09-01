@@ -41,7 +41,36 @@ foreach ($prov in $byProvider.Keys) {
 
     $version = $null
     foreach ($cap in $byProvider[$prov]) {
-        $version = $cap.version
+        # RECENCY GUARD (added 2026-09-01). A capture is EVIDENCE, so an OLDER one must never
+        # overwrite a NEWER one -- but this loop was last-write-wins and did exactly that.
+        # HOW IT BIT: two captures of the SAME entity can sit in Downloads at once, because Chrome
+        # names a re-download '<name> (1).json'. '(1)' sorts BEFORE the bare name, so the watcher's
+        # startup sweep fed the NEWER file first and the stale one second. That silently destroyed
+        # CA_CLETS_OCATS' verified v2.11 Article capture (300 options, codeTypeSource CA_CLETS) by
+        # replacing it with the v2.10 empty-table capture -- i.e. it reinstated the very defect the
+        # v2.11 bump existed to fix, and the only reason it was noticed is that import_picklists'
+        # own validation FAILed on the result. Recovered from git; the guard is so it cannot recur.
+        $prior = $entities[$cap.entity]
+        if ($prior -and $prior.capturedAt -and $cap.capturedAt) {
+            $pT = try { [datetime]$prior.capturedAt } catch { $null }
+            $cT = try { [datetime]$cap.capturedAt }   catch { $null }
+            if ($pT -and $cT -and $cT -lt $pT) {
+                Write-Host "[import-picklists] STALE SKIP $prov/$($cap.entity): capture $($cap.capturedAt) is OLDER than the stored $($prior.capturedAt) -- kept the newer one" -ForegroundColor Yellow
+                $warn++
+                continue
+            }
+        }
+        # Take the HIGHEST version among ACCEPTED captures, not the last one processed. Assigning
+        # unconditionally is what rolled the file's own version 2.11 -> 2.10 above. [version] cast,
+        # not string compare: lexically '2.9' > '2.10', which is the wrong answer.
+        if (-not $version) {
+            $version = $cap.version
+        } else {
+            $cv = try { [version]"$($cap.version)" } catch { $null }
+            $bv = try { [version]"$version" }        catch { $null }
+            if ($cv -and $bv) { if ($cv -gt $bv) { $version = $cap.version } }
+            elseif ($cap.version) { $version = $cap.version }
+        }
         $entMap = [ordered]@{}
         foreach ($fld in @($cap.fields)) {
             $entMap[$fld.fieldId] = [ordered]@{
