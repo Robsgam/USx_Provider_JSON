@@ -38,6 +38,17 @@
 
 param([switch]$Quiet, [string]$OutFile)
 
+# -Quiet WITHOUT -OutFile discarded the entire report and still exited 0 -- a success-shaped
+# silence, which is the exact class this tool's own [NO-VERDICT] guard exists to prevent. Measured
+# 2026-09-01: `-Quiet` alone produced 22 bytes ("[exited with code 0]") after a ~10-minute
+# 20-provider run that invokes enforce for every one of them, so the caller paid the full cost and
+# learned NOTHING -- and could not distinguish that from a crash. No caller passes -Quiet
+# (doctor.ps1 invokes it bare), so refusing to be silent here breaks nothing.
+if ($Quiet -and -not $OutFile) {
+    Write-Host "  [WARN] -Quiet without -OutFile would discard the whole report; printing it instead." -ForegroundColor Yellow
+    $Quiet = $false
+}
+
 $ErrorActionPreference = 'Stop'
 $toolDir  = $PSScriptRoot
 $repoRoot = (Resolve-Path "$toolDir\..").Path
