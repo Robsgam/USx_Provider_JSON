@@ -2,9 +2,49 @@
 
 Auto-generated from `CA_CLETS_OCATS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.10** | Generated: 2026-09-01
+Current: **v2.11** | Generated: 2026-09-01
 
 ---
+
+## v2.11 -- 2026-09-01 -- ARTICLE TYPE DROPDOWN WAS RENDERING EMPTY IN THE TENANT
+
+**CHANGED** (one line, Article form only -- no QIDM, no combination, no wire field):
+  ArticleTypeCode control codeTypeSource 'CA_CLETS_OCATS' -> 'CA_CLETS'.  
+FOUND BY THE FIRST-EVER PICKLIST CAPTURE OF THIS FORM, minutes after v2.10 was imported:  
+  [import-picklists] FAIL Article.ArticleTypeCode: tenant table EMPTY (NCIC_ARTICLE_TYPE/CA_CLETS_OCATS)  
+Rob, same moment: "article had an issue with the article type drop down."  
+ROOT CAUSE: the codeTypeSource was THIS PROVIDER'S OWN NAME. No such platform code table exists, so  
+the control rendered with ZERO options and an officer could not add a type to any article search.  
+THE CORRECT VALUE WAS ALREADY DOCUMENTED -- CLAUDE.md's Code Type Pairings table records  
+"NCIC_ARTICLE_TYPE | CA_CLETS | NCIC gives empty dropdown". 'CA_CLETS' is a PLATFORM REGISTRY TABLE  
+NAME, not a provider-scoped value: nine providers use it, including non-CA ones (HI, IL, MD, NM, OH,  
+OR, TN), and it is live-proven on CA_CLETS's own Article logs. OCATS was the sole outlier.  
+SEVERITY -- not a blocked search: ArticleTypeCode sits in any[] on both QA.S and QA.O, so serial and  
+owner-applied-number searches worked. What was lost was narrowing by type, and the officer saw a  
+visibly broken control.  
+SCOPE CHECKED IN THE SAME PASS, so one bump covers it: every other OCATS dropdown  
+(LicensePlateTypeCode, businessIndicator, firearmMake, GunCaliber, gunTypeCode) correctly uses NCIC.  
+Only this one control was wrong.  
+*** WHY A BUMP AND NOT AN EDIT: v2.10 IS INSTALLED. *** The picklist capture itself records  
+"version": "2.10", which is the proof. Editing v2.10 in place would leave one version number  
+describing two different forms, and the wire XML carries no version -- so every log captured against  
+it becomes unattributable (audit_log_inflation attack B by construction). I initially applied the fix  
+while the script still said 2.10 because a shell escaping error swallowed the version bump; caught it  
+before rebuilding and re-bumped properly.  
+⚠️ OWED BEFORE THE SWEEP: RE-IMPORT v2.11, then RE-CAPTURE THE ARTICLE PICKLIST. The committed  
+TENANT_PICKLISTS.json records this table as EMPTY at v2.10 -- that entry is evidence of the DEFECT,  
+not of the fix. Only a fresh capture on v2.11 can show the options populated, and until then this  
+fix is REASONED, not verified.  
+WHAT THE SAME CAPTURE ALSO SETTLED, and it is worth keeping: businessIndicator renders exactly  
+"N - No" / "Y - Yes" on the live tenant, so the 'Y' chosen for TEST_VALUE_OVERRIDES earlier today  
+from the code-type table is a REAL option -- that was a reasoned guess and is now evidence.  
+RegistrationState renders 57 options and its label already reads "State (leave blank for CA)", i.e.  
+the form itself states the in/out convention. VehicleMakeCode is truncated at 300 (the known cap), so  
+its test value stays inconclusive against the capture.  
+GATES: validator 66P/0F/0W. No QIDM, combination or wire change, so routing, fidelity and  
+reachability are untouched by construction and were re-run to confirm.  
+COST: a re-import and one re-capture. No logs existed at v2.10 (picklists are not logs), so nothing  
+was archived and no sweep work is lost.  
 
 ## v2.10 -- 2026-09-01 -- WITHDRAWS v2.9 AND RESTORES THE v2.8 CONFIGURATION EXACTLY
 

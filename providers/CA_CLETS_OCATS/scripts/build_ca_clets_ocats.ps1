@@ -32,7 +32,12 @@ $ErrorActionPreference = "Stop"
 #   per-agency (a fixed hidden value) or per-officer (must stay visible)? Everything else in v2.9 was
 #   verified sound -- routing 12/12, fidelity 25 branches 0/0 -- so it is recoverable from git
 #   (commit 875077f4) once that value is known.
-$Version     = '2.10'
+# v2.11: Article Type dropdown rendered EMPTY in the tenant -- codeTypeSource was this provider's own
+# name. Found by the first-ever picklist capture of this form (2026-09-01). See the control comment.
+# BUMPED rather than edited because v2.10 IS INSTALLED -- the capture itself records "version": "2.10",
+# so editing v2.10 in place would leave one version number describing two different forms, which makes
+# every log captured against it unattributable (ENGINEERING_STANDARD / usx-build 6d).
+$Version     = '2.11'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\CA_CLETS_OCATS_v${Version}.json"
@@ -611,7 +616,25 @@ $artLayout = MakeLayouts @(
                 @{ id = 'OwnerAppliedNumber_Input'; node = Inp 'ownerAppliedNumber' 'Owner Applied Number' '20' 'ROW_ART_1' }
             )}
             @{ id = 'ROW_ART_2'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'ArticleTypeCode_Input';      node = Sel 'ArticleTypeCode' 'Article Type (optional)' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS_OCATS' } 'ROW_ART_2' }
+                # v2.11: codeTypeSource 'CA_CLETS_OCATS' -> 'CA_CLETS'. THE DROPDOWN WAS RENDERING EMPTY
+                #   IN THE TENANT. Caught by the one-time picklist capture on 2026-09-01, the first
+                #   time this provider's form was ever scraped:
+                #     [import-picklists] FAIL Article.ArticleTypeCode: tenant table EMPTY
+                #                        (NCIC_ARTICLE_TYPE/CA_CLETS_OCATS)
+                #   The source was this PROVIDER'S OWN NAME, and no such platform code table exists --
+                #   so the officer saw an Article Type control with zero options and could not add a
+                #   type to any article search. CLAUDE.md's Code Type Pairings table has recorded the
+                #   working pairing all along: NCIC_ARTICLE_TYPE + **CA_CLETS** ("NCIC gives empty
+                #   dropdown"). 'CA_CLETS' is a PLATFORM REGISTRY TABLE NAME, not a provider-scoped
+                #   value -- nine providers use it including non-CA ones (HI, IL, MD, NM, OH, OR, TN),
+                #   and it is live-proven on CA_CLETS's own Article logs. OCATS was the only outlier.
+                #   NOT A BLOCKED SEARCH: ArticleTypeCode sits in any[] on both QA.S and QA.O, so
+                #   serial and OAN searches worked; what was lost was the ability to narrow by type.
+                #   Every other OCATS dropdown was checked in the same pass and correctly uses NCIC.
+                #   ⚠️ RE-CAPTURE ARTICLE AFTER RE-IMPORT: the committed TENANT_PICKLISTS.json records
+                #   this table as EMPTY at v2.10. That entry is evidence of the defect, not of the fix
+                #   -- only a fresh capture on v2.11 can show the options populated.
+                @{ id = 'ArticleTypeCode_Input';      node = Sel 'ArticleTypeCode' 'Article Type (optional)' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_2' }
                 @{ id = 'ArticleBrand_Input';         node = Inp 'articleBrand'    'Brand (optional)' '6' 'ROW_ART_2' }
                 @{ id = 'ArticleCategory_Input';      node = Inp 'articleCategory' 'Article Category (optional)' '1' 'ROW_ART_2' }
                 @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_ART_2' @{ initialValue = 'C' } }
