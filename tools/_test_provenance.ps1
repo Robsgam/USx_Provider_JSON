@@ -27,23 +27,54 @@ $script:TP_TierLabel = "Tier"
 # mainline build_<provider>.ps1, then any non-_mc/_old build_* script.
 function Get-BuildVersionForProvider {
     param([Parameter(Mandatory)][string]$ProvDir)
-    $scriptsDir = Join-Path $ProvDir "scripts"
-    if (-not (Test-Path $scriptsDir)) { return $null }
     $provName = Split-Path $ProvDir -Leaf
-    $canonical = Join-Path $scriptsDir ("build_" + $provName.ToLower() + ".ps1")
-    $script = $null
-    if (Test-Path $canonical) {
-        $script = Get-Item $canonical
-    } else {
-        $script = Get-ChildItem $scriptsDir -Filter "build_*" -File -ErrorAction SilentlyContinue |
-            Where-Object { $_.Name -notmatch '_mc' -and $_.Name -notmatch '_old' } | Select-Object -First 1
-        if (-not $script) {
-            $script = Get-ChildItem $scriptsDir -Filter "build_*_mc*" -File -ErrorAction SilentlyContinue | Select-Object -First 1
+    $scriptsDir = Join-Path $ProvDir "scripts"
+    if (Test-Path $scriptsDir) {
+        $canonical = Join-Path $scriptsDir ("build_" + $provName.ToLower() + ".ps1")
+        $script = $null
+        if (Test-Path $canonical) {
+            $script = Get-Item $canonical
+        } else {
+            $script = Get-ChildItem $scriptsDir -Filter "build_*" -File -ErrorAction SilentlyContinue |
+                Where-Object { $_.Name -notmatch '_mc' -and $_.Name -notmatch '_old' } | Select-Object -First 1
+            if (-not $script) {
+                $script = Get-ChildItem $scriptsDir -Filter "build_*_mc*" -File -ErrorAction SilentlyContinue | Select-Object -First 1
+            }
+        }
+        if ($script) {
+            $text = [System.IO.File]::ReadAllText($script.FullName)
+            if ($text -match '\$Version\s*=\s*["'']([0-9]+\.[0-9]+(?:-[A-Za-z]+)?)["'']') { return $Matches[1] }
         }
     }
-    if (-not $script) { return $null }
-    $text = [System.IO.File]::ReadAllText($script.FullName)
-    if ($text -match '\$Version\s*=\s*["'']([0-9]+\.[0-9]+(?:-[A-Za-z]+)?)["'']') { return $Matches[1] }
+
+    # FALLBACK: THE ACTIVE JSON FILENAME. Added 2026-09-02.
+    # A provider whose JSON is a CAPTURED ARTIFACT rather than a generated one has NO build script,
+    # so every path above returns $null and post_test.ps1 stamps the literal string "unknown" into
+    # the log header AND the filename -- producing CA_eSUN_vunknown_<combo>.txt. That is not a
+    # cosmetic blemish: every log gate and report_sweep_ledger globs "<PROVIDER>_v<version>_*", so
+    # 25 real captures with real wire XML counted for exactly NOTHING and the tool still printed
+    # "Imported: 25 PASS". A success message with no usable artifact.
+    # Found on CA_eSUN v1.0 (the hand-built San Diego Sheriff baseline) 2026-09-02.
+    # The filename is the repo's PRIMARY version carrier by policy -- CLAUDE.md Versioning Policy:
+    # "the version lives (a) in the filename and (b) inside the bundle description" -- so reading it
+    # here is the documented source, not a guess. reset_test_package.ps1 already falls back to the
+    # bundle description for the same reason; this makes the shared resolver agree with it.
+    # STRICTLY A FALLBACK: it is reached ONLY when the build-script path yields nothing, which is
+    # true for exactly one provider today, so no generated provider's stamp can change.
+    try {
+        $resolver = Join-Path $PSScriptRoot '_resolve_provider_json.ps1'
+        if (Test-Path $resolver) {
+            . $resolver
+            $activeJson = Get-ProviderRootJson -ProvDir $ProvDir -Provider $provName
+            if ($activeJson) {
+                $leaf = [System.IO.Path]::GetFileNameWithoutExtension($activeJson)
+                if ($leaf -match '_v([0-9]+\.[0-9]+(?:-[A-Za-z]+)?)$') { return $Matches[1] }
+                # Second fallback: the bundle description, the policy's other carrier.
+                $jt = [System.IO.File]::ReadAllText($activeJson)
+                if ($jt -match [regex]::Escape($provName) + ' v([0-9]+\.[0-9]+(?:-[A-Za-z]+)?)') { return $Matches[1] }
+            }
+        }
+    } catch { }
     return $null
 }
 
