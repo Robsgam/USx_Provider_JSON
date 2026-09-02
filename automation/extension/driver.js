@@ -150,7 +150,7 @@
     const dBetween = opts.between || 1700;    // pause after submit/clear, before next combo
     const tests = plan.tests.filter((t) => (t.kind === 'combo' || t.kind === 'any' || t.kind === 'any-field' || t.kind === 'guardrail' || t.kind === 'value-strip') && (!entityFilter || t.entity === entityFilter));
     if (!tests.length) { console.warn('[USx-DRV] no combo tests for', entityFilter); return; }
-    const manifest = []; const results = [];
+    const manifest = []; const results = []; const notSent = [];
     for (const t of tests) {
       const fr = [];
       // Normalize fills: PowerShell ConvertTo-Json collapses single-element arrays to bare objects
@@ -159,10 +159,6 @@
       for (const f of fills) { fr.push(await fillWithRetry(f.fieldId, f.value, dSettle)); await L.sleep(dField); }
       await L.sleep(dSettle);
       const filled = fr.every((r) => r && r.ok);
-      // Store the NORMALIZED fills array (not t.fills) -- PowerShell's ConvertTo-Json collapses
-      // a single-element array to a bare object, and idFills() downstream (capture.js) expects
-      // a real array; storing the raw plan value here crashed __usxBulkFetch mid-batch.
-      manifest.push({ provider: plan.provider, entity: t.entity, query: t.query, comboKeyRef: t.comboKeyRef, expectedKeyRef: t.expectedKeyRef, tier: t.tier, kind: t.kind, anyField: t.anyField || null, strippedField: t.strippedField || null, strippedValue: t.strippedValue || null, fills: fills, underFilled: !filled, n: t.n, submittedAt: new Date().toISOString() });
       // MUST await -- clickSendClear is async (it polls up to 6s for Send to enable). Calling it
       // bare returns a Promise, so `sent.ok`/`sent.err` are both undefined: every test logs
       // "NOT submitted (undefined)" even when the click lands, and the run does not wait for the
@@ -170,6 +166,28 @@
       // 2026-07-30 (all 7 tests reported NOT submitted while the fills were visibly working).
       const sent = await clickSendClear();
       results.push({ n: t.n, combo: t.comboKeyRef, filled, sent });
+
+      // A MANIFEST ENTRY IS A CLAIM THAT A QUERY WAS SENT. Only write one if it WAS.
+      // This push used to sit ABOVE clickSendClear(), so every test entered the manifest whether
+      // or not it ever submitted. capture.js then KEEPS unpaired entries by design (they may be
+      // late dex-log rows), so a combo that can NEVER submit accumulated forever and got
+      // positionally paired onto unrelated wire rows -- manufacturing evidence.
+      // Cost of not having this, all on 2026-09-02: three fabricated batches on CA_eSUN. The worst
+      // held 19 records of which 8 were labelled 'NameAddressIn', a combo that reported
+      // "NOT submitted" on 4 tests x 2 runs and was sent ZERO times; only 2 of those 8 carried a
+      // Name on the wire at all, the rest carried VIN or Plate, and both records labelled
+      // 'VPNameBirthDateIn' carried Plate wire. Every one was caught by hand, which is not a gate.
+      // The late-row case this does NOT break: a SUBMITTED query whose dex-log row has not appeared
+      // yet still gets its manifest entry and still survives to the next fetch. Only the
+      // never-sent ones are dropped, and those could never pair with anything truthfully.
+      if (sent.ok) {
+        // Store the NORMALIZED fills array (not t.fills) -- PowerShell's ConvertTo-Json collapses
+        // a single-element array to a bare object, and idFills() downstream (capture.js) expects
+        // a real array; storing the raw plan value here crashed __usxBulkFetch mid-batch.
+        manifest.push({ provider: plan.provider, entity: t.entity, query: t.query, comboKeyRef: t.comboKeyRef, expectedKeyRef: t.expectedKeyRef, tier: t.tier, kind: t.kind, anyField: t.anyField || null, strippedField: t.strippedField || null, strippedValue: t.strippedValue || null, fills: fills, underFilled: !filled, n: t.n, submittedAt: new Date().toISOString() });
+      } else {
+        notSent.push(`T${t.n} ${t.entity} ${t.comboKeyRef}`);
+      }
       if (!filled) console.warn(`[USx-DRV] T${t.n} ${t.entity} ${t.comboKeyRef}: submitted UNDER-FILLED (a field failed to fill) -- capture records it, but verify this combo.`);
       console.log('%c[USx-DRV]', 'color:#06c', `T${t.n} ${t.entity} ${t.comboKeyRef}: ${sent.ok ? 'submitted' : 'NOT submitted (' + sent.err + ')'}`);
       await L.sleep(dBetween);
@@ -181,7 +199,20 @@
       let prior = []; try { prior = JSON.parse(localStorage.getItem('__usx_batch') || '[]'); } catch (e) {}
       localStorage.setItem('__usx_batch', JSON.stringify(prior.concat(manifest)));
     } catch (e) {}
-    console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold', `plan run complete: ${manifest.length} queries submitted. Go to /admin/dex-log and run __usxCaptureBatch().`, results);
+    // RECONCILE OUT LOUD. This line used to read "${manifest.length} queries submitted" off a
+    // manifest that included FAILED tests, so it was a send count that could not fail -- the same
+    // success-shaped-silence class as an inert gate. manifest.length is now genuinely the send
+    // count, but print BOTH numbers anyway so the operator never has to do the subtraction, and
+    // name the tests that did not send so a shortfall is visible at the point it happens.
+    console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold',
+      `plan run complete: ${tests.length} test(s) driven, ${manifest.length} SENT, ${notSent.length} NOT sent. ` +
+      `${manifest.length} manifest entr${manifest.length === 1 ? 'y' : 'ies'} written (never-sent tests are NOT recorded). ` +
+      `Go to /admin/dex-log and run __usxCaptureBatch(). EXPECT EXACTLY ${manifest.length} CAPTURE(S).`, results);
+    if (notSent.length) {
+      console.warn('%c[USx-DRV]', 'color:#c60;font-weight:bold',
+        `${notSent.length} test(s) did NOT send and were deliberately kept OUT of the manifest, so nothing can be ` +
+        `labelled with them: ${notSent.join(' | ')}`);
+    }
     return results;
   };
 
@@ -457,7 +488,37 @@
     return payload;
   };
 
+  // ---------------------------------------------------------------------------
+  // MANIFEST RESET -- the recovery tool that did not exist on 2026-09-02.
+  // capture.js KEEPS unpaired manifest entries by design, and until this build the driver wrote an
+  // entry for every test whether it sent or not. So a stale manifest could span VERSIONS: during the
+  // CA_eSUN v2.0 sweep it still held Person/DriverLicenseQuery x4 and Article/ArticleSingleQuery x2
+  // from the v1.1 sweep -- entities that had not been driven once at v2.0 -- and those labels were
+  // positionally dealt onto whatever dex-log rows the bulk fetch found. There was no supported way
+  // to clear it; __usxCaptureWatchReset() resets WATCH mode, not this. Prints what it drops rather
+  // than clearing silently, because a reset that reports nothing is indistinguishable from a no-op.
+  window.__usxManifestReset = function () {
+    let prior = [];
+    try { prior = JSON.parse(localStorage.getItem('__usx_batch') || '[]'); } catch (e) {}
+    if (!prior.length) {
+      console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold', 'manifest already empty -- nothing to reset.');
+      return { dropped: 0, entries: [] };
+    }
+    const summary = {};
+    for (const e of prior) {
+      const k = `${e.entity}/${e.comboKeyRef}`;
+      summary[k] = (summary[k] || 0) + 1;
+    }
+    localStorage.removeItem('__usx_batch');
+    console.warn('%c[USx-DRV]', 'color:#c60;font-weight:bold',
+      `manifest RESET -- dropped ${prior.length} queued entr${prior.length === 1 ? 'y' : 'ies'}. ` +
+      `Anything not yet captured is now unrecoverable BY DESIGN: re-drive it rather than pairing a ` +
+      `stale label onto a fresh row.`);
+    console.table(Object.keys(summary).sort().map((k) => ({ 'entity/combo': k, queued: summary[k] })));
+    return { dropped: prior.length, entries: summary };
+  };
+
   if (location.hash.includes('universal-search')) {
-    console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold', 'driver ready. BUILD 2026-09-02a (picklist capture now echoes attributeTypeId; value-strip kind added to __usxRunPlan filter). __usxRunOne({...}) = one combo; __usxRunPlan(plan,"Vehicle") = whole entity; __usxScopePicklists(scope,"Vehicle") = dump dropdown options. After a submit, run __usxRmsRecon() then __usxRmsRowRecon() to help find the RMS result/error row structure.');
+    console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold', 'driver ready. BUILD 2026-09-02b (MANIFEST TRUTH FIX: a manifest entry is written ONLY when the query actually SENT -- never-sent tests can no longer be labelled onto someone else\'s wire row; run summary now reconciles driven/SENT/NOT-sent; new __usxManifestReset() clears a stale or cross-version manifest and prints what it dropped). __usxRunOne({...}) = one combo; __usxRunPlan(plan,"Vehicle") = whole entity; __usxScopePicklists(scope,"Vehicle") = dump dropdown options. After a submit, run __usxRmsRecon() then __usxRmsRowRecon() to help find the RMS result/error row structure.');
   }
 })();
