@@ -458,6 +458,6 @@
   };
 
   if (location.hash.includes('universal-search')) {
-    console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold', 'driver ready. BUILD 2026-08-06a (value-strip kind added to __usxRunPlan filter). __usxRunOne({...}) = one combo; __usxRunPlan(plan,"Vehicle") = whole entity; __usxScopePicklists(scope,"Vehicle") = dump dropdown options. After a submit, run __usxRmsRecon() then __usxRmsRowRecon() to help find the RMS result/error row structure.');
+    console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold', 'driver ready. BUILD 2026-09-02a (picklist capture now echoes attributeTypeId; value-strip kind added to __usxRunPlan filter). __usxRunOne({...}) = one combo; __usxRunPlan(plan,"Vehicle") = whole entity; __usxScopePicklists(scope,"Vehicle") = dump dropdown options. After a submit, run __usxRmsRecon() then __usxRmsRowRecon() to help find the RMS result/error row structure.');
   }
 })();
