@@ -380,7 +380,12 @@
     };
 
     for (const f of fields) {
-      const rec = { entity: f.entity, fieldId: f.fieldId, label: f.label || null, codeTypeCategory: f.codeTypeCategory || null, codeTypeSource: f.codeTypeSource || null, count: 0, truncated: false, options: [], error: null };
+      // attributeTypeId echoed 2026-09-02. emit_picklist_scope now carries it, but this record is
+      // what actually reaches the download and then import_picklists -- so without it the repo-side
+      // fix is only half a fix, and an attributeTypeId-driven dropdown still stores with NO source.
+      // Measured on CA_eSUN v1.0: 9 of 15 scoped dropdowns (PurposeCode, SexCode, RegistrationState,
+      // VehicleMakeCode) are attributeTypeId-driven and were captured as cat=null/src=null.
+      const rec = { entity: f.entity, fieldId: f.fieldId, label: f.label || null, codeTypeCategory: f.codeTypeCategory || null, codeTypeSource: f.codeTypeSource || null, attributeTypeId: f.attributeTypeId || null, count: 0, truncated: false, options: [], error: null };
       try {
         const input = L.q(f.fieldId);
         if (!input) { rec.error = 'field not found in DOM'; out.push(rec); continue; }

@@ -73,8 +73,11 @@ foreach ($prov in $byProvider.Keys) {
         }
         $entMap = [ordered]@{}
         foreach ($fld in @($cap.fields)) {
+            # attributeTypeId carried through 2026-09-02 -- see emit_picklist_scope. Without it an
+            # attributeTypeId-driven dropdown was stored with NO source identification at all.
             $entMap[$fld.fieldId] = [ordered]@{
                 label = $fld.label; codeTypeCategory = $fld.codeTypeCategory; codeTypeSource = $fld.codeTypeSource
+                attributeTypeId = $fld.attributeTypeId
                 count = $fld.count; truncated = [bool]$fld.truncated; error = $fld.error; options = @($fld.options)
             }
         }
@@ -98,7 +101,14 @@ foreach ($prov in $byProvider.Keys) {
             $fld = $fp.Value
             if ($fld.error) { Write-Host "[import-picklists] WARN ${entName}.$($fp.Name): capture error: $($fld.error)" -ForegroundColor Yellow; $warn++; continue }
             if (-not @($fld.options).Count) {
-                Write-Host "[import-picklists] FAIL ${entName}.$($fp.Name): tenant table EMPTY ($($fld.codeTypeCategory)/$($fld.codeTypeSource))" -ForegroundColor Red; $fail++; continue
+                # Name whichever source the field actually declares. This used to print a bare
+                # "()" for every attributeTypeId-driven dropdown, so the one fact the failure
+                # exists to report -- WHICH tenant table is empty -- was missing exactly where it
+                # matters most (DEX_INQUIRY_PURPOSE_CODE, LIMITATION #39).
+                $srcDesc = if ($fld.codeTypeCategory -or $fld.codeTypeSource) { "$($fld.codeTypeCategory)/$($fld.codeTypeSource)" }
+                           elseif ($fld.attributeTypeId) { "attributeTypeId=$($fld.attributeTypeId)" }
+                           else { 'NO SOURCE DECLARED ON THE CONTROL' }
+                Write-Host "[import-picklists] FAIL ${entName}.$($fp.Name): tenant table EMPTY ($srcDesc)" -ForegroundColor Red; $fail++; continue
             }
             if ($plan) {
                 # Every distinct value the plan fills into this select must match an option

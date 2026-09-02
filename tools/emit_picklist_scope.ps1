@@ -36,12 +36,26 @@ foreach ($bundle in $data.bundles) {
             if ($node.hidden -eq $true) { continue }   # hidden gate-feeders can't be opened
             $p = $node.props
             if (-not $p -or -not $p.fieldId) { continue }
+            # attributeTypeId ADDED 2026-09-02. It was never emitted, so a dropdown driven by an
+            # attributeTypeId rather than a codeTypeCategory/Source pair was recorded with NO SOURCE
+            # IDENTIFICATION AT ALL -- both fields empty. Measured on CA_eSUN v1.0: 9 of 15 scoped
+            # dropdowns (PurposeCode, SexCode, RegistrationState, VehicleMakeCode) captured as
+            # cat=''/src='', so import_picklists stored them sourceless and its EMPTY-table failure
+            # printed a bare "()" naming nothing. The capture itself is fine -- ingest keys on
+            # fieldId -- but the stored evidence could not say WHICH table came back empty, which is
+            # exactly the question LIMITATION #39 turns on (DEX_INQUIRY_PURPOSE_CODE resolves on
+            # SDSO and returned ZERO options on NY).
+            # STRICTLY ADDITIVE, AND THAT IS DELIBERATE: audit_picklist_scope's category model
+            # depends on attributeTypeId dropdowns carrying a NULL codeTypeCategory (its header says
+            # so, and it regexes "codeTypeCategory":"<non-empty>"). Folding attributeTypeId INTO
+            # codeTypeCategory would silently change that gate's comparison set. A new key does not.
             $fields += [pscustomobject]@{
                 entity           = $entity
                 fieldId          = $p.fieldId
                 label            = "$($p.label)"
                 codeTypeCategory = "$($p.codeTypeCategory)"
                 codeTypeSource   = "$($p.codeTypeSource)"
+                attributeTypeId  = "$($p.attributeTypeId)"
             }
         }
     }
