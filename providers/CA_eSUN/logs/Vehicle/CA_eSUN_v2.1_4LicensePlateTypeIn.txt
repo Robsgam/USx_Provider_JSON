@@ -1,0 +1,76 @@
+﻿================================================================
+TEST LOG: CA_eSUN Vehicle VehicleRegistrationQuery
+Combo: 4LicensePlateTypeIn (4LicensePlateTypeIn (auto))
+Date: 2026-09-02 19:57:23
+Result: PASS
+JSON Version: 2.1
+Entity Fingerprint: 1d09b8a125265d0d0eacc8a31c659a48c1be1ab0ba6bda5dd4c6928af5c663cf
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","PurposeCode":"Criminal Justice","VehicleYear":"2026"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M1J7D5EANCFXAHJH0RBS9R94">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <DeviceId>MK43RS</DeviceId>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleRegistrationQuery</MessageType>
+            <Id>01M1J7D5EANCFXAHJH0RBS9R94</Id>
+            <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+            <LicensePlateNumber>TEST123</LicensePlateNumber>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  DeviceId                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M1J7D5EANCFXAHJH0RBS9R94
+  LicensePlateTypeCode           PC
+  LicensePlateNumber             TEST123
+  CaRequestPurposeCode           C
+
+NOTES
+-----
+Automated capture (txId 01M1J7D5EANCFXAHJH0RBS9R94). kind=combo; anyField=; expectedKeyRef=4LicensePlateTypeIn; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

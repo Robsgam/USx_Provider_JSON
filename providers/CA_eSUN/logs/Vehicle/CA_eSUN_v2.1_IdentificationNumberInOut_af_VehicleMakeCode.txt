@@ -1,0 +1,78 @@
+﻿================================================================
+TEST LOG: CA_eSUN Vehicle VehicleRegistrationQuery
+Combo: IdentificationNumberInOut_af_VehicleMakeCode (IdentificationNumberInOut_af_VehicleMakeCode (auto))
+Date: 2026-09-02 19:57:21
+Result: PASS
+JSON Version: 2.1
+Entity Fingerprint: 1d09b8a125265d0d0eacc8a31c659a48c1be1ab0ba6bda5dd4c6928af5c663cf
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"LicensePlateYear":"2026","PurposeCode":"Criminal Justice","VehicleIdentificationNumber":"1HGCM82633A123456","VehicleMakeCode":"FORD","VehicleYear":"2026"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M1J7DR3791H9M1RXRS5N74A4">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <DeviceId>MK43RS</DeviceId>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleRegistrationQuery</MessageType>
+            <Id>01M1J7DR3791H9M1RXRS5N74A4</Id>
+            <VehicleMakeCode>CNST_FORD</VehicleMakeCode>
+            <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+            <VehicleYear>2026</VehicleYear>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  DeviceId                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M1J7DR3791H9M1RXRS5N74A4
+  VehicleMakeCode                CNST_FORD
+  VehicleIdentificationNumber    1HGCM82633A123456
+  VehicleYear                    2026
+  CaRequestPurposeCode           C
+
+NOTES
+-----
+Automated capture (txId 01M1J7DR3791H9M1RXRS5N74A4). kind=any-field; anyField=VehicleMakeCode; expectedKeyRef=IdentificationNumberInOut; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

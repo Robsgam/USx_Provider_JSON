@@ -1,4 +1,4 @@
-CA_eSUN -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
+﻿CA_eSUN -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-09-02
@@ -59,7 +59,7 @@ BoatQuery -- Boat Entity
 CAILojackQuery -- Vehicle Entity
 ================================================================================
 
-  LojackID -- LojackID [PENDING] -- 1 log(s) at v1.0
+  LojackID -- LojackID [CONFIRMED] -- 1 log(s) at v1.0
     keyReference: LojackID
     set[]: PurposeCode, LojackID
     any[]: ORI
@@ -160,7 +160,7 @@ VehicleRegistrationQuery -- Vehicle Entity
     set[]: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     any[]: RegistrationState
 
-  IdentificationNumberInOut -- VehicleIdentificationNumber [PENDING] -- 5 log(s) at v1.0
+  IdentificationNumberInOut -- VehicleIdentificationNumber [CONFIRMED] -- 5 log(s) at v1.0
     keyReference: IdentificationNumberInOut
     set[]: PurposeCode, VehicleIdentificationNumber
     any[]: ORI, VehicleMakeCode, VehicleYear, RegistrationState
@@ -175,19 +175,19 @@ VehicleRegistrationQuery -- Vehicle Entity
     set[]: PurposeCode, NameFirst, NameLast
     any[]: ORI, AddressCity, AddressStreetNumber, RegistrationState
 
-  QVLicensePlateNumberIn -- LicensePlateNumber [PENDING] -- 2 log(s) at v1.0
+  QVLicensePlateNumberIn -- LicensePlateNumber [CONFIRMED] -- 2 log(s) at v1.0
     keyReference: QVLicensePlateNumberIn
     set[]: PurposeCode, LicensePlateNumber
     any[]: ORI, RegistrationState
       log: CA_eSUN_v1.0_QVLicensePlateNumberIn_af_RegistrationState.txt
       log: CA_eSUN_v1.0_QVLicensePlateNumberIn.txt
 
-  RQLicensePlateTypeYearOut -- LicensePlateNumber [PENDING] -- no log
+  RQLicensePlateTypeYearOut -- LicensePlateNumber [CONFIRMED] -- no log
     keyReference: RQLicensePlateTypeYearOut
     set[]: PurposeCode, LicensePlateNumber, RegistrationState
     any[]: ORI, LicensePlateYear, LicensePlateTypeCode
 
-  VPNameBirthDateIn -- BirthDate [PENDING] -- 1 log(s) at v1.0
+  VPNameBirthDateIn -- BirthDate [CONFIRMED] -- 1 log(s) at v1.0
     keyReference: VPNameBirthDateIn
     set[]: PurposeCode, NameFirst, NameLast, BirthDate
     any[]: ORI, RegistrationState
