@@ -4,9 +4,29 @@
 Opened 2026-03-23 by Gordon Hallof · project DEX (CJIS/USx/DEx Implementation) · label `USx` ·
 **unassigned** · **status `Blocked`**
 
-**Current: v2.11 — IMPORTED and TENANT-VERIFIED ALL-PASS 5/5 (65 logs, 65 PASS / 0 FAIL) 2026-09-01.**
-Ticket state re-read from Jira the same day: still **`Blocked`**, still **0 comments**, still
-unassigned, last updated 2026-04-01. A release line is **DRAFTED BELOW and awaiting Rob's approval.**
+**Current: v2.12 — BUILT 2026-09-02, NOT IMPORTED, NOT TENANT-VERIFIED.**
+
+## ⛔ JIRA DEFERRED BY ROB, 2026-09-02 — AND THE v2.11 DRAFT BELOW IS WITHDRAWN
+
+Rob: *"rebuild ocats and defer the jira until we have a solid josn."* Both halves are instructions.
+
+**The v2.11 release line drafted further down MUST NOT BE POSTED.** It is superseded, and it was
+never merely stale — it describes a build carrying a **real over-permit**: `RQ.P` transmitted
+`VehicleMakeCode` and `vehicleYear` on out-of-state plate searches, which metadata
+`RQ{LicensePlateNumber}` (`<Any>` = `[State, LicensePlateTypeCode]`) does not define. Fixed at
+v2.12. Had Jira not been held, that comment would have certified a defective JSON as verified —
+which is the entire reason the hold exists. It is kept below as HISTORY, not as a queued action.
+
+**Nothing is owed to this ticket until v2.12 is imported and re-swept**, at which point a NEW
+release line is drafted from scratch and awaits its own approval. Approval never carries — not from
+MD_METERS, and not from this ticket's own earlier draft.
+
+**Cost of the rebuild, stated plainly:** the v2.11 ALL-PASS package (65 logs, 65 PASS / 0 FAIL) is
+archived to `logs/<Entity>/_archive_pre_v2.12/`. CA_CLETS_OCATS is **no longer ALL-PASS** and is
+**no longer lifecycle-complete-eligible** until re-imported and re-swept (65 tests).
+
+Ticket state as last read from Jira (2026-09-02): **`In Progress`** — it had been `Blocked`, and
+moved at 2026-09-01 16:37 ET; **0 comments**; unassigned; reporter Gordon Hallof.
 
 ## ⚠️ THE TICKET STATUS IS `Blocked`, AND THAT IS NOT LIKE THE OTHERS
 

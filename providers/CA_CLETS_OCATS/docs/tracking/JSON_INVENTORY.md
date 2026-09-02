@@ -18,13 +18,18 @@
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| CA_CLETS_OCATS_v2.11.json | v2.11 | Current | 66P/0F/0W/0LIM. |
+| CA_CLETS_OCATS_v2.12.json | v2.12 | Current | 66P/0F/0W/0LIM. |
 
+## v2.12 (2026-09-02)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| CA_CLETS_OCATS_v2.12.json | v2.12 | Current | 66P/0F/0W/0LIM. |
 ## v2.11 (2026-09-01)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| CA_CLETS_OCATS_v2.11.json | v2.11 | Current | 66P/0F/0W/0LIM. |
+| CA_CLETS_OCATS_v2.11.json | v2.11 | Superseded | 66P/0F/0W/0LIM. |
 ## v2.10 (2026-09-01)
 
 | File | Version | Status | Notes |

@@ -37,7 +37,7 @@ $ErrorActionPreference = "Stop"
 # BUMPED rather than edited because v2.10 IS INSTALLED -- the capture itself records "version": "2.10",
 # so editing v2.10 in place would leave one version number describing two different forms, which makes
 # every log captured against it unattributable (ENGINEERING_STANDARD / usx-build 6d).
-$Version     = '2.11'
+$Version     = '2.12'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\CA_CLETS_OCATS_v${Version}.json"
@@ -132,8 +132,25 @@ $vehRegQuery = [PSCustomObject]@{
             keyReference          = 'AWVEHQ'
             state                 = 'In/Out'
         }
+        # v2.12: VehicleMakeCode and vehicleYear REMOVED from any[]. LicensePlateTypeCode STAYS.
+        # Metadata RQ{LicensePlateNumber} = Set[LicensePlateNumber, LicensePlateTypeCode,
+        # LicensePlateYear, State] with <Any> = [State, LicensePlateTypeCode] -- so the plate type
+        # is legitimately optional here, and the two VEHICLE-DESCRIPTOR fields are NOT: they are
+        # optionals of the VIN sibling RQ{VehicleIdentificationNumber} (<Any> = [State,
+        # VehicleMakeCode, VehicleYear]), which keeps them. Verified per-VARIANT against the raw
+        # <Requirements> via the transaction|keyRef|primaryField triple, NOT by keyRef.
+        # DELIBERATELY NOT TOUCHED IN THE SAME PASS: AWVEHQ's any[] carries both fields and is
+        # CORRECT -- its own metadata variant defines them (<Any> = [ExactSearchIndicator,
+        # Authorization, PageNumber, LicensePlateStateCode, VehicleYear, VehicleMakeCode]). Same
+        # two field names, same query, opposite answers; only the per-variant read distinguishes
+        # them, which is the whole reason this defect survived a tenant sweep.
+        # WHY IT WAS INVISIBLE UNTIL NOW: audit_requirement_fidelity keyed its metadata <Any> pool
+        # on transaction|keyRef instead of the full triple, so the PLATE variant inherited the VIN
+        # variant's optionals and the over-permit read as legal. Gate fixed 2026-09-02 (commit
+        # 3fffed02); this provider was flagged [FLAG:fidelity-sibling-optional-leak] rather than
+        # rebuilt in that pass, and this IS that rebuild.
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','LicensePlateNumber','LicensePlateYear','RegistrationState'); any = @('LicensePlateTypeCode','VehicleMakeCode','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }) }
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','LicensePlateNumber','LicensePlateYear','RegistrationState'); any = @('LicensePlateTypeCode'); defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }) }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RQ.P'
             state                 = 'In/Out'

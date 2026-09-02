@@ -1,70 +1,69 @@
-﻿================================================================
+================================================================
   Build Report: CA_CLETS_OCATS
-  Source: CA_CLETS_OCATS_v2.11.json
-  Generated: 2026-09-01 14:56
+  Source: CA_CLETS_OCATS_v2.12.json
+  Generated: 2026-09-02 11:44
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX <-> JSON CONSISTENCY -- CA_CLETS_OCATS_v2.11
+TEST MATRIX <-> JSON CONSISTENCY -- CA_CLETS_OCATS_v2.12
 ============================================================
-Source: CA_CLETS_OCATS_v2.11.json
+Source: CA_CLETS_OCATS_v2.12.json
 Matrix: CA_CLETS_OCATS_TEST_MATRIX.txt
-Generated: 2026-09-01
+Generated: 2026-09-02
 
 SCOPE: This confirms each matrix row's expected combo fires for its
 data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
 It does NOT prove the combo is a provider-supported query: that is
 checked separately against the devdoc by audit_supported_queries.ps1.
 
-ENTITY: VEHICLE (16 tests -- 1 card, 8 combos)
+ENTITY: VEHICLE (15 tests -- 1 card, 8 combos)
   T1  Vehicle    [PASS] (structural check)
-  T2  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear
-  T3  Vehicle    [PASS] (structural check)
-  T4  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear
-  T5  Vehicle    [PASS] VehicleRegistrationQuery fires (4K)
-  T6  Vehicle    [PASS] VehicleRegistrationQuery fires (4)
-  T7  Vehicle    [PASS] VehicleRegistrationQuery fires (VP)
-  T8  Vehicle    [PASS] any[] fields verified: NameMiddle, NameSuffix
-  T9  Vehicle    [PASS] VehicleRegistrationQuery fires (AWVEHQ)
-  T10  Vehicle    [PASS] any[] fields verified: exactSearchIndicator, authorization, pageNumber, vehicleYear
-  T11  Vehicle    [PASS] VehicleRegistrationQuery fires (VC)
-  T12  Vehicle    [PASS] any[] fields verified: NameMiddle, NameSuffix
-  T13  Vehicle    [PASS] VehicleRegistrationQuery fires (4V)
+  T2  Vehicle    [PASS] (structural check)
+  T3  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear
+  T4  Vehicle    [PASS] VehicleRegistrationQuery fires (4K)
+  T5  Vehicle    [PASS] VehicleRegistrationQuery fires (4)
+  T6  Vehicle    [PASS] VehicleRegistrationQuery fires (VP)
+  T7  Vehicle    [PASS] any[] fields verified: NameMiddle, NameSuffix
+  T8  Vehicle    [PASS] VehicleRegistrationQuery fires (AWVEHQ)
+  T9  Vehicle    [PASS] any[] fields verified: exactSearchIndicator, authorization, pageNumber, vehicleYear
+  T10  Vehicle    [PASS] VehicleRegistrationQuery fires (VC)
+  T11  Vehicle    [PASS] any[] fields verified: NameMiddle, NameSuffix
+  T12  Vehicle    [PASS] VehicleRegistrationQuery fires (4V)
+  T13  Vehicle    [PASS] VehicleRegistrationQuery fires (AWVEHQ)
   T14  Vehicle    [PASS] VehicleRegistrationQuery fires (AWVEHQ)
-  T15  Vehicle    [PASS] VehicleRegistrationQuery fires (AWVEHQ)
-  T16  Vehicle    [PASS] (structural check)
+  T15  Vehicle    [PASS] (structural check)
 ENTITY: BOAT (8 tests -- 1 card, 5 combos)
+  T16  Boat       [PASS] (structural check)
   T17  Boat       [PASS] (structural check)
   T18  Boat       [PASS] (structural check)
   T19  Boat       [PASS] (structural check)
-  T20  Boat       [PASS] (structural check)
-  T21  Boat       [PASS] BoatQuery fires (4B)
+  T20  Boat       [PASS] BoatQuery fires (4B)
+  T21  Boat       [PASS] (structural check)
   T22  Boat       [PASS] (structural check)
   T23  Boat       [PASS] (structural check)
-  T24  Boat       [PASS] (structural check)
 ENTITY: PERSON (12 tests -- 1 card, 5 combos)
+  T24  Person     [PASS] (structural check)
   T25  Person     [PASS] (structural check)
-  T26  Person     [PASS] (structural check)
-  T27  Person     [PASS] any[] fields verified: NameMiddle, NameSuffix
-  T28  Person     [PASS] (structural check)
-  T29  Person     [PASS] DriverLicenseQuery fires (OCNAMQ)
-  T30  Person     [PASS] any[] fields verified: NameMiddle, NameSuffix
-  T31  Person     [PASS] (structural check)
-  T32  Person     [PASS] any[] fields verified: NameMiddle, NameSuffix
+  T26  Person     [PASS] any[] fields verified: NameMiddle, NameSuffix
+  T27  Person     [PASS] (structural check)
+  T28  Person     [PASS] DriverLicenseQuery fires (OCNAMQ)
+  T29  Person     [PASS] any[] fields verified: NameMiddle, NameSuffix
+  T30  Person     [PASS] (structural check)
+  T31  Person     [PASS] any[] fields verified: NameMiddle, NameSuffix
+  T32  Person     [PASS] (structural check)
   T33  Person     [PASS] (structural check)
   T34  Person     [PASS] (structural check)
   T35  Person     [PASS] (structural check)
-  T36  Person     [PASS] (structural check)
 ENTITY: FIREARM (2 tests -- 1 card, 1 combo)
-  T37  Firearm    [PASS] GunQuery fires (QGB)
-  T38  Firearm    [PASS] any[] fields verified: GunCaliber, firearmMake, gunTypeCode
+  T36  Firearm    [PASS] GunQuery fires (QGB)
+  T37  Firearm    [PASS] any[] fields verified: GunCaliber, firearmMake, gunTypeCode
 ENTITY: ARTICLE (4 tests -- 1 card, 2 combos)
-  T39  Article    [PASS] (structural check)
-  T40  Article    [PASS] any[] fields verified: articleBrand, ArticleTypeCode, articleCategory
-  T41  Article    [PASS] (structural check)
-  T42  Article    [PASS] any[] fields verified: articleBrand, ArticleTypeCode, articleCategory
+  T38  Article    [PASS] (structural check)
+  T39  Article    [PASS] any[] fields verified: articleBrand, ArticleTypeCode, articleCategory
+  T40  Article    [PASS] (structural check)
+  T41  Article    [PASS] any[] fields verified: articleBrand, ArticleTypeCode, articleCategory
 
-SUMMARY: 42/42 PASS, 0 FAIL
+SUMMARY: 41/41 PASS, 0 FAIL
 
 

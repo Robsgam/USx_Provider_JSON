@@ -1,14 +1,14 @@
-﻿================================================================
+================================================================
   Build Report: CA_CLETS_OCATS
-  Source: CA_CLETS_OCATS_v2.11.json
-  Generated: 2026-09-01 14:56
+  Source: CA_CLETS_OCATS_v2.12.json
+  Generated: 2026-09-02 11:44
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- CA_CLETS_OCATS_v2.11.json
+  CommSys Query Simulator -- CA_CLETS_OCATS_v2.12.json
 ================================================================
 
 --- QIDM: CA_CLETS_OCATS_VehicleRegistrationQuery [Vehicle] ---
@@ -35,7 +35,7 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] RQ.P
       set: [caRequestPurposeCode, LicensePlateNumber, LicensePlateYear, RegistrationState]
-      any: [LicensePlateTypeCode, VehicleMakeCode, vehicleYear] -> matched: [LicensePlateTypeCode, VehicleMakeCode, vehicleYear]
+      any: [LicensePlateTypeCode] -> matched: [LicensePlateTypeCode]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -45,8 +45,6 @@ QUERY SIMULATION
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
         <LicensePlateYear>2024</LicensePlateYear>
         <State>NJ</State>
-        <VehicleMakeCode>FORD</VehicleMakeCode>
-        <VehicleYear>2023</VehicleYear>
         <LicensePlateStateCode>NJ</LicensePlateStateCode>
       </Transaction>
     [SKIP] RQ.V -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']

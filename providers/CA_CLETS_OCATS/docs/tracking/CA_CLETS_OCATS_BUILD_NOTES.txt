@@ -1,6 +1,59 @@
 CA_CLETS_OCATS -- Build Notes
 ==============================
 
+v2.12  2026-09-02  THE OUT-OF-STATE PLATE SEARCH STOPS OFFERING THE VIN SIBLING'S OPTIONALS
+  CHANGED: RQ.P any[LicensePlateTypeCode, VehicleMakeCode, vehicleYear] -> any[LicensePlateTypeCode].
+    VehicleMakeCode and vehicleYear REMOVED. set[] and defaults[] unchanged. Nothing else touched.
+  REASON: metadata RQ{LicensePlateNumber} = Set[LicensePlateNumber, LicensePlateTypeCode,
+    LicensePlateYear, State] with <Any> = [State, LicensePlateTypeCode]. It does NOT define
+    VehicleMakeCode or VehicleYear -- those are optionals of the VIN sibling
+    RQ{VehicleIdentificationNumber} (<Any> = [State, VehicleMakeCode, VehicleYear]), which keeps
+    them. So every out-of-state plate query COULD transmit two fields that transaction does not
+    define (LIMITATION #1 family). LicensePlateTypeCode STAYS -- that one IS in this variant's
+    <Any>, and removing it would be the opposite error.
+  THE PART THAT MAKES THIS HARD, AND WHY A FULL TENANT SWEEP DID NOT CATCH IT: AWVEHQ carries
+    BOTH VehicleMakeCode and vehicleYear in its any[] and is CORRECT -- its own metadata variant
+    defines them (<Any> = [ExactSearchIndicator, Authorization, PageNumber, LicensePlateStateCode,
+    VehicleYear, VehicleMakeCode]). Same two field names, same query, same entity, opposite
+    answers. Only a PER-VARIANT read distinguishes them. AWVEHQ was deliberately not touched.
+  HOW IT HID: audit_requirement_fidelity collected the metadata <Any> pool keyed on
+    "transaction|keyRef" rather than the full "transaction|keyRef|primaryFieldReference" triple, so
+    the PLATE variant inherited the VIN variant's optionals and the over-permit read as legal.
+    A KEYREF IS NOT A VARIANT. Gate fixed 2026-09-02 (commit 3fffed02); this provider was FLAGGED
+    rather than rebuilt in that pass (usx-tooling rule 8c -- a shared-tool change must never
+    trigger another provider's rebuild), and this IS that rebuild.
+    Found originally by the UNAIMED FUZZ on CA_SAN_LUIS_OBISPO, not by inspection here.
+  ROB'S CALL (2026-09-02): "rebuild ocats and defer the jira until we have a solid josn."
+    Both halves acted on -- the wire defect is fixed, and the drafted DEX-980 release line is
+    WITHDRAWN rather than posted. See DEX_TICKET.md.
+  MEASURED:
+    requirement fidelity  25 branches / 0 UNDER / 2 OVER  ->  25 branches / 0 UNDER / 0 OVER
+                          (branches did NOT fall -- nothing was suppressed to reach zero)
+    query trace           25 built / 0 MISSING            unchanged
+    reachability          all combos reachable, 0 prefill-dead, 0 shadow
+    prefill shadow        0 (49 ordered pairs compared)
+    validator 66P/0F/0W - wiring closure clean - devdoc combinations all accounted for
+  COST PAID, AND IT IS REAL: the v2.11 ALL-PASS package (65 logs, 65 PASS / 0 FAIL, swept
+    2026-09-01) is ARCHIVED to logs/<Entity>/_archive_pre_v2.12/. This provider DROPS OUT of
+    ALL-PASS and out of the lifecycle-complete count until v2.12 is imported and re-swept. That is
+    the correct price for a wire change on a tenant-verified build -- the alternative was leaving a
+    known over-permit in a shipped JSON. The 65 archived logs remain valid evidence for v2.11.
+  FUZZ SURVIVORS (seed 1313179), both TRIAGED, neither a new gate hole:
+    swap-order @ BoatQuery[1] -- CORRECT SURVIVOR. BQ.H set[purposeCode, Hull, State] and BQ.R
+      set[purposeCode, Reg, State] have DISJOINT identifiers, neither set[] is a subset of the
+      other, and BQ.R is gated 'BoatHullIdNumber NOT_EXISTS' so the two can never co-match.
+      Order between them cannot change any outcome.
+    any-to-set @ VehicleRegistrationQuery[4] NameMiddle -- REAL but a KNOWN, ALREADY-DOCUMENTED
+      class, not a new finding. Promoting NameMiddle into VP's set[] would make a middle name
+      MANDATORY for the owner-name vehicle search. Fidelity cannot see it because set[]/any[] are
+      resolved through the QIDM attribute map and EVERY name component collapses to targetField
+      'Name', which metadata does mandate -- so the mutant still reads as satisfying the branch.
+      This is the composite-granularity limit recorded in usx-tooling ("drop-set of a
+      composite-Name component ... a real defect the current granularity cannot see"), in the
+      PROMOTE direction; the tool's composite-completeness check covers the surname DEMOTE
+      direction only. Recorded, NOT fixed here -- a third shared-tool change in one session is
+      exactly the uninstructed scope creep rule 8c exists to stop.
+
 v2.11  2026-09-01  ARTICLE TYPE DROPDOWN WAS RENDERING EMPTY IN THE TENANT
   CHANGED (one line, Article form only -- no QIDM, no combination, no wire field):
     ArticleTypeCode control codeTypeSource 'CA_CLETS_OCATS' -> 'CA_CLETS'.
