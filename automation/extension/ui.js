@@ -171,6 +171,40 @@
       };
       p.appendChild(fetchBatch);
 
+      // RESET QUEUE — a panel button, not a console call.
+      // Rob 2026-09-02: "not doing your commadn line stuuff just running the query from the gui",
+      // then "put the manifest reset button in the panel". The reset existed only as
+      // __usxManifestReset() in the console, which is unusable under the GUI-only rule -- so in
+      // practice a polluted queue had NO supported way to be cleared.
+      // WHY IT IS NEEDED AT ALL: capture.js KEEPS unpaired queue entries by design (a sent query's
+      // dex-log row can arrive late). Before BUILD 2026-09-02b the driver queued a test whether or
+      // not it SENT, so combos that can never submit accumulated forever and were positionally
+      // dealt onto unrelated wire rows -- three fabricated batches on CA_eSUN in one day, the worst
+      // with 8 of 19 records labelled with a combo that was sent ZERO times. The queue also went
+      // CROSS-VERSION, still holding v1.1 entries during the v2.0 sweep.
+      // Deliberately sits DIRECTLY UNDER Fetch and is only enabled when the queue is non-empty:
+      // this is the button you want at the exact moment Fetch reports a partial capture.
+      const resetBatch = el('button', BTN + ';' + RED, '🧹 Reset queue');
+      resetBatch.id = 'usx-reset-batch';
+      resetBatch.title = 'Clear the queued Run Plan entries. Anything not yet captured must be re-driven.';
+      resetBatch.onclick = () => {
+        let prior = [];
+        try { prior = JSON.parse(localStorage.getItem('__usx_batch') || '[]'); } catch (e) {}
+        if (!prior.length) { flash('Queue is already empty — nothing to reset.'); return; }
+        // CONFIRM, because this is not recoverable: an uncaptured query must be re-driven.
+        const summary = {};
+        for (const e of prior) { const k = e.entity + '/' + e.comboKeyRef; summary[k] = (summary[k] || 0) + 1; }
+        const lines = Object.keys(summary).sort().map((k) => '  ' + k + ' x' + summary[k]).join('\n');
+        if (!window.confirm(
+          'Clear ' + prior.length + ' queued entr' + (prior.length === 1 ? 'y' : 'ies') + '?\n\n' + lines +
+          '\n\nAnything not yet captured becomes unrecoverable and must be re-driven. ' +
+          'That is deliberate — pairing a stale label onto a fresh row is how fabricated evidence happens.')) return;
+        localStorage.removeItem('__usx_batch');
+        flash('Queue reset — ' + prior.length + ' entr' + (prior.length === 1 ? 'y' : 'ies') + ' dropped. Re-drive anything you still need.');
+        console.warn('%c[USx-UI]', 'color:#c60;font-weight:bold', 'queue reset, dropped:', summary);
+      };
+      p.appendChild(resetBatch);
+
       // Everything else is a fallback — tucked under a disclosure so the default view stays clean.
       const more = el('details', 'margin-top:6px');
       const sum = el('summary', 'cursor:pointer;color:#9cf;font:12px system-ui;list-style:none;user-select:none;padding:2px 0', 'More capture options'); more.appendChild(sum);
@@ -338,7 +372,19 @@
       const c = document.getElementById('usx-cnt');
       if (c) { let n = 0; try { n = JSON.parse(localStorage.getItem('__usx_captured') || '[]').length; } catch (e) {} c.textContent = 'Captured so far: ' + n; }
       const bs = document.getElementById('usx-batch-status');
-      if (bs) { let n = 0; try { n = JSON.parse(localStorage.getItem('__usx_batch') || '[]').length; } catch(e) {} bs.textContent = n > 0 ? 'Queued from Run Plan: ' + n : ''; }
+      let queued = 0; try { queued = JSON.parse(localStorage.getItem('__usx_batch') || '[]').length; } catch(e) {}
+      if (bs) bs.textContent = queued > 0 ? 'Queued from Run Plan: ' + queued : '';
+      // Reset is only offered when there IS a queue -- an always-enabled destructive button invites
+      // a reflex click, and an empty reset would report success while doing nothing (the
+      // success-shaped no-op this project keeps finding). Label carries the count so the operator
+      // sees a stale queue without opening anything.
+      const rb = document.getElementById('usx-reset-batch');
+      if (rb) {
+        rb.disabled = queued === 0;
+        rb.style.opacity = queued === 0 ? '0.45' : '1';
+        rb.style.cursor = queued === 0 ? 'default' : 'pointer';
+        rb.textContent = queued > 0 ? '🧹 Reset queue (' + queued + ')' : '🧹 Reset queue';
+      }
       const w = document.getElementById('usx-watch');
       if (w) w.textContent = window.__usxWatchTimer ? '⏹ Click-capturing… (click to stop)' : '▶ Start click-capture';
     }
@@ -346,5 +392,5 @@
 
   window.__usxUiTimer = setInterval(tick, 1000);
   tick();
-  console.log('%c[USx-UI]', 'color:#fa0;font-weight:bold', 'control panel injected.');
+  console.log('%c[USx-UI]', 'color:#fa0;font-weight:bold', 'control panel injected. BUILD 2026-09-02a (Reset queue button on the dex panel -- clears a stale or cross-version Run Plan queue from the GUI, enabled only when the queue is non-empty, confirms before dropping).');
 })();
