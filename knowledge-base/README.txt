@@ -645,6 +645,26 @@ TOOLS
     providers without current-version logs or metadata XML pass by absence. Uses _metadata_parse.ps1.
     Usage: .\tools\audit_log_metadata.ps1 -Provider <name> [-Quiet]
 
+  tools/audit_log_metadata_attribution.ps1
+    WHICH metadata combination does the wire say this log IS -- decided WITHOUT consulting the
+    combo array we built. Closes the feedback loop the other two log gates leave open (Rob,
+    2026-09-02): audit_log_combo_attribution (2i) attributes but replays the QUERY STRING through
+    OUR JSON, so a wrong combo array is confirmed rather than caught; audit_log_metadata (6d) is
+    metadata-driven but only asks SATISFACTION and breaks on the FIRST matching combo, discarding
+    which one. This tool keeps EVERY satisfied metadata alternative, then checks that the combo
+    the log is FILED under declares one of them. The JSON is used only as a dictionary (combo name
+    -> declared set[], resolved through the QIDM attribute map), never as an authority.
+    COMPARE ON THE REQUIRED SET, NEVER primaryFieldReference: a metadata combination carries one
+    PF label across all its <Choice> alternatives, so PF comparison produced 22 false DISAGREEs
+    across 4 providers on the first draft. Resolving set[] through the attribute map also removes
+    the DH-suffix mismatch for free (the attribute's targetField is already the metadata name).
+    '_strip_' tests are EXCLUDED and counted -- they deliberately neutralise a field to prove
+    re-routing, so their filename names the combo tested AGAINST, not the one that fired.
+    DISAGREE and NO-LABEL are blocking; AMBIGUOUS (a legitimate tightening of an alternative) is
+    audit_requirement_fidelity's question and is reported, not re-litigated.
+    Baseline 2026-09-02: 13 providers / 791 logs / 716 AGREE / 0 DISAGREE / 0 NO-LABEL / 2 strip.
+    Usage: .\tools\audit_log_metadata_attribution.ps1 -Provider <name> [-All] [-Quiet] [-OutFile p]
+
   tools/_metadata_parse.ps1
     Shared metadata-XML parser (dot-sourced by audit_log_metadata): Get-MetadataTransactions
     returns per-query fields + combos with requiredSets (alternative required-field arrays,
