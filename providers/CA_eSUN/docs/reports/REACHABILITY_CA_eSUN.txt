@@ -1,7 +1,28 @@
 ================================================================
-  COMBO REACHABILITY AUDIT -- CA_eSUN_v2.6.json
+  COMBO REACHABILITY AUDIT -- CA_eSUN_v1.0.json
 ================================================================
 
+  [FAIL] DEAD COMBO: VehicleRegistrationQuery/4LicensePlateTypeIn
+         never fires -- 'QVLicensePlateNumberIn' is ordered before it (index 0 < 2) and matches whenever it does
+         A.set=[PurposeCode, LicensePlateNumber, LicensePlateTypeCode]
+         B.set=[PurposeCode, LicensePlateNumber]
+         B.set is a subset of A.set -- B is strictly broader
+         FIX: gate them apart (existence-only), drop A as a shadow, or register an accepted divergence.
+
+  [FAIL] DEAD COMBO: DriverLicenseQuery/VPBirthDateIn
+         never fires -- 'L1NameIn' is ordered before it (index 0 < 4) and matches whenever it does
+         A.set=[PurposeCode, NameFirst, NameLast, BirthDate]
+         B.set=[PurposeCode, NameFirst, NameLast]
+         B.set is a subset of A.set -- B is strictly broader
+         FIX: gate them apart (existence-only), drop A as a shadow, or register an accepted divergence.
+
+  [FAIL] DEAD COMBO: DriverLicenseQuery/VPAgeIn
+         never fires -- 'L1NameIn' is ordered before it (index 0 < 5) and matches whenever it does
+         A.set=[PurposeCode, NameFirst, NameLast, Age]
+         B.set=[PurposeCode, NameFirst, NameLast]
+         B.set is a subset of A.set -- B is strictly broader
+         FIX: gate them apart (existence-only), drop A as a shadow, or register an accepted divergence.
+
 ================================================================
-  [PASS] 21 combination(s) checked -- all reachable
+  [FAIL] 3 dead combination(s) of 23 checked
 ================================================================

@@ -1,6 +1,6 @@
 ﻿{
     "provider":  "CA_eSUN",
-    "version":  "2.5",
+    "version":  "1.0",
     "derivedFrom":  "devdoc + metadata (NOT the built JSON)",
     "note":  "expectedKeyRef=NO-FIRE means the devdoc allows this fill but no built combo matches -- the driver should submit it and the sweep should record that nothing was sent. UNREACHABLE means a devdoc field has no form control at all.",
     "testCount":  50,
@@ -13,13 +13,17 @@
                       "optionalsAdded":  [
 
                                          ],
-                      "expectedKeyRef":  "QA",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
                       "fills":  [
                                     {
-                                        "fieldId":  "serialNumber",
+                                        "fieldId":  "ArticleSerialNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleSerialNumber",
                                         "value":  "TEST123"
                                     }
                                 ]
@@ -32,17 +36,21 @@
                       "optionalsAdded":  [
                                              "ArticleBrand"
                                          ],
-                      "expectedKeyRef":  "QA",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
                       "fills":  [
                                     {
-                                        "fieldId":  "serialNumber",
+                                        "fieldId":  "ArticleSerialNumber",
                                         "value":  "TEST123"
                                     },
                                     {
-                                        "fieldId":  "articleBrand",
+                                        "fieldId":  "ArticleSerialNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleBrand",
                                         "value":  "TEST12"
                                     }
                                 ]
@@ -55,18 +63,18 @@
                       "optionalsAdded":  [
                                              "ArticleCategory"
                                          ],
-                      "expectedKeyRef":  "QA",
+                      "expectedKeyRef":  "UNREACHABLE",
                       "unwiredFields":  [
-
+                                            "ArticleCategory"
                                         ],
                       "fills":  [
                                     {
-                                        "fieldId":  "serialNumber",
+                                        "fieldId":  "ArticleSerialNumber",
                                         "value":  "TEST123"
                                     },
                                     {
-                                        "fieldId":  "articleCategory",
-                                        "value":  "T"
+                                        "fieldId":  "ArticleSerialNumber",
+                                        "value":  "TEST123"
                                     }
                                 ]
                   },
@@ -78,17 +86,21 @@
                       "optionalsAdded":  [
                                              "ArticleTypeCode"
                                          ],
-                      "expectedKeyRef":  "QA",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
                       "fills":  [
                                     {
-                                        "fieldId":  "serialNumber",
+                                        "fieldId":  "ArticleSerialNumber",
                                         "value":  "TEST123"
                                     },
                                     {
-                                        "fieldId":  "articleTypeCode",
+                                        "fieldId":  "ArticleSerialNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleTypeCode",
                                         "value":  "TEST12"
                                     }
                                 ]
@@ -101,7 +113,7 @@
                       "optionalsAdded":  [
 
                                          ],
-                      "expectedKeyRef":  "BQ.H",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
@@ -120,7 +132,7 @@
                       "optionalsAdded":  [
 
                                          ],
-                      "expectedKeyRef":  "BQ.R",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
@@ -139,7 +151,7 @@
                       "optionalsAdded":  [
 
                                          ],
-                      "expectedKeyRef":  "BQ.H",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
@@ -158,7 +170,7 @@
                       "optionalsAdded":  [
                                              "State"
                                          ],
-                      "expectedKeyRef":  "BQ.H",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
@@ -181,7 +193,7 @@
                       "optionalsAdded":  [
 
                                          ],
-                      "expectedKeyRef":  "BQ.R",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
@@ -200,7 +212,7 @@
                       "optionalsAdded":  [
                                              "State"
                                          ],
-                      "expectedKeyRef":  "BQ.R",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
@@ -223,25 +235,25 @@
                       "optionalsAdded":  [
 
                                          ],
-                      "expectedKeyRef":  "L1.N.DH",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
                       "fills":  [
                                     {
-                                        "fieldId":  "NameLastDH",
+                                        "fieldId":  "NameLast",
                                         "value":  "DOE"
                                     },
                                     {
-                                        "fieldId":  "NameFirstDH",
+                                        "fieldId":  "NameFirst",
                                         "value":  "JOHN"
                                     },
                                     {
-                                        "fieldId":  "NameMiddleDH",
+                                        "fieldId":  "NameMiddle",
                                         "value":  "A"
                                     },
                                     {
-                                        "fieldId":  "NameSuffixDH",
+                                        "fieldId":  "NameSuffix",
                                         "value":  "JR"
                                     }
                                 ]
@@ -254,13 +266,13 @@
                       "optionalsAdded":  [
 
                                          ],
-                      "expectedKeyRef":  "L1.O.DH",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
                       "fills":  [
                                     {
-                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "fieldId":  "OperatorLicenseNumber",
                                         "value":  "TEST123"
                                     }
                                 ]
@@ -273,33 +285,33 @@
                       "optionalsAdded":  [
 
                                          ],
-                      "expectedKeyRef":  "L1.N.DH",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
                       "fills":  [
                                     {
-                                        "fieldId":  "BirthDateDH",
+                                        "fieldId":  "BirthDate",
                                         "value":  "1990-01-15"
                                     },
                                     {
-                                        "fieldId":  "NameLastDH",
+                                        "fieldId":  "NameLast",
                                         "value":  "DOE"
                                     },
                                     {
-                                        "fieldId":  "NameFirstDH",
+                                        "fieldId":  "NameFirst",
                                         "value":  "JOHN"
                                     },
                                     {
-                                        "fieldId":  "NameMiddleDH",
+                                        "fieldId":  "NameMiddle",
                                         "value":  "A"
                                     },
                                     {
-                                        "fieldId":  "NameSuffixDH",
+                                        "fieldId":  "NameSuffix",
                                         "value":  "JR"
                                     },
                                     {
-                                        "fieldId":  "SexCodeDH",
+                                        "fieldId":  "SexCode",
                                         "value":  "M"
                                     }
                                 ]
@@ -312,38 +324,34 @@
                       "optionalsAdded":  [
                                              "Attention"
                                          ],
-                      "expectedKeyRef":  "L1.N.DH",
+                      "expectedKeyRef":  "UNREACHABLE",
                       "unwiredFields":  [
-
+                                            "Attention"
                                         ],
                       "fills":  [
                                     {
-                                        "fieldId":  "BirthDateDH",
+                                        "fieldId":  "BirthDate",
                                         "value":  "1990-01-15"
                                     },
                                     {
-                                        "fieldId":  "NameLastDH",
+                                        "fieldId":  "NameLast",
                                         "value":  "DOE"
                                     },
                                     {
-                                        "fieldId":  "NameFirstDH",
+                                        "fieldId":  "NameFirst",
                                         "value":  "JOHN"
                                     },
                                     {
-                                        "fieldId":  "NameMiddleDH",
+                                        "fieldId":  "NameMiddle",
                                         "value":  "A"
                                     },
                                     {
-                                        "fieldId":  "NameSuffixDH",
+                                        "fieldId":  "NameSuffix",
                                         "value":  "JR"
                                     },
                                     {
-                                        "fieldId":  "SexCodeDH",
+                                        "fieldId":  "SexCode",
                                         "value":  "M"
-                                    },
-                                    {
-                                        "fieldId":  "attention",
-                                        "value":  "TEST123"
                                     }
                                 ]
                   },
@@ -355,41 +363,37 @@
                       "optionalsAdded":  [
                                              "PurposeCode"
                                          ],
-                      "expectedKeyRef":  "L1.N.DH",
+                      "expectedKeyRef":  "L1Name",
                       "unwiredFields":  [
 
                                         ],
                       "fills":  [
                                     {
-                                        "fieldId":  "BirthDateDH",
+                                        "fieldId":  "BirthDate",
                                         "value":  "1990-01-15"
                                     },
                                     {
-                                        "fieldId":  "NameLastDH",
+                                        "fieldId":  "NameLast",
                                         "value":  "DOE"
                                     },
                                     {
-                                        "fieldId":  "NameFirstDH",
+                                        "fieldId":  "NameFirst",
                                         "value":  "JOHN"
                                     },
                                     {
-                                        "fieldId":  "NameMiddleDH",
+                                        "fieldId":  "NameMiddle",
                                         "value":  "A"
                                     },
                                     {
-                                        "fieldId":  "NameSuffixDH",
+                                        "fieldId":  "NameSuffix",
                                         "value":  "JR"
                                     },
                                     {
-                                        "fieldId":  "SexCodeDH",
+                                        "fieldId":  "SexCode",
                                         "value":  "M"
                                     },
                                     {
-                                        "fieldId":  "caRequestPurposeCode",
-                                        "value":  "C"
-                                    },
-                                    {
-                                        "fieldId":  "caRequestPurposeCode",
+                                        "fieldId":  "PurposeCode",
                                         "value":  "C"
                                     }
                                 ]
@@ -402,33 +406,33 @@
                       "optionalsAdded":  [
                                              "State"
                                          ],
-                      "expectedKeyRef":  "KQ.N",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
                       "fills":  [
                                     {
-                                        "fieldId":  "BirthDateDH",
+                                        "fieldId":  "BirthDate",
                                         "value":  "1990-01-15"
                                     },
                                     {
-                                        "fieldId":  "NameLastDH",
+                                        "fieldId":  "NameLast",
                                         "value":  "DOE"
                                     },
                                     {
-                                        "fieldId":  "NameFirstDH",
+                                        "fieldId":  "NameFirst",
                                         "value":  "JOHN"
                                     },
                                     {
-                                        "fieldId":  "NameMiddleDH",
+                                        "fieldId":  "NameMiddle",
                                         "value":  "A"
                                     },
                                     {
-                                        "fieldId":  "NameSuffixDH",
+                                        "fieldId":  "NameSuffix",
                                         "value":  "JR"
                                     },
                                     {
-                                        "fieldId":  "SexCodeDH",
+                                        "fieldId":  "SexCode",
                                         "value":  "M"
                                     },
                                     {
@@ -445,13 +449,13 @@
                       "optionalsAdded":  [
 
                                          ],
-                      "expectedKeyRef":  "L1.O.DH",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
                       "fills":  [
                                     {
-                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "fieldId":  "OperatorLicenseNumber",
                                         "value":  "TEST123"
                                     }
                                 ]
@@ -464,17 +468,13 @@
                       "optionalsAdded":  [
                                              "Attention"
                                          ],
-                      "expectedKeyRef":  "L1.O.DH",
+                      "expectedKeyRef":  "UNREACHABLE",
                       "unwiredFields":  [
-
+                                            "Attention"
                                         ],
                       "fills":  [
                                     {
-                                        "fieldId":  "OperatorLicenseNumberDH",
-                                        "value":  "TEST123"
-                                    },
-                                    {
-                                        "fieldId":  "attention",
+                                        "fieldId":  "OperatorLicenseNumber",
                                         "value":  "TEST123"
                                     }
                                 ]
@@ -487,21 +487,17 @@
                       "optionalsAdded":  [
                                              "PurposeCode"
                                          ],
-                      "expectedKeyRef":  "L1.O.DH",
+                      "expectedKeyRef":  "KQOperatorLicenseNumberIn",
                       "unwiredFields":  [
 
                                         ],
                       "fills":  [
                                     {
-                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "fieldId":  "OperatorLicenseNumber",
                                         "value":  "TEST123"
                                     },
                                     {
-                                        "fieldId":  "caRequestPurposeCode",
-                                        "value":  "C"
-                                    },
-                                    {
-                                        "fieldId":  "caRequestPurposeCode",
+                                        "fieldId":  "PurposeCode",
                                         "value":  "C"
                                     }
                                 ]
@@ -514,13 +510,13 @@
                       "optionalsAdded":  [
                                              "State"
                                          ],
-                      "expectedKeyRef":  "KQ.O",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
                       "fills":  [
                                     {
-                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "fieldId":  "OperatorLicenseNumber",
                                         "value":  "TEST123"
                                     },
                                     {
@@ -537,7 +533,7 @@
                       "optionalsAdded":  [
 
                                          ],
-                      "expectedKeyRef":  "L1.N",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
@@ -568,7 +564,7 @@
                       "optionalsAdded":  [
 
                                          ],
-                      "expectedKeyRef":  "L1.O",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
@@ -587,7 +583,7 @@
                       "optionalsAdded":  [
 
                                          ],
-                      "expectedKeyRef":  "QW.N",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
@@ -626,7 +622,7 @@
                       "optionalsAdded":  [
                                              "State"
                                          ],
-                      "expectedKeyRef":  "DQ.N",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
@@ -669,7 +665,7 @@
                       "optionalsAdded":  [
 
                                          ],
-                      "expectedKeyRef":  "L1.O",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
@@ -688,7 +684,7 @@
                       "optionalsAdded":  [
                                              "State"
                                          ],
-                      "expectedKeyRef":  "DQ.O",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
@@ -711,29 +707,29 @@
                       "optionalsAdded":  [
 
                                          ],
-                      "expectedKeyRef":  "QGH.A",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
                       "fills":  [
                                     {
-                                        "fieldId":  "GunAge",
-                                        "value":  "45"
+                                        "fieldId":  "Age",
+                                        "value":  "TE"
                                     },
                                     {
-                                        "fieldId":  "GunNameLast",
+                                        "fieldId":  "NameLast",
                                         "value":  "DOE"
                                     },
                                     {
-                                        "fieldId":  "GunNameFirst",
+                                        "fieldId":  "NameFirst",
                                         "value":  "JOHN"
                                     },
                                     {
-                                        "fieldId":  "GunNameMiddle",
+                                        "fieldId":  "NameMiddle",
                                         "value":  "A"
                                     },
                                     {
-                                        "fieldId":  "GunNameSuffix",
+                                        "fieldId":  "NameSuffix",
                                         "value":  "JR"
                                     }
                                 ]
@@ -746,29 +742,29 @@
                       "optionalsAdded":  [
 
                                          ],
-                      "expectedKeyRef":  "QGH.B",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
                       "fills":  [
                                     {
-                                        "fieldId":  "GunBirthDate",
-                                        "value":  "1980-01-15"
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
                                     },
                                     {
-                                        "fieldId":  "GunNameLast",
+                                        "fieldId":  "NameLast",
                                         "value":  "DOE"
                                     },
                                     {
-                                        "fieldId":  "GunNameFirst",
+                                        "fieldId":  "NameFirst",
                                         "value":  "JOHN"
                                     },
                                     {
-                                        "fieldId":  "GunNameMiddle",
+                                        "fieldId":  "NameMiddle",
                                         "value":  "A"
                                     },
                                     {
-                                        "fieldId":  "GunNameSuffix",
+                                        "fieldId":  "NameSuffix",
                                         "value":  "JR"
                                     }
                                 ]
@@ -781,13 +777,13 @@
                       "optionalsAdded":  [
 
                                          ],
-                      "expectedKeyRef":  "QGB",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
                       "fills":  [
                                     {
-                                        "fieldId":  "serialNumber",
+                                        "fieldId":  "SerialNumber",
                                         "value":  "TEST123"
                                     }
                                 ]
@@ -800,18 +796,14 @@
                       "optionalsAdded":  [
                                              "GunCaliber"
                                          ],
-                      "expectedKeyRef":  "QGB",
+                      "expectedKeyRef":  "UNREACHABLE",
                       "unwiredFields":  [
-
+                                            "GunCaliber"
                                         ],
                       "fills":  [
                                     {
-                                        "fieldId":  "serialNumber",
+                                        "fieldId":  "SerialNumber",
                                         "value":  "TEST123"
-                                    },
-                                    {
-                                        "fieldId":  "gunCaliber",
-                                        "value":  "TEST"
                                     }
                                 ]
                   },
@@ -823,17 +815,17 @@
                       "optionalsAdded":  [
                                              "GunMake"
                                          ],
-                      "expectedKeyRef":  "QGB",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
                       "fills":  [
                                     {
-                                        "fieldId":  "serialNumber",
+                                        "fieldId":  "SerialNumber",
                                         "value":  "TEST123"
                                     },
                                     {
-                                        "fieldId":  "firearmMake",
+                                        "fieldId":  "FirearmMake",
                                         "value":  "TES"
                                     }
                                 ]
@@ -846,18 +838,14 @@
                       "optionalsAdded":  [
                                              "GunTypeCode"
                                          ],
-                      "expectedKeyRef":  "QGB",
+                      "expectedKeyRef":  "UNREACHABLE",
                       "unwiredFields":  [
-
+                                            "GunTypeCode"
                                         ],
                       "fills":  [
                                     {
-                                        "fieldId":  "serialNumber",
+                                        "fieldId":  "SerialNumber",
                                         "value":  "TEST123"
-                                    },
-                                    {
-                                        "fieldId":  "gunTypeCode",
-                                        "value":  "TE"
                                     }
                                 ]
                   },
@@ -869,18 +857,14 @@
                       "optionalsAdded":  [
                                              "RelatedSearchHitIndicator"
                                          ],
-                      "expectedKeyRef":  "QGB",
+                      "expectedKeyRef":  "UNREACHABLE",
                       "unwiredFields":  [
-
+                                            "RelatedSearchHitIndicator"
                                         ],
                       "fills":  [
                                     {
-                                        "fieldId":  "serialNumber",
+                                        "fieldId":  "SerialNumber",
                                         "value":  "TEST123"
-                                    },
-                                    {
-                                        "fieldId":  "RelatedSearchHitIndicator",
-                                        "value":  "T"
                                     }
                                 ]
                   },
@@ -892,7 +876,7 @@
                       "optionalsAdded":  [
 
                                          ],
-                      "expectedKeyRef":  "QV.P",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
@@ -911,7 +895,7 @@
                       "optionalsAdded":  [
 
                                          ],
-                      "expectedKeyRef":  "QV.P",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
@@ -934,30 +918,30 @@
                       "optionalsAdded":  [
 
                                          ],
-                      "expectedKeyRef":  "VP.D",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
                       "fills":  [
                                     {
-                                        "fieldId":  "VehNameLast",
+                                        "fieldId":  "NameLast",
                                         "value":  "DOE"
                                     },
                                     {
-                                        "fieldId":  "VehNameFirst",
+                                        "fieldId":  "NameFirst",
                                         "value":  "JOHN"
                                     },
                                     {
-                                        "fieldId":  "VehNameMiddle",
+                                        "fieldId":  "NameMiddle",
                                         "value":  "A"
                                     },
                                     {
-                                        "fieldId":  "VehNameSuffix",
+                                        "fieldId":  "NameSuffix",
                                         "value":  "JR"
                                     },
                                     {
-                                        "fieldId":  "VehBirthDate",
-                                        "value":  "1980-01-15"
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
                                     }
                                 ]
                   },
@@ -969,25 +953,25 @@
                       "optionalsAdded":  [
 
                                          ],
-                      "expectedKeyRef":  "VP.N",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
                       "fills":  [
                                     {
-                                        "fieldId":  "VehNameLast",
+                                        "fieldId":  "NameLast",
                                         "value":  "DOE"
                                     },
                                     {
-                                        "fieldId":  "VehNameFirst",
+                                        "fieldId":  "NameFirst",
                                         "value":  "JOHN"
                                     },
                                     {
-                                        "fieldId":  "VehNameMiddle",
+                                        "fieldId":  "NameMiddle",
                                         "value":  "A"
                                     },
                                     {
-                                        "fieldId":  "VehNameSuffix",
+                                        "fieldId":  "NameSuffix",
                                         "value":  "JR"
                                     }
                                 ]
@@ -1000,25 +984,25 @@
                       "optionalsAdded":  [
                                              "AddressCity"
                                          ],
-                      "expectedKeyRef":  "VP.N",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
                       "fills":  [
                                     {
-                                        "fieldId":  "VehNameLast",
+                                        "fieldId":  "NameLast",
                                         "value":  "DOE"
                                     },
                                     {
-                                        "fieldId":  "VehNameFirst",
+                                        "fieldId":  "NameFirst",
                                         "value":  "JOHN"
                                     },
                                     {
-                                        "fieldId":  "VehNameMiddle",
+                                        "fieldId":  "NameMiddle",
                                         "value":  "A"
                                     },
                                     {
-                                        "fieldId":  "VehNameSuffix",
+                                        "fieldId":  "NameSuffix",
                                         "value":  "JR"
                                     },
                                     {
@@ -1035,25 +1019,25 @@
                       "optionalsAdded":  [
                                              "AddressStreetNumber"
                                          ],
-                      "expectedKeyRef":  "VP.N",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
                       "fills":  [
                                     {
-                                        "fieldId":  "VehNameLast",
+                                        "fieldId":  "NameLast",
                                         "value":  "DOE"
                                     },
                                     {
-                                        "fieldId":  "VehNameFirst",
+                                        "fieldId":  "NameFirst",
                                         "value":  "JOHN"
                                     },
                                     {
-                                        "fieldId":  "VehNameMiddle",
+                                        "fieldId":  "NameMiddle",
                                         "value":  "A"
                                     },
                                     {
-                                        "fieldId":  "VehNameSuffix",
+                                        "fieldId":  "NameSuffix",
                                         "value":  "JR"
                                     },
                                     {
@@ -1070,7 +1054,7 @@
                       "optionalsAdded":  [
 
                                          ],
-                      "expectedKeyRef":  "QV.V",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
@@ -1089,7 +1073,7 @@
                       "optionalsAdded":  [
 
                                          ],
-                      "expectedKeyRef":  "QV.P",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
@@ -1108,7 +1092,7 @@
                       "optionalsAdded":  [
                                              "State"
                                          ],
-                      "expectedKeyRef":  "RQ.P",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
@@ -1131,7 +1115,7 @@
                       "optionalsAdded":  [
 
                                          ],
-                      "expectedKeyRef":  "QV.V",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
@@ -1150,7 +1134,7 @@
                       "optionalsAdded":  [
                                              "VehicleMakeCode"
                                          ],
-                      "expectedKeyRef":  "QV.V",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
@@ -1173,7 +1157,7 @@
                       "optionalsAdded":  [
 
                                          ],
-                      "expectedKeyRef":  "QV.P",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
@@ -1200,7 +1184,7 @@
                       "optionalsAdded":  [
                                              "State"
                                          ],
-                      "expectedKeyRef":  "RQ.P",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
@@ -1231,7 +1215,7 @@
                       "optionalsAdded":  [
 
                                          ],
-                      "expectedKeyRef":  "QV.V",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
@@ -1250,7 +1234,7 @@
                       "optionalsAdded":  [
                                              "State"
                                          ],
-                      "expectedKeyRef":  "RQ.V",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
@@ -1273,7 +1257,7 @@
                       "optionalsAdded":  [
                                              "VehicleMakeCode"
                                          ],
-                      "expectedKeyRef":  "QV.V",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
@@ -1296,7 +1280,7 @@
                       "optionalsAdded":  [
                                              "VehicleYear"
                                          ],
-                      "expectedKeyRef":  "QV.V",
+                      "expectedKeyRef":  "NO-FIRE",
                       "unwiredFields":  [
 
                                         ],
@@ -1306,7 +1290,7 @@
                                         "value":  "1HGCM82633A123456"
                                     },
                                     {
-                                        "fieldId":  "vehicleYear",
+                                        "fieldId":  "VehicleYear",
                                         "value":  "2026"
                                     }
                                 ]

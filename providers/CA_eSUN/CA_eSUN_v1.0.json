@@ -5208,8 +5208,7 @@
               "sourceField": [
                 "RegistrationState"
               ],
-              "targetField": "State",
-              "codeTypeProvider": "NCIC"
+              "targetField": "State"
             },
             {
               "name": "VehicleIdentificationNumber",
@@ -5255,7 +5254,8 @@
                     "operator": "IN",
                     "value": [
                       "CA",
-                      "null"
+                      "null",
+                      "59872938171"
                     ]
                   }
                 ],
@@ -5318,11 +5318,11 @@
                 "set": [
                   "PurposeCode",
                   "LicensePlateNumber",
-                  "LicensePlateYear",
                   "RegistrationState"
                 ],
                 "any": [
                   "ORI",
+                  "LicensePlateYear",
                   "LicensePlateTypeCode"
                 ],
                 "conditions": [
@@ -5332,7 +5332,8 @@
                     ],
                     "operator": "NOT_IN",
                     "value": [
-                      "CA"
+                      "CA",
+                      "59872938171"
                     ]
                   }
                 ],
@@ -5340,6 +5341,10 @@
                   {
                     "field": "LicensePlateTypeCode",
                     "value": "PC"
+                  },
+                  {
+                    "field": "LicensePlateYear",
+                    "value": "2026"
                   }
                 ]
               },
@@ -5399,7 +5404,8 @@
                     "operator": "IN",
                     "value": [
                       "CA",
-                      "null"
+                      "null",
+                      "59872938171"
                     ]
                   }
                 ],
@@ -5793,8 +5799,7 @@
               "sourceField": [
                 "SexCode"
               ],
-              "targetField": "SexCode",
-              "codeTypeSource": "NCIC"
+              "targetField": "SexCode"
             },
             {
               "name": "State",
@@ -5808,8 +5813,7 @@
               "sourceField": [
                 "RegistrationState"
               ],
-              "targetField": "State",
-              "codeTypeProvider": "NCIC"
+              "targetField": "State"
             },
             {
               "name": "VehicleIdentificationNumber",
@@ -6182,8 +6186,7 @@
               "sourceField": [
                 "SexCode"
               ],
-              "targetField": "SexCode",
-              "codeTypeProvider": "NCIC"
+              "targetField": "SexCode"
             },
             {
               "name": "State",
@@ -6197,8 +6200,7 @@
               "sourceField": [
                 "RegistrationState"
               ],
-              "targetField": "State",
-              "codeTypeProvider": "NCIC"
+              "targetField": "State"
             }
           ],
           "combinations": [
@@ -6398,8 +6400,7 @@
               "sourceField": [
                 "RegistrationState"
               ],
-              "targetField": "State",
-              "codeTypeProvider": "NCIC"
+              "targetField": "State"
             }
           ],
           "combinations": [
@@ -6524,8 +6525,7 @@
               "sourceField": [
                 "RegistrationState"
               ],
-              "targetField": "State",
-              "codeTypeProvider": "NCIC"
+              "targetField": "State"
             }
           ],
           "combinations": [
@@ -7532,7 +7532,7 @@
           }
         }
       ],
-      "description": "Provider configuration for CA eSUN",
+      "description": "Provider configuration for CA_eSUN v1.0 -- HAND BUILT BY ENGINEERING, captured from the San Diego Sheriff live tenant 2026-09-02. Baseline of the v1.x line. Verbatim original: source/CA_eSUN_v1.0_SDSO_BASELINE_2026-09-02.json",
       "label": "CLETS",
       "name": "CA_eSUN",
       "type": "BUNDLE",

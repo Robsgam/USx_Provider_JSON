@@ -2,32 +2,47 @@
   SUPPORTED-QUERY (DEVDOC) AUDIT -- CA_eSUN
 ================================================================
 
-[PASS] CHECK 0 transaction-name scope: all 6 built transaction(s) are devdoc-authorized (compared against 6 Basic name(s))
+[FAIL] CHECK 0 SCOPE VIOLATION: built transaction 'AFS' is NOT in the devdoc 'Basic Queries Supported' list
+[FAIL] CHECK 0 SCOPE VIOLATION: built transaction 'CAILojackQuery' is NOT in the devdoc 'Basic Queries Supported' list
 
 Extract STATUS: PROVISIONAL  (PROVISIONAL -- mismatches INFO until devdoc sign-off)
 Devdoc 'Basic Queries Supported' (CA_eSUN_DEVDOC.txt, lines 33-289): ArticleSingleQuery, BoatQuery, DriverHistoryQuery, DriverLicenseQuery, GunQuery, VehicleRegistrationQuery
 
-[PASS] combo QA: 'Article | ArticleSerialNumber' is devdoc-supported
-[PASS] combo BQ.H: 'Boat | BoatHullIdNumber' is devdoc-supported
-[PASS] combo BQ.R: 'Boat | RegistrationNumber' is devdoc-supported
-[PASS] combo DQ.N: 'Driver License | Name' is devdoc-supported
-[PASS] combo QW.N: 'Driver License | Name' is devdoc-supported
-[PASS] combo L1.N: 'Driver License | Name' is devdoc-supported
-[PASS] combo DQ.O: 'Driver License | OperatorLicenseNumber' is devdoc-supported
-[PASS] combo L1.O: 'Driver License | OperatorLicenseNumber' is devdoc-supported
-[PASS] combo KQ.N: 'Driver History | Name' is devdoc-supported
-[PASS] combo L1.N.DH: 'Driver History | Name' is devdoc-supported
-[PASS] combo KQ.O: 'Driver History | OperatorLicenseNumber' is devdoc-supported
-[PASS] combo L1.O.DH: 'Driver History | OperatorLicenseNumber' is devdoc-supported
-[PASS] combo QGH.A: 'Firearm | Name' is devdoc-supported
-[PASS] combo QGH.B: 'Firearm | Name' is devdoc-supported
-[PASS] combo QGB: 'Firearm | GunSerialNumber' is devdoc-supported
-[PASS] combo RQ.P: 'Vehicle Registration | LicensePlateNumber' is devdoc-supported
-[PASS] combo VP.D: 'Vehicle Registration | BirthDate' is devdoc-supported
-[PASS] combo RQ.V: 'Vehicle Registration | VehicleIdentificationNumber' is devdoc-supported
-[PASS] combo VP.N: 'Vehicle Registration | Name' is devdoc-supported
-[PASS] combo QV.V: 'Vehicle Registration | VehicleIdentificationNumber' is devdoc-supported
-[PASS] combo 4: 'Vehicle Registration | LicensePlateNumber' is devdoc-supported
-[PASS] combo QV.P: 'Vehicle Registration | LicensePlateNumber' is devdoc-supported
+[INFO] combo QVLicensePlateNumberIn: 'VehicleRegistrationQuery | LicensePlateNumber' NOT in supported-query list (unsupported query?)
+[INFO] combo IdentificationNumberInOut: 'VehicleRegistrationQuery | VehicleIdentificationNumber' NOT in supported-query list (unsupported query?)
+[INFO] combo 4LicensePlateTypeIn: 'VehicleRegistrationQuery | LicensePlateNumber' NOT in supported-query list (unsupported query?)
+[INFO] combo RQLicensePlateTypeYearOut: 'VehicleRegistrationQuery | LicensePlateNumber' NOT in supported-query list (unsupported query?)
+[INFO] combo VPNameBirthDateIn: 'VehicleRegistrationQuery | BirthDate' NOT in supported-query list (unsupported query?)
+[INFO] combo NameAddressIn: 'VehicleRegistrationQuery | Name' NOT in supported-query list (unsupported query?)
+[INFO] combo ArticleSerialNumber: 'ArticleSingleQuery | ArticleSerialNumber' NOT in supported-query list (unsupported query?)
+[INFO] combo PurposeCodeFirearmSerialNumber: 'GunQuery | FirearmSerialNumber' NOT in supported-query list (unsupported query?)
+[INFO] combo PurposeCodeNameLastBirthDate: 'GunQuery | Name' NOT in supported-query list (unsupported query?)
+[INFO] combo PurposeCodeNameLastAge: 'GunQuery | Name' NOT in supported-query list (unsupported query?)
+[INFO] combo L1NameIn: 'DL | Name' NOT in supported-query list (unsupported query?)
+[INFO] combo L1OperatorLicenseNumberIn: 'DL | OperatorLicenseNumber' NOT in supported-query list (unsupported query?)
+[INFO] combo DQNameBirthSexCodeOut: 'DL | BirthDate' NOT in supported-query list (unsupported query?)
+[INFO] combo KQOperatorLicenseNumberOut: 'DL | OperatorLicenseNumber' NOT in supported-query list (unsupported query?)
+[INFO] combo VPBirthDateIn: 'DL | BirthDate' NOT in supported-query list (unsupported query?)
+[INFO] combo VPAgeIn: 'DL | Age' NOT in supported-query list (unsupported query?)
+[INFO] combo LojackID: 'CAILojackQuery | LojackID' NOT in supported-query list (unsupported query?)
+[PASS] combo L1Name: 'Driver History | Name' is devdoc-supported
+[PASS] combo KQName: 'Driver History | Name' is devdoc-supported
+[PASS] combo KQOperatorLicenseNumberIn: 'Driver History | OperatorLicenseNumber' is devdoc-supported
+[PASS] combo KQOperatorLicenseNumberOut: 'Driver History | OperatorLicenseNumber' is devdoc-supported
+[INFO] combo PurposeCodeNameLastBirthDate: 'AFS | Name' NOT in supported-query list (unsupported query?)
+[INFO] combo PurposeCodeNameLastAge: 'AFS | Name' NOT in supported-query list (unsupported query?)
+[INFO] combo PurposeCodeRegistrationNumber: 'BoatQuery | RegistrationNumber' NOT in supported-query list (unsupported query?)
+[INFO] combo PurposeCodeBoatHullIdNumber: 'BoatQuery | BoatHullIdNumber' NOT in supported-query list (unsupported query?)
+[WARN] supported 'Article | ArticleSerialNumber' has NO combo in JSON (intentional skip? document it)
+[WARN] supported 'Boat | BoatHullIdNumber' has NO combo in JSON (intentional skip? document it)
+[WARN] supported 'Boat | RegistrationNumber' has NO combo in JSON (intentional skip? document it)
+[WARN] supported 'Driver License | Name' has NO combo in JSON (intentional skip? document it)
+[WARN] supported 'Driver License | OperatorLicenseNumber' has NO combo in JSON (intentional skip? document it)
+[WARN] supported 'Firearm | GunSerialNumber' has NO combo in JSON (intentional skip? document it)
+[WARN] supported 'Firearm | Name' has NO combo in JSON (intentional skip? document it)
+[WARN] supported 'Vehicle Registration | BirthDate' has NO combo in JSON (intentional skip? document it)
+[WARN] supported 'Vehicle Registration | LicensePlateNumber' has NO combo in JSON (intentional skip? document it)
+[WARN] supported 'Vehicle Registration | Name' has NO combo in JSON (intentional skip? document it)
+[WARN] supported 'Vehicle Registration | VehicleIdentificationNumber' has NO combo in JSON (intentional skip? document it)
 
-RESULTS: 23 PASS / 0 FAIL / 0 WARN (0 INFO)
+RESULTS: 4 PASS / 2 FAIL / 11 WARN (21 INFO)

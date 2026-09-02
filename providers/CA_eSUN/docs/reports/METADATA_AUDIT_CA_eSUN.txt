@@ -1,34 +1,33 @@
 ﻿================================================================
   Build Report: CA_eSUN
-  Source: CA_eSUN_v2.6.json
-  Generated: 2026-08-27 14:04
+  Source: CA_eSUN_v1.0.json
+  Generated: 2026-09-02 13:18
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-08-27 14:04
+ Generated: 2026-09-02 13:18
 ============================================================
 
 ============================================================
  METADATA AUDIT: CA_eSUN
 ============================================================
   XML: CA_eSUN.xml
-  JSON: CA_eSUN_v2.6.json
+  JSON: CA_eSUN_v1.0.json
 
 --- CHECK 1: Query Coverage ---
   [PASS] ArticleSingleQuery: in XML and JSON
   [PASS] BoatQuery: in XML and JSON
+  [PASS] CAILojackQuery: in XML and JSON
   [PASS] DriverHistoryQuery: in XML and JSON
   [PASS] DriverLicenseQuery: in XML and JSON
   [PASS] GunQuery: in XML and JSON
   [PASS] VehicleRegistrationQuery: in XML and JSON
+  [FAIL] AFS: in JSON but NOT in XML (invalid query)
 
 --- CHECK 2: KeyReference Validation ---
-  [PASS] QA: exists in XML ArticleSingleQuery
-  [PASS] QGB: exists in XML GunQuery
-  [PASS] 4: exists in XML VehicleRegistrationQuery
 
 --- CHECK 3: Field Coverage ---
   ArticleSingleQuery:
@@ -42,7 +41,9 @@ METADATA AUDIT
   [PASS]   CaRequestPurposeCode: in XML and QIDM
   [PASS]   RegistrationNumber: in XML and QIDM
   [PASS]   State: in XML and QIDM
-  CAILojackQuery: (not built in JSON -- see CHECK 1)
+  CAILojackQuery:
+  [PASS]   CaRequestPurposeCode: in XML and QIDM
+  [PASS]   LojackIdentifier: in XML and QIDM
   CAISupervisedReleaseQuery: (not built in JSON -- see CHECK 1)
   CCHCriminalHistoryAQQuery: (not built in JSON -- see CHECK 1)
   CCHCriminalHistoryFQQuery: (not built in JSON -- see CHECK 1)
@@ -63,6 +64,7 @@ METADATA AUDIT
   [PASS]   State: in XML and QIDM
   DriverLicenseOnlyQuery: (not built in JSON -- see CHECK 1)
   DriverLicenseQuery:
+  [PASS]   Age: in XML and QIDM
   [PASS]   BirthDate: in XML and QIDM
   [PASS]   CaRequestPurposeCode: in XML and QIDM
   [PASS]   Name: in XML and QIDM
@@ -78,7 +80,6 @@ METADATA AUDIT
   [PASS]   GunSerialNumber: in XML and QIDM
   [PASS]   GunTypeCode: in XML and QIDM
   [PASS]   Name: in XML and QIDM
-  [PASS]   RelatedSearchHitIndicator: in XML and QIDM
   VehicleRegistrationQuery:
   [PASS]   AddressCity: in XML and QIDM
   [PASS]   AddressStreetNumber: in XML and QIDM
@@ -99,89 +100,50 @@ METADATA AUDIT
 
 --- CHECK 4: Combination Field Requirements ---
   ArticleSingleQuery:
-  [PASS]   keyRef QA: set field 'CaRequestPurposeCode' present
-  [PASS]   keyRef QA: set field 'ArticleSerialNumber' present
-  [PASS]   keyRef QA: any field 'ArticleBrand' present
-  [PASS]   keyRef QA: any field 'ArticleCategory' present
-  [PASS]   keyRef QA: any field 'ArticleTypeCode' present
   BoatQuery:
-  [PASS]   keyRef BQ: set field 'CaRequestPurposeCode' covered by BQ.H,BQ.R
-  [PASS]   keyRef BQ: set field 'RegistrationNumber' covered by BQ.H,BQ.R
-  [PASS]   keyRef BQ: any field 'State' covered by BQ.H,BQ.R
-  [PASS]   keyRef BQ: set field 'CaRequestPurposeCode' covered by BQ.H,BQ.R
-  [PASS]   keyRef BQ: set field 'BoatHullIdNumber' covered by BQ.H,BQ.R
-  [PASS]   keyRef BQ: any field 'State' covered by BQ.H,BQ.R
+  CAILojackQuery:
   DriverHistoryQuery:
-  [PASS]   keyRef KQ: set field 'CaRequestPurposeCode' covered by KQ.N,KQ.O
-  [PASS]   keyRef KQ: set field 'Name' covered by KQ.N,KQ.O
-  [PASS]   keyRef KQ: set field 'SexCode' covered by KQ.N,KQ.O
-  [PASS]   keyRef KQ: set field 'BirthDate' covered by KQ.N,KQ.O
-  [PASS]   keyRef KQ: any field 'Attention' covered by KQ.N,KQ.O
-  [PASS]   keyRef KQ: any field 'PurposeCode' covered by KQ.N,KQ.O
-  [PASS]   keyRef KQ: any field 'State' covered by KQ.N,KQ.O
-  [PASS]   keyRef KQ: set field 'CaRequestPurposeCode' covered by KQ.N,KQ.O
-  [PASS]   keyRef KQ: set field 'OperatorLicenseNumber' covered by KQ.N,KQ.O
-  [PASS]   keyRef KQ: any field 'Attention' covered by KQ.N,KQ.O
-  [PASS]   keyRef KQ: any field 'PurposeCode' covered by KQ.N,KQ.O
-  [PASS]   keyRef KQ: any field 'State' covered by KQ.N,KQ.O
+  [PASS]   keyRef L1: set field 'CaRequestPurposeCode' covered by L1Name
+  [PASS]   keyRef L1: set field 'Name' covered by L1Name
+  [PASS]   keyRef KQ: set field 'CaRequestPurposeCode' covered by KQName
+  [PASS]   keyRef KQ: set field 'Name' covered by KQName
+  [PASS]   keyRef KQ: set field 'SexCode' covered by KQName
+  [PASS]   keyRef KQ: set field 'BirthDate' covered by KQName
+  [PASS]   keyRef KQ: any field 'Attention' covered by KQName
+  [PASS]   keyRef KQ: any field 'PurposeCode' covered by KQName
+  [PASS]   keyRef KQ: any field 'State' covered by KQName
+  [PASS]   keyRef KQ: set field 'CaRequestPurposeCode' covered by KQOperatorLicenseNumberIn,KQOperatorLicenseNumberOut
+  [PASS]   keyRef KQ: set field 'OperatorLicenseNumber' covered by KQOperatorLicenseNumberIn,KQOperatorLicenseNumberOut
+  [PASS]   keyRef KQ: any field 'Attention' covered by KQOperatorLicenseNumberIn,KQOperatorLicenseNumberOut
+  [PASS]   keyRef KQ: any field 'PurposeCode' covered by KQOperatorLicenseNumberIn,KQOperatorLicenseNumberOut
+  [PASS]   keyRef KQ: any field 'State' covered by KQOperatorLicenseNumberIn,KQOperatorLicenseNumberOut
   DriverLicenseQuery:
-  [PASS]   keyRef L1: set field 'CaRequestPurposeCode' covered by L1.N,L1.O
-  [PASS]   keyRef L1: set field 'Name' covered by L1.N,L1.O
-  [PASS]   keyRef L1: set field 'CaRequestPurposeCode' covered by L1.N,L1.O
-  [PASS]   keyRef L1: set field 'OperatorLicenseNumber' covered by L1.N,L1.O
-  [PASS]   keyRef DQ: set field 'CaRequestPurposeCode' covered by DQ.N,DQ.O
-  [PASS]   keyRef DQ: set field 'SexCode' covered by DQ.N,DQ.O
-  [PASS]   keyRef DQ: set field 'BirthDate' covered by DQ.N,DQ.O
-  [PASS]   keyRef DQ: set field 'Name' covered by DQ.N,DQ.O
-  [PASS]   keyRef DQ: any field 'State' covered by DQ.N,DQ.O
-  [PASS]   keyRef DQ: set field 'CaRequestPurposeCode' covered by DQ.N,DQ.O
-  [PASS]   keyRef DQ: set field 'OperatorLicenseNumber' covered by DQ.N,DQ.O
-  [PASS]   keyRef DQ: any field 'State' covered by DQ.N,DQ.O
-  [PASS]   keyRef QW: set field 'CaRequestPurposeCode' covered by QW.N
-  [PASS]   keyRef QW: set field 'BirthDate' covered by QW.N
-  [PASS]   keyRef QW: set field 'Name' covered by QW.N
-  [PASS]   keyRef QW: any field 'SexCode' covered by QW.N
-  [PASS]   keyRef QW: set field 'CaRequestPurposeCode' covered by QW.N
+  [PASS]   keyRef L1: set field 'CaRequestPurposeCode' covered by L1NameIn
+  [PASS]   keyRef L1: set field 'Name' covered by L1NameIn
+  [PASS]   keyRef L1: set field 'CaRequestPurposeCode' covered by L1OperatorLicenseNumberIn
+  [PASS]   keyRef L1: set field 'OperatorLicenseNumber' covered by L1OperatorLicenseNumberIn
+  [PASS]   keyRef DQ: set field 'CaRequestPurposeCode' covered by DQNameBirthSexCodeOut
+  [PASS]   keyRef DQ: set field 'SexCode' covered by DQNameBirthSexCodeOut
+  [PASS]   keyRef DQ: set field 'BirthDate' covered by DQNameBirthSexCodeOut
+  [PASS]   keyRef DQ: set field 'Name' covered by DQNameBirthSexCodeOut
+  [PASS]   keyRef DQ: any field 'State' covered by DQNameBirthSexCodeOut
   GunQuery:
-  [PASS]   keyRef QGB: set field 'CaRequestPurposeCode' present
-  [PASS]   keyRef QGB: set field 'GunSerialNumber' present
-  [PASS]   keyRef QGB: any field 'GunCaliber' present
-  [PASS]   keyRef QGB: any field 'GunMake' present
-  [PASS]   keyRef QGB: any field 'GunTypeCode' present
-  [PASS]   keyRef QGB: any field 'RelatedSearchHitIndicator' present
-  [PASS]   keyRef QGH: set field 'CaRequestPurposeCode' covered by QGH.A,QGH.B
-  [PASS]   keyRef QGH: set field 'Name' covered by QGH.A,QGH.B
   VehicleRegistrationQuery:
-  [PASS]   keyRef QV: set field 'CaRequestPurposeCode' covered by QV.V,QV.P
-  [PASS]   keyRef QV: set field 'LicensePlateNumber' covered by QV.V,QV.P
-  [PASS]   keyRef QV: set field 'CaRequestPurposeCode' covered by QV.V,QV.P
-  [PASS]   keyRef QV: set field 'VehicleIdentificationNumber' covered by QV.V,QV.P
-  [PASS]   keyRef QV: any field 'VehicleMakeCode' covered by QV.V,QV.P
-  [PASS]   keyRef QV: any field 'VehicleYear' covered by QV.V,QV.P
-  [PASS]   keyRef 4: set field 'CaRequestPurposeCode' present
-  [PASS]   keyRef 4: set field 'LicensePlateNumber' present
-  [PASS]   keyRef 4: set field 'LicensePlateTypeCode' present
-  [PASS]   keyRef RQ: set field 'CaRequestPurposeCode' covered by RQ.P,RQ.V
-  [PASS]   keyRef RQ: set field 'LicensePlateNumber' covered by RQ.P,RQ.V
-  [PASS]   keyRef RQ: set field 'LicensePlateTypeCode' covered by RQ.P,RQ.V
-  [PASS]   keyRef RQ: set field 'LicensePlateYear' covered by RQ.P,RQ.V
-  [PASS]   keyRef RQ: any field 'State' covered by RQ.P,RQ.V
-  [PASS]   keyRef RQ: set field 'CaRequestPurposeCode' covered by RQ.P,RQ.V
-  [PASS]   keyRef RQ: set field 'VehicleIdentificationNumber' covered by RQ.P,RQ.V
-  [PASS]   keyRef RQ: any field 'State' covered by RQ.P,RQ.V
-  [PASS]   keyRef RQ: any field 'VehicleMakeCode' covered by RQ.P,RQ.V
-  [PASS]   keyRef RQ: any field 'VehicleYear' covered by RQ.P,RQ.V
-  [PASS]   keyRef VP: set field 'CaRequestPurposeCode' covered by VP.D,VP.N
-  [PASS]   keyRef VP: set field 'Name' covered by VP.D,VP.N
-  [PASS]   keyRef VP: any field 'AddressCity' covered by VP.D,VP.N
-  [PASS]   keyRef VP: any field 'AddressStreetNumber' covered by VP.D,VP.N
+  [PASS]   keyRef QV: set field 'CaRequestPurposeCode' covered by QVLicensePlateNumberIn
+  [PASS]   keyRef QV: set field 'LicensePlateNumber' covered by QVLicensePlateNumberIn
+  [PASS]   keyRef VP: set field 'CaRequestPurposeCode' covered by VPNameBirthDateIn
+  [PASS]   keyRef VP: set field 'Name' covered by VPNameBirthDateIn
 
 --- CHECK 4d: Field promoted to set[] vs metadata any[] ---
-  [NOTE]   keyRef RQ.V: 'RegistrationState' in set[] but metadata any[] -- ACCEPTED per registry
-  [PASS]   No fields over-promoted from metadata any[] to set[]
+  [FAIL]   keyRef RQLicensePlateTypeYearOut (VehicleRegistrationQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] (defaulted -- initialValue not counted for set[]) -- move to any[] or record in CA_eSUN_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef DQNameBirthSexCodeOut (DriverLicenseQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] (defaulted -- initialValue not counted for set[]) -- move to any[] or record in CA_eSUN_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef KQOperatorLicenseNumberOut (DriverLicenseQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] (defaulted -- initialValue not counted for set[]) -- move to any[] or record in CA_eSUN_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef VPAgeIn (DriverLicenseQuery): 'Age' PROMOTED to set[] but metadata has it in any[] -- move to any[] or record in CA_eSUN_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef KQName (DriverHistoryQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] (defaulted -- initialValue not counted for set[]) -- move to any[] or record in CA_eSUN_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef KQOperatorLicenseNumberOut (DriverHistoryQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] (defaulted -- initialValue not counted for set[]) -- move to any[] or record in CA_eSUN_ACCEPTED_DIVERGENCES.txt
 
 --- CHECK 4e: Field demoted to any[] vs metadata set[] ---
-  [PASS]   No metadata-required fields demoted to any[]
+  [FAIL]   keyRef RQLicensePlateTypeYearOut (VehicleRegistrationQuery): 'LicensePlateTypeCode' DEMOTED to any[] but metadata REQUIRES it in set[] -- the query can fire without it; promote to set[] or record in CA_eSUN_ACCEPTED_DIVERGENCES.txt
 
 --- CHECK 4b: Choice-Set Option Coverage ---
 
@@ -191,6 +153,8 @@ METADATA AUDIT
   BoatQuery: 2 metadata search paths
   [PASS]   BoatHullIdNumber: at least one combo built (e.g. BQ)
   [PASS]   RegistrationNumber: at least one combo built (e.g. BQ)
+  CAILojackQuery: 1 metadata search paths
+  [FAIL]   LojackIdentifier: QIDM has attribute but NO combo uses it as primaryFieldReference (missing combo for QV path)
   DriverHistoryQuery: 2 metadata search paths
   [PASS]   Name: at least one combo built (e.g. L1)
   [PASS]   OperatorLicenseNumber: at least one combo built (e.g. L1)
@@ -198,7 +162,7 @@ METADATA AUDIT
   [PASS]   Name: at least one combo built (e.g. L1)
   [PASS]   OperatorLicenseNumber: at least one combo built (e.g. L1)
   GunQuery: 2 metadata search paths
-  [PASS]   GunSerialNumber: at least one combo built (e.g. QGB)
+  [FAIL]   GunSerialNumber: QIDM has attribute but NO combo uses it as primaryFieldReference (missing combo for QGB path)
   [PASS]   Name: at least one combo built (e.g. QGH)
   VehicleRegistrationQuery: 3 metadata search paths
   [PASS]   LicensePlateNumber: at least one combo built (e.g. QV)
@@ -206,47 +170,23 @@ METADATA AUDIT
   [PASS]   VehicleIdentificationNumber: at least one combo built (e.g. QV)
 
 --- CHECK 5: Field maxLength Alignment ---
-  [PASS] articleBrand: maxLength 6 matches XML (ArticleBrand)
-  [PASS] articleCategory: maxLength 1 matches XML (ArticleCategory)
-  [PASS] serialNumber: maxLength 20 matches XML (ArticleSerialNumber)
-  [PASS] caRequestPurposeCode: maxLength 1 matches XML (CaRequestPurposeCode)
+  [PASS] ArticleSerialNumber: maxLength 20 matches XML (ArticleSerialNumber)
   [PASS] BoatHullIdNumber: maxLength 20 matches XML (BoatHullIdNumber)
-  [PASS] caRequestPurposeCode: maxLength 1 matches XML (CaRequestPurposeCode)
   [PASS] RegistrationNumber: maxLength 8 matches XML (RegistrationNumber)
-  [PASS] attention: maxLength 30 matches XML (Attention)
-  [PASS] caRequestPurposeCode: maxLength 1 matches XML (CaRequestPurposeCode)
-  [PASS] NameLastDH: maxLength 30 matches XML (Name)
-  [PASS] NameFirstDH: maxLength 30 matches XML (Name)
-  [PASS] NameMiddleDH: maxLength 30 matches XML (Name)
-  [PASS] OperatorLicenseNumberDH: maxLength 20 matches XML (OperatorLicenseNumber)
-  [PASS] caRequestPurposeCode: maxLength 1 matches XML (PurposeCode)
-  [PASS] caRequestPurposeCode: maxLength 1 matches XML (CaRequestPurposeCode)
-  [PASS] NameLast: maxLength 30 matches XML (Name)
-  [PASS] NameFirst: maxLength 30 matches XML (Name)
-  [PASS] NameMiddle: maxLength 30 matches XML (Name)
-  [PASS] OperatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
-  [PASS] GunAge: maxLength 2 matches XML (Age)
-  [PASS] caRequestPurposeCode: maxLength 1 matches XML (CaRequestPurposeCode)
-  [PASS] serialNumber: maxLength 14 matches XML (GunSerialNumber)
-  [PASS] GunNameLast: maxLength 30 matches XML (Name)
-  [PASS] GunNameFirst: maxLength 30 matches XML (Name)
-  [PASS] GunNameMiddle: maxLength 30 matches XML (Name)
-  [PASS] RelatedSearchHitIndicator: maxLength 1 matches XML (RelatedSearchHitIndicator)
+  [PASS] LojackID: maxLength 5 matches XML (LojackIdentifier)
+  [PASS] Age: maxLength 2 matches XML (Age)
+  [WARN] Age: QIF maxLength 4 > XML maxLength 2 (Age) -- server may reject
+  [WARN] SerialNumber: QIF maxLength 20 > XML maxLength 14 (GunSerialNumber) -- server may reject
   [PASS] AddressCity: maxLength 13 matches XML (AddressCity)
   [PASS] AddressStreetNumber: maxLength 3 matches XML (AddressStreetNumber)
-  [PASS] caRequestPurposeCode: maxLength 1 matches XML (CaRequestPurposeCode)
   [PASS] LicensePlateNumber: maxLength 10 matches XML (LicensePlateNumber)
   [PASS] LicensePlateYear: maxLength 4 matches XML (LicensePlateYear)
-  [PASS] VehNameLast: maxLength 30 matches XML (Name)
-  [PASS] VehNameFirst: maxLength 30 matches XML (Name)
-  [PASS] VehNameMiddle: maxLength 30 matches XML (Name)
-  [PASS] VehicleIdentificationNumber: maxLength 30 matches XML (VehicleIdentificationNumber)
-  [PASS] vehicleYear: maxLength 4 matches XML (VehicleYear)
+  [PASS] VehicleYear: maxLength 4 matches XML (VehicleYear)
 
 ============================================================
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 173 PASS / 0 FAIL / 0 WARN
+Total: 100 PASS / 10 FAIL / 2 WARN
 ============================================================
 

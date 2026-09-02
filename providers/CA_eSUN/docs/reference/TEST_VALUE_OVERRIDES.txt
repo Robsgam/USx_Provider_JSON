@@ -1,29 +1,40 @@
 # TEST_VALUE_OVERRIDES.txt -- fieldId=value  OR  <Entity>.fieldId=value (entity-scoped wins)
 # CA_eSUN
 #
-# ADDED 2026-08-20 at v2.4 -- resolves [FLAG:plan-fillability-unfireable-tests].
-# test_phase2 step [2] reported 26 UNSATISFIED plan tests, ALL of them on the two CROSS-ENTITY
-# owner name pools. Cause is exactly what the flag predicted: these fieldIds are provider-specific
-# (VehName*/GunName*, not the portfolio-standard NameFirst/NameLast), so Get-TestValue had no
-# mapping and emit_test_plan omitted them -- leaving VP.D/VP.N/QGH.A/QGH.B tests that name a
-# mandatory field they never fill. The tenant would correctly keep Send DISABLED and send nothing,
-# so those tests could not have produced evidence. NOT a build defect and NOT a JSON change.
+# REWRITTEN 2026-09-02 FOR THE v1.0 BASELINE. The previous contents targeted the RETIRED 2.x
+# field namespace (VehNameLast/VehNameFirst/GunNameLast/GunAge/...), which does not exist in the
+# hand-built engineering config. v1.0 uses the PORTFOLIO-STANDARD names on every entity
+# (NameLast/NameFirst/NameMiddle/NameSuffix/BirthDate/Age), so no cross-entity name overrides are
+# needed at all -- Get-TestValue already maps those. Verified against the emitted v1.0 form.
 #
-# Entity-scoped form throughout, so a value cannot leak onto another entity's control.
-#
-# Vehicle -- owner search (VP.D mandatory Last+First+BirthDate, VP.N mandatory Last+First)
-Vehicle.VehNameLast=DOE
-Vehicle.VehNameFirst=JOHN
-Vehicle.VehNameMiddle=A
-Vehicle.VehNameSuffix=JR
-Vehicle.VehBirthDate=1980-01-15
-#
-# Firearm -- gun-by-owner search. Metadata puts Choice[Age|BirthDate] INSIDE <Set> on the Name
-# variant, which is why QGH is split into QGH.A (Age) and QGH.B (BirthDate) -- one combination per
-# branch, since set[] has no OR. Both branches therefore need their own discriminator value.
-Firearm.GunNameLast=DOE
-Firearm.GunNameFirst=JOHN
-Firearm.GunNameMiddle=A
-Firearm.GunNameSuffix=JR
-Firearm.GunAge=45
-Firearm.GunBirthDate=1980-01-15
+# ORI IS DELIBERATELY ABSENT AND MUST STAY ABSENT.
+# 12 combinations reference 'ORI' in their any[], and NO form control for it exists on ANY entity
+# (checked all five default-variant layouts). It is supplied by the platform AUTH envelope
+# (AUTHENTICATION set[ORI, Mnemonic, DeviceId]), not typed by an officer. emit_test_plan's
+# "'ORI' has no test value" warnings are therefore CORRECT and expected -- inventing a value would
+# make the driver type into a control that does not exist. Leave them.
+
+# ── Vehicle ───────────────────────────────────────────────────────────────────────────
+# LojackID is the sole set[] field of the CAILojackQuery combo and has a real FormInput control,
+# so without a value that whole query is unfireable (the test_phase2 UNSATISFIED class).
+Vehicle.LojackID=LJ1234567
+
+# ── Firearm ───────────────────────────────────────────────────────────────────────────
+# PROVISIONAL -- these are codeTypeCategory dropdowns (NCIC_FIREARM_CALIBER / NCIC_FIREARM_TYPE)
+# and the values below are NOT yet confirmed against the San Diego tenant's own code tables.
+# CONFIRM VIA THE PICKLIST CAPTURE BEFORE DRIVING: a value outside the tenant's list cannot be
+# selected and the test cannot fire -- exactly the CA_CLETS_OCATS v2.10 Article defect, where the
+# dropdown rendered EMPTY and every request-side gate was still green.
+Firearm.FirearmCaliber=11
+Firearm.FirearmType=R
+
+# ── State toggle (all three State-bearing entities) ────────────────────────────────────
+# RegistrationState carries initialValue='CA' on Vehicle, Person AND Boat, so a toggle test that
+# also uses 'CA' submits the form's own default and proves nothing -- emit_test_plan flags it as a
+# HOLLOW TOGGLE. GA is chosen because the routing gates fork on exactly this value:
+#   in-state  : RegistrationState IN     [CA, null, 59872938171]
+#   out-of-state: RegistrationState NOT_EQUALS/NOT_IN [CA]
+# so GA is the value that actually exercises the out-of-state branch.
+# NOTE: the 'CA' prefill on a routing field is LIMITATION #30 and is carried FROM THE LIVE CONFIG
+# unchanged -- it is recorded, not fixed, because v1.0 is a faithful capture.
+RegistrationState.toggle=GA

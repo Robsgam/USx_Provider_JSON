@@ -2,9 +2,23 @@
 // Then render each entity form and run its line (one at a time; each downloads one file):
 var scope = {
     "provider":  "CA_eSUN",
-    "version":  "2.6",
+    "version":  "1.0",
     "note":  "Paste as scope; render each entity form; __usxScopePicklists(scope, \u0027\u003cEntity\u003e\u0027). One download per entity.",
     "fields":  [
+                   {
+                       "entity":  "Article",
+                       "fieldId":  "PurposeCode",
+                       "label":  "CA Purpose Code",
+                       "codeTypeCategory":  "",
+                       "codeTypeSource":  ""
+                   },
+                   {
+                       "entity":  "Article",
+                       "fieldId":  "ArticleTypeCode",
+                       "label":  "Article Type",
+                       "codeTypeCategory":  "NCIC_ARTICLE_TYPE",
+                       "codeTypeSource":  "CA_CLETS"
+                   },
                    {
                        "entity":  "Vehicle",
                        "fieldId":  "LicensePlateTypeCode",
@@ -14,22 +28,29 @@ var scope = {
                    },
                    {
                        "entity":  "Vehicle",
-                       "fieldId":  "VehicleMakeCode",
-                       "label":  "Vehicle Make (optional)",
+                       "fieldId":  "PurposeCode",
+                       "label":  "CA Purpose Code",
                        "codeTypeCategory":  "",
                        "codeTypeSource":  ""
                    },
                    {
                        "entity":  "Vehicle",
                        "fieldId":  "RegistrationState",
-                       "label":  "State (leave blank for CA)",
+                       "label":  "State",
+                       "codeTypeCategory":  "",
+                       "codeTypeSource":  ""
+                   },
+                   {
+                       "entity":  "Vehicle",
+                       "fieldId":  "VehicleMakeCode",
+                       "label":  "Vehicle Make Code",
                        "codeTypeCategory":  "",
                        "codeTypeSource":  ""
                    },
                    {
                        "entity":  "Person",
-                       "fieldId":  "RegistrationState",
-                       "label":  "State (leave blank for CA)",
+                       "fieldId":  "PurposeCode",
+                       "label":  "CA Purpose Code",
                        "codeTypeCategory":  "",
                        "codeTypeSource":  ""
                    },
@@ -42,46 +63,53 @@ var scope = {
                    },
                    {
                        "entity":  "Person",
-                       "fieldId":  "SexCodeDH",
-                       "label":  "Sex",
+                       "fieldId":  "RegistrationState",
+                       "label":  "License State",
                        "codeTypeCategory":  "",
                        "codeTypeSource":  ""
                    },
                    {
                        "entity":  "Firearm",
-                       "fieldId":  "firearmMake",
-                       "label":  "Make (optional)",
+                       "fieldId":  "FirearmCaliber",
+                       "label":  "Firearm Caliber",
+                       "codeTypeCategory":  "NCIC_FIREARM_CALIBER",
+                       "codeTypeSource":  "NJ_NIBRS"
+                   },
+                   {
+                       "entity":  "Firearm",
+                       "fieldId":  "FirearmMake",
+                       "label":  "Firearm Make",
                        "codeTypeCategory":  "NCIC_FIREARM_MAKE",
                        "codeTypeSource":  "NCIC"
                    },
                    {
                        "entity":  "Firearm",
-                       "fieldId":  "gunCaliber",
-                       "label":  "Caliber (optional)",
-                       "codeTypeCategory":  "NCIC_FIREARM_CALIBER",
-                       "codeTypeSource":  "NCIC"
-                   },
-                   {
-                       "entity":  "Firearm",
-                       "fieldId":  "gunTypeCode",
-                       "label":  "Type (optional)",
+                       "fieldId":  "FirearmType",
+                       "label":  "Firearm Type",
                        "codeTypeCategory":  "NCIC_FIREARM_TYPE",
                        "codeTypeSource":  "NCIC"
                    },
                    {
-                       "entity":  "Article",
-                       "fieldId":  "articleTypeCode",
-                       "label":  "Article Type (optional)",
-                       "codeTypeCategory":  "NCIC_ARTICLE_TYPE",
-                       "codeTypeSource":  "CA_CLETS"
+                       "entity":  "Firearm",
+                       "fieldId":  "PurposeCode",
+                       "label":  "CA Purpose Code",
+                       "codeTypeCategory":  "",
+                       "codeTypeSource":  ""
+                   },
+                   {
+                       "entity":  "Boat",
+                       "fieldId":  "PurposeCode",
+                       "label":  "CA Purpose Code",
+                       "codeTypeCategory":  "",
+                       "codeTypeSource":  ""
                    },
                    {
                        "entity":  "Boat",
                        "fieldId":  "RegistrationState",
-                       "label":  "State (leave blank for CA)",
+                       "label":  "State",
                        "codeTypeCategory":  "",
                        "codeTypeSource":  ""
                    }
                ]
 };
-console.log('%c[USx-SCOPE] scope loaded: CA_eSUN v2.6 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Boat')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')");
+console.log('%c[USx-SCOPE] scope loaded: CA_eSUN v1.0 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Boat')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')");
