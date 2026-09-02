@@ -205,12 +205,84 @@
 
   // Auto-detect: react-select inputs carry class arc-select__input; a segmented date field
   // (FormDate) has [role=spinbutton] children instead of an <input>; else plain text.
+  // ── RADIO GROUP (RND-71815 / FormRadioGroup) ────────────────────────────────────────────
+  // Added 2026-09-02. The driver had ZERO radio handling -- grep 'radio' returned nothing in this
+  // file or driver.js -- so a field rendered as a radio group could not be filled at all. On
+  // CA_eSUN that is fatal rather than degrading: PurposeCode is in the set[] of ALL 25 combinations
+  // (measured), so converting it to a radio group without this would leave Send disabled on every
+  // one of the 35 plan tests -- a total, not partial, test failure.
+  //
+  // WRITTEN DEFENSIVELY ON PURPOSE. FormRadioGroup is NOT yet confirmed to render at all
+  // (RND-71815 is still To Do; the node shape came from a Jira comment). We therefore do not know
+  // the exact DOM, so this probes SEVERAL plausible shapes and -- like selectReactSelect -- logs
+  // the stage it reached. The first live run then diagnoses itself instead of costing a round trip.
+  function findRadioGroup(fieldId) {
+    // 1) the container carries the fieldId (mirrors every other control here)
+    const byId = q(fieldId);
+    if (byId) {
+      if (byId.getAttribute && byId.getAttribute('role') === 'radiogroup') return byId;
+      if (byId.querySelector && byId.querySelector('input[type="radio"],[role="radio"]')) return byId;
+      if (byId.type === 'radio') return byId.closest('[role="radiogroup"]') || byId.parentElement;
+    }
+    // 2) radios grouped by NAME rather than a container id
+    const byName = document.querySelector(`input[type="radio"][name="${CSS.escape(fieldId)}"]`);
+    if (byName) return byName.closest('[role="radiogroup"]') || byName.closest('fieldset') || byName.parentElement;
+    // 3) an explicit radiogroup labelled with the fieldId
+    return document.querySelector(`[role="radiogroup"][data-field-id="${CSS.escape(fieldId)}"]`);
+  }
+
+  async function selectRadioGroup(fieldId, value) {
+    const dbg = (...a) => console.log('%c[USx-RAD]', 'color:#0a7', fieldId, ...a);
+    const group = findRadioGroup(fieldId);
+    if (!group) return { fieldId, kind: 'radio', ok: false, err: 'radio group not found' };
+
+    const radios = [...group.querySelectorAll('input[type="radio"],[role="radio"]')];
+    dbg(`${radios.length} option(s) found`);
+    if (!radios.length) return { fieldId, kind: 'radio', ok: false, err: 'radio group has no options' };
+
+    // Match on the CODE, exactly as the select path does: labels render "<CODE> - <Name>" and the
+    // plan's fill values are CODEs. Try the input's own value first (most reliable), then the
+    // visible label text anchored at the code so 'C' cannot match 'CNST_FORD'.
+    const re = new RegExp('^' + String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b');
+    const labelOf = (r) => {
+      const byFor = r.id ? document.querySelector(`label[for="${CSS.escape(r.id)}"]`) : null;
+      return ((byFor && byFor.textContent) || (r.closest('label') && r.closest('label').textContent) ||
+              r.getAttribute('aria-label') || '').trim();
+    };
+    let target = radios.find((r) => (r.value || '') === value)
+              || radios.find((r) => re.test(labelOf(r)));
+    if (!target) {
+      dbg('NO MATCH. options were:', radios.map((r) => `${r.value || '?'} | ${labelOf(r)}`));
+      return { fieldId, kind: 'radio', ok: false, err: `no radio matching "${value}"` };
+    }
+    dbg(`matched: "${target.value || labelOf(target)}"`);
+
+    // Click the LABEL when there is one -- a React-controlled radio often ignores a programmatic
+    // click on a visually-hidden input, which is the same class of failure the text path solves
+    // with the native value setter.
+    const lbl = target.id ? document.querySelector(`label[for="${CSS.escape(target.id)}"]`) : null;
+    (lbl || target).click();
+    if (!target.checked) { target.click(); }
+    target.dispatchEvent(new Event('change', { bubbles: true }));
+
+    const ok = await pollFor(() => target.checked, 3000, 100);
+    dbg(ok ? 'selection confirmed' : 'selection NOT confirmed after 3000ms');
+    return { fieldId, kind: 'radio', ok: !!ok, err: ok ? null : 'radio did not become checked' };
+  }
+
   async function fillField(fieldId, value) {
     const el = q(fieldId);
-    if (!el) return { fieldId, ok: false, err: 'not found' };
-    if ((el.className || '').toString().includes('arc-select__input')) {
+    // ORDER MATTERS. The react-select test runs FIRST so that nothing which works today can be
+    // re-routed by the new radio probe -- an existing control must keep its existing path.
+    if (el && (el.className || '').toString().includes('arc-select__input')) {
       return await selectReactSelect(fieldId, value);
     }
+    // Radio detection runs BEFORE the not-found bail, because a radio group may expose no element
+    // whose id === fieldId (shape 2 in findRadioGroup), so q() alone would report "not found" on a
+    // control that is plainly on screen.
+    const rg = findRadioGroup(fieldId);
+    if (rg) return await selectRadioGroup(fieldId, value);
+    if (!el) return { fieldId, ok: false, err: 'not found' };
     if (el.querySelector && el.querySelector('[role="spinbutton"]')) {
       return await fillDateSegments(fieldId, value);
     }
@@ -319,8 +391,8 @@
   // site by reflex.
   function isProviderTestTenant() { return /usx-[a-z0-9-]+\.mark43/i.test(location.hostname); }
 
-  window.__usxLib = { sleep, q, fillText, selectReactSelect, fillField, clickSend, extractConnectCicXml, triggerDownload, providerFromHost, isProviderTestTenant, providerOverrideKey };
+  window.__usxLib = { sleep, q, fillText, selectReactSelect, findRadioGroup, selectRadioGroup, fillField, clickSend, extractConnectCicXml, triggerDownload, providerFromHost, isProviderTestTenant, providerOverrideKey };
   // Build tag: bump on every extension change so console pastes identify the loaded build
   // (version skew burned attempt 4: a stale build still had the parked Run ALL button).
-  console.log('%c[USx]', 'color:#0a0;font-weight:bold', 'usx_lib loaded. BUILD 2026-08-27a (manifest 0.5.3 -- matches BOTH /admin/usx-log and legacy /admin/dex-log; panel ON/OFF per tenant + launcher dot unchanged)');
+  console.log('%c[USx]', 'color:#0a0;font-weight:bold', 'usx_lib loaded. BUILD 2026-09-02a (RADIO GROUP support added -- __usxLib.findRadioGroup(id) / selectRadioGroup(id,code) to probe; manifest 0.5.3 -- matches BOTH /admin/usx-log and legacy /admin/dex-log; panel ON/OFF per tenant + launcher dot unchanged)');
 })();
