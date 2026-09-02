@@ -193,6 +193,57 @@ function Note-IfUnresolved([string]$ctx, [string]$fid, $val) {
 # that field's form default (the base combo test already sends the default). When the resolved
 # base value equals the default, derive a distinct valid toggle value (or flag the test hollow).
 $script:ToggleStats = @{ anyField = 0; inverted = 0; hollow = 0 }
+$script:CondSkips = New-Object System.Collections.ArrayList
+
+# ---------------------------------------------------------------------------------------------
+# A COMBO'S OWN IN / NOT_IN LIST CONSTRAINS WHAT AN any[] TOGGLE MAY FILL.
+#
+# Rob 2026-09-02: "fix the plan generator first". CA_eSUN v2.1 T10 filled the VPNameBirthDateIn
+# combo (which submits fine) plus RegistrationState=GA, and Send never enabled. The combo carries
+#     { field:[RegistrationState], operator:IN, value:["CA","null","59872938171"] }
+# an IN-STATE whitelist, so GA makes it match nothing and NO query arms. The test could not run by
+# construction, and it burned three live runs looking like a build defect. Same for T23 on Person.
+#
+# WHY THE EXISTING "unrunnable" DROP DID NOT CATCH IT -- and this is the important part.
+# That drop asks Resolve-ExpectedKeyRef which combo fires, which routes through _sim_helpers, whose
+# documented model (QIDM_REFERENCE Sec 2a) is that a conditions array containing ANY value-comparison
+# operator (EQUALS/NOT_EQUALS/IN/NOT_IN/REGEX) is POISONED and disabled IN ITS ENTIRETY. Under that
+# model these conditions are inert, the combo still "fires" with GA, and the test looks runnable.
+# THE LIVE TENANT DISAGREES: with State blank T9 submits, with State=GA T10 does not, five runs
+# running. That is direct evidence the conditions are evaluated -- but the poisoned-array rule is
+# recorded from real experience on other providers, so this function deliberately does NOT change
+# _sim_helpers or the firing model. It only refuses to GENERATE a fill that the combo's own declared
+# value list rejects, which is correct under BOTH models: if conditions are inert the substituted
+# value routes identically, and if they are live the test can now actually run.
+#
+# Substitute rather than skip wherever possible -- a skipped any[] field loses toggle coverage.
+# Sentinels ('null', ''), and values that look like leaked ids rather than field values, are never
+# substituted in: CA_eSUN's list literally contains "59872938171" beside "CA".
+function Test-AnyValueAgainstConditions($combo, $attrName, $fieldId, $value, [ref]$skipLog, $ctx) {
+    if ($null -eq $value -or "$value" -eq '') { return $value }
+    $conds = @($combo.requirements.conditions | Where-Object { $_ })
+    if ($conds.Count -eq 0) { return $value }
+    foreach ($cond in $conds) {
+        $op = "$($cond.operator)".ToUpperInvariant()
+        if ($op -ne 'IN' -and $op -ne 'NOT_IN') { continue }
+        # Conditions name the SOURCE field; the toggle may be keyed by attribute name or fieldId.
+        $cf = @($cond.field) | ForEach-Object { "$_" }
+        if (($cf -notcontains "$attrName") -and ($cf -notcontains "$fieldId")) { continue }
+        $listed = @($cond.value | ForEach-Object { "$_" })
+        $usable = @($listed | Where-Object { $_ -and $_ -ne 'null' -and $_ -notmatch '^\d{6,}$' })
+        if ($op -eq 'IN') {
+            if ($listed -contains "$value") { return $value }              # already legal
+            if ($usable.Count -gt 0) { return $usable[0] }                 # substitute a legal one
+            [void]$skipLog.Value.Add("$ctx any[$fieldId] -- combo requires $fieldId IN [$($listed -join ',')] and no usable value is listed; toggle test SKIPPED")
+            return $null
+        } else {
+            if ($listed -notcontains "$value") { return $value }           # already legal
+            [void]$skipLog.Value.Add("$ctx any[$fieldId] -- '$value' is excluded by NOT_IN [$($listed -join ',')]; toggle test SKIPPED")
+            return $null
+        }
+    }
+    return $value
+}
 function Get-AnyFillValue([string]$ent, [string]$ff, [bool]$isOOS, $formDefaults, [bool]$CountStats = $true) {
     $val = Get-TestValue $ff $isOOS
     $default = $null
@@ -419,6 +470,8 @@ foreach ($ent in $entities) {
                     if (@($hiddenIds) -icontains $ff) { continue }   # hidden gate-feeder (e.g. automated Attention): nothing to type
                     $val = Get-AnyFillValue $ent $ff $isOOS $entFormDefaults
                     Note-IfUnresolved "$ent $kr any[]" $ff $val
+                    # HONOUR THE COMBO'S OWN VALUE LIST. See Test-AnyValueAgainstConditions.
+                    $val = Test-AnyValueAgainstConditions $c $af $ff $val ([ref]$script:CondSkips) "$ent $kr"
                     if ($null -ne $val -and $val -ne '') {
                         $script:ToggleStats.anyField++
                         $n++
@@ -442,6 +495,12 @@ foreach ($ent in $entities) {
                     $ff = Resolve-FieldId $af $q $fieldIds
                     if (@($hiddenIds) -icontains $ff) { continue }
                     $v = Get-AnyFillValue $ent $ff $true $entFormDefaults $false
+                    # SAME CONSTRAINT AS THE PER-FIELD LOOP ABOVE -- and this is the branch that
+                    # actually produced CA_eSUN's T10/T23. Note the hardcoded $true above: the
+                    # all-together test always asks for the OUT-OF-STATE value, so on an IN-STATE
+                    # combo it reliably picks a State the combo's own IN list rejects. Applying the
+                    # guard in only one of the two branches is why my first pass changed nothing.
+                    $v = Test-AnyValueAgainstConditions $c $af $ff $v ([ref]$script:CondSkips) "$ent $kr (all-any)"
                     if ($null -ne $v -and $v -ne '') { $anyFills += [ordered]@{ fieldId = $ff; value = "$v" } }
                 }
                 if (@($anyFills).Count -gt @($fills).Count) {
@@ -798,6 +857,13 @@ $tests | Where-Object { $_.kind -eq 'combo' } | ForEach-Object { "  T$($_.n) $($
 # Toggle-coverage summary -- any-field tests only prove a toggle if their value differs from the
 # field default. Report inversions + any residual hollow tests so a hollow toggle never again
 # passes unnoticed (the 6-provider silent-hollow bug, 2026-07-20).
+# PRINT WHAT THE CONDITION CONSTRAINT DID. A substitution or a skip that reports nothing is
+# indistinguishable from the check never running -- and this file's whole purpose is to stop
+# generating tests that cannot run, so it must say when it acted.
+if ($script:CondSkips.Count -gt 0) {
+    Write-Host ("[plan] {0} any[] toggle test(s) SKIPPED -- the combo's own IN/NOT_IN list rejects every available value:" -f $script:CondSkips.Count) -ForegroundColor Yellow
+    $script:CondSkips | ForEach-Object { Write-Host "         $_" -ForegroundColor DarkYellow }
+}
 Write-Host ("[{0}] Toggle coverage: {1} any-field test(s), {2} inverted from default, {3} hollow (flagged below)" -f `
     $(if ($script:ToggleStats.hollow -gt 0) { 'WARN' } else { 'PASS' }), `
     $script:ToggleStats.anyField, $script:ToggleStats.inverted, $script:ToggleStats.hollow) `
