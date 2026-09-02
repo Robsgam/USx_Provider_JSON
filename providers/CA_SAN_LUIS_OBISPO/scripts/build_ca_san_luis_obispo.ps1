@@ -22,7 +22,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_san_luis_obispo_mc.ps1
 
 param(
-    [string]$Version = '2.6'
+    [string]$Version = '2.7'
 )
 
 $ErrorActionPreference = "Stop"
@@ -43,7 +43,7 @@ if ($env:REPRO_OUTPATH) { $OUT = $env:REPRO_OUTPATH }
 
 # keyRef INVENTORY (LIMITATION #21 -- ConnectCIC requires unique keyRefs per QIDM; SLO uses regional
 # short keyRefs, most-specific-first, with identifier-priority guardrails NOT_EXISTS conditions):
-#   VehicleRegistrationQuery : RQ.P, RQ.V, QV.P, QV.V   (Plate>VIN guardrail on RQ.V/QV.V)
+#   VehicleRegistrationQuery : RQ.P, RQ.V, 4.P, QV.V   (Plate>VIN guardrail on RQ.V/QV.V)
 #   DriverLicenseQuery       : L1.N, DQ.O, L1.O          (OLN>Name guardrail on L1.N)
 #   DriverHistoryQuery       : KQ.N, B2.N, KQ.O, B2.O    (DH-suffix; OLN>Name guardrail on KQ.N/B2.N)
 #   BoatQuery                : BQ (hull), QB (reg)       (Hull>Reg guardrail on QB)
@@ -61,7 +61,7 @@ $qmf = Build-Qmf -ProviderName 'CA_SAN_LUIS_OBISPO'
 
 # =====================================================================
 # 1d. VehicleRegistrationQuery -- PascalCase, NO cross-entity
-# 4 combos: RQ.P (OOS plate), RQ.V (OOS VIN), QV.V (VIN in-state), QV.P (plate in-state)
+# 4 combos: RQ.P (OOS plate), RQ.V (OOS VIN), 4.P (in-state plate+type, devdoc #1), QV.V (VIN in-state)
 # NO CaRequestPurposeCode.
 # =====================================================================
 $vehRegQuery = [PSCustomObject]@{
@@ -106,10 +106,33 @@ $vehRegQuery = [PSCustomObject]@{
         # "fixing" them, and why TN_TIES v2.6 removed its plate TYPE while CA_CLETS v2.27 kept
         # its own and removed only the YEAR. This provider is the last surviving item from that
         # sweep, which named it explicitly and left it for its own next rebuild.
+        # v2.7: this slot was keyRef 'QV.P' (set[LicensePlateNumber] any[LicensePlateTypeCode]).
+        # It is now '4.P', metadata 4#{LicensePlateNumber} = Set[LicensePlateNumber,
+        # LicensePlateTypeCode] -- which is devdoc "#1 (In) LicensePlateNumber,
+        # LicensePlateTypeCode" EXACTLY, both unbracketed/mandatory.
+        # WHY THE STATE CONDITION (Rob's ruling, 2026-09-02): "4# carries no state so the
+        # convention leave state blank will work and the query can be fired with state
+        # conditional". 4# defines no State field, so it IS the in-state variant; State-blank
+        # is this repo's in-state convention (LIMITATION #30) and the VIN pair on this very
+        # provider already routes that way (RQ.V gated RegistrationState EXISTS, QV.V gated
+        # NOT_EXISTS). The plate pair was the asymmetric one -- both halves ungated, relying on
+        # specificity alone. This makes plate match VIN.
+        # WHY IT REPLACES QV.P RATHER THAN JOINING IT: LicensePlateTypeCode is form-prefilled
+        # 'PC' (kept deliberately at v2.6 -- devdoc #1 makes it MANDATORY in-state), so it is
+        # ALWAYS present. That makes 4.P's set[] and QV.P's set[] satisfiable by identical form
+        # state; no fill can distinguish them and no ordering can separate them (the AZ_AZDPS
+        # DQPN/DQP exact-collision class, BUILD_RULES 24). One of the two had to go, and 4.P is
+        # the one the devdoc actually lists. Nothing is lost: QV{Plate}'s only distinct
+        # capability is a plate-only in-state search, which devdoc #1 does not sanction and
+        # which the prefill already made unreachable. The wire is UNCHANGED either way -- both
+        # are combinations of the SAME <Transaction Name="VehicleRegistrationQuery">, and a
+        # keyRef never reaches the wire (only <MessageType> + the fields do).
+        # NO any[]: metadata 4# declares no <Any> at all. This also preserves the v2.6 ruling
+        # that LicensePlateYear must not ride out on an in-state plate search.
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber'); any = @('LicensePlateTypeCode'); defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }) }
+            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateTypeCode'); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }); defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }) }
             primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'QV.P'
+            keyReference          = '4.P'
             state                 = 'In/Out'
         }
         # In-state VIN (1 set)
@@ -120,7 +143,7 @@ $vehRegQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description        = 'VehicleRegistrationQuery -- RQ.P (OOS plate), RQ.V (OOS VIN), QV.P (plate), QV.V (VIN). Most-specific first, plate before VIN. MC PascalCase.'
+    description        = 'VehicleRegistrationQuery -- RQ.P (OOS plate), RQ.V (OOS VIN), 4.P (in-state plate+type), QV.V (VIN). State-gated in/out on BOTH plate and VIN. Most-specific first, plate before VIN. MC PascalCase.'
     handlerFunction    = 'CommsysTransactionRequestHandler'
     name               = 'CA_SAN_LUIS_OBISPO_VehicleRegistrationQuery'
     type               = 'QUERYINPUTDATAMAPPING'
@@ -431,7 +454,7 @@ $sloBundle = [PSCustomObject]@{
 # ------------------------------------------------------------------
 # Vehicle -- 3 cards (MC)
 # OPTIONS: RegistrationState + LicensePlateTypeCode + LicensePlateYear
-# PLATE SEARCH: LicensePlateNumber (QV.P / RQ.P)
+# PLATE SEARCH: LicensePlateNumber (4.P / RQ.P)
 # VIN SEARCH: VehicleIdentificationNumber + VehicleMakeCode + VehicleYear (QV.V / RQ.V)
 # ------------------------------------------------------------------
 # ------------------------------------------------------------------

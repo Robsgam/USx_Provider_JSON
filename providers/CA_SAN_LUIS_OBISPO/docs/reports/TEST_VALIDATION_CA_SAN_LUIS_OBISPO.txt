@@ -1,16 +1,16 @@
-﻿================================================================
+================================================================
   Build Report: CA_SAN_LUIS_OBISPO
-  Source: CA_SAN_LUIS_OBISPO_v2.6.json
-  Generated: 2026-08-27 14:14
+  Source: CA_SAN_LUIS_OBISPO_v2.7.json
+  Generated: 2026-09-02 10:18
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX <-> JSON CONSISTENCY -- CA_SAN_LUIS_OBISPO_v2.6
+TEST MATRIX <-> JSON CONSISTENCY -- CA_SAN_LUIS_OBISPO_v2.7
 ============================================================
-Source: CA_SAN_LUIS_OBISPO_v2.6.json
+Source: CA_SAN_LUIS_OBISPO_v2.7.json
 Matrix: CA_SAN_LUIS_OBISPO_TEST_MATRIX.txt
-Generated: 2026-08-27
+Generated: 2026-09-02
 
 SCOPE: This confirms each matrix row's expected combo fires for its
 data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
@@ -42,30 +42,31 @@ ENTITY: PERSON (24 tests -- 2 cards, 9 combos)
   T22  Person     [PASS] (structural check)
   T23  Person     [PASS] (structural check)
   T24  Person     [PASS] queriesToDeselect verified
-ENTITY: VEHICLE (10 tests -- 1 card, 4 combos)
+ENTITY: VEHICLE (11 tests -- 1 card, 4 combos)
   T25  Vehicle    [PASS] (structural check)
   T26  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear
   T27  Vehicle    [PASS] (structural check)
   T28  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear
   T29  Vehicle    [PASS] (structural check)
-  T30  Vehicle    [PASS] (structural check)
-  T31  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear
+  T30  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear
+  T31  Vehicle    [PASS] (structural check)
   T32  Vehicle    [PASS] (structural check)
   T33  Vehicle    [PASS] (structural check)
   T34  Vehicle    [PASS] (structural check)
+  T35  Vehicle    [PASS] (structural check)
 ENTITY: BOAT (5 tests -- 1 card, 2 combos)
-  T35  Boat       [PASS] BoatQuery fires (BQ)
-  T36  Boat       [PASS] any[] fields verified: RegistrationState
-  T37  Boat       [PASS] BoatQuery fires (QB)
-  T38  Boat       [PASS] any[] fields verified: RegistrationState
-  T39  Boat       [PASS] BoatQuery fires (BQ)
+  T36  Boat       [PASS] BoatQuery fires (BQ)
+  T37  Boat       [PASS] any[] fields verified: RegistrationState
+  T38  Boat       [PASS] BoatQuery fires (QB)
+  T39  Boat       [PASS] any[] fields verified: RegistrationState
+  T40  Boat       [PASS] BoatQuery fires (BQ)
 ENTITY: FIREARM (2 tests -- 1 card, 1 combo)
-  T40  Firearm    [PASS] GunQuery fires (QGB)
-  T41  Firearm    [PASS] any[] fields verified: GunCaliber, firearmMake, gunTypeCode
+  T41  Firearm    [PASS] GunQuery fires (QGB)
+  T42  Firearm    [PASS] any[] fields verified: GunCaliber, firearmMake, gunTypeCode
 ENTITY: ARTICLE (2 tests -- 1 card, 1 combo)
-  T42  Article    [PASS] ArticleSingleQuery fires (QA)
-  T43  Article    [PASS] any[] fields verified: articleBrand, articleCategory, ArticleTypeCode
+  T43  Article    [PASS] ArticleSingleQuery fires (QA)
+  T44  Article    [PASS] any[] fields verified: articleBrand, articleCategory, ArticleTypeCode
 
-SUMMARY: 43/43 PASS, 0 FAIL
+SUMMARY: 44/44 PASS, 0 FAIL
 
 

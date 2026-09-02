@@ -1,6 +1,6 @@
-CA_SAN_LUIS_OBISPO v2.6 -- TEST MATRIX
+CA_SAN_LUIS_OBISPO v2.7 -- TEST MATRIX
 ==================================================
-Generated: 2026-08-27
+Generated: 2026-09-02
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -39,7 +39,7 @@ Boat (1 card, 3 fields):
 
 QIDM SUMMARY (6 QIDMs, 17 combos)
 ----------------------------------------
-  VehicleRegistrationQuery: 4 combos (RQ x2, QV x2), autoSelect=true
+  VehicleRegistrationQuery: 4 combos (RQ x2, QV x1, 4.P x1), autoSelect=true
   DriverLicenseQuery: 5 combos (DQ x2, QV x1, L1.O x1, L1.N x1), autoSelect=true, deselects: [DH]
   DriverHistoryQuery: 4 combos (KQ x2, B2.O x1, B2.N x1), autoSelect=true, deselects: [DL]
   GunQuery: 1 combos (QG x1)
@@ -108,7 +108,7 @@ ENTITY 1: PERSON (24 tests -- 2 cards, 9 combos)
 24  Person      Deselect: DL deselects DH.            [    ]
               Fill both query fields. Check deselect behavior.
 
-ENTITY 2: VEHICLE (10 tests -- 1 card, 4 combos)
+ENTITY 2: VEHICLE (11 tests -- 1 card, 4 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -120,61 +120,63 @@ ENTITY 2: VEHICLE (10 tests -- 1 card, 4 combos)
               Expected: VehicleRegistrationQuery fires (RQ.V)
 28  Vehicle     RQ+.V+State        + VehicleMakeCode, vehicleYear  [    ]
               Expected: any[] fields present in XML output.
-29  Vehicle     QV+.P              LicensePlateNumber=TEST123       [    ]
-              Expected: VehicleRegistrationQuery fires (QV.P)
-30  Vehicle     QV+.V              VehicleIdentificationNumber=1HGCM8263... [    ]
+29  Vehicle     QV+.V              VehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleRegistrationQuery fires (QV.V)
-31  Vehicle     QV+.V              + VehicleMakeCode, vehicleYear  [    ]
+30  Vehicle     QV+.V              + VehicleMakeCode, vehicleYear  [    ]
               Expected: any[] fields present in XML output.
+31  Vehicle     4.P+4.P            LicensePlateNumber=TEST123, LicensePl... [    ]
+              Expected: VehicleRegistrationQuery fires (4.P)
 32  Vehicle     Guardrail: RQ.P>RQ.V  LicensePlateNumber=TEST123, VehicleId... [    ]
               Expected: VehicleRegistrationQuery fires (RQ.P). RegistrationState+VIN absent from XML.
-33  Vehicle     Guardrail: RQ.P>QV.V  LicensePlateNumber=TEST123, VehicleId... [    ]
+33  Vehicle     Guardrail: RQ.P>4.P  RegistrationState=GA, LicensePlateNum... [    ]
+              Expected: VehicleRegistrationQuery fires (RQ.P). Plate+LicensePlateTypeCode absent from XML.
+34  Vehicle     Guardrail: RQ.P>QV.V  LicensePlateNumber=TEST123, VehicleId... [    ]
               Expected: VehicleRegistrationQuery fires (RQ.P). VIN absent from XML.
-34  Vehicle     Guardrail: RQ.P>QV.V  RegistrationState=GA, VehicleIdentifi... [    ]
+35  Vehicle     Guardrail: RQ.P>QV.V  RegistrationState=GA, VehicleIdentifi... [    ]
               Expected: VehicleRegistrationQuery fires (RQ.P). VIN absent from XML.
 
 ENTITY 3: BOAT (5 tests -- 1 card, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-35  Boat        BQ+Hull            BoatHullIdNumber=FL1234AB56H7    [    ]
+36  Boat        BQ+Hull            BoatHullIdNumber=FL1234AB56H7    [    ]
               Expected: BoatQuery fires (BQ)
-36  Boat        BQ+Hull            + RegistrationState             [    ]
+37  Boat        BQ+Hull            + RegistrationState             [    ]
               Expected: any[] fields present in XML output.
-37  Boat        QB+Reg             RegistrationNumber=FL1234AB      [    ]
+38  Boat        QB+Reg             RegistrationNumber=FL1234AB      [    ]
               Expected: BoatQuery fires (QB)
-38  Boat        QB+Reg             + RegistrationState             [    ]
+39  Boat        QB+Reg             + RegistrationState             [    ]
               Expected: any[] fields present in XML output.
-39  Boat        Guardrail: BQ>QB   BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+40  Boat        Guardrail: BQ>QB   BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (BQ). Reg absent from XML.
 
 ENTITY 4: FIREARM (2 tests -- 1 card, 1 combo)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-40  Firearm     QG+B               serialNumber=GUN12345            [    ]
+41  Firearm     QG+B               serialNumber=GUN12345            [    ]
               Expected: GunQuery fires (QGB)
-41  Firearm     QG+B               + GunCaliber, firearmMake, gunTypeCode [    ]
+42  Firearm     QG+B               + GunCaliber, firearmMake, gunTypeCode [    ]
               Expected: any[] fields present in XML output.
 
 ENTITY 5: ARTICLE (2 tests -- 1 card, 1 combo)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-42  Article     QA+serialNumber    serialNumber=GUN12345            [    ]
+43  Article     QA+serialNumber    serialNumber=GUN12345            [    ]
               Expected: ArticleSingleQuery fires (QA)
-43  Article     QA+serialNumber    + articleBrand, articleCategory, ArticleTypeCode [    ]
+44  Article     QA+serialNumber    + articleBrand, articleCategory, ArticleTypeCode [    ]
               Expected: any[] fields present in XML output.
 
 ================================================================================
-TOTAL: 43 tests
+TOTAL: 44 tests
 
 COMBO COVERAGE (17/17):
-  VehicleRegistrationQuery: 4/4 -- T25(RQ+.P), T27(RQ+.V), T29(QV+.P), T30(QV+.V)
+  VehicleRegistrationQuery: 4/4 -- T25(RQ+.P), T27(RQ+.V), T29(QV+.V), T31(4.P+4.P)
   DriverLicenseQuery: 5/5 -- T1(DQ+.O), T2(DQ+.N), T4(QV+C.N), T6(L1.O+L1.O), T7(L1.N+L1.N)
   DriverHistoryQuery: 4/4 -- T9(KQ+.O), T11(KQ+.N), T13(B2.O+B2.O), T15(B2.N+B2.N)
-  GunQuery: 1/1 -- T40(B)
-  ArticleSingleQuery: 1/1 -- T42(serialNumber)
-  BoatQuery: 2/2 -- T35(BQ+Hull), T37(QB+Reg)
+  GunQuery: 1/1 -- T41(B)
+  ArticleSingleQuery: 1/1 -- T43(serialNumber)
+  BoatQuery: 2/2 -- T36(BQ+Hull), T38(QB+Reg)
 
-IMPORT FILE: CA_SAN_LUIS_OBISPO_v2.6.json
+IMPORT FILE: CA_SAN_LUIS_OBISPO_v2.7.json

@@ -6155,11 +6155,17 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "LicensePlateNumber"
-                                                                                                         ],
-                                                                                                 "any":  [
+                                                                                                             "LicensePlateNumber",
                                                                                                              "LicensePlateTypeCode"
                                                                                                          ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "RegistrationState"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    }
+                                                                                                                ],
                                                                                                  "defaults":  [
                                                                                                                   {
                                                                                                                       "field":  "LicensePlateTypeCode",
@@ -6168,7 +6174,7 @@
                                                                                                               ]
                                                                                              },
                                                                             "primaryFieldReference":  "LicensePlateNumber",
-                                                                            "keyReference":  "QV.P",
+                                                                            "keyReference":  "4.P",
                                                                             "state":  "In/Out"
                                                                         },
                                                                         {
@@ -6200,7 +6206,7 @@
                                                                             "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "VehicleRegistrationQuery -- RQ.P (OOS plate), RQ.V (OOS VIN), QV.P (plate), QV.V (VIN). Most-specific first, plate before VIN. MC PascalCase.",
+                                                   "description":  "VehicleRegistrationQuery -- RQ.P (OOS plate), RQ.V (OOS VIN), 4.P (in-state plate+type), QV.V (VIN). State-gated in/out on BOTH plate and VIN. Most-specific first, plate before VIN. MC PascalCase.",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "CA_SAN_LUIS_OBISPO_VehicleRegistrationQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -6844,7 +6850,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for CA_SAN_LUIS_OBISPO v2.6 MC -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 2 Person QIDMs",
+                        "description":  "Provider configuration for CA_SAN_LUIS_OBISPO v2.7 MC -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 2 Person QIDMs",
                         "name":  "CA_SAN_LUIS_OBISPO",
                         "type":  "BUNDLE",
                         "provider":  "CA_SAN_LUIS_OBISPO"

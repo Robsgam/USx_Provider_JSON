@@ -294,7 +294,7 @@ sweep and must never be read as such.
 |---|---|---|---|
 | ~~CA_CLETS_OCATS~~ | **v2.11** | **IMPORTED 2026-09-01 -- ALL-PASS 5/5, 65 logs. Record is the Section A row.** | none known |
 | CA_CONTRA_COSTA | **v2.4** | NOT IMPORTED -- 0 logs at any version | none known |
-| CA_SAN_LUIS_OBISPO | **v2.6** | NOT IMPORTED -- 0 logs at any version | none known |
+| CA_SAN_LUIS_OBISPO | **v2.7** | NOT IMPORTED -- 0 logs at any version. **v2.7 built 2026-09-02** (was v2.6): keyRef `QV.P` -> `4.P`, the in-state plate search now implements metadata `4#{Plate}` = devdoc "#1 (In) LicensePlateNumber, LicensePlateTypeCode", gated `RegistrationState NOT_EXISTS` per Rob's ruling that State-blank is the in-state convention. Query trace 19 built/1 MISSING -> **20 built/0 MISSING**, fidelity unchanged at 22 branches / 0 UNDER / 0 OVER. No package archived (never tested). **This is the version to import**, not v2.6. | none known |
 | CA_VENTURA_COUNTY | **v2.5** | NOT IMPORTED -- 0 logs at any version | none known |
 | **CA_eSUN** | **v2.6** | **NOT IMPORTED -- 0 logs at any version** | ⚠️ see the warning below |
 | **LA_LEMS** | **v3.2** | **NOT IMPORTED -- 0 logs at any version** | ⚠️ see the warning below |

@@ -1,6 +1,51 @@
 CA_SAN_LUIS_OBISPO -- Build Notes
 ==================================
 Provider: CA_SAN_LUIS_OBISPO
+v2.7  2026-09-02  THE IN-STATE PLATE SEARCH IS NOW THE VARIANT THE DEVDOC ACTUALLY LISTS
+  CHANGED: keyRef QV.P -> 4.P. Was set[LicensePlateNumber] any[LicensePlateTypeCode]; is now
+    set[LicensePlateNumber, LicensePlateTypeCode] with NO any[] and a new condition
+    RegistrationState NOT_EXISTS. defaults[] (LicensePlateTypeCode=PC) unchanged. The
+    LicensePlateTypeCode form prefill is UNTOUCHED -- v2.6's ruling that devdoc #1 makes it
+    mandatory in-state still stands and this change depends on it rather than reversing it.
+  REASON: PHASE 1 step [5] reported VehicleRegistrationQuery 5/6 built, MISSING metadata
+    4#{LicensePlateNumber} = Set[LicensePlateNumber, LicensePlateTypeCode]. Read from the raw
+    <Requirements> (the sanctioned raw-XML exception), that is devdoc "#1 (In) LicensePlateNumber,
+    LicensePlateTypeCode" EXACTLY -- both unbracketed, i.e. both mandatory. It was not covered by
+    the data-mined declaration (mined tokens are QA/QB/QG/QV/QW), so it was a genuine gap.
+  ROB'S RULING (2026-09-02): "4# carries no state so the convention leave state blank will work
+    and the query can be fired with state conditional." That is the resolution. 4# defines no
+    State field, so it IS the in-state variant, and State-blank is this repo's in-state
+    convention (LIMITATION #30). This provider's VIN pair ALREADY routed exactly that way --
+    RQ.V gated RegistrationState EXISTS, QV.V gated NOT_EXISTS -- while the plate pair was the
+    asymmetric one, both halves ungated and relying on specificity alone. Plate now matches VIN.
+  I HAD ARGUED AGAINST BUILDING IT AND I WAS WRONG. My analysis treated the
+    LicensePlateTypeCode prefill as the only available discriminator, concluded 4.P and QV.P
+    were an exact collision no ordering could separate, and recommended registering 4# as
+    structurally unbuildable. Both halves of that were mistaken: State is the discriminator, and
+    the out-of-state regression I predicted (RQ.P losing its prefilled type) only arises if the
+    prefill is removed, which this change never does.
+  WHY 4.P REPLACES QV.P RATHER THAN JOINING IT: LicensePlateTypeCode is form-prefilled and
+    therefore ALWAYS present, so 4.P's set[] and QV.P's set[] are satisfiable by identical form
+    state -- an exact collision (the AZ_AZDPS DQPN/DQP class, BUILD_RULES 24). One of the two had
+    to go and 4.P is the one the devdoc lists. NOTHING IS LOST: QV{Plate}'s only distinct
+    capability is a plate-only in-state search, which devdoc #1 does not sanction and which the
+    prefill had already made unreachable. THE WIRE IS UNCHANGED -- all six variants are
+    combinations of the SAME <Transaction Name="VehicleRegistrationQuery">, and a keyRef never
+    reaches the wire (only <MessageType> plus the fields do), so 4.P firing and QV.P firing on
+    the same fields emit byte-identical requests.
+  MEASURED, NOT ARGUED -- the denominator moved the right way:
+    query trace          19 built / 1 MISSING  ->  20 built / 0 MISSING
+    requirement fidelity 22 branches / 0 UNDER / 0 OVER  ->  UNCHANGED at 22 / 0 / 0
+      (branches did NOT fall, so nothing was suppressed -- the check that catches a "fix" which
+       is really a silencer; TX's RSDWW cost a branch while appearing zero times in the JSON)
+    reachability         all combos reachable, 0 prefill-dead, 0 shadow
+    prefill shadow       0 (23 ordered pairs compared)
+    validator 67P/0F/0W - wiring closure clean - enforce 0 FAIL / 0 WARN
+  NO REGISTRY ROW WAS ADDED, and that is deliberate: building the variant is the fix, so there is
+    nothing to accept. No existence-class row was left behind to silence the branch just added.
+  COST: NONE. CA_SAN_LUIS_OBISPO has never been tenant-tested (0 logs at any version), so no test
+    package is archived; no Foundation and no LIVE tenant. Plan regenerated to 58 tests at v2.7.
+
 v2.6  2026-08-27  IN-STATE PLATE SEARCHES STOP ASSERTING THE CURRENT REGISTRATION YEAR
   CHANGED: LicensePlateYear removed from QV.P's any[] AND from its defaults[]. QV.P is now
     set[LicensePlateNumber] any[LicensePlateTypeCode] with a single default LicensePlateTypeCode=PC.

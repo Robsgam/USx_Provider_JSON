@@ -6,8 +6,7 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| CA_SAN_LUIS_OBISPO_v2.6.json | v2.6 | Current | 67P/0F/0W. |
-
+| CA_SAN_LUIS_OBISPO_v2.7.json | v2.7 | Current | 67P/0F/0W/0LIM. |
 ## phases/
 
 | File | Version | Status | Notes |
@@ -24,11 +23,17 @@ All JSON versions produced for this provider.
 
 
 
+
+## v2.7 (2026-09-02)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| CA_SAN_LUIS_OBISPO_v2.7.json | v2.7 | Current | 67P/0F/0W/0LIM. |
 ## v2.6 (2026-08-27)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| CA_SAN_LUIS_OBISPO_v2.6.json | v2.6 | Current | 67P/0F/0W/0LIM. |
+| CA_SAN_LUIS_OBISPO_v2.6.json | v2.6 | Superseded | 67P/0F/0W/0LIM. |
 ## v2.5 (2026-08-20)
 
 | File | Version | Status | Notes |
