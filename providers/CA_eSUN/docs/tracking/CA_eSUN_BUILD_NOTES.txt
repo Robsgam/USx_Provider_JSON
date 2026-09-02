@@ -201,3 +201,41 @@ v1.0  2026-09-02  HAND BUILT BY ENGINEERING -- captured from the San Diego Sheri
        a field that rides in any[], and our test driver has NO radio support at all (zero
        occurrences of "radio" in automation/extension) -- it drives react-select only.
     3. The AP #1 / AP #2 codeTypeProvider fix.
+================================================================================
+v2.0 -- 2026-09-02 -- ENGINEERED LINE OPENS (separate from the SDSO live line)
+================================================================================
+CHANGED:
+  A1. OriginatingAgencyORI attribute removed from all 7 CommSys QIDMs.
+  A2. bare 'ORI' removed from 20 combinations' any[] (the second half of the drop,
+      missed on the first pass and caught by re-reading the fidelity finding).
+  B.  Combinations ordered most-specific-first in 4 QIDMs, with an identifier-priority
+      tiebreak (Plate > VIN > Hull > OLN > Reg > Serial > SSN) applied only between
+      combos with no subset relationship. OLN now beats Name on DL and DH; Hull beats
+      Reg on Boat.
+  C.  RQLicensePlateTypeYearOut: LicensePlateTypeCode + LicensePlateYear any[] -> set[].
+  D.  RegistrationState initialValue 'CA' cleared on 9 controls (3 entities x 3 layout
+      variants) -- LIMITATION #30. Rob's call, asked before the sweep.
+REASON:
+  v1.0/v1.1 are a faithful capture of the hand-built San Diego Sheriff configuration and
+  carry its defects unchanged. v2.0 is the first build of a SEPARATE engineered line and
+  fixes what can be fixed without touching cards, controls, widths or labels.
+  The ORI drop is justified by devdoc line 8: <OriginatingAgencyORI> is for on-behalf-of
+  another agency or an entry/edit transaction (Entry|Modify|Clear|Locate|Cancel). We build
+  neither. Proven inert first: across 25 committed v1.1 logs it carried the SAME value as
+  <Authentication>/<ORI> ('MK1234567' x21), so removal changes no transmitted value.
+MEASURED v1.1 -> v2.0:
+  requirement fidelity   25 branches / 18 OVER / 1 UNDER  ->  27 branches / 0 / 0
+  query trace            26 built / 1 PREFILL-DEAD        ->  27 built / 0 / 0 / 0
+  combo reachability     3 registered dead                ->  23 checked, all reachable
+  audit_prefill_shadow   3 FAIL                           ->  0 FAIL (41 pairs)
+  wiring closure         38 breaks                        ->  11 breaks
+  verify_build           50 FAIL / 11 WARN                ->  35 FAIL / 10 WARN
+  validator              59P/7F/53W/5LIM                  ->  59P/7F/53W/2LIM
+  test plan              35 tests                         ->  43 tests (Person 4 -> 12)
+NOT CHANGED, DELIBERATELY:
+  The 7 validator FAILs. Five are AP #1 on State and the LIVE WIRE REFUTES them --
+  <State>CA</State> x5 and <State>GA</State> x6 across 25 logs, real codes. The other two
+  are SexCode AP #2 and are UNTESTED, not passed: SexCode reached zero wires because both
+  combos carrying it were dead. Now reachable, so v2.0's sweep can settle it.
+  The 35 remaining verify failures and 11 wiring breaks need FORM controls
+  (ArticleTypeCodeRemainder, Attention x2, 8 vehicle attrs on the Person QIDM) -- v3.

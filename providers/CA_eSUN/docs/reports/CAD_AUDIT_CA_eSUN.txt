@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_eSUN
-  Source: CA_eSUN_v1.0.json
-  Generated: 2026-09-02 14:40
+  Source: CA_eSUN_v2.0.json
+  Generated: 2026-09-02 16:26
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: CA_eSUN_v1.0
+ CAD AUDIT: CA_eSUN_v2.0
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -26,7 +26,7 @@ CAD AUDIT
     [PASS] nameMiddle: in QIF as 'NameMiddle' (PascalCase USx fieldIds)
     [PASS] nameSuffix: in QIF as 'NameSuffix' (PascalCase USx fieldIds)
     [PASS] birthDate: in QIF as 'BirthDate' (PascalCase USx fieldIds)
-    [PASS] purposeCode: in QIF as 'PurposeCode' (PascalCase USx fieldIds)
+    [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] addressCity: in QIF as 'AddressCity' (PascalCase USx fieldIds)
     [PASS] addressStreetNumber: in QIF as 'AddressStreetNumber' (PascalCase USx fieldIds)
     [INFO] licensePlateColorCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -43,7 +43,7 @@ CAD AUDIT
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] registrationState: in QIF as 'RegistrationState' (PascalCase USx fieldIds)
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] purposeCode: in QIF as 'PurposeCode' (PascalCase USx fieldIds)
+    [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] socialSecurityNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -70,7 +70,7 @@ CAD AUDIT
     [PASS] nameMiddle: in QIF as 'NameMiddle' (PascalCase USx fieldIds)
     [PASS] nameSuffix: in QIF as 'NameSuffix' (PascalCase USx fieldIds)
     [PASS] birthDate: in QIF as 'BirthDate' (PascalCase USx fieldIds)
-    [PASS] purposeCode: in QIF as 'PurposeCode' (PascalCase USx fieldIds)
+    [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -88,7 +88,7 @@ CAD AUDIT
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] birthDate: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] purposeCode: in QIF as 'PurposeCode' (PascalCase USx fieldIds)
+    [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] ArticleSerialNumber: in QIF, not in CAD list (provider-specific)
@@ -102,7 +102,7 @@ CAD AUDIT
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] birthDate: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] purposeCode: in QIF as 'PurposeCode' (PascalCase USx fieldIds)
+    [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
 
@@ -136,37 +136,36 @@ CAD AUDIT
     [PASS] QIDM 'CA_eSUN_BoatQuery': all sourceFields match QIF fieldIds (case-sensitive)
 
 --- CHECK 5: CAD Defaults Coverage ---
+    [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo RQLicensePlateTypeYearOut -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 4LicensePlateTypeIn -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo QVLicensePlateNumberIn -- defaults cover all initialValue any[] fields
     [FAIL] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo IdentificationNumberInOut -- missing default for VehicleYear (form default='2026')
-    [FAIL] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo IdentificationNumberInOut -- missing default for State (form default='CA')
-    [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 4LicensePlateTypeIn -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo RQLicensePlateTypeYearOut -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo VPNameBirthDateIn -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo NameAddressIn -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_eSUN_ArticleSingleQuery' combo ArticleSerialNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_eSUN_GunQuery' combo PurposeCodeFirearmSerialNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_eSUN_GunQuery' combo PurposeCodeNameLastBirthDate -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_eSUN_GunQuery' combo PurposeCodeNameLastAge -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo L1NameIn -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo KQOperatorLicenseNumberOut -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo L1OperatorLicenseNumberIn -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo DQNameBirthSexCodeOut -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo KQOperatorLicenseNumberOut -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo VPBirthDateIn -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo VPAgeIn -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo L1NameIn -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_eSUN_LojackQuery' combo LojackID -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo L1Name -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo KQName -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo KQOperatorLicenseNumberIn -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo KQOperatorLicenseNumberOut -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo KQOperatorLicenseNumberIn -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo KQName -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo L1Name -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_eSUN_AFS' combo PurposeCodeNameLastBirthDate -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_eSUN_AFS' combo PurposeCodeNameLastAge -- defaults cover all initialValue any[] fields
-    [FAIL] QIDM 'CA_eSUN_BoatQuery' combo PurposeCodeRegistrationNumber -- missing default for State (form default='CA')
-    [FAIL] QIDM 'CA_eSUN_BoatQuery' combo PurposeCodeBoatHullIdNumber -- missing default for State (form default='CA')
+    [PASS] QIDM 'CA_eSUN_BoatQuery' combo PurposeCodeBoatHullIdNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_eSUN_BoatQuery' combo PurposeCodeRegistrationNumber -- defaults cover all initialValue any[] fields
 
 ========================================
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 86 PASS / 4 FAIL / 0 WARN / 47 INFO
+Total: 83 PASS / 1 FAIL / 0 WARN / 52 INFO
 
 

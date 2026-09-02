@@ -1,38 +1,31 @@
 ﻿================================================================
   Build Report: CA_eSUN
-  Source: CA_eSUN_v1.0.json
-  Generated: 2026-09-02 14:40
+  Source: CA_eSUN_v2.0.json
+  Generated: 2026-09-02 16:26
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: CA_eSUN_v1.0
+ POST-BUILD VERIFICATION: CA_eSUN_v2.0
 ========================================
 
 --- CHECK 1: Banned Patterns ---
   [FAIL] Banned pattern 'LicensePlateNumberIn' found 1 time(s)
 
 --- CHECK 2: fieldId / sourceField Consistency ---
-  [FAIL] QIDM 'CA_eSUN_VehicleRegistrationQuery' attr 'OriginatingAgencyORI' sourceField='ORI' not in Vehicle QIF fieldIds
   [FAIL] QIDM 'CA_eSUN_ArticleSingleQuery' attr 'ArticleTypeCode' sourceField='ArticleTypeCodeRemainder' not in Article QIF fieldIds
-  [FAIL] QIDM 'CA_eSUN_GunQuery' attr 'OriginatingAgencyORI' sourceField='ORI' not in Firearm QIF fieldIds
-  [FAIL] QIDM 'CA_eSUN_GunQuery' primaryFieldReference='FirearmSerialNumber' not in attribute names [Age, BirthDate, CaRequestPurposeCode, GunCaliber, GunMake, GunSerialNumber, GunTypeCode, Name, OriginatingAgencyORI]
+  [FAIL] QIDM 'CA_eSUN_GunQuery' primaryFieldReference='FirearmSerialNumber' not in attribute names [Age, BirthDate, CaRequestPurposeCode, GunCaliber, GunMake, GunSerialNumber, GunTypeCode, Name]
   [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'AddressCity' sourceField='AddressCity' not in Person QIF fieldIds
   [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'AddressStreetNumber' sourceField='AddressStreetNumber' not in Person QIF fieldIds
   [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'LicensePlateNumber' sourceField='LicensePlateNumber' not in Person QIF fieldIds
   [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'LicensePlateTypeCode' sourceField='LicensePlateTypeCode' not in Person QIF fieldIds
   [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'LicensePlateYear' sourceField='LicensePlateYear' not in Person QIF fieldIds
-  [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'OriginatingAgencyORI' sourceField='ORI' not in Person QIF fieldIds
   [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'VehicleIdentificationNumber' sourceField='VehicleIdentificationNumber' not in Person QIF fieldIds
   [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'VehicleMakeCode' sourceField='VehicleMakeCode' not in Person QIF fieldIds
   [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'VehicleYear' sourceField='VehicleYear' not in Person QIF fieldIds
-  [FAIL] QIDM 'CA_eSUN_LojackQuery' attr 'OriginatingAgencyORI' sourceField='ORI' not in Vehicle QIF fieldIds
-  [FAIL] QIDM 'CA_eSUN_LojackQuery' primaryFieldReference='LojackID' not in attribute names [CaRequestPurposeCode, OriginatingAgencyORI, LojackIdentifier]
-  [FAIL] QIDM 'CA_eSUN_DriverHistoryQuery' attr 'OriginatingAgencyORI' sourceField='ORI' not in Person QIF fieldIds
-  [FAIL] QIDM 'CA_eSUN_AFS' attr 'OriginatingAgencyORI' sourceField='ORI' not in Person QIF fieldIds
-  [FAIL] QIDM 'CA_eSUN_BoatQuery' attr 'OriginatingAgencyORI' sourceField='ORI' not in Boat QIF fieldIds
+  [FAIL] QIDM 'CA_eSUN_LojackQuery' primaryFieldReference='LojackID' not in attribute names [CaRequestPurposeCode, LojackIdentifier]
   [PASS] CommSys QIDM fieldId/sourceField/combo consistency checked
 
 --- CHECK 3: RMS QIDM Consistency ---
@@ -68,16 +61,16 @@ POST-BUILD VERIFICATION
   [INFO] No RMS+CommSys bundle pair -- skipping RMS subset check
 
 --- CHECK 9: Value-Comparison Conditions (poisoned-array) ---
-  [WARN] Value-comparison conditions present (poisoned-array; inert on CommSys form path) -- redesign at rebuild: CA_eSUN_VehicleRegistrationQuery/QVLicensePlateNumberIn: IN; CA_eSUN_VehicleRegistrationQuery/4LicensePlateTypeIn: IN; CA_eSUN_VehicleRegistrationQuery/RQLicensePlateTypeYearOut: NOT_IN; CA_eSUN_VehicleRegistrationQuery/VPNameBirthDateIn: IN; CA_eSUN_VehicleRegistrationQuery/NameAddressIn: IN; CA_eSUN_DriverLicenseQuery/L1NameIn: IN; CA_eSUN_DriverLicenseQuery/L1OperatorLicenseNumberIn: IN; CA_eSUN_DriverLicenseQuery/DQNameBirthSexCodeOut: NOT_EQUALS; CA_eSUN_DriverLicenseQuery/KQOperatorLicenseNumberOut: NOT_EQUALS; CA_eSUN_DriverLicenseQuery/VPBirthDateIn: IN; CA_eSUN_DriverLicenseQuery/VPAgeIn: IN; CA_eSUN_DriverHistoryQuery/L1Name: IN; CA_eSUN_DriverHistoryQuery/KQName: NOT_EQUALS; CA_eSUN_DriverHistoryQuery/KQOperatorLicenseNumberIn: IN; CA_eSUN_DriverHistoryQuery/KQOperatorLicenseNumberOut: NOT_EQUALS; CA_eSUN_AFS/PurposeCodeNameLastAge: IN
+  [WARN] Value-comparison conditions present (poisoned-array; inert on CommSys form path) -- redesign at rebuild: CA_eSUN_VehicleRegistrationQuery/RQLicensePlateTypeYearOut: NOT_IN; CA_eSUN_VehicleRegistrationQuery/4LicensePlateTypeIn: IN; CA_eSUN_VehicleRegistrationQuery/QVLicensePlateNumberIn: IN; CA_eSUN_VehicleRegistrationQuery/VPNameBirthDateIn: IN; CA_eSUN_VehicleRegistrationQuery/NameAddressIn: IN; CA_eSUN_DriverLicenseQuery/KQOperatorLicenseNumberOut: NOT_EQUALS; CA_eSUN_DriverLicenseQuery/L1OperatorLicenseNumberIn: IN; CA_eSUN_DriverLicenseQuery/DQNameBirthSexCodeOut: NOT_EQUALS; CA_eSUN_DriverLicenseQuery/VPBirthDateIn: IN; CA_eSUN_DriverLicenseQuery/VPAgeIn: IN; CA_eSUN_DriverLicenseQuery/L1NameIn: IN; CA_eSUN_DriverHistoryQuery/KQOperatorLicenseNumberOut: NOT_EQUALS; CA_eSUN_DriverHistoryQuery/KQOperatorLicenseNumberIn: IN; CA_eSUN_DriverHistoryQuery/KQName: NOT_EQUALS; CA_eSUN_DriverHistoryQuery/L1Name: IN; CA_eSUN_AFS/PurposeCodeNameLastAge: IN
 
 --- CHECK 10: Identifier-Priority Guardrail ---
   [FAIL] QIDM 'CA_eSUN_VehicleRegistrationQuery' VIN combo 'IdentificationNumberInOut' missing LicensePlateNumber NOT_EXISTS (plate>VIN guardrail; plate+VIN co-entry will bleed VIN into plate XML)
-  [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' Name combo 'L1NameIn' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
   [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' Name combo 'DQNameBirthSexCodeOut' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
   [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' Name combo 'VPBirthDateIn' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
   [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' Name combo 'VPAgeIn' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
-  [FAIL] QIDM 'CA_eSUN_DriverHistoryQuery' Name combo 'L1Name' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
+  [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' Name combo 'L1NameIn' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
   [FAIL] QIDM 'CA_eSUN_DriverHistoryQuery' Name combo 'KQName' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
+  [FAIL] QIDM 'CA_eSUN_DriverHistoryQuery' Name combo 'L1Name' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
   [FAIL] QIDM 'CA_eSUN_BoatQuery' Reg combo 'PurposeCodeRegistrationNumber' missing BoatHullIdNumber NOT_EXISTS (Hull>Reg guardrail; Hull+Reg co-entry will bleed RegistrationNumber into Hull XML)
 
 --- CHECK 11: conditions[].field references a valid QIF sourceField ---
@@ -90,7 +83,6 @@ POST-BUILD VERIFICATION
   [FAIL] Field 'RegistrationState' label='State' missing State routing hint -- need 'leave blank for' (when State is not defaulted) or 'change for out-of-state' (when State is defaulted). BUILD_RULES Section 11
   [WARN] Field 'VehicleMakeCode' (any[]-only) label='Vehicle Make Code' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
   [WARN] Field 'VehicleYear' (any[]-only) label='Vehicle Year' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'LicensePlateYear' (any[]-only) label='Plate Year' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
   [WARN] Field 'AddressCity' (any[]-only) label='Address City' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
   [WARN] Field 'AddressStreetNumber' (any[]-only) label='Address Street Number' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
   [WARN] Field 'ArticleTypeCode' (any[]-only) label='Article Type' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
@@ -98,17 +90,10 @@ POST-BUILD VERIFICATION
   [WARN] Field 'FirearmCaliber' (any[]-only) label='Firearm Caliber' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
   [WARN] Field 'FirearmMake' (any[]-only) label='Firearm Make' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
   [WARN] Field 'FirearmType' (any[]-only) label='Firearm Type' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [INFO] 11 field(s) need label hint fixes
+  [INFO] 10 field(s) need label hint fixes
 
 --- CHECK 14: Combo Reachability (shadow detection) ---
-  [FAIL] SHADOW: 'QVLicensePlateNumberIn' fires before '4LicensePlateTypeIn' on CA_eSUN_VehicleRegistrationQuery minimal set[] payload -- add EXISTS condition to 'QVLicensePlateNumberIn' or reorder so '4LicensePlateTypeIn' comes first
-  [FAIL] SHADOW: 'QVLicensePlateNumberIn' fires before 'RQLicensePlateTypeYearOut' on CA_eSUN_VehicleRegistrationQuery minimal set[] payload -- add EXISTS condition to 'QVLicensePlateNumberIn' or reorder so 'RQLicensePlateTypeYearOut' comes first
-  [FAIL] SHADOW: 'L1NameIn' fires before 'DQNameBirthSexCodeOut' on CA_eSUN_DriverLicenseQuery minimal set[] payload -- add EXISTS condition to 'L1NameIn' or reorder so 'DQNameBirthSexCodeOut' comes first
-  [FAIL] SHADOW: 'L1OperatorLicenseNumberIn' fires before 'KQOperatorLicenseNumberOut' on CA_eSUN_DriverLicenseQuery minimal set[] payload -- add EXISTS condition to 'L1OperatorLicenseNumberIn' or reorder so 'KQOperatorLicenseNumberOut' comes first
-  [FAIL] SHADOW: 'L1NameIn' fires before 'VPBirthDateIn' on CA_eSUN_DriverLicenseQuery minimal set[] payload -- add EXISTS condition to 'L1NameIn' or reorder so 'VPBirthDateIn' comes first
-  [FAIL] SHADOW: 'L1NameIn' fires before 'VPAgeIn' on CA_eSUN_DriverLicenseQuery minimal set[] payload -- add EXISTS condition to 'L1NameIn' or reorder so 'VPAgeIn' comes first
-  [FAIL] SHADOW: 'L1Name' fires before 'KQName' on CA_eSUN_DriverHistoryQuery minimal set[] payload -- add EXISTS condition to 'L1Name' or reorder so 'KQName' comes first
-  [FAIL] SHADOW: 'KQOperatorLicenseNumberIn' fires before 'KQOperatorLicenseNumberOut' on CA_eSUN_DriverHistoryQuery minimal set[] payload -- add EXISTS condition to 'KQOperatorLicenseNumberIn' or reorder so 'KQOperatorLicenseNumberOut' comes first
+  [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)
 
 --- CHECK 15: Duplicate targetField within a configuration ---
   [INFO] duplicate targetField 'EyeColorCode' in 'CA_eSUN_Results' -- attrs 'EyeColor' and 'EyeColorCode' both write it; which one lands is undefined (response mapping -- INFO per scope ruling)
@@ -117,7 +102,7 @@ POST-BUILD VERIFICATION
   [PASS] No duplicate targetField in any REQUEST QIDM (3 in response mappings -- INFO, see CHECK 15 header)
 
 ========================================
- VERIFICATION FAILED: 50 FAIL / 11 WARN / 7 PASS
+ VERIFICATION FAILED: 35 FAIL / 10 WARN / 8 PASS
 ========================================
 
 

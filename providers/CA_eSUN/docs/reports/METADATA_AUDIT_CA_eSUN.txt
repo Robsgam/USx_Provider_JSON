@@ -1,21 +1,21 @@
 ﻿================================================================
   Build Report: CA_eSUN
-  Source: CA_eSUN_v1.0.json
-  Generated: 2026-09-02 14:40
+  Source: CA_eSUN_v2.0.json
+  Generated: 2026-09-02 16:26
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-09-02 14:40
+ Generated: 2026-09-02 16:26
 ============================================================
 
 ============================================================
  METADATA AUDIT: CA_eSUN
 ============================================================
   XML: CA_eSUN.xml
-  JSON: CA_eSUN_v1.0.json
+  JSON: CA_eSUN_v2.0.json
 
 --- CHECK 1: Query Coverage ---
   [PASS] ArticleSingleQuery: in XML and JSON
@@ -112,11 +112,11 @@ METADATA AUDIT
   [PASS]   keyRef KQ: any field 'Attention' covered by KQName
   [PASS]   keyRef KQ: any field 'PurposeCode' covered by KQName
   [PASS]   keyRef KQ: any field 'State' covered by KQName
-  [PASS]   keyRef KQ: set field 'CaRequestPurposeCode' covered by KQOperatorLicenseNumberIn,KQOperatorLicenseNumberOut
-  [PASS]   keyRef KQ: set field 'OperatorLicenseNumber' covered by KQOperatorLicenseNumberIn,KQOperatorLicenseNumberOut
-  [PASS]   keyRef KQ: any field 'Attention' covered by KQOperatorLicenseNumberIn,KQOperatorLicenseNumberOut
-  [PASS]   keyRef KQ: any field 'PurposeCode' covered by KQOperatorLicenseNumberIn,KQOperatorLicenseNumberOut
-  [PASS]   keyRef KQ: any field 'State' covered by KQOperatorLicenseNumberIn,KQOperatorLicenseNumberOut
+  [PASS]   keyRef KQ: set field 'CaRequestPurposeCode' covered by KQOperatorLicenseNumberOut,KQOperatorLicenseNumberIn
+  [PASS]   keyRef KQ: set field 'OperatorLicenseNumber' covered by KQOperatorLicenseNumberOut,KQOperatorLicenseNumberIn
+  [PASS]   keyRef KQ: any field 'Attention' covered by KQOperatorLicenseNumberOut,KQOperatorLicenseNumberIn
+  [PASS]   keyRef KQ: any field 'PurposeCode' covered by KQOperatorLicenseNumberOut,KQOperatorLicenseNumberIn
+  [PASS]   keyRef KQ: any field 'State' covered by KQOperatorLicenseNumberOut,KQOperatorLicenseNumberIn
   DriverLicenseQuery:
   [PASS]   keyRef L1: set field 'CaRequestPurposeCode' covered by L1NameIn
   [PASS]   keyRef L1: set field 'Name' covered by L1NameIn
@@ -135,15 +135,15 @@ METADATA AUDIT
   [PASS]   keyRef VP: set field 'Name' covered by VPNameBirthDateIn
 
 --- CHECK 4d: Field promoted to set[] vs metadata any[] ---
-  [FAIL]   keyRef RQLicensePlateTypeYearOut (VehicleRegistrationQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] (defaulted -- initialValue not counted for set[]) -- move to any[] or record in CA_eSUN_ACCEPTED_DIVERGENCES.txt
-  [FAIL]   keyRef DQNameBirthSexCodeOut (DriverLicenseQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] (defaulted -- initialValue not counted for set[]) -- move to any[] or record in CA_eSUN_ACCEPTED_DIVERGENCES.txt
-  [FAIL]   keyRef KQOperatorLicenseNumberOut (DriverLicenseQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] (defaulted -- initialValue not counted for set[]) -- move to any[] or record in CA_eSUN_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef RQLicensePlateTypeYearOut (VehicleRegistrationQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] -- move to any[] or record in CA_eSUN_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef KQOperatorLicenseNumberOut (DriverLicenseQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] -- move to any[] or record in CA_eSUN_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef DQNameBirthSexCodeOut (DriverLicenseQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] -- move to any[] or record in CA_eSUN_ACCEPTED_DIVERGENCES.txt
   [FAIL]   keyRef VPAgeIn (DriverLicenseQuery): 'Age' PROMOTED to set[] but metadata has it in any[] -- move to any[] or record in CA_eSUN_ACCEPTED_DIVERGENCES.txt
-  [FAIL]   keyRef KQName (DriverHistoryQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] (defaulted -- initialValue not counted for set[]) -- move to any[] or record in CA_eSUN_ACCEPTED_DIVERGENCES.txt
-  [FAIL]   keyRef KQOperatorLicenseNumberOut (DriverHistoryQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] (defaulted -- initialValue not counted for set[]) -- move to any[] or record in CA_eSUN_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef KQOperatorLicenseNumberOut (DriverHistoryQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] -- move to any[] or record in CA_eSUN_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef KQName (DriverHistoryQuery): 'RegistrationState' PROMOTED to set[] but metadata has it in any[] -- move to any[] or record in CA_eSUN_ACCEPTED_DIVERGENCES.txt
 
 --- CHECK 4e: Field demoted to any[] vs metadata set[] ---
-  [FAIL]   keyRef RQLicensePlateTypeYearOut (VehicleRegistrationQuery): 'LicensePlateTypeCode' DEMOTED to any[] but metadata REQUIRES it in set[] -- the query can fire without it; promote to set[] or record in CA_eSUN_ACCEPTED_DIVERGENCES.txt
+  [PASS]   No metadata-required fields demoted to any[]
 
 --- CHECK 4b: Choice-Set Option Coverage ---
 
@@ -187,6 +187,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 100 PASS / 10 FAIL / 2 WARN
+Total: 101 PASS / 9 FAIL / 2 WARN
 ============================================================
 

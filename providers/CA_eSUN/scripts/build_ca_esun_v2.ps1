@@ -147,6 +147,34 @@ foreach ($c in $q0) {
 }
 Write-Output ("B. QIDMs reordered: {0}" -f $reordered)
 
+# ---- D. remove the RegistrationState prefill -- LIMITATION #30 ------------------------------
+# Rob's call 2026-09-02, asked BEFORE the sweep rather than discovered after it.
+# RegistrationState carried initialValue='CA' on Vehicle, Person and Boat. LIMITATION #30: do NOT
+# set initialValue on State when the provider has separate in-state and out-of-state keyRefs,
+# because it changes which combo fires. It does exactly that here -- with State always present the
+# OOS combos always match, so once combinations are ordered most-specific-first the IN-STATE combos
+# (4LicensePlateTypeIn, L1OperatorLicenseNumberIn, KQOperatorLicenseNumberIn) can never fire.
+# This is the ONLY form-affecting change in v2 and it is a DEFAULT, not a control: no card, row,
+# width, type or label moves. The assertion below proves that claim rather than asserting it.
+$statePrefill = 0
+foreach ($b in $j.bundles) {
+  foreach ($c in $b.configurations) {
+    if ("$($c.type)" -ne 'QUERYINPUTFORM') { continue }
+    foreach ($vp in $c.layout.PSObject.Properties) {
+      foreach ($np in $vp.Value.PSObject.Properties) {
+        $n = $np.Value
+        if (-not $n.props) { continue }
+        if ("$($n.props.fieldId)" -ne 'RegistrationState') { continue }
+        if ("$($n.props.initialValue)" -eq '') { continue }
+        $n.props.initialValue = ''
+        $statePrefill++
+      }
+    }
+  }
+}
+Write-Output ("D. RegistrationState initialValue cleared on: {0} control(s)" -f $statePrefill)
+if ($statePrefill -eq 0) { throw "ABORT: expected to clear State prefills, cleared none" }
+
 # ---- version ------------------------------------------------------------------------------
 foreach ($b in $j.bundles) {
   if ("$($b.provider)" -eq 'CA_eSUN') {
@@ -179,5 +207,11 @@ function Get-LayoutSig($o) {
 }
 $h0 = Get-LayoutSig (Get-Content $src -Raw | ConvertFrom-Json)
 $h1 = Get-LayoutSig $v
-Write-Output ("LAYOUT identical to v1.1: {0}" -f ($h0 -eq $h1))
-if ($h0 -ne $h1) { throw "ABORT: layout changed -- v2 must not touch cards, controls or widths" }
+# The ONLY sanctioned layout delta is change D: RegistrationState initialValue 'CA' -> ''.
+# Rather than weaken the check to "close enough", normalise EXACTLY that one edit out of the v1.1
+# signature and demand byte-equality on everything else. If any other prop, node, card, row, width
+# or label moved -- including a second State-like field I did not intend to touch -- this throws.
+$h0n = $h0.Replace('"fieldId":"RegistrationState","initialValue":"CA"', '"fieldId":"RegistrationState","initialValue":""')
+$h0n = $h0n.Replace('"initialValue":"CA","fieldId":"RegistrationState"', '"initialValue":"","fieldId":"RegistrationState"')
+Write-Output ("LAYOUT identical to v1.1 apart from the {0} State default(s): {1}" -f $statePrefill, ($h0n -eq $h1))
+if ($h0n -ne $h1) { throw "ABORT: layout changed beyond the sanctioned State-default edit -- v2 must not touch cards, controls, widths or labels" }

@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_eSUN
-  Source: CA_eSUN_v1.0.json
-  Generated: 2026-09-02 14:40
+  Source: CA_eSUN_v2.0.json
+  Generated: 2026-09-02 16:26
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -54,17 +54,17 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTTIY_Boat' -> Boat : 7 fieldIds
 
 === PHASE 3: QIDM Validation ===
-  [WARN] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'QVLicensePlateNumberIn' has POISONED-ARRAY condition(s) [RegistrationState IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
+  [WARN] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'RQLicensePlateTypeYearOut' has POISONED-ARRAY condition(s) [RegistrationState NOT_IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
     [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
   [WARN] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo '4LicensePlateTypeIn' has POISONED-ARRAY condition(s) [RegistrationState IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
     [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
-  [WARN] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'RQLicensePlateTypeYearOut' has POISONED-ARRAY condition(s) [RegistrationState NOT_IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
+  [WARN] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'QVLicensePlateNumberIn' has POISONED-ARRAY condition(s) [RegistrationState IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
     [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
   [WARN] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'VPNameBirthDateIn' has POISONED-ARRAY condition(s) [RegistrationState IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
     [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
   [WARN] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'NameAddressIn' has POISONED-ARRAY condition(s) [RegistrationState IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
     [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
-  [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' -> Vehicle : 13 attrs, 6 combos
+  [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' -> Vehicle : 12 attrs, 6 combos
   [WARN] QIDM 'CA_eSUN_VehicleRegistrationQuery' missing queryLabel property
     [FIX] In build script: add queryLabel property to QIDM 'CA_eSUN_VehicleRegistrationQuery' -- see QIDM_REFERENCE.txt for standard labels per query type
   [FAIL] QIDM 'CA_eSUN_VehicleRegistrationQuery' attr 'State' sourceField='RegistrationState' has attributeTypeId=STATE on form but NO codeTypeProvider on QIDM attr -- sends numeric ID (AP #1)
@@ -83,8 +83,8 @@ VALIDATOR RESULTS
   [WARN] QIDM 'CA_eSUN_GunQuery' combo 'PurposeCodeNameLastAge' missing state property -- CommSys combos need state='In', 'Out', or 'In/Out'
     [FIX] In build script: add state='In/Out' to combo 'PurposeCodeNameLastAge' (or 'In'/'Out' if provider has separate in-state/OOS routing)
   [WARN] QIDM 'CA_eSUN_GunQuery' combo 'PurposeCodeFirearmSerialNumber' primaryFieldReference='FirearmSerialNumber' not in attribute names
-    [FIX] In build script: change primaryFieldReference to a valid attribute name from this QIDM (available: Age, BirthDate, CaRequestPurposeCode, GunCaliber, GunMake, GunSerialNumber, GunTypeCode, Name, OriginatingAgencyORI)
-  [PASS] QIDM 'CA_eSUN_GunQuery' -> Firearm : 9 attrs, 3 combos
+    [FIX] In build script: change primaryFieldReference to a valid attribute name from this QIDM (available: Age, BirthDate, CaRequestPurposeCode, GunCaliber, GunMake, GunSerialNumber, GunTypeCode, Name)
+  [PASS] QIDM 'CA_eSUN_GunQuery' -> Firearm : 8 attrs, 3 combos
   [WARN] QIDM 'CA_eSUN_GunQuery' missing queryLabel property
     [FIX] In build script: add queryLabel property to QIDM 'CA_eSUN_GunQuery' -- see QIDM_REFERENCE.txt for standard labels per query type
   [PASS] QIDM 'CA_eSUN_GunQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
@@ -97,19 +97,19 @@ VALIDATOR RESULTS
          VehicleIdentificationNumber (sourceField='VehicleIdentificationNumber')
          VehicleMakeCode (sourceField='VehicleMakeCode')
          VehicleYear (sourceField='VehicleYear')
-  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'L1NameIn' has POISONED-ARRAY condition(s) [RegistrationState IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
+  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'KQOperatorLicenseNumberOut' has POISONED-ARRAY condition(s) [RegistrationState NOT_EQUALS] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
     [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
   [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'L1OperatorLicenseNumberIn' has POISONED-ARRAY condition(s) [RegistrationState IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
     [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
   [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'DQNameBirthSexCodeOut' has POISONED-ARRAY condition(s) [RegistrationState NOT_EQUALS] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
     [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
-  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'KQOperatorLicenseNumberOut' has POISONED-ARRAY condition(s) [RegistrationState NOT_EQUALS] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
-    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
   [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'VPBirthDateIn' has POISONED-ARRAY condition(s) [RegistrationState IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
     [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
   [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'VPAgeIn' has POISONED-ARRAY condition(s) [RegistrationState IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
     [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
-  [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' -> Person : 16 attrs, 6 combos
+  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'L1NameIn' has POISONED-ARRAY condition(s) [RegistrationState IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
+    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
+  [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' -> Person : 15 attrs, 6 combos
   [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' queryLabel='DL' -- standard is 'Driver License' (AP #25)
     [FIX] In build script: change queryLabel from 'DL' to 'Driver License'
   [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'State' sourceField='RegistrationState' has attributeTypeId=STATE on form but NO codeTypeProvider on QIDM attr -- sends numeric ID (AP #1)
@@ -119,23 +119,23 @@ VALIDATOR RESULTS
   [WARN] QIDM 'CA_eSUN_LojackQuery' combo 'LojackID' missing state property -- CommSys combos need state='In', 'Out', or 'In/Out'
     [FIX] In build script: add state='In/Out' to combo 'LojackID' (or 'In'/'Out' if provider has separate in-state/OOS routing)
   [WARN] QIDM 'CA_eSUN_LojackQuery' combo 'LojackID' primaryFieldReference='LojackID' not in attribute names
-    [FIX] In build script: change primaryFieldReference to a valid attribute name from this QIDM (available: CaRequestPurposeCode, OriginatingAgencyORI, LojackIdentifier)
-  [PASS] QIDM 'CA_eSUN_LojackQuery' -> Vehicle : 3 attrs, 1 combos
+    [FIX] In build script: change primaryFieldReference to a valid attribute name from this QIDM (available: CaRequestPurposeCode, LojackIdentifier)
+  [PASS] QIDM 'CA_eSUN_LojackQuery' -> Vehicle : 2 attrs, 1 combos
   [WARN] QIDM 'CA_eSUN_LojackQuery' missing queryLabel property
     [FIX] In build script: add queryLabel property to QIDM 'CA_eSUN_LojackQuery' -- see QIDM_REFERENCE.txt for standard labels per query type
-  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQName' any[] references 'Attention' not in QIF fieldIds
-    [FIX] Add field 'Attention' to the Person QIF, or remove 'Attention' from this combo's any[] array
   [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQOperatorLicenseNumberOut' any[] references 'Attention' not in QIF fieldIds
     [FIX] Add field 'Attention' to the Person QIF, or remove 'Attention' from this combo's any[] array
-  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'L1Name' has POISONED-ARRAY condition(s) [RegistrationState IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
-    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
-  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQName' has POISONED-ARRAY condition(s) [RegistrationState NOT_EQUALS] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
+  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQName' any[] references 'Attention' not in QIF fieldIds
+    [FIX] Add field 'Attention' to the Person QIF, or remove 'Attention' from this combo's any[] array
+  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQOperatorLicenseNumberOut' has POISONED-ARRAY condition(s) [RegistrationState NOT_EQUALS] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
     [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
   [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQOperatorLicenseNumberIn' has POISONED-ARRAY condition(s) [RegistrationState IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
     [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
-  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQOperatorLicenseNumberOut' has POISONED-ARRAY condition(s) [RegistrationState NOT_EQUALS] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
+  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQName' has POISONED-ARRAY condition(s) [RegistrationState NOT_EQUALS] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
     [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
-  [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' -> Person : 8 attrs, 4 combos
+  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'L1Name' has POISONED-ARRAY condition(s) [RegistrationState IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
+    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
+  [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' -> Person : 7 attrs, 4 combos
   [FAIL] QIDM 'CA_eSUN_DriverHistoryQuery' attr 'State' sourceField='RegistrationState' has attributeTypeId=STATE on form but NO codeTypeProvider on QIDM attr -- sends numeric ID (AP #1)
   [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' SexCode attr 'SexCode' size=2 -- expected 1
     [FIX] In build script: change SexCode attr size from 2 to 1
@@ -148,19 +148,16 @@ VALIDATOR RESULTS
     [FIX] In build script: add state='In/Out' to combo 'PurposeCodeNameLastAge' (or 'In'/'Out' if provider has separate in-state/OOS routing)
   [WARN] QIDM 'CA_eSUN_AFS' combo 'PurposeCodeNameLastAge' has POISONED-ARRAY condition(s) [RegistrationState IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
     [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
-  [PASS] QIDM 'CA_eSUN_AFS' -> Person : 6 attrs, 2 combos
+  [PASS] QIDM 'CA_eSUN_AFS' -> Person : 5 attrs, 2 combos
   [WARN] QIDM 'CA_eSUN_AFS' missing queryLabel property
     [FIX] In build script: add queryLabel property to QIDM 'CA_eSUN_AFS' -- see QIDM_REFERENCE.txt for standard labels per query type
   [FAIL] QIDM 'CA_eSUN_AFS' attr 'State' sourceField='RegistrationState' has attributeTypeId=STATE on form but NO codeTypeProvider on QIDM attr -- sends numeric ID (AP #1)
   [PASS] QIDM 'CA_eSUN_AFS' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
-  [PASS] QIDM 'CA_eSUN_BoatQuery' -> Boat : 5 attrs, 2 combos
+  [PASS] QIDM 'CA_eSUN_BoatQuery' -> Boat : 4 attrs, 2 combos
   [WARN] QIDM 'CA_eSUN_BoatQuery' missing queryLabel property
     [FIX] In build script: add queryLabel property to QIDM 'CA_eSUN_BoatQuery' -- see QIDM_REFERENCE.txt for standard labels per query type
   [FAIL] QIDM 'CA_eSUN_BoatQuery' attr 'State' sourceField='RegistrationState' has attributeTypeId=STATE on form but NO codeTypeProvider on QIDM attr -- sends numeric ID (AP #1)
     [INFO] QIDM 'CA_eSUN_BoatQuery' attr 'State' uses IgnoreUserValueRuleHandler(args=CA) -- filters/strips matching values from the outbound wire; NOT a substitute for hardcoding (AP #4 still applies to that misuse)
-  [LIMITATION] QIDM 'CA_eSUN_VehicleRegistrationQuery' has separate In/Out combos but Vehicle State field 'RegistrationState' has initialValue='CA' -- combo routing affected (LIMITATION #30)
-  [LIMITATION] QIDM 'CA_eSUN_DriverLicenseQuery' has separate In/Out combos but Person State field 'RegistrationState' has initialValue='CA' -- combo routing affected (LIMITATION #30)
-  [LIMITATION] QIDM 'CA_eSUN_DriverHistoryQuery' has separate In/Out combos but Person State field 'RegistrationState' has initialValue='CA' -- combo routing affected (LIMITATION #30)
 
 === PHASE 4: AutoSelect & Cross-Reference ===
   [PASS] Article : 1 QIDMs, 1 QIF(s)
@@ -180,10 +177,10 @@ VALIDATOR RESULTS
   [PASS] QUERYRESULTDATAMAPPING present
 
 === PHASE 6: Query Simulation ===
+  [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'RQLicensePlateTypeYearOut': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo '4LicensePlateTypeIn': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'QVLicensePlateNumberIn': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'IdentificationNumberInOut': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo '4LicensePlateTypeIn': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'RQLicensePlateTypeYearOut': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'VPNameBirthDateIn': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'NameAddressIn': all set[]/any[] fields resolvable
   [WARN] QIDM 'CA_eSUN_ArticleSingleQuery' combo 'ArticleSerialNumber': unresolvable any[] fields: ArticleTypeCodeRemainder
@@ -191,26 +188,26 @@ VALIDATOR RESULTS
   [PASS] QIDM 'CA_eSUN_GunQuery' combo 'PurposeCodeFirearmSerialNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_eSUN_GunQuery' combo 'PurposeCodeNameLastBirthDate': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_eSUN_GunQuery' combo 'PurposeCodeNameLastAge': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'L1NameIn': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'KQOperatorLicenseNumberOut': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'L1OperatorLicenseNumberIn': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'DQNameBirthSexCodeOut': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'KQOperatorLicenseNumberOut': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'VPBirthDateIn': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'VPAgeIn': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'L1NameIn': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_eSUN_LojackQuery' combo 'LojackID': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'L1Name': all set[]/any[] fields resolvable
-  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQName': unresolvable any[] fields: Attention
-    [FIX] Add form fields for: Attention to the Person QIF, or remove them from combo 'KQName' any[]
-  [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQOperatorLicenseNumberIn': all set[]/any[] fields resolvable
   [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQOperatorLicenseNumberOut': unresolvable any[] fields: Attention
     [FIX] Add form fields for: Attention to the Person QIF, or remove them from combo 'KQOperatorLicenseNumberOut' any[]
+  [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQOperatorLicenseNumberIn': all set[]/any[] fields resolvable
+  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQName': unresolvable any[] fields: Attention
+    [FIX] Add form fields for: Attention to the Person QIF, or remove them from combo 'KQName' any[]
+  [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'L1Name': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_eSUN_AFS' combo 'PurposeCodeNameLastBirthDate': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_eSUN_AFS' combo 'PurposeCodeNameLastAge': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_eSUN_BoatQuery' combo 'PurposeCodeRegistrationNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_eSUN_BoatQuery' combo 'PurposeCodeBoatHullIdNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_eSUN_BoatQuery' combo 'PurposeCodeRegistrationNumber': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 59 PASS / 7 FAIL / 53 WARN / 5 LIMITATION
+  RESULTS: 59 PASS / 7 FAIL / 53 WARN / 2 LIMITATION
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
 
   FIX all FAIL items before importing.

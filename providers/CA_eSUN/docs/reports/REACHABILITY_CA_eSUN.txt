@@ -1,28 +1,7 @@
 ================================================================
-  COMBO REACHABILITY AUDIT -- CA_eSUN_v1.0.json
+  COMBO REACHABILITY AUDIT -- CA_eSUN_v2.0.json
 ================================================================
 
-  [NOTE] DEAD COMBO: VehicleRegistrationQuery/4LicensePlateTypeIn
-         never fires -- 'QVLicensePlateNumberIn' is ordered before it (index 0 < 2) and matches whenever it does
-         A.set=[PurposeCode, LicensePlateNumber, LicensePlateTypeCode]
-         B.set=[PurposeCode, LicensePlateNumber]
-         B.set is a subset of A.set -- B is strictly broader
-         ACCEPTED (dead-combo): STRUCTURALLY DEAD, fill-independent -- audit_combo_reachability reports it on the plain reachability test, and the plan generates no test for it. It sits behind QVLicensePlateNumberIn, whose set[] is a strict subset, so first-match hands every plate fill to QV and 4LicensePlateTypeIn can never win. Carried in from the live configuration unchanged; NOT reordered, because v1.0 is a capture and reordering would make it stop matching what San Diego runs.
-
-  [NOTE] DEAD COMBO: DriverLicenseQuery/VPBirthDateIn
-         never fires -- 'L1NameIn' is ordered before it (index 0 < 4) and matches whenever it does
-         A.set=[PurposeCode, NameFirst, NameLast, BirthDate]
-         B.set=[PurposeCode, NameFirst, NameLast]
-         B.set is a subset of A.set -- B is strictly broader
-         ACCEPTED (dead-combo): STRUCTURALLY DEAD, fill-independent (audit_combo_reachability). Shadowed by an earlier DriverLicenseQuery combination whose set[] it cannot out-specify once the form defaults are applied. No plan test is generated for it, so there is no evidence to owe. Carried in unchanged from the live configuration.
-
-  [NOTE] DEAD COMBO: DriverLicenseQuery/VPAgeIn
-         never fires -- 'L1NameIn' is ordered before it (index 0 < 5) and matches whenever it does
-         A.set=[PurposeCode, NameFirst, NameLast, Age]
-         B.set=[PurposeCode, NameFirst, NameLast]
-         B.set is a subset of A.set -- B is strictly broader
-         ACCEPTED (dead-combo): STRUCTURALLY DEAD, fill-independent (audit_combo_reachability) -- the Age-branch twin of VPBirthDateIn, dead for the same reason and in the same position. No plan test is generated. Carried in unchanged from the live configuration.
-
 ================================================================
-  [PASS] 23 combination(s) checked -- all reachable (3 accepted dead-combo divergence(s))
+  [PASS] 23 combination(s) checked -- all reachable
 ================================================================
