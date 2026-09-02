@@ -1,0 +1,76 @@
+﻿================================================================
+TEST LOG: CA_eSUN Vehicle CAILojackQuery
+Combo: LojackID (LojackID (auto))
+Date: 2026-09-02 15:59:51
+Result: PASS
+JSON Version: 1.1
+Entity Fingerprint: ec301dce8003eaa919c778d2712545fca744b2edf563aa0275b60495f4df20c2
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"AddressCity":"RENO","AddressStreetNumber":"123","BirthDate":"1990-01-15","LicensePlateYear":"2026","LojackID":"LJ1234567","NameFirst":"JOHN","NameLast":"DOE","PurposeCode":"Criminal Justice","RegistrationState":"Georgia","VehicleYear":"2026"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M1HTSN3MSQR55WZ6MRK9JR69">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <DeviceId>MK43RS</DeviceId>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>CAILojackQuery</MessageType>
+            <Id>01M1HTSN3MSQR55WZ6MRK9JR69</Id>
+            <OriginatingAgencyORI>MK1234567</OriginatingAgencyORI>
+            <LojackIdentifier>LJ1234567</LojackIdentifier>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  DeviceId                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M1HTSN3MSQR55WZ6MRK9JR69
+  OriginatingAgencyORI           MK1234567
+  LojackIdentifier               LJ1234567
+  CaRequestPurposeCode           C
+
+NOTES
+-----
+Automated capture (txId 01M1HTSN3MSQR55WZ6MRK9JR69). kind=combo; anyField=; expectedKeyRef=LojackID; firedMessageType=CAILojackQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
