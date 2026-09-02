@@ -143,13 +143,37 @@
   // popup-capture workaround (which loses formState -- the only proof both fields were entered).
   window.__usxRunPlan = async function (plan, entityFilter, opts) {
     if (!plan || !Array.isArray(plan.tests)) { console.error('[USx-DRV] pass the TEST_PLAN object: __usxRunPlan(plan, "Vehicle")'); return; }
+
+    // RE-ENTRANCY LOCK. There was none, and a second Run press started a SECOND concurrent walk
+    // over the SAME form -- the two runs filling and submitting on top of each other.
+    // Live-caught on the CA_eSUN v2.1 sweep 2026-09-02, where the console interleaved
+    //   T1 T2 T3 T4  T1  T5  T2  T6  T3  T7  T4  T8  T5 ...
+    // and produced a whole run of anomalies that all LOOKED like build defects: BirthDate "did not
+    // fill" (the other run had cleared the form mid-fill), T8 submitting in one walk and not the
+    // other, and NameAddressIn -- registered unreachable across five prior runs -- appearing to
+    // submit for the first time ever because another walk's fields were sitting on the form.
+    // Operator's words: "the tests are a mess". They were, and none of it was the JSON.
+    // This is refused rather than queued ON PURPOSE: a queued second run would silently double
+    // every dex-log row and re-create the manifest-vs-rows mismatch that caused three fabricated
+    // batches earlier the same day.
+    if (window.__usxRunInFlight) {
+      console.error('%c[USx-DRV]', 'color:#c00;font-weight:bold',
+        `A RUN IS ALREADY IN PROGRESS (${window.__usxRunInFlight}). This second run was REFUSED -- ` +
+        `two concurrent runs fill the same form on top of each other and every result from both is ` +
+        `untrustworthy. Wait for "plan run complete", or reload the tab to clear a stuck run.`);
+      return null;
+    }
+    window.__usxRunInFlight = (entityFilter || 'ALL') + ' @ ' + new Date().toLocaleTimeString();
+
     opts = opts || {};
     // Deliberately unhurried so React state + autoSelect keep up. Tune via opts if needed.
     const dField = opts.fieldDelay || 450;   // pause after each field
     const dSettle = opts.settle || 900;      // pause after all fields, before submit (let autoSelect enable)
     const dBetween = opts.between || 1700;    // pause after submit/clear, before next combo
     const tests = plan.tests.filter((t) => (t.kind === 'combo' || t.kind === 'any' || t.kind === 'any-field' || t.kind === 'guardrail' || t.kind === 'value-strip') && (!entityFilter || t.entity === entityFilter));
-    if (!tests.length) { console.warn('[USx-DRV] no combo tests for', entityFilter); return; }
+    // RELEASE THE LOCK ON THIS EXIT TOO. A lock that is only released on the happy path is worse
+    // than no lock: one no-op run would wedge the button until a tab reload.
+    if (!tests.length) { window.__usxRunInFlight = null; console.warn('[USx-DRV] no combo tests for', entityFilter); return; }
     const manifest = []; const results = []; const notSent = [];
     for (const t of tests) {
       const fr = [];
@@ -213,6 +237,7 @@
         `${notSent.length} test(s) did NOT send and were deliberately kept OUT of the manifest, so nothing can be ` +
         `labelled with them: ${notSent.join(' | ')}`);
     }
+    window.__usxRunInFlight = null;   // release: this run is finished, the next Run press is allowed
     return results;
   };
 
@@ -519,6 +544,6 @@
   };
 
   if (location.hash.includes('universal-search')) {
-    console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold', 'driver ready. BUILD 2026-09-02b (MANIFEST TRUTH FIX: a manifest entry is written ONLY when the query actually SENT -- never-sent tests can no longer be labelled onto someone else\'s wire row; run summary now reconciles driven/SENT/NOT-sent; new __usxManifestReset() clears a stale or cross-version manifest and prints what it dropped). __usxRunOne({...}) = one combo; __usxRunPlan(plan,"Vehicle") = whole entity; __usxScopePicklists(scope,"Vehicle") = dump dropdown options. After a submit, run __usxRmsRecon() then __usxRmsRowRecon() to help find the RMS result/error row structure.');
+    console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold', 'driver ready. BUILD 2026-09-02c (RE-ENTRANCY LOCK: a second Run press while a run is in flight is REFUSED, not queued -- two concurrent runs fill the same form on top of each other and every result from both is untrustworthy. MANIFEST TRUTH FIX: a manifest entry is written ONLY when the query actually SENT -- never-sent tests can no longer be labelled onto someone else\'s wire row; run summary now reconciles driven/SENT/NOT-sent; new __usxManifestReset() clears a stale or cross-version manifest and prints what it dropped). __usxRunOne({...}) = one combo; __usxRunPlan(plan,"Vehicle") = whole entity; __usxScopePicklists(scope,"Vehicle") = dump dropdown options. After a submit, run __usxRmsRecon() then __usxRmsRowRecon() to help find the RMS result/error row structure.');
   }
 })();
