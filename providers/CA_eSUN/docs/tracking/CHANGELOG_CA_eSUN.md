@@ -2,9 +2,14 @@
 
 Auto-generated from `CA_eSUN_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.1** | Generated: 2026-09-02
+Current: **v2.1** | Generated: 2026-09-02
 
 ---
+
+## v2.1 -- 2026-09-02 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v1.1 -- 2026-09-02 -- RND-71815 -- PurposeCode RENDERED AS A RADIO GROUP. SAN DIEGO SHERIFF ONLY.
 

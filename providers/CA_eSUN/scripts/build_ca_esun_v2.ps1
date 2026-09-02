@@ -9,15 +9,19 @@
 # like the other 19 providers -- that is the "at some point" step. Deriving is what lets the script
 # ASSERT the layout is byte-identical; a ground-up rebuild could not promise that.
 #
-# THREE CHANGES, ALL INSIDE QUERYINPUTDATAMAPPING:
-#   A. drop the OriginatingAgencyORI attribute from every QIDM
-#   B. order combinations most-specific-first (a strict superset must precede its subset)
-#   C. RQLicensePlateTypeYearOut: LicensePlateTypeCode + LicensePlateYear any[] -> set[]
+# CHANGES (A-D are v2.0; E added at v2.1 after the v2.0 sweep falsified A's stated effect):
+#   A1. drop the OriginatingAgencyORI attribute from every QIDM
+#   A2. drop bare 'ORI' from 20 combinations' any[]
+#   B.  order combinations most-specific-first (a strict superset must precede its subset)
+#   C.  RQLicensePlateTypeYearOut: LicensePlateTypeCode + LicensePlateYear any[] -> set[]
+#   D.  clear the RegistrationState 'CA' prefill (LIMITATION #30) -- Rob's call
+#   E.  declare OriginatingAgencyORI as an AUTH (header) attribute -- Rob: "leave that piece in
+#       the header and rebuild"
 $ErrorActionPreference = 'Stop'
 $repo = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $repo = Split-Path $repo -Parent
 $src  = Join-Path $repo 'providers\CA_eSUN\docs\deliverables\CA_eSUN_v1.1_RADIOBUTTON.json'
-$dst  = Join-Path $repo 'providers\CA_eSUN\CA_eSUN_v2.0.json'
+$dst  = Join-Path $repo 'providers\CA_eSUN\CA_eSUN_v2.1.json'
 if (-not (Test-Path $src)) { throw "ABORT: v1.1 source not found at $src" }
 
 $j = Get-Content $src -Raw | ConvertFrom-Json
@@ -45,7 +49,14 @@ if (@($q0).Count -eq 0) { throw "ABORT: no CommSys QIDMs found -- the transform 
 # all 8 query mappings are Query transactions. It is also PROVEN INERT here: across 25 committed
 # v1.1 logs it carries the SAME value as <Authentication>/<ORI> ('MK1234567' x21), so the devdoc's
 # "ConnectCIC may replace the Authentication/ORI value with the provided OriginatingAgencyORI" is a
-# no-op today. Removing it stops the send that fails gate 6d without changing a transmitted value.
+# no-op today.
+# !! CORRECTED 2026-09-02 (commit 90cab5c4). This comment used to end "Removing it stops the send
+# !! that fails gate 6d without changing a transmitted value." THE FIRST HALF IS FALSE and the v2.0
+# !! sweep proved it: 19 of 22 v2.0 logs still carry <OriginatingAgencyORI> inside <Request> with the
+# !! field present ZERO times in the v2.0 JSON. Not stale rows -- DQNameBirthSexCodeOut/VPBirthDateIn/
+# !! VPAgeIn were structurally dead before v2.0 and all six of their logs carry it. This removal is
+# !! still correct cleanup (a QIDM attribute that emits nothing should not be declared) and it
+# !! provably changed no transmitted value -- but it was NOT the fix. See change E.
 $dropped = 0
 foreach ($c in $q0) {
   $keep = @(@($c.attributes) | Where-Object { "$($_.targetField)" -ne 'OriginatingAgencyORI' })
@@ -175,12 +186,54 @@ foreach ($b in $j.bundles) {
 Write-Output ("D. RegistrationState initialValue cleared on: {0} control(s)" -f $statePrefill)
 if ($statePrefill -eq 0) { throw "ABORT: expected to clear State prefills, cleared none" }
 
+# ---- E. put OriginatingAgencyORI in the HEADER, where the devdoc says it belongs -------------
+# Rob 2026-09-02: "leave that piece in the header and rebuild".
+# v2.0 removed the field from the QIDMs and the wire STILL carried it -- inside <Request>, where
+# no transaction's metadata defines it, which is why gate 6d FAILs 19 of 22 v2.0 logs. Proven not
+# to be stale rows: DQNameBirthSexCodeOut / VPBirthDateIn / VPAgeIn were structurally DEAD at v1.0
+# and v1.1 and fired for the first time on the v2.0 sweep, and all six of their logs carry it.
+# Devdoc line 8 names TWO legal placements -- <OriginatingAgencyORI> and
+# <Authentication/OriginatingAgencyORI> -- and the second is the header. So this declares it as an
+# AUTHENTICATION attribute sourcing the same ORI the header already carries. The AUTH combination
+# already requires 'ORI' in its set[], so no combination change is needed.
+# THIS IS AN EXPERIMENT WITH A WIRE-VISIBLE ANSWER, and it is stated as one rather than as a fix:
+#   header only  -> <Authentication> gains it, <Request> loses it, 6d clears. Placement was the fix.
+#   both places  -> the platform injects the <Request> copy independently of us; confirms the
+#                   hypothesis recorded at 90cab5c4 and the finding goes to the platform team.
+# Either outcome is worth the rebuild because it converts an inference into evidence.
+$authAdded = 0
+foreach ($b in $j.bundles) {
+  foreach ($c in $b.configurations) {
+    if ("$($c.type)" -ne 'AUTHENTICATION') { continue }
+    if (@($c.attributes) | Where-Object { "$($_.targetField)" -eq 'OriginatingAgencyORI' }) { continue }
+    $c.attributes = @(@($c.attributes) + [PSCustomObject]@{
+      description = 'Agency ORI carried in the ConnectCIC header per devdoc line 8 (<Authentication/OriginatingAgencyORI>), NOT in the request body'
+      name        = 'OriginatingAgencyORI'
+      size        = 12
+      sourceField = @('ORI')
+      targetField = 'OriginatingAgencyORI'
+    })
+    $authAdded++
+  }
+}
+Write-Output ("E. OriginatingAgencyORI declared as an AUTH (header) attribute on: {0} config(s)" -f $authAdded)
+if ($authAdded -eq 0) { throw "ABORT: expected to add the AUTH attribute, added none" }
+
 # ---- version ------------------------------------------------------------------------------
 foreach ($b in $j.bundles) {
   if ("$($b.provider)" -eq 'CA_eSUN') {
-    $b.description = "Provider configuration for CA_eSUN v2.0 -- ENGINEERED LINE, separate from the San Diego Sheriff live v1.0/v1.1 line. Derived from v1.1: layout byte-identical, radio-group PurposeCode retained. QIDM-only fixes: OriginatingAgencyORI attribute removed (devdoc scopes it to entry/edit and on-behalf-of; proven identical to Authentication/ORI across 25 logs), combinations ordered most-specific-first, RQLicensePlateTypeYearOut requirements aligned to metadata."
+    $b.description = "Provider configuration for CA_eSUN v2.1 -- ENGINEERED LINE, separate from the San Diego Sheriff live v1.0/v1.1 line. Derived from v1.1: layout byte-identical, radio-group PurposeCode retained. QIDM-only fixes: OriginatingAgencyORI attribute removed (devdoc scopes it to entry/edit and on-behalf-of; proven identical to Authentication/ORI across 25 logs), combinations ordered most-specific-first, RQLicensePlateTypeYearOut requirements aligned to metadata, and OriginatingAgencyORI moved to the ConnectCIC HEADER as an AUTHENTICATION attribute per devdoc line 8 (it was reaching <Request> where no transaction metadata defines it)."
   }
 }
+
+# ONE JSON IN ROOT. This script writes the file directly rather than through Write-ProviderJson,
+# so it does not inherit that helper's stale-sibling cleanup -- and the v2.0 -> v2.1 bump duly left
+# BOTH in the root, which enforce FAILs on and which makes Get-ProviderRootJson's answer depend on
+# glob order. Remove any other root JSON for this provider before writing the new one.
+$rootDir = Split-Path $dst -Parent
+Get-ChildItem (Join-Path $rootDir 'CA_eSUN*.json') -File -ErrorAction SilentlyContinue |
+  Where-Object { $_.FullName -ne $dst } |
+  ForEach-Object { Write-Output ("   removed stale root JSON: {0}" -f $_.Name); Remove-Item $_.FullName -Force }
 
 [IO.File]::WriteAllText($dst, ($j | ConvertTo-Json -Depth 100), (New-Object Text.UTF8Encoding($false)))
 Write-Output ""

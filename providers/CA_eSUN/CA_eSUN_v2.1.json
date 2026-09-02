@@ -6037,6 +6037,15 @@
                                                                                               "dexStateUserId"
                                                                                           ],
                                                                           "targetField":  "UserName"
+                                                                      },
+                                                                      {
+                                                                          "description":  "Agency ORI carried in the ConnectCIC header per devdoc line 8 (\u003cAuthentication/OriginatingAgencyORI\u003e), NOT in the request body",
+                                                                          "name":  "OriginatingAgencyORI",
+                                                                          "size":  12,
+                                                                          "sourceField":  [
+                                                                                              "ORI"
+                                                                                          ],
+                                                                          "targetField":  "OriginatingAgencyORI"
                                                                       }
                                                                   ],
                                                    "combinations":  [
@@ -8425,7 +8434,7 @@
                                                                                 }
                                                }
                                            ],
-                        "description":  "Provider configuration for CA_eSUN v2.0 -- ENGINEERED LINE, separate from the San Diego Sheriff live v1.0/v1.1 line. Derived from v1.1: layout byte-identical, radio-group PurposeCode retained. QIDM-only fixes: OriginatingAgencyORI attribute removed (devdoc scopes it to entry/edit and on-behalf-of; proven identical to Authentication/ORI across 25 logs), combinations ordered most-specific-first, RQLicensePlateTypeYearOut requirements aligned to metadata.",
+                        "description":  "Provider configuration for CA_eSUN v2.1 -- ENGINEERED LINE, separate from the San Diego Sheriff live v1.0/v1.1 line. Derived from v1.1: layout byte-identical, radio-group PurposeCode retained. QIDM-only fixes: OriginatingAgencyORI attribute removed (devdoc scopes it to entry/edit and on-behalf-of; proven identical to Authentication/ORI across 25 logs), combinations ordered most-specific-first, RQLicensePlateTypeYearOut requirements aligned to metadata, and OriginatingAgencyORI moved to the ConnectCIC HEADER as an AUTHENTICATION attribute per devdoc line 8 (it was reaching \u003cRequest\u003e where no transaction metadata defines it).",
                         "label":  "CLETS",
                         "name":  "CA_eSUN",
                         "type":  "BUNDLE",
