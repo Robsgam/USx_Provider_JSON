@@ -240,22 +240,65 @@
     dbg(`${radios.length} option(s) found`);
     if (!radios.length) return { fieldId, kind: 'radio', ok: false, err: 'radio group has no options' };
 
+    // A RADIO IS NOT ALWAYS AN <input>. Chakra/Arc render the visible control as a DIV with
+    // role="radio" + aria-checked, and a div has NO .checked and NO .value -- both come back
+    // undefined. My first version read those DOM PROPERTIES directly, so on a div-based group it
+    // would find the option, click it, and then poll `target.checked` forever: "radio did not
+    // become checked" on a control that had actually changed. Read the ARIA state and the
+    // attribute, not the property.
+    const isChecked = (r) => r.checked === true || r.getAttribute('aria-checked') === 'true' ||
+                             (r.closest('label') && r.closest('label').getAttribute('data-checked') !== null);
+    const valOf = (r) => r.value || r.getAttribute('value') || r.getAttribute('data-value') || '';
+
     // Match on the CODE, exactly as the select path does: labels render "<CODE> - <Name>" and the
     // plan's fill values are CODEs. Try the input's own value first (most reliable), then the
     // visible label text anchored at the code so 'C' cannot match 'CNST_FORD'.
     const re = new RegExp('^' + String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b');
+    // PER-OPTION LABEL, NOT THE GROUP LABEL. My first version fell back to r.closest('label'),
+    // which on this markup climbs past the option and lands on the FIELD's label -- so both
+    // options reported the identical text "CA Purpose Code" and nothing could ever match:
+    //   NO MATCH. options were: ['72564861555 | CA Purpose Code', '72564854180 | CA Purpose Code']
+    // Walk up only while the ancestor still owns EXACTLY ONE radio. The moment an ancestor
+    // contains both radios it is the group, and its text is the field label.
     const labelOf = (r) => {
       const byFor = r.id ? document.querySelector(`label[for="${CSS.escape(r.id)}"]`) : null;
-      return ((byFor && byFor.textContent) || (r.closest('label') && r.closest('label').textContent) ||
-              r.getAttribute('aria-label') || '').trim();
+      if (byFor && byFor.textContent && byFor.textContent.trim()) return byFor.textContent.trim();
+      let n = r.parentElement, own = null;
+      for (let d = 0; n && d < 6; d++, n = n.parentElement) {
+        if (n.querySelectorAll('input[type="radio"],[role="radio"]').length !== 1) break;
+        own = n;
+      }
+      return ((own && own.textContent) || r.getAttribute('aria-label') || '').trim();
     };
-    let target = radios.find((r) => (r.value || '') === value)
-              || radios.find((r) => re.test(labelOf(r)));
+    // THE OPTION'S value IS A PLATFORM ATTRIBUTE ID, NOT THE CODE. Observed live on CA_eSUN:
+    // 72564861555 and 72564854180 for C and I. So a value-equality match can never succeed on an
+    // attributeTypeId-backed group -- the LABEL is the only place the code appears, rendered
+    // "<CODE> - <Name>" exactly as the select path expects. Value-equality is kept first because it
+    // is the reliable path on a group whose values ARE codes; label matching is the fallback that
+    // actually fires here. `re` is anchored (^C\b) so 'C' cannot match 'CNST_FORD'.
+    const reAnywhere = new RegExp('\\b' + String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b');
+    let target = radios.find((r) => valOf(r) === value)
+              || radios.find((r) => re.test(labelOf(r)))
+              || radios.find((r) => reAnywhere.test(labelOf(r)));
     if (!target) {
-      dbg('NO MATCH. options were:', radios.map((r) => `${r.value || '?'} | ${labelOf(r)}`));
+      // Dump the SHAPE and WHAT IS CURRENTLY SELECTED -- "no radio matching X" alone told us
+      // nothing, and it cost a whole 15-test run reported as UNDER-FILLED. Knowing which option is
+      // already checked usually answers whether the fill was even needed.
+      dbg('NO MATCH. options were:', radios.map((r) => `${r.tagName}${r.getAttribute('role') ? '[role=' + r.getAttribute('role') + ']' : ''} value="${valOf(r) || '?'}" label="${labelOf(r)}"${isChecked(r) ? ' <= CHECKED' : ''}`));
       return { fieldId, kind: 'radio', ok: false, err: `no radio matching "${value}"` };
     }
-    dbg(`matched: "${target.value || labelOf(target)}"`);
+    dbg(`matched: "${valOf(target) || labelOf(target)}"`);
+
+    // ALREADY ON THE WANTED VALUE -> DONE. Do not click.
+    // This is the normal case here, not an edge case: CA_eSUN's PurposeCode carries
+    // initialValue='C' and the plan fills 'C', so the radio is ALREADY correct on every one of the
+    // 43 tests. Clicking an already-selected React radio can re-render or toggle the group, and
+    // the old code clicked unconditionally then polled a property that does not exist on a
+    // div-based control -- reporting a failure while the form was in exactly the right state.
+    if (isChecked(target)) {
+      dbg('already selected -- no interaction needed');
+      return { fieldId, kind: 'radio', ok: true, err: null, note: 'already selected' };
+    }
 
     // Click the LABEL when there is one -- a React-controlled radio often ignores a programmatic
     // click on a visually-hidden input, which is the same class of failure the text path solves
@@ -394,5 +437,5 @@
   window.__usxLib = { sleep, q, fillText, selectReactSelect, findRadioGroup, selectRadioGroup, fillField, clickSend, extractConnectCicXml, triggerDownload, providerFromHost, isProviderTestTenant, providerOverrideKey };
   // Build tag: bump on every extension change so console pastes identify the loaded build
   // (version skew burned attempt 4: a stale build still had the parked Run ALL button).
-  console.log('%c[USx]', 'color:#0a0;font-weight:bold', 'usx_lib loaded. BUILD 2026-09-02a (RADIO GROUP support added -- __usxLib.findRadioGroup(id) / selectRadioGroup(id,code) to probe; manifest 0.5.3 -- matches BOTH /admin/usx-log and legacy /admin/dex-log; panel ON/OFF per tenant + launcher dot unchanged)');
+  console.log('%c[USx]', 'color:#0a0;font-weight:bold', 'usx_lib loaded. BUILD 2026-09-02b (RADIO GROUP matching FIXED: option values are platform attribute IDs not codes, and the per-option label walk no longer climbs to the GROUP label -- both options previously read the field label so nothing could match; also honours aria-checked, and short-circuits when the wanted option is already selected. -- __usxLib.findRadioGroup(id) / selectRadioGroup(id,code) to probe; manifest 0.5.3 -- matches BOTH /admin/usx-log and legacy /admin/dex-log; panel ON/OFF per tenant + launcher dot unchanged)');
 })();
