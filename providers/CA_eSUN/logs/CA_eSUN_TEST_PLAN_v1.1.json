@@ -1,0 +1,891 @@
+{
+    "provider":  "CA_eSUN",
+    "version":  "1.1",
+    "tier":  "Full",
+    "note":  "Full pass (tiers removed 2026-07-01): every combo + individual any[] per field + all-any[] together + guardrail tests. render/negative are manual one-time checks done at initial provider build only and are NOT part of the recurring test matrix (2026-07-01). The driver auto-submits all four kinds (combo/any-field/any/guardrail, 2026-07-01) -- guardrail fills[] already contains BOTH competing identifier fields, so it captures formState/RMS the same as any other test, no manual popup-capture workaround needed.",
+    "testCount":  35,
+    "formDefaults":  {
+                         "Vehicle":  {
+                                         "LicensePlateYear":  "2026",
+                                         "RegistrationState":  "CA",
+                                         "VehicleYear":  "2026"
+                                     },
+                         "Person":  {
+                                        "RegistrationState":  "CA"
+                                    },
+                         "Firearm":  {
+
+                                     },
+                         "Article":  {
+
+                                     },
+                         "Boat":  {
+                                      "RegistrationState":  "CA"
+                                  }
+                     },
+    "tests":  [
+                  {
+                      "n":  1,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "QVLicensePlateNumberIn",
+                      "expectedKeyRef":  "QVLicensePlateNumberIn",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  2,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "QVLicensePlateNumberIn",
+                      "expectedKeyRef":  "QVLicensePlateNumberIn",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "RegistrationState",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  3,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "IdentificationNumberInOut",
+                      "expectedKeyRef":  "IdentificationNumberInOut",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  4,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "IdentificationNumberInOut",
+                      "expectedKeyRef":  "IdentificationNumberInOut",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "VehicleMakeCode",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleMakeCode",
+                                        "value":  "CNST_FORD"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  5,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "IdentificationNumberInOut",
+                      "expectedKeyRef":  "IdentificationNumberInOut",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "VehicleYear",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleYear",
+                                        "value":  "2023"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  6,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "IdentificationNumberInOut",
+                      "expectedKeyRef":  "IdentificationNumberInOut",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "RegistrationState",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  7,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "IdentificationNumberInOut",
+                      "expectedKeyRef":  "IdentificationNumberInOut",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleMakeCode",
+                                        "value":  "CNST_FORD"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleYear",
+                                        "value":  "2023"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  8,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "VPNameBirthDateIn",
+                      "expectedKeyRef":  "VPNameBirthDateIn",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  9,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "VPNameBirthDateIn",
+                      "expectedKeyRef":  "VPNameBirthDateIn",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "RegistrationState",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  10,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "NameAddressIn",
+                      "expectedKeyRef":  "NameAddressIn",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  11,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "NameAddressIn",
+                      "expectedKeyRef":  "NameAddressIn",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "AddressCity",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "AddressCity",
+                                        "value":  "RENO"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  12,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "NameAddressIn",
+                      "expectedKeyRef":  "NameAddressIn",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "AddressStreetNumber",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "AddressStreetNumber",
+                                        "value":  "123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  13,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "NameAddressIn",
+                      "expectedKeyRef":  "NameAddressIn",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "RegistrationState",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  14,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "NameAddressIn",
+                      "expectedKeyRef":  "NameAddressIn",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "AddressCity",
+                                        "value":  "RENO"
+                                    },
+                                    {
+                                        "fieldId":  "AddressStreetNumber",
+                                        "value":  "123"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  15,
+                      "entity":  "Vehicle",
+                      "query":  "CAILojackQuery",
+                      "comboKeyRef":  "LojackID",
+                      "expectedKeyRef":  "LojackID",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "LojackID",
+                                        "value":  "LJ1234567"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  16,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "L1NameIn",
+                      "expectedKeyRef":  "L1NameIn",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  17,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "L1NameIn",
+                      "expectedKeyRef":  "L1NameIn",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "RegistrationState",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  18,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "L1OperatorLicenseNumberIn",
+                      "expectedKeyRef":  "L1OperatorLicenseNumberIn",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  19,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "L1OperatorLicenseNumberIn",
+                      "expectedKeyRef":  "L1OperatorLicenseNumberIn",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "RegistrationState",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  20,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "PurposeCodeFirearmSerialNumber",
+                      "expectedKeyRef":  "PurposeCodeFirearmSerialNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "SerialNumber",
+                                        "value":  "GUN12345"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  21,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "PurposeCodeFirearmSerialNumber",
+                      "expectedKeyRef":  "PurposeCodeFirearmSerialNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "FirearmCaliber",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "SerialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "FirearmCaliber",
+                                        "value":  "11"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  22,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "PurposeCodeFirearmSerialNumber",
+                      "expectedKeyRef":  "PurposeCodeFirearmSerialNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "FirearmMake",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "SerialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "FirearmMake",
+                                        "value":  "IMI"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  23,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "PurposeCodeFirearmSerialNumber",
+                      "expectedKeyRef":  "PurposeCodeFirearmSerialNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "FirearmType",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "SerialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "FirearmType",
+                                        "value":  "R"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  24,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "PurposeCodeFirearmSerialNumber",
+                      "expectedKeyRef":  "PurposeCodeFirearmSerialNumber",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "SerialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "FirearmCaliber",
+                                        "value":  "11"
+                                    },
+                                    {
+                                        "fieldId":  "FirearmMake",
+                                        "value":  "IMI"
+                                    },
+                                    {
+                                        "fieldId":  "FirearmType",
+                                        "value":  "R"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  25,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "PurposeCodeNameLastBirthDate",
+                      "expectedKeyRef":  "PurposeCodeNameLastBirthDate",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  26,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "PurposeCodeNameLastAge",
+                      "expectedKeyRef":  "PurposeCodeNameLastAge",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "Age",
+                                        "value":  "35"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  27,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "ArticleSerialNumber",
+                      "expectedKeyRef":  "ArticleSerialNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleSerialNumber",
+                                        "value":  "ART99999"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  28,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "ArticleSerialNumber",
+                      "expectedKeyRef":  "ArticleSerialNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ArticleTypeCode",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleSerialNumber",
+                                        "value":  "ART99999"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleTypeCode",
+                                        "value":  "BBICYCL"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  29,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "ArticleSerialNumber",
+                      "expectedKeyRef":  "ArticleSerialNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ArticleTypeCodeRemainder",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleSerialNumber",
+                                        "value":  "ART99999"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleTypeCodeRemainder",
+                                        "value":  "BBICYCL"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  30,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "ArticleSerialNumber",
+                      "expectedKeyRef":  "ArticleSerialNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ArticleBrand",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleSerialNumber",
+                                        "value":  "ART99999"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleBrand",
+                                        "value":  "SONY"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  31,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "ArticleSerialNumber",
+                      "expectedKeyRef":  "ArticleSerialNumber",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleSerialNumber",
+                                        "value":  "ART99999"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleTypeCode",
+                                        "value":  "BBICYCL"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleTypeCodeRemainder",
+                                        "value":  "BBICYCL"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleBrand",
+                                        "value":  "SONY"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  32,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "PurposeCodeRegistrationNumber",
+                      "expectedKeyRef":  "PurposeCodeRegistrationNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  33,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "PurposeCodeRegistrationNumber",
+                      "expectedKeyRef":  "PurposeCodeRegistrationNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "RegistrationState",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  34,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "PurposeCodeBoatHullIdNumber",
+                      "expectedKeyRef":  "PurposeCodeBoatHullIdNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  35,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "PurposeCodeBoatHullIdNumber",
+                      "expectedKeyRef":  "PurposeCodeBoatHullIdNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "RegistrationState",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "PurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ]
+                  }
+              ]
+}

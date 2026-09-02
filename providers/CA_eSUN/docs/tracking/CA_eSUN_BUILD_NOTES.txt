@@ -3,6 +3,49 @@ CA_eSUN -- Build Notes
 Provider: CA_eSUN
 State: California
 
+v1.1  2026-09-02  RND-71815 -- PurposeCode RENDERED AS A RADIO GROUP. SAN DIEGO SHERIFF ONLY.
+  *** THIS IS A DELIBERATE ONE-OFF, OUTSIDE THE NORMAL PROCESS. *** Rob 2026-09-02: "this will be
+  considered a one off for San diego sheriif only as it stands" and "recall this is a one off so it
+  can be outside the noraml process". It applies to CA_eSUN and to NO other provider; the other 19
+  keep PurposeCode exactly as they have it. Do not propagate. Do not treat the gate state below as
+  a standard to be met -- v1.0 is a faithful capture with pre-existing live defects, and v1.1
+  changes ONE thing on top of it.
+  CHANGED: PurposeCode type.resolvedName FormSelect -> FormRadioGroup on ALL FIVE entities
+    (Vehicle, Person, Firearm, Article, Boat) across all three layout variants = 15 controls.
+    props.direction='column' added (RND's own reference node shape, and how the ticket's
+    "configure order of label appearance" requirement is expressed). displayName -> 'Radio Group'.
+    NOTHING ELSE TOUCHED -- verified by reading the emitted file back: 8 QIDMs / 25 combinations
+    before AND after, 15 of 15 converted, 0 FormSelect PurposeCode remaining.
+  VALIDATOR UNCHANGED: 59 PASS / 7 FAIL / 53 WARN / 5 LIMITATION, identical to v1.0. The validator
+    does not whitelist resolvedName, so the new control type passes through it untouched. That is
+    information, not reassurance -- it means the validator can tell us nothing about whether
+    FormRadioGroup actually renders.
+  THE DRIVER HAD TO BE FIXED FIRST, and this was measured, not guessed: PurposeCode sits in the
+    set[] of ALL 25 combinations, and the driver had ZERO radio handling (grep 'radio' returned
+    nothing in usx_lib.js or driver.js). Converting without driver support would have left Send
+    disabled on all 35 plan tests -- a total test failure, not a partial one. usx_lib.js gained
+    findRadioGroup + selectRadioGroup at BUILD 2026-09-02a (commit 5ac1a26c) before this bump.
+  STILL UNVERIFIED, AND THE FIRST RETEST IS THE TEST OF IT: FormRadioGroup is not confirmed to
+    render at all. RND-71815 is still 'To Do' and the node shape came from a Jira comment, not from
+    a shipped example. If the control does not render, PurposeCode has no input and every query
+    fails -- which is exactly why the driver's [USx-RAD] logging dumps the options it found.
+    ALSO OPEN on that ticket: its requirement "must select a button for search to proceed" is
+    harmless HERE (PurposeCode is mandatory in every eSUN combination anyway) but would be a WIRE
+    change on any provider where the field rides in any[]. Another reason this stays a one-off.
+  TENANT PICKLIST CONFIRMS THE FIT: PurposeCode returns exactly TWO options at San Diego --
+    "C - Criminal Justice" and "I - Immigration Enforcement" -- so a radio pair is the right shape,
+    and DEX_INQUIRY_PURPOSE_CODE demonstrably resolves on this tenant (contrast LIMITATION #39,
+    where it returned ZERO options on NY and forced a revert to FormInput at v4.23).
+  COST PAID: the v1.0 package -- 25 logs, all PASS -- is archived to logs/<Entity>/_archive_pre_v1.1/.
+    Plan and picklist scope regenerated at v1.1. A full re-drive is owed.
+  v1.0 REMAINS RECOVERABLE EXACTLY AS INGESTED: tag CA_eSUN-v1.0-baseline, carrying both the
+    working JSON (SHA CA7F4493...) and the verbatim tenant export (SHA 06C85659...).
+        git checkout CA_eSUN-v1.0-baseline -- providers/CA_eSUN
+  IMPORT ARTIFACT: docs/deliverables/CA_eSUN_v1.1_RADIOBUTTON.json -- byte-identical to the root
+    JSON, named so the radio build is identifiable at a glance (Rob's request). The ROOT stays
+    CA_eSUN_v1.1.json because Get-ProviderRootJson matches ^<PROVIDER>_v[\d.]+\.json$ exactly and
+    any extra token makes every gate stop finding the provider.
+
 *** THE VERSION LINE RESTARTS AT v1.0. THIS IS NOT A REGRESSION FROM v2.6. ***
 Rob, 2026-09-02: "i want to start the built line at this json not our process ... we need to start
 it over from zero", and "for now the json is the authority and we need to catalog it as version
