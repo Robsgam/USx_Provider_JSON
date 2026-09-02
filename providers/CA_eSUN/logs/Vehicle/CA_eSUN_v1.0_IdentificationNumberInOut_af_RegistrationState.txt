@@ -1,16 +1,16 @@
 ﻿================================================================
-TEST LOG: CA_eSUN Article ArticleSingleQuery
-Combo: ArticleSerialNumber (ArticleSerialNumber (auto))
-Date: 2026-09-02 14:32:30
+TEST LOG: CA_eSUN Vehicle VehicleRegistrationQuery
+Combo: IdentificationNumberInOut_af_RegistrationState (IdentificationNumberInOut_af_RegistrationState (auto))
+Date: 2026-09-02 14:32:35
 Result: PASS
 JSON Version: 1.0
-Entity Fingerprint: 0a996389bc7143f26904b0542f71259d353a658df72c9fee8f31e71540cc93ef
+Entity Fingerprint: f04fd0d7eba7335ed32c0a09891e97887365040250d1997fbb2b6ba3270a3e75
 Tier: Full
 ================================================================
 
 QUERY STRING
 ------------
-{"ArticleSerialNumber":"ART99999","PurposeCode":"Criminal Justice"}
+{"LicensePlateYear":"2026","PurposeCode":"Criminal Justice","RegistrationState":"Georgia","VehicleIdentificationNumber":"1HGCM82633A123456","VehicleYear":"2026"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01M1HM9CP69EP9B54MR55A0RBY">
+    <api:Transaction id="01M1HNTEQ7D29KZ6MVMYJP5045">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,11 +36,12 @@ COMMSYS XML
         </Session>
         <Transaction>
           <Request>
-            <MessageType>ArticleSingleQuery</MessageType>
-            <Id>01M1HM9CP69EP9B54MR55A0RBY</Id>
-            <ArticleTypeCode />
-            <ArticleCategory />
-            <ArticleSerialNumber>ART99999</ArticleSerialNumber>
+            <MessageType>VehicleRegistrationQuery</MessageType>
+            <Id>01M1HNTEQ7D29KZ6MVMYJP5045</Id>
+            <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+            <State>GA</State>
+            <OriginatingAgencyORI>MK1234567</OriginatingAgencyORI>
+            <VehicleYear>2026</VehicleYear>
             <CaRequestPurposeCode>C</CaRequestPurposeCode>
           </Request>
         </Transaction>
@@ -65,12 +66,15 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   DeviceId                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01M1HM9CP69EP9B54MR55A0RBY
-  ArticleSerialNumber            ART99999
+  Id                             01M1HNTEQ7D29KZ6MVMYJP5045
+  VehicleIdentificationNumber    1HGCM82633A123456
+  State                          GA
+  OriginatingAgencyORI           MK1234567
+  VehicleYear                    2026
   CaRequestPurposeCode           C
 
 NOTES
 -----
-Automated capture (txId 01M1HM9CP69EP9B54MR55A0RBY). kind=combo; anyField=; expectedKeyRef=ArticleSerialNumber; firedMessageType=ArticleSingleQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01M1HNTEQ7D29KZ6MVMYJP5045). kind=any-field; anyField=RegistrationState; expectedKeyRef=IdentificationNumberInOut; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS
