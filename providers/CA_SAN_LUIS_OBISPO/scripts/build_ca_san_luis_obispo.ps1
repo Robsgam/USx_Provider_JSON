@@ -22,7 +22,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_san_luis_obispo_mc.ps1
 
 param(
-    [string]$Version = '2.7'
+    [string]$Version = '2.8'
 )
 
 $ErrorActionPreference = "Stop"
@@ -76,8 +76,19 @@ $vehRegQuery = [PSCustomObject]@{
     )
     combinations = @(
         # OOS Plate (4 set -- most specific)
+        # v2.8: any[VehicleMakeCode, vehicleYear] REMOVED. Metadata
+        # RQ{LicensePlateNumber} = Set[LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear,
+        # State] and declares NO <Any> AT ALL -- those two optionals belong to the VIN sibling
+        # RQ{VehicleIdentificationNumber} (Any[VehicleMakeCode, VehicleYear]), which keeps them.
+        # The devdoc agrees: "#3 (Out) LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear,
+        # State" carries no brackets, so the out-of-state plate search has no optionals.
+        # HOW IT HID FOR SO LONG: audit_requirement_fidelity collected the metadata <Any> pool keyed
+        # on transaction|keyRef instead of the full transaction|keyRef|primaryField triple, so the
+        # PLATE variant inherited the VIN variant's optionals and this read as legal. Fixed in the
+        # gate the same day; the same bug was concealing the identical defect on CA_eSUN (4) and
+        # tenant-verified CA_CLETS_OCATS (2), both FLAGGED for their own rebuilds, not touched here.
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear','RegistrationState'); any = @('VehicleMakeCode','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }) }
+            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }) }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RQ.P'
             state                 = 'In/Out'

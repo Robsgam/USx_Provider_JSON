@@ -100,7 +100,7 @@
   Usage: .\audit_requirement_fidelity.ps1 [-Provider <NAME>] [-OutFile <path>]
 #>
 
-param([string]$Provider, [string]$Path, [string]$OutFile)
+param([string]$Provider, [string]$Path, [string]$OutFile, [switch]$Explain)
 
 $ErrorActionPreference = 'Stop'
 $toolDir  = $PSScriptRoot
@@ -194,7 +194,27 @@ function Get-MetaAlternatives([string]$xmlPath) {
     foreach ($t in $x.SelectNodes('//*[local-name()="Transaction"]')) {
         $tn = "$($t.GetAttribute('name'))"; if (-not $tn) { continue }
         foreach ($cb in $t.SelectNodes('.//*[local-name()="Combination"]')) {
-            $k = "$tn|$($cb.GetAttribute('keyReference'))"
+            # KEYED ON THE FULL TRIPLE transaction|keyRef|primaryField -- NOT on the keyRef.
+            # CHANGED 2026-09-02. This was "$tn|keyRef", and the comment above defended the wider
+            # union as "directionally safe ... can only SUPPRESS an over-permit finding, never
+            # invent one". True, and the suppression was never measured -- it cost a real finding:
+            #   CA_SAN_LUIS_OBISPO DriverHistoryQuery, metadata
+            #     B2{Name} = Set[BirthDate,Name] Any[Attention,PurposeCode,SexCode]
+            #     B2{OLN}  = Set[OperatorLicenseNumber] Any[Attention,PurposeCode]
+            #   Under a keyRef-wide pool, B2{OLN} inherited SexCode from its Name SIBLING, so
+            #   SexCodeDH built into B2.O's any[] -- a field that branch does not define -- read as
+            #   legal and the unaimed fuzz mutation SURVIVED the whole panel.
+            # THE ASYMMETRY IS THE PROOF, and it is what made this diagnosable at all: the SAME
+            # mutation on the sibling KQ.O was CAUGHT, because KQ{Name} carries SexCode in its
+            # <Set> rather than its <Any>, so it never entered the pool. Two identical-set[] combos,
+            # same field, opposite verdicts, decided by which grammar slot a THIRD variant used.
+            # This is the repo's most-repeated rule applied to the gate itself: A KEYREF IS NOT A
+            # VARIANT. _probe.ps1's Get-ProbeMetadataOptionals already keys optionals on this exact
+            # triple for this exact reason -- the harness had it right and the gate did not.
+            # Duplicate-keyRef merging (the other stated reason for the wide key) is preserved where
+            # it is legitimate: two <Combination> nodes sharing BOTH keyRef and primaryField still
+            # merge, which is the real duplicate case (NY RNAM, TX QB/RQ, FL FRQ x7).
+            $k = "$tn|$($cb.GetAttribute('keyReference'))|$($cb.GetAttribute('primaryFieldReference'))"
             if (-not $anyPool.ContainsKey($k)) { $anyPool[$k] = @() }
             # DESCENDANT (`//`), NOT CHILD (`/`) -- fixed 2026-08-27. The comment above has always
             # said "every <Any> at ANY DEPTH", and the XPath said `Any/Field`, which is DIRECT
@@ -221,8 +241,21 @@ function Get-MetaAlternatives([string]$xmlPath) {
             $kr    = "$($c.keyReference)"
             $sets  = @($c.requiredSets)
             $total = $sets.Count
+            # Look the pool up on the SAME triple it was collected under. The keyRef-wide fallback
+            # is deliberate and must NOT be removed: if the triple ever fails to line up (a parser
+            # shape change, a combination with no primaryFieldReference), an EMPTY pool would
+            # INVENT over-permit findings on every optional -- turning a suppression bug into a
+            # false-positive storm, which is strictly worse. Falling back reproduces exactly the
+            # previous behaviour for that combination, so the change can only ever narrow.
             $pool  = @()
-            if ($anyPool.ContainsKey("$qname|$kr")) { $pool = @($anyPool["$qname|$kr"] | Sort-Object -Unique) }
+            $pfk   = "$qname|$kr|$($c.primaryField)"
+            if ($anyPool.ContainsKey($pfk)) {
+                $pool = @($anyPool[$pfk] | Sort-Object -Unique)
+            } else {
+                $wide = @($anyPool.Keys | Where-Object { $_ -like "$qname|$kr|*" })
+                foreach ($wk in $wide) { $pool += @($anyPool[$wk]) }
+                $pool = @($pool | Sort-Object -Unique)
+            }
             $i = 0
             foreach ($rs in $sets) {
                 $i++
@@ -578,6 +611,42 @@ foreach ($d in $dirs) {
         $shared[$sk].N++
         $shared[$sk].Set += @($mm.Set | ForEach-Object { Canon $_ })
         $shared[$sk].Any += @($mm.Any | ForEach-Object { Canon $_ })
+    }
+
+    # ── -Explain: SHOW THE PAIRING (ENGINEERING_STANDARD 4.6 -- a parser that cannot print what it
+    # parsed is indistinguishable from one that is silently wrong). Added 2026-09-02 because the
+    # SHARED-COMBO UNION below excused a genuine over-permit (SexCodeDH on CA_SAN_LUIS_OBISPO's
+    # DriverHistoryQuery B2.O) while catching the SAME field on its identical-set[] sibling KQ.O,
+    # and the asymmetry was undiagnosable from the tool's own output. Also prints BUILT combos that
+    # no alternative paired to -- those are compared against nothing, and the branch count alone
+    # cannot reveal them.
+    if ($Explain) {
+        Out-Line "  -- EXPLAIN: metadata alternative -> built combo --------------------------------" 'DarkCyan'
+        foreach ($mm in $meta) {
+            $bb = $assign["$($mm.Idx)"]
+            if (-not $bb) {
+                Out-Line ("     {0,-26} {1,-8} {{{2}}}  ->  (UNPAIRED -- skipped, not compared)" -f $mm.Query, $mm.KeyRef, $mm.PrimaryField) 'DarkYellow'
+                continue
+            }
+            $skx = "$($mm.Query)|$($bb.KeyRef)"
+            $nx  = if ($shared.ContainsKey($skx)) { $shared[$skx].N } else { 1 }
+            Out-Line ("     {0,-26} {1,-8} {{{2}}}  ->  built '{3}'  shN={4}" -f $mm.Query, $mm.KeyRef, $mm.PrimaryField, $bb.KeyRef, $nx) 'Gray'
+            Out-Line ("        meta set[{0}]  any[{1}]" -f ((@($mm.Set) -join ',')), ((@($mm.Any) -join ','))) 'DarkGray'
+            if ($nx -gt 1) {
+                Out-Line ("        SHARED POOL (excuses over-permit) set+any = [{0}]" -f ((@($shared[$skx].Set) + @($shared[$skx].Any) | Sort-Object -Unique) -join ',')) 'DarkYellow'
+            }
+        }
+        # built combos nothing paired to
+        $pairedKeys = @{}
+        foreach ($mm in $meta) { $bb = $assign["$($mm.Idx)"]; if ($bb) { $pairedKeys["$($mm.Query)|$($bb.KeyRef)"] = $true } }
+        foreach ($qn in $built.Keys) {
+            foreach ($bc in @($built[$qn])) {
+                if (-not $pairedKeys.ContainsKey("$qn|$($bc.KeyRef)")) {
+                    Out-Line ("     [NEVER COMPARED] built {0,-26} {1}  -- no metadata alternative paired to it" -f $qn, $bc.KeyRef) 'DarkYellow'
+                }
+            }
+        }
+        Out-Line "  -------------------------------------------------------------------------------" 'DarkCyan'
     }
 
     foreach ($m in $meta) {

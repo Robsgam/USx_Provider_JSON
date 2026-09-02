@@ -169,6 +169,34 @@ function Get-Node($j, [string]$entity, [string]$fieldId) {
     return $null
 }
 
+# FIND A DROPDOWN BY WHAT MAKES IT ONE, NOT BY ITS NAME. Added 2026-09-02.
+# `codetype-select-as-input` hunted three hardcoded fieldIds (relatedHitSearchIndicator /
+# RelatedHitSearchIndicator / ImageIndicator) and threw 'no codeTypeCategory dropdown found to
+# mutate' when none was present -- which is the case on ALL SIX CA providers, none of which builds
+# an ImageIndicator control (CLAUDE.md records that as correct: the field is absent from their
+# metadata). MEASURED 2026-09-02: 6 of 20 providers reported [INVALID] -- CA_CLETS, CA_CLETS_OCATS,
+# CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY -- while each carries 5-6 real
+# codeTypeCategory-driven FormSelects that are perfectly valid targets. So validate.ps1's
+# codeTypeCategory branch had never been efficacy-proven on a single CA provider, and
+# ENGINEERING_STANDARD 5 requires 0 INVALID as well as 0 SURVIVED. An INVALID is not a harmless
+# skip: 'a step that did not run is NOT a pass', and a stale mutation is indistinguishable from a
+# blind gate (the fl-drop-devdoc-optional lesson).
+# Selects on the PROPERTY the rule is about, so it self-extends to any future dropdown.
+function Get-CodeTypeSelectNode($j) {
+    foreach ($b in $j.bundles) { foreach ($c in $b.configurations) {
+        if ($c.type -ne 'QUERYINPUTFORM') { continue }
+        $lay = $c.layout.'default'
+        if (-not $lay) { continue }
+        foreach ($nid in $lay.PSObject.Properties.Name) {
+            $n = $lay.$nid
+            if (-not $n.props) { continue }
+            if ("$($n.type.resolvedName)" -ne 'FormSelect') { continue }
+            if (-not $n.props.codeTypeCategory) { continue }
+            return $n
+        } } }
+    return $null
+}
+
 # ── PER-PROVIDER MUTATION MAPS ────────────────────────────────────────────────────────
 # The table below names REAL keyRefs and fieldIds, so it is provider-shaped by necessity. A
 # provider without a map cannot be mutation-tested, and by LAW 2 its gates' PASS is therefore not
@@ -296,11 +324,16 @@ $MUTS = @(
      Desc='a codeTypeCategory-driven dropdown (relatedHitSearchIndicator, YES_NO_UNKNOWN) flipped from FormSelect to FormInput with its props intact -- the officer free-types where a coded value is required and it reaches the wire uncoded. Distinct from sexcode-as-input: that one is attributeTypeId-driven, this one codeTypeCategory-driven, and the original SEX/RACE-only check was blind to this branch.'
      Gate='validate.ps1'; Args={ @('-Path',$workJson) }
      Mut={ param($j)
+           # Prefer the historically-named controls so the mutation stays byte-identical on the 14
+           # providers where it already ran; fall back to ANY codeTypeCategory FormSelect, which is
+           # what the rule is actually about. See Get-CodeTypeSelectNode for the 6-provider blind
+           # spot this closes.
            $n = $null
            foreach ($ent in @('Vehicle','Person','Firearm','Boat')) {
                foreach ($fid in @('relatedHitSearchIndicator','RelatedHitSearchIndicator','ImageIndicator')) {
                    if (-not $n) { $n = Get-Node $j $ent $fid } } }
-           if (-not $n) { throw 'no codeTypeCategory dropdown found to mutate' }
+           if (-not $n) { $n = Get-CodeTypeSelectNode $j }
+           if (-not $n) { throw 'no codeTypeCategory-driven FormSelect exists in this JSON to mutate' }
            $n.type.resolvedName = 'FormInput' } }
 
   # ── IL_LEADS_OFML ──────────────────────────────────────────────────────────────────────
@@ -405,6 +438,29 @@ $MUTS = @(
      Mut={ param($j) $c=Get-Cfg $j '*_DriverLicenseQuery'; $cm=Get-Combo $c 'Z2.N'
            $cm.requirements.set=@(@($cm.requirements.set) | Where-Object { $_ -ne 'NameLast' })
            $cm.requirements.any=@(@($cm.requirements.any)+'NameLast') } }
+
+  # PROMOTED FUZZ SURVIVOR (CA_SAN_LUIS_OBISPO, seed 1246792, triaged real 2026-09-02) -- the
+  # SIBLING-VARIANT OPTIONAL LEAK. audit_requirement_fidelity collected the metadata <Any> pool
+  # keyed on "transaction|keyRef" instead of the full "transaction|keyRef|primaryFieldReference"
+  # triple, so EVERY alternative of a keyRef inherited every sibling alternative's optionals and an
+  # over-permit against the narrower variant read as legal. The original survivor was SexCodeDH on
+  # DriverHistoryQuery B2.O (metadata B2{OLN} = Set[OLN] Any[Attention,PurposeCode]; SexCode is in
+  # the SIBLING B2{Name}'s <Any>). Catalogued here on the VEHICLE family instead, because that is
+  # where the SAME bug was hiding real live defects on three providers -- CA_SLO 2, CA_eSUN 4 and
+  # tenant-verified CA_CLETS_OCATS 2 -- all of them a plate combo carrying the VIN sibling's
+  # VehicleMakeCode/VehicleYear. SLO's RQ{LicensePlateNumber} declares NO <Any> AT ALL, so the pool
+  # is unambiguously empty and the mutation cannot be excused by a looser reading.
+  # WHY THIS MUTATION AND NOT THE DH ONE: the asymmetry that made the bug diagnosable was that the
+  # identical mutation on sibling KQ.O was CAUGHT, purely because KQ{Name} carries SexCode in <Set>
+  # rather than <Any>. A mutation whose kill depends on which grammar slot a THIRD variant used is
+  # too fragile to be a permanent catalogue row; the empty-<Any> Vehicle case is not.
+  # If someone re-widens that pool key back to the keyRef "to avoid false positives", this SURVIVES.
+  @{ Id='slo-fidelity-sibling-optional-leak'; OnlyProvider='CA_SAN_LUIS_OBISPO'
+     Desc='VehicleMakeCode added to RQ.P any[] though metadata RQ{LicensePlateNumber} declares NO <Any> at all -- the field is defined only on the VIN sibling RQ{VehicleIdentificationNumber}. Was SURVIVED before 2026-09-02 because the optional pool was keyed on keyRef alone, so the plate variant inherited the VIN variant''s optionals. A KEYREF IS NOT A VARIANT.'
+     Gate='audit_requirement_fidelity.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j) $c=Get-Cfg $j '*_VehicleRegistrationQuery'; $cm=Get-Combo $c 'RQ.P'
+           if ($null -eq $cm.requirements.PSObject.Properties['any']) { Add-Member -InputObject $cm.requirements -MemberType NoteProperty -Name any -Value @('VehicleMakeCode') }
+           else { $cm.requirements.any=@(@($cm.requirements.any)+'VehicleMakeCode') } } }
 
   @{ Id='il-guardrail-wire-leak'; OnlyProvider='IL_LEADS_OFML'
      Desc='RegistrationState removed from Z2.P any[] while its "RegistrationState EXISTS" routing condition is left in place -- the field decides which query fires and then does not ride the wire, so an out-of-state plate query goes out with no destination state. Per-COMBINATION defect: sibling combos still carry State, so every per-provider and form-level check reads it as wired.'

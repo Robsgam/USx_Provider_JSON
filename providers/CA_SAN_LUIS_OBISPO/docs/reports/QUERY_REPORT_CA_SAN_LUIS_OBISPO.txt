@@ -1,7 +1,7 @@
 ================================================================
   Build Report: CA_SAN_LUIS_OBISPO
-  Source: CA_SAN_LUIS_OBISPO_v2.7.json
-  Generated: 2026-09-02 10:18
+  Source: CA_SAN_LUIS_OBISPO_v2.8.json
+  Generated: 2026-09-02 11:01
 ================================================================
 QUERY SIMULATION
 ================
@@ -9,7 +9,7 @@ QUERY SIMULATION
   Seeded form defaults (1): Person.attentionDH=X
 
 ================================================================
-  CommSys Query Simulator -- CA_SAN_LUIS_OBISPO_v2.7.json
+  CommSys Query Simulator -- CA_SAN_LUIS_OBISPO_v2.8.json
 ================================================================
 
 --- QIDM: CA_SAN_LUIS_OBISPO_VehicleRegistrationQuery [Vehicle] ---
@@ -17,7 +17,6 @@ QUERY SIMULATION
 
     [FIRES first-match] RQ.P
       set: [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
-      any: [VehicleMakeCode, vehicleYear] -> matched: [VehicleMakeCode, vehicleYear]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -26,15 +25,13 @@ QUERY SIMULATION
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
         <LicensePlateYear>2024</LicensePlateYear>
         <State>NJ</State>
-        <VehicleMakeCode>FORD</VehicleMakeCode>
-        <VehicleYear>2023</VehicleYear>
       </Transaction>
     [SKIP] RQ.V -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']
     [SKIP] 4.P -- conditions failed: RegistrationState NOT_EXISTS [value='NJ']
     [SKIP] QV.V -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']; RegistrationState NOT_EXISTS [value='NJ']
 
     >> PLATFORM FIRES: RQ.P (first matching combo)
-    >> UNION POOL (platform serializes): LicensePlateNumber=ABC1234, LicensePlateTypeCode=PC, LicensePlateYear=2024, State=NJ, VehicleMakeCode=FORD, VehicleYear=2023
+    >> UNION POOL (platform serializes): LicensePlateNumber=ABC1234, LicensePlateTypeCode=PC, LicensePlateYear=2024, State=NJ
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 

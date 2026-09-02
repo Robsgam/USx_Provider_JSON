@@ -2,9 +2,68 @@
 
 Auto-generated from `CA_SAN_LUIS_OBISPO_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.7** | Generated: 2026-09-02
+Current: **v2.8** | Generated: 2026-09-02
 
 ---
+
+## v2.8 -- 2026-09-02 -- THE OUT-OF-STATE PLATE SEARCH STOPS OFFERING THE VIN SIBLING'S OPTIONALS
+
+**CHANGED:** RQ.P any[VehicleMakeCode, vehicleYear] REMOVED -- RQ.P now carries NO any[] at all.
+  set[] and defaults[] unchanged. RQ.V, QV.V and 4.P untouched.  
+**REASON:** metadata RQ{LicensePlateNumber} = Set[LicensePlateNumber, LicensePlateTypeCode,
+  LicensePlateYear, State] and declares NO <Any> WHATSOEVER. VehicleMakeCode and VehicleYear are  
+  optionals of the VIN sibling RQ{VehicleIdentificationNumber} (Any[VehicleMakeCode,  
+  VehicleYear]), which legitimately keeps them. The devdoc agrees independently: "#3 (Out)  
+  LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, State" carries NO BRACKETS, so the  
+  out-of-state plate search has no optionals at all. Both authorities, same answer.  
+  Impact while live: every out-of-state plate query COULD transmit two fields that transaction  
+  does not define (LIMITATION #1 family). Never actually sent -- this provider has never been  
+  imported -- so the exposure is zero and the correction is free.  
+HOW IT HID, AND IT IS NOT A CA_SAN_LUIS_OBISPO PROBLEM: audit_requirement_fidelity collected the  
+  metadata <Any> pool keyed on "transaction|keyRef" rather than the full  
+  "transaction|keyRef|primaryFieldReference" triple, so EVERY alternative of a keyRef inherited  
+  its SIBLING alternatives' optionals. The plate variant silently inherited the VIN variant's  
+  <Any> and the over-permit read as legal. A KEYREF IS NOT A VARIANT -- this repo's most-repeated  
+  rule, violated inside the gate itself. Fixed in the same session; _probe.ps1's  
+  Get-ProbeMetadataOptionals already keyed on the triple, so the harness had it right and the  
+  gate did not.  
+FOUND BY THE UNAIMED FUZZ, NOT BY LOOKING: seed 1246792 produced  
+  "over-permit @ DriverHistoryQuery[3] SexCodeDH" and it SURVIVED the whole panel. Triaged rather  
+  than dismissed -- built B2.O is an exact match to metadata B2{OLN} = Set[OLN]  
+  Any[Attention, PurposeCode], so SexCode is genuinely undefined there. THE ASYMMETRY IS WHAT  
+  MADE IT DIAGNOSABLE: the identical mutation on sibling KQ.O was CAUGHT, purely because  
+  KQ{Name} carries SexCode in <Set> while B2{Name} carries it in <Any>, so only the latter  
+  entered the pool. Two identical-set[] combos, same field, opposite verdicts, decided by which  
+  grammar slot a THIRD variant used.  
+MEASURED ACROSS ALL 20 BEFORE THE TOOL CHANGE WAS COMMITTED:  
+  branches compared   420 -> 420   UNCHANGED (no coverage lost -- the check that separates a  
+                                   real fix from a silencer)  
+  UNDER-REQUIRED        4 ->   4   unchanged (the change touches the over-permit pool only)  
+  OVER-PERMITTED        3 ->  11   +8, ALL VERIFIED REAL per-variant against the raw XML  
+  regression fixture  116 branches / 0 UNDER / 0 OVER -- INTACT (CA_CLETS, FL_FCIC,  
+                      HI_HCJDC_OFML, NJ_NJCJIS, NY_NYSPIN_EJUSTICE, TX_TLETS all still clean)  
+  The other 6 of those 8 are NOT this provider's and were NOT fixed here (usx-tooling rule 8c):  
+  CA_eSUN 4 and TENANT-VERIFIED CA_CLETS_OCATS 2, both carrying the identical plate/VIN class,  
+  both FLAGGED [FLAG:fidelity-sibling-optional-leak] for their own next rebuild.  
+LAW 2 -- the gate is now PROVEN able to fail on this class: catalogued mutation  
+  'slo-fidelity-sibling-optional-leak' added to audit_gate_efficacy (re-adds VehicleMakeCode to  
+  RQ.P; KILLED, findings 0 -> 1). It is aimed at the VEHICLE family rather than the original DH  
+  survivor on purpose -- RQ{Plate} declares an EMPTY <Any>, so the mutation cannot be excused by  
+  a looser reading, whereas the DH kill depended on which grammar slot a third variant used.  
+A SECOND, UNRELATED GATE HOLE CLOSED IN THE SAME PASS: audit_gate_efficacy's  
+  'codetype-select-as-input' mutation hunted three hardcoded fieldIds (relatedHitSearchIndicator  
+  / ImageIndicator) and reported [INVALID] when none existed -- which is the case on ALL SIX CA  
+  providers, none of which builds an ImageIndicator control. MEASURED: 6 of 20 providers, each  
+  carrying 5-6 perfectly valid codeTypeCategory FormSelects, so validate.ps1's codeTypeCategory  
+  branch had NEVER been efficacy-proven on any CA provider. Now falls back to selecting any  
+  codeTypeCategory-driven FormSelect. CA_SAN_LUIS_OBISPO 8/8 + 1 INVALID -> 9/9 / 0 SURVIVED /  
+  0 INVALID; CA_CLETS likewise 0 INVALID. ENGINEERING_STANDARD 5 requires 0 INVALID, not just  
+  0 SURVIVED -- a step that did not run is not a pass.  
+GATES: validator 67P/0F/0W - fidelity 22 branches / 0 UNDER / 0 OVER - query trace 20 built /  
+  0 MISSING - reachability all reachable - efficacy 9/9 KILLED / 0 SURVIVED / 0 INVALID -  
+  PS-5.1 119 scanned / 0 PARSE-FAIL - portability 280 cells / 0 unportable - enforce 0F / 0W.  
+COST: NONE. Never tenant-tested (0 logs at any version), so no package archived, no Foundation  
+  and no LIVE tenant. Plan regenerated at v2.8.  
 
 ## v2.7 -- 2026-09-02 -- THE IN-STATE PLATE SEARCH IS NOW THE VARIANT THE DEVDOC ACTUALLY LISTS
 
