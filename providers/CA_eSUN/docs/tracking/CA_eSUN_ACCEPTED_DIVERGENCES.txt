@@ -1,0 +1,28 @@
+# SUPPRESSION-SCOPE: direction-aware
+#   Opted in 2026-09-02 at the v1.0 baseline. Without this marker a registry row suppresses EVERY
+#   check for its (query, keyRef, field) triple regardless of what the recorded decision said.
+# CA_eSUN ACCEPTED METADATA DIVERGENCES
+# Read by tools/audit_metadata.ps1 (CHECK 4 / 4d), audit_combo_reachability.ps1 (dead-combo* -> NOTE)
+# and audit_test_coverage.ps1 -Gate (existence-class rows are exempt from UNCOVERED).
+# Format (pipe-delimited): query | keyRef | field | rule | reason | source | date
+#
+# ============================================================================================
+# v1.0 IS A FAITHFUL CAPTURE OF THE SAN DIEGO SHERIFF LIVE CONFIGURATION, HAND BUILT BY
+# ENGINEERING. NOTHING BELOW IS A BUILD DEFECT WE INTRODUCED -- each row records something the
+# live tenant does, proven on the wire, so that the v1.x line has a documented starting point.
+# Rob 2026-09-02: "register the 8 as known-unreachable."
+# CORRECTION TO MY OWN COUNT: the owed set is 10 plan tests, of which NINE are structurally
+# unreachable (I said 8 -- both Article tests fill ArticleTypeCodeRemainder, which has no form
+# control at all, so they are structural too, not dedupe) and ONE is recoverable
+# (Person/L1OperatorLicenseNumberIn plain -- it DID submit, T18, and lost its log to a filename
+# collision with its own _af_RegistrationState sibling).
+# ONLY COMBO-LEVEL items are registered here. A row is keyed (query, keyRef), so a failure that
+# affects ONE any-field TEST of an otherwise-working combo must NOT be registered -- doing so would
+# suppress the whole keyRef and cost real coverage (the IL_LEADS_OFML and TX RSDWW lessons). Those
+# test-level items are recorded in BUILD_NOTES instead.
+# ============================================================================================
+
+VehicleRegistrationQuery | NameAddressIn | * | dead-combo | LIVE-PROVEN UNREACHABLE, three consecutive driver runs, 0 of 5 plan tests ever submitted. The tenant never activates a query checkbox and Send stays DISABLED, so nothing is sent -- not a validation failure, there is simply no query to run. Every variant was tried: name-only, +AddressCity, +AddressStreetNumber, +RegistrationState=GA, and all three together. Neighbouring combos on the SAME form submitted immediately before and after each attempt (QVLicensePlateNumberIn, IdentificationNumberInOut, LojackID), so it is not latency and not the form being slow. Metadata does define the variant (VehicleRegistrationQuery <Any> includes AddressCity/AddressStreetNumber and the devdoc lists "#4 (In) Name, [AddressCity, AddressStreetNumber]"), so this is a live ROUTING fact about the San Diego tenant, not a metadata gap. Registered so the coverage gate stops demanding evidence that cannot be produced. | live-driver 3 runs 2026-09-02 | 2026-09-02
+VehicleRegistrationQuery | 4LicensePlateTypeIn | * | dead-combo | STRUCTURALLY DEAD, fill-independent -- audit_combo_reachability reports it on the plain reachability test, and the plan generates no test for it. It sits behind QVLicensePlateNumberIn, whose set[] is a strict subset, so first-match hands every plate fill to QV and 4LicensePlateTypeIn can never win. Carried in from the live configuration unchanged; NOT reordered, because v1.0 is a capture and reordering would make it stop matching what San Diego runs. | audit_combo_reachability 2026-09-02 | 2026-09-02
+DriverLicenseQuery | VPBirthDateIn | * | dead-combo | STRUCTURALLY DEAD, fill-independent (audit_combo_reachability). Shadowed by an earlier DriverLicenseQuery combination whose set[] it cannot out-specify once the form defaults are applied. No plan test is generated for it, so there is no evidence to owe. Carried in unchanged from the live configuration. | audit_combo_reachability 2026-09-02 | 2026-09-02
+DriverLicenseQuery | VPAgeIn | * | dead-combo | STRUCTURALLY DEAD, fill-independent (audit_combo_reachability) -- the Age-branch twin of VPBirthDateIn, dead for the same reason and in the same position. No plan test is generated. Carried in unchanged from the live configuration. | audit_combo_reachability 2026-09-02 | 2026-09-02

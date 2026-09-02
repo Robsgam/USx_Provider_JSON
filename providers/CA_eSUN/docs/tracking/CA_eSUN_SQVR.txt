@@ -1,12 +1,202 @@
-﻿CA_eSUN -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
+CA_eSUN -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
 Last updated: 2026-09-02
-JSON version: (see REBUILD_TRACKER.md)
-Live test: In progress
+JSON version: v1.0
+Live test: PARTIAL -- 25 logs captured 2026-09-02 across three driver runs (all PASS)
+
+v1.0 IS A FAITHFUL CAPTURE of the San Diego Sheriff live configuration, HAND BUILT BY
+ENGINEERING. It is not a clean build and is not claimed to be one. Combination statuses below
+are derived from the emitted JSON, the committed logs and the accepted-divergence registry.
+
+================================================================================
+AFS -- Person Entity
+================================================================================
+
+  PurposeCodeNameLastAge -- Name [CONFIRMED] -- 1 log(s) at v1.0
+    keyReference: PurposeCodeNameLastAge
+    set[]: PurposeCode, NameFirst, NameLast, Age
+    any[]: ORI, RegistrationState
+      log: CA_eSUN_v1.0_PurposeCodeNameLastAge.txt
+
+  PurposeCodeNameLastBirthDate -- Name [CONFIRMED] -- 1 log(s) at v1.0
+    keyReference: PurposeCodeNameLastBirthDate
+    set[]: PurposeCode, NameFirst, NameLast, BirthDate
+    any[]: ORI
+      log: CA_eSUN_v1.0_PurposeCodeNameLastBirthDate.txt
+
+================================================================================
+ArticleSingleQuery -- Article Entity
+================================================================================
+
+  ArticleSerialNumber -- ArticleSerialNumber [CONFIRMED] -- 3 log(s) at v1.0
+    keyReference: ArticleSerialNumber
+    set[]: PurposeCode, ArticleSerialNumber
+    any[]: ArticleTypeCode, ArticleTypeCodeRemainder, ArticleBrand
+      log: CA_eSUN_v1.0_ArticleSerialNumber_af_ArticleBrand.txt
+      log: CA_eSUN_v1.0_ArticleSerialNumber_af_ArticleTypeCode.txt
+      log: CA_eSUN_v1.0_ArticleSerialNumber.txt
+
+================================================================================
+BoatQuery -- Boat Entity
+================================================================================
+
+  PurposeCodeBoatHullIdNumber -- BoatHullIdNumber [CONFIRMED] -- 2 log(s) at v1.0
+    keyReference: PurposeCodeBoatHullIdNumber
+    set[]: PurposeCode, BoatHullIdNumber
+    any[]: ORI, RegistrationState
+      log: CA_eSUN_v1.0_PurposeCodeBoatHullIdNumber_af_RegistrationState.txt
+      log: CA_eSUN_v1.0_PurposeCodeBoatHullIdNumber.txt
+
+  PurposeCodeRegistrationNumber -- RegistrationNumber [CONFIRMED] -- 2 log(s) at v1.0
+    keyReference: PurposeCodeRegistrationNumber
+    set[]: PurposeCode, RegistrationNumber
+    any[]: ORI, RegistrationState
+      log: CA_eSUN_v1.0_PurposeCodeRegistrationNumber_af_RegistrationState.txt
+      log: CA_eSUN_v1.0_PurposeCodeRegistrationNumber.txt
+
+================================================================================
+CAILojackQuery -- Vehicle Entity
+================================================================================
+
+  LojackID -- LojackID [CONFIRMED] -- 1 log(s) at v1.0
+    keyReference: LojackID
+    set[]: PurposeCode, LojackID
+    any[]: ORI
+      log: CA_eSUN_v1.0_LojackID.txt
+
+================================================================================
+DriverHistoryQuery -- Person Entity
+================================================================================
+
+  KQName -- Name [PENDING] -- no log
+    keyReference: KQName
+    set[]: PurposeCode, NameFirst, NameLast, SexCode, BirthDate, RegistrationState
+    any[]: Attention, ORI
+
+  KQOperatorLicenseNumberIn -- OperatorLicenseNumber [PENDING] -- no log
+    keyReference: KQOperatorLicenseNumberIn
+    set[]: PurposeCode, OperatorLicenseNumber
+    any[]: RegistrationState
+
+  KQOperatorLicenseNumberOut -- OperatorLicenseNumber [PENDING] -- no log
+    keyReference: KQOperatorLicenseNumberOut
+    set[]: PurposeCode, OperatorLicenseNumber, RegistrationState
+    any[]: Attention, ORI
+
+  L1Name -- Name [PENDING] -- no log
+    keyReference: L1Name
+    set[]: PurposeCode, NameFirst, NameLast
+    any[]: RegistrationState
 
 ================================================================================
 DriverLicenseQuery -- Person Entity
 ================================================================================
 
-  L1OperatorLicenseNumberIn_af_RegistrationState -- L1OperatorLicenseNumberIn_af_RegistrationState (auto) [CONFIRMED]
-    keyReference: L1OperatorLicenseNumberIn_af_RegistrationState
+  DQNameBirthSexCodeOut -- BirthDate [PENDING] -- no log
+    keyReference: DQNameBirthSexCodeOut
+    set[]: PurposeCode, NameFirst, NameLast, BirthDate, SexCode, RegistrationState
+    any[]: ORI
+
+  KQOperatorLicenseNumberOut -- OperatorLicenseNumber [PENDING] -- no log
+    keyReference: KQOperatorLicenseNumberOut
+    set[]: PurposeCode, OperatorLicenseNumber, RegistrationState
+    any[]: ORI
+
+  L1NameIn -- Name [CONFIRMED] -- 1 log(s) at v1.0
+    keyReference: L1NameIn
+    set[]: PurposeCode, NameFirst, NameLast
+    any[]: RegistrationState
+      log: CA_eSUN_v1.0_L1NameIn.txt
+
+  L1OperatorLicenseNumberIn -- OperatorLicenseNumber [CONFIRMED] -- 1 log(s) at v1.0
+    keyReference: L1OperatorLicenseNumberIn
+    set[]: PurposeCode, OperatorLicenseNumber
+    any[]: ORI, RegistrationState
+      log: CA_eSUN_v1.0_L1OperatorLicenseNumberIn_af_RegistrationState.txt
+
+  VPAgeIn -- Age [REGISTERED dead-combo] -- unreachable, evidence not owed
+    keyReference: VPAgeIn
+    set[]: PurposeCode, NameFirst, NameLast, Age
+    any[]: ORI, SexCode, RegistrationState
+
+  VPBirthDateIn -- BirthDate [REGISTERED dead-combo] -- unreachable, evidence not owed
+    keyReference: VPBirthDateIn
+    set[]: PurposeCode, NameFirst, NameLast, BirthDate
+    any[]: ORI, SexCode, RegistrationState
+
+================================================================================
+GunQuery -- Firearm Entity
+================================================================================
+
+  PurposeCodeFirearmSerialNumber -- FirearmSerialNumber [CONFIRMED] -- 5 log(s) at v1.0
+    keyReference: PurposeCodeFirearmSerialNumber
+    set[]: PurposeCode, SerialNumber
+    any[]: FirearmCaliber, FirearmMake, FirearmType, ORI
+      log: CA_eSUN_v1.0_PurposeCodeFirearmSerialNumber_af_FirearmCaliber.txt
+      log: CA_eSUN_v1.0_PurposeCodeFirearmSerialNumber_af_FirearmMake.txt
+      log: CA_eSUN_v1.0_PurposeCodeFirearmSerialNumber_af_FirearmType.txt
+      log: CA_eSUN_v1.0_PurposeCodeFirearmSerialNumber_any.txt
+      log: CA_eSUN_v1.0_PurposeCodeFirearmSerialNumber.txt
+
+  PurposeCodeNameLastAge -- Name [CONFIRMED] -- 1 log(s) at v1.0
+    keyReference: PurposeCodeNameLastAge
+    set[]: PurposeCode, NameFirst, NameLast, Age
+    any[]: ORI
+      log: CA_eSUN_v1.0_PurposeCodeNameLastAge.txt
+
+  PurposeCodeNameLastBirthDate -- Name [CONFIRMED] -- 1 log(s) at v1.0
+    keyReference: PurposeCodeNameLastBirthDate
+    set[]: PurposeCode, NameFirst, NameLast, BirthDate
+    any[]: ORI
+      log: CA_eSUN_v1.0_PurposeCodeNameLastBirthDate.txt
+
+================================================================================
+VehicleRegistrationQuery -- Vehicle Entity
+================================================================================
+
+  4LicensePlateTypeIn -- LicensePlateNumber [REGISTERED dead-combo] -- unreachable, evidence not owed
+    keyReference: 4LicensePlateTypeIn
+    set[]: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
+    any[]: RegistrationState
+
+  IdentificationNumberInOut -- VehicleIdentificationNumber [CONFIRMED] -- 5 log(s) at v1.0
+    keyReference: IdentificationNumberInOut
+    set[]: PurposeCode, VehicleIdentificationNumber
+    any[]: ORI, VehicleMakeCode, VehicleYear, RegistrationState
+      log: CA_eSUN_v1.0_IdentificationNumberInOut_af_RegistrationState.txt
+      log: CA_eSUN_v1.0_IdentificationNumberInOut_af_VehicleMakeCode.txt
+      log: CA_eSUN_v1.0_IdentificationNumberInOut_af_VehicleYear.txt
+      log: CA_eSUN_v1.0_IdentificationNumberInOut_any.txt
+      log: CA_eSUN_v1.0_IdentificationNumberInOut.txt
+
+  NameAddressIn -- Name [REGISTERED dead-combo] -- unreachable, evidence not owed
+    keyReference: NameAddressIn
+    set[]: PurposeCode, NameFirst, NameLast
+    any[]: ORI, AddressCity, AddressStreetNumber, RegistrationState
+
+  QVLicensePlateNumberIn -- LicensePlateNumber [CONFIRMED] -- 2 log(s) at v1.0
+    keyReference: QVLicensePlateNumberIn
+    set[]: PurposeCode, LicensePlateNumber
+    any[]: ORI, RegistrationState
+      log: CA_eSUN_v1.0_QVLicensePlateNumberIn_af_RegistrationState.txt
+      log: CA_eSUN_v1.0_QVLicensePlateNumberIn.txt
+
+  RQLicensePlateTypeYearOut -- LicensePlateNumber [PENDING] -- no log
+    keyReference: RQLicensePlateTypeYearOut
+    set[]: PurposeCode, LicensePlateNumber, RegistrationState
+    any[]: ORI, LicensePlateYear, LicensePlateTypeCode
+
+  VPNameBirthDateIn -- BirthDate [CONFIRMED] -- 1 log(s) at v1.0
+    keyReference: VPNameBirthDateIn
+    set[]: PurposeCode, NameFirst, NameLast, BirthDate
+    any[]: ORI, RegistrationState
+      log: CA_eSUN_v1.0_VPNameBirthDateIn.txt
+
+================================================================================
+TOTALS
+================================================================================
+  Total combos (CommSys): 25
+  CONFIRMED (backed by a v1.0 log): 14
+  REGISTERED unreachable (no evidence owed): 4
+  PENDING (no log yet): 7
+  Logs held at v1.0: 25, all RESULT: PASS

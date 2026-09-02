@@ -98,8 +98,17 @@ function SectionHeader($title) {
 
 # ── Provider discovery ────────────────────────────────────────────────────────
 function Get-ProviderList {
+    # A PROVIDER IS DEFINED BY HAVING SOURCE MATERIAL, NOT BY HAVING A GENERATOR.
+    # This used to require scripts/ alone, which SILENTLY EXCLUDED any hand-built provider from a
+    # full portfolio run -- worse than a FAIL, because the board reads clean while the provider is
+    # never checked at all. Measured 2026-09-02 the moment CA_eSUN v1.0 (the captured San Diego
+    # baseline) lost its build script: enforce was walking 19 providers, not 20, and
+    # `-Provider CA_eSUN` died with "Provider not found". Widening to scripts/ OR source/ was
+    # measured first and admits EXACTLY ONE directory -- CA_eSUN -- so no non-provider folder can
+    # slip in. Fifth place the no-build-script baseline broke a tool that assumed a generator
+    # exists (after reset_test_package, _test_provenance, sync_version_docs, and PHASE 2f).
     $dirs = Get-ChildItem $provDir -Directory | Where-Object {
-        (Test-Path (Join-Path $_.FullName "scripts"))
+        (Test-Path (Join-Path $_.FullName "scripts")) -or (Test-Path (Join-Path $_.FullName "source"))
     }
     if ($Provider) {
         $dirs = $dirs | Where-Object { $_.Name -eq $Provider }
@@ -112,19 +121,30 @@ function Get-ProviderList {
 }
 
 function Get-ScriptVersion($provPath) {
-    # Single script model: find the build script (not _mc, not _old)
-    $scripts = Get-ChildItem (Join-Path $provPath "scripts") -Filter "build_*" -File |
-        Where-Object { $_.Name -notmatch '_mc' -and $_.Name -notmatch '_old' }
-    # Legacy fallback: _mc script for providers not yet migrated
-    if ($scripts.Count -eq 0) {
-        $scripts = Get-ChildItem (Join-Path $provPath "scripts") -Filter "build_*_mc*" -File
+    # Guarded: Get-ChildItem on a missing scripts/ throws PathNotFound on a hand-built provider.
+    $scriptsDir = Join-Path $provPath "scripts"
+    if (Test-Path $scriptsDir) {
+        # Single script model: find the build script (not _mc, not _old)
+        $scripts = @(Get-ChildItem $scriptsDir -Filter "build_*" -File -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -notmatch '_mc' -and $_.Name -notmatch '_old' })
+        # Legacy fallback: _mc script for providers not yet migrated
+        if ($scripts.Count -eq 0) {
+            $scripts = @(Get-ChildItem $scriptsDir -Filter "build_*_mc*" -File -ErrorAction SilentlyContinue)
+        }
+        if ($scripts.Count -gt 0) {
+            $text = [System.IO.File]::ReadAllText($scripts[0].FullName)
+            if ($text -match '\$Version\s*=\s*["'']([^"'']+)["'']') {
+                return $Matches[1]
+            }
+        }
     }
-    if ($scripts.Count -eq 0) { return $null }
-    $text = [System.IO.File]::ReadAllText($scripts[0].FullName)
-    if ($text -match '\$Version\s*=\s*["'']([^"'']+)["'']') {
-        return $Matches[1]
-    }
-    return $null
+    # FALLBACK for a hand-built provider: the shared resolver (active JSON filename, then the
+    # bundle description) -- the two carriers CLAUDE.md's Versioning Policy names. Without this,
+    # every version-sync check in PHASE 3 compares against $null and cannot mean anything.
+    try {
+        . (Join-Path $PSScriptRoot '_test_provenance.ps1')
+        return (Get-BuildVersionForProvider -ProvDir $provPath)
+    } catch { return $null }
 }
 
 # ── Parse validator report ────────────────────────────────────────────────────

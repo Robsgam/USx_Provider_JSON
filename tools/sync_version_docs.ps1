@@ -54,14 +54,31 @@ function Skipped($msg) {
 
 # ── Read version from build script ───────────────────────────────────────────
 function Get-ScriptVersion($provPath) {
-    $scripts = Get-ChildItem (Join-Path $provPath "scripts") -Filter "build_*" -File |
-        Where-Object { $_.Name -notmatch '_old' }
-    if ($scripts.Count -eq 0) { return $null }
-    $text = [System.IO.File]::ReadAllText($scripts[0].FullName)
-    if ($text -match '\$Version\s*=\s*["''"]([^"'']+)["''"]') {
-        return $Matches[1]
+    # A HAND-BUILT provider has NO scripts/ directory at all, and Get-ChildItem on a missing path
+    # throws a non-terminating PathNotFound that surfaced as a raw ItemNotFoundException in the
+    # middle of an otherwise clean sync (CA_eSUN v1.0, 2026-09-02). Guard the path first: this is
+    # the FOURTH place the no-build-script baseline broke a tool that assumes one exists, after
+    # reset_test_package ("Could not determine version"), _test_provenance (logs stamped
+    # "vunknown") and enforce PHASE 2f (reproducibility, structurally unsatisfiable).
+    $scriptsDir = Join-Path $provPath "scripts"
+    if (Test-Path $scriptsDir) {
+        $scripts = @(Get-ChildItem $scriptsDir -Filter "build_*" -File -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -notmatch '_old' })
+        if ($scripts.Count -gt 0) {
+            $text = [System.IO.File]::ReadAllText($scripts[0].FullName)
+            if ($text -match '\$Version\s*=\s*["''"]([^"'']+)["''"]') {
+                return $Matches[1]
+            }
+        }
     }
-    return $null
+    # FALLBACK -- the SHARED resolver, which reads the active JSON filename then the bundle
+    # description. Both are the version carriers CLAUDE.md's Versioning Policy names, so a
+    # hand-built provider stays fully version-tracked: filename, bundle description, .test_version,
+    # STATUS, SQVR, JSON_INVENTORY, BUILD_NOTES and CHANGELOG all advance together on a bump.
+    try {
+        . (Join-Path $PSScriptRoot '_test_provenance.ps1')
+        return (Get-BuildVersionForProvider -ProvDir $provPath)
+    } catch { return $null }
 }
 
 # ── Read validator score from report ─────────────────────────────────────────
