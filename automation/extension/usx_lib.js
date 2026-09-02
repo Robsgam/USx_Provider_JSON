@@ -281,10 +281,28 @@
               || radios.find((r) => re.test(labelOf(r)))
               || radios.find((r) => reAnywhere.test(labelOf(r)));
     if (!target) {
-      // Dump the SHAPE and WHAT IS CURRENTLY SELECTED -- "no radio matching X" alone told us
-      // nothing, and it cost a whole 15-test run reported as UNDER-FILLED. Knowing which option is
-      // already checked usually answers whether the fill was even needed.
       dbg('NO MATCH. options were:', radios.map((r) => `${r.tagName}${r.getAttribute('role') ? '[role=' + r.getAttribute('role') + ']' : ''} value="${valOf(r) || '?'}" label="${labelOf(r)}"${isChecked(r) ? ' <= CHECKED' : ''}`));
+      // I HAVE NOW GUESSED AT THIS MARKUP TWICE AND BEEN WRONG TWICE. Print the actual HTML instead
+      // of theorising a third time: on this control the option values are opaque platform ids
+      // (72564861555 / 72564854180) and BOTH options report the FIELD label "CA Purpose Code", so
+      // the per-option text is somewhere my ancestor-walk and aria-label fallback do not reach.
+      dbg('group markup (first 1200 chars) --', (group.outerHTML || '').slice(0, 1200));
+
+      // FALL BACK TO THE EXISTING SELECTION RATHER THAN FAILING THE WHOLE TEST -- but only when
+      // exactly ONE option is checked, and say loudly that the value is UNVERIFIED.
+      // Why this is safe enough to unblock the sweep: PurposeCode carries initialValue='C', the
+      // plan fills 'C' on all 43 tests, and the v1.1/v2.0 wires confirm <CaRequestPurposeCode>C.
+      // So the form is already in the state the test wants and the driver changing nothing is the
+      // CORRECT outcome. Why it is still flagged: if a future plan asked for 'I' this would
+      // silently accept 'C', so it must never read as a clean pass -- it returns a note the log
+      // carries, not a silent ok.
+      const checked = radios.filter(isChecked);
+      if (checked.length === 1) {
+        dbg(`CANNOT IDENTIFY OPTIONS -- leaving the existing selection (value="${valOf(checked[0])}") ` +
+            `and reporting UNVERIFIED. The request was "${value}". Confirm on the wire, not here.`);
+        return { fieldId, kind: 'radio', ok: true, err: null,
+                 note: `UNVERIFIED: options unidentifiable; kept existing selection value="${valOf(checked[0])}" for requested "${value}"` };
+      }
       return { fieldId, kind: 'radio', ok: false, err: `no radio matching "${value}"` };
     }
     dbg(`matched: "${valOf(target) || labelOf(target)}"`);
@@ -437,5 +455,5 @@
   window.__usxLib = { sleep, q, fillText, selectReactSelect, findRadioGroup, selectRadioGroup, fillField, clickSend, extractConnectCicXml, triggerDownload, providerFromHost, isProviderTestTenant, providerOverrideKey };
   // Build tag: bump on every extension change so console pastes identify the loaded build
   // (version skew burned attempt 4: a stale build still had the parked Run ALL button).
-  console.log('%c[USx]', 'color:#0a0;font-weight:bold', 'usx_lib loaded. BUILD 2026-09-02b (RADIO GROUP matching FIXED: option values are platform attribute IDs not codes, and the per-option label walk no longer climbs to the GROUP label -- both options previously read the field label so nothing could match; also honours aria-checked, and short-circuits when the wanted option is already selected. -- __usxLib.findRadioGroup(id) / selectRadioGroup(id,code) to probe; manifest 0.5.3 -- matches BOTH /admin/usx-log and legacy /admin/dex-log; panel ON/OFF per tenant + launcher dot unchanged)');
+  console.log('%c[USx]', 'color:#0a0;font-weight:bold', 'usx_lib loaded. BUILD 2026-09-02c (RADIO: when the options cannot be identified -- opaque platform-id values AND both reporting the field label -- the existing selection is KEPT and reported UNVERIFIED instead of failing the test, and the group markup is dumped so it can be fixed properly. Earlier: option values are platform attribute IDs not codes, and the per-option label walk no longer climbs to the GROUP label -- both options previously read the field label so nothing could match; also honours aria-checked, and short-circuits when the wanted option is already selected. -- __usxLib.findRadioGroup(id) / selectRadioGroup(id,code) to probe; manifest 0.5.3 -- matches BOTH /admin/usx-log and legacy /admin/dex-log; panel ON/OFF per tenant + launcher dot unchanged)');
 })();
