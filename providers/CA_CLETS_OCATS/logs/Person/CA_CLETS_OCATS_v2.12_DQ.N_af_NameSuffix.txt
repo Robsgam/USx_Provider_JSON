@@ -1,0 +1,91 @@
+﻿================================================================
+TEST LOG: CA_CLETS_OCATS Person DriverLicenseQuery
+Combo: DQ.N_af_NameSuffix (DQ.N_af_NameSuffix (auto))
+Date: 2026-09-02 12:26:53
+Result: PASS
+JSON Version: 2.12
+Entity Fingerprint: 8a99f423dec4b0c220297d13311b60017745299b884e26097d33137b9fa3e172
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BirthDate":"1990-01-15","NameFirst":"JOHN","NameLast":"DOE","NameSuffix":"JR","SexCode":"Male","caRequestPurposeCode":"C"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M1HDPBJ44XF4343XV5KSRY1C">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <DeviceId>MK43RS</DeviceId>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01M1HDPBJ44XF4343XV5KSRY1C</Id>
+            <SexCode>M</SexCode>
+            <BirthDate>19900115</BirthDate>
+            <Name>DOE, JOHN JR</Name>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "lastName":  "DOE",
+                         "firstName":  "JOHN",
+                         "sexAttrId":  "72322276932",
+                         "dateOfBirth":  "1990-01-15"
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  DeviceId                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M1HDPBJ44XF4343XV5KSRY1C
+  SexCode                        M
+  BirthDate                      19900115
+  Name                           DOE, JOHN JR
+  CaRequestPurposeCode           C
+
+NOTES
+-----
+Automated capture (txId 01M1HDPBJ44XF4343XV5KSRY1C). kind=any-field; anyField=NameSuffix; expectedKeyRef=DQ.N; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

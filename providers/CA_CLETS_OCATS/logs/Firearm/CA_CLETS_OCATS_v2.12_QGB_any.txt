@@ -1,0 +1,80 @@
+﻿================================================================
+TEST LOG: CA_CLETS_OCATS Firearm GunQuery
+Combo: QGB_any (QGB_any (auto))
+Date: 2026-09-02 12:26:43
+Result: PASS
+JSON Version: 2.12
+Entity Fingerprint: e79177f9d9a0c3719b288cc1f6d34c7f579cef99855055bbf8a7742aa7e4a2b1
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"GunCaliber":"11","caRequestPurposeCode":"C","firearmMake":"IMI","gunTypeCode":"H","serialNumber":"GUN12345"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M1HDTNH5CC5CW6DJKE1H05HY">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <DeviceId>MK43RS</DeviceId>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>GunQuery</MessageType>
+            <Id>01M1HDTNH5CC5CW6DJKE1H05HY</Id>
+            <GunSerialNumber>GUN12345</GunSerialNumber>
+            <GunCaliber>11</GunCaliber>
+            <GunMake>IMI</GunMake>
+            <GunTypeCode>H</GunTypeCode>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  DeviceId                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M1HDTNH5CC5CW6DJKE1H05HY
+  GunSerialNumber                GUN12345
+  GunCaliber                     11
+  GunMake                        IMI
+  GunTypeCode                    H
+  CaRequestPurposeCode           C
+
+NOTES
+-----
+Automated capture (txId 01M1HDTNH5CC5CW6DJKE1H05HY). kind=any; anyField=; expectedKeyRef=QGB; firedMessageType=GunQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
