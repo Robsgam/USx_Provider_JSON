@@ -1,0 +1,366 @@
+# CA_eSUN v2.0 -- FIRST BUILD OF THE ENGINEERED LINE.
+#
+# Rob 2026-09-02: "anything after 1.1 will be its own line ... at some point we will need to build
+# out the json like the others", and for this version: "fixes as much as possible in the
+# combinations without makign any changes to the cad interoperability and no form changes except
+# maybe some field labels", then "drop the ori and build v2".
+#
+# So v2.0 DERIVES from v1.1 and touches QIDMs ONLY. It is deliberately NOT yet a from-scratch build
+# like the other 19 providers -- that is the "at some point" step. Deriving is what lets the script
+# ASSERT the layout is byte-identical; a ground-up rebuild could not promise that.
+#
+# CHANGES (A-D are v2.0; E added at v2.1 after the v2.0 sweep falsified A's stated effect):
+#   A1. drop the OriginatingAgencyORI attribute from every QIDM
+#   A2. drop bare 'ORI' from 20 combinations' any[]
+#   B.  order combinations most-specific-first (a strict superset must precede its subset)
+#   C.  RQLicensePlateTypeYearOut: LicensePlateTypeCode + LicensePlateYear any[] -> set[]
+#   D.  clear the RegistrationState 'CA' prefill (LIMITATION #30) -- Rob's call
+#   E.  declare OriginatingAgencyORI as an AUTH (header) attribute -- Rob: "leave that piece in
+#       the header and rebuild"
+$ErrorActionPreference = 'Stop'
+$repo = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
+$repo = Split-Path $repo -Parent
+$src  = Join-Path $repo 'providers\CA_eSUN\docs\deliverables\CA_eSUN_v1.1_RADIOBUTTON.json'
+# WRITES TO docs/deliverables ONLY -- NEVER the provider root. That is the fix for a real collision
+# I caused: this script and the mainline build BOTH wrote CA_eSUN_v*.json in the root, and BOTH
+# delete "stale" root siblings on the way. So whichever ran last silently deleted the other's
+# output -- and enforce's reproducibility phase re-runs a build script, which is exactly how the
+# freshly-built v3.0 root vanished and left v2.2 sitting there instead.
+# ONE PROVIDER, ONE ROOT JSON, ONE CANONICAL BUILD SCRIPT (build_ca_esun.ps1 = the v3.0 mainline).
+# The radiobutton line is a set of DELIVERABLES, not a competing root.
+$dst  = Join-Path $repo 'providers\CA_eSUN\docs\deliverables\CA_eSUN_v2.2_RADIOBUTTON.json'
+if (-not (Test-Path $src)) { throw "ABORT: v1.1 source not found at $src" }
+
+$j = Get-Content $src -Raw | ConvertFrom-Json
+
+function Get-Qidms($o) {
+  $r = @()
+  foreach ($b in $o.bundles) {
+    foreach ($c in $b.configurations) {
+      if ("$($c.type)" -eq 'QUERYINPUTDATAMAPPING' -and "$($c.provider)" -ne 'RMS') { $r += $c }
+    }
+  }
+  return ,$r
+}
+
+# ---- census BEFORE ----------------------------------------------------------------------
+$q0 = Get-Qidms $j
+$combo0 = (@($q0) | ForEach-Object { @($_.combinations).Count } | Measure-Object -Sum).Sum
+$ori0 = (@($q0) | Where-Object { @($_.attributes) | Where-Object { "$($_.targetField)" -eq 'OriginatingAgencyORI' } }).Count
+Write-Output ("BEFORE: {0} QIDMs / {1} combinations / {2} carry OriginatingAgencyORI" -f @($q0).Count, $combo0, $ori0)
+if (@($q0).Count -eq 0) { throw "ABORT: no CommSys QIDMs found -- the transform would be a silent no-op" }
+
+# ---- A. drop the ORI attribute -----------------------------------------------------------
+# Devdoc line 8 scopes <OriginatingAgencyORI> to running a transaction ON BEHALF OF ANOTHER AGENCY,
+# or to an ENTRY/EDIT transaction (suffix Entry|Modify|Clear|Locate|Cancel). We build neither --
+# all 8 query mappings are Query transactions. It is also PROVEN INERT here: across 25 committed
+# v1.1 logs it carries the SAME value as <Authentication>/<ORI> ('MK1234567' x21), so the devdoc's
+# "ConnectCIC may replace the Authentication/ORI value with the provided OriginatingAgencyORI" is a
+# no-op today.
+# !! CORRECTED 2026-09-02 (commit 90cab5c4). This comment used to end "Removing it stops the send
+# !! that fails gate 6d without changing a transmitted value." THE FIRST HALF IS FALSE and the v2.0
+# !! sweep proved it: 19 of 22 v2.0 logs still carry <OriginatingAgencyORI> inside <Request> with the
+# !! field present ZERO times in the v2.0 JSON. Not stale rows -- DQNameBirthSexCodeOut/VPBirthDateIn/
+# !! VPAgeIn were structurally dead before v2.0 and all six of their logs carry it. This removal is
+# !! still correct cleanup (a QIDM attribute that emits nothing should not be declared) and it
+# !! provably changed no transmitted value -- but it was NOT the fix. See change E.
+$dropped = 0
+foreach ($c in $q0) {
+  $keep = @(@($c.attributes) | Where-Object { "$($_.targetField)" -ne 'OriginatingAgencyORI' })
+  $dropped += (@($c.attributes).Count - $keep.Count)
+  $c.attributes = $keep
+}
+Write-Output ("A1. OriginatingAgencyORI attributes removed: {0}" -f $dropped)
+if ($dropped -eq 0) { throw "ABORT: expected to remove ORI attributes, removed none" }
+
+# A2. ...and the OTHER half of the drop, which the first pass missed: bare 'ORI' rides in 20
+# combinations' any[]. Devdoc line 8 puts the device/site ORI in <Authentication>/<ORI> -- the
+# ConnectCIC HEADER -- and it is already an AUTHENTICATION attribute here (ORI, Mnemonic, DeviceId,
+# UserName). Carrying it in a combination's any[] additionally offers it as a QUERY-BODY field,
+# which no transaction's metadata defines; that is the residual OVER-PERMITTED finding. Removing it
+# from any[] does NOT touch the envelope, so the authenticated ORI still transmits exactly as today.
+$oriAny = 0
+foreach ($c in $q0) {
+  foreach ($cb in @($c.combinations)) {
+    $any = @($cb.requirements.any)
+    $trimmed = @($any | Where-Object { $_ -ne 'ORI' })
+    if ($trimmed.Count -ne $any.Count) { $oriAny++ }
+    $cb.requirements.any = $trimmed
+  }
+}
+Write-Output ("A2. bare 'ORI' removed from combination any[]: {0}" -f $oriAny)
+
+# ---- C. RQ under-required (BEFORE ordering, so ordering sees the final sets) --------------
+$rqFixed = 0
+foreach ($c in $q0) {
+  foreach ($cb in @($c.combinations)) {
+    if ("$($cb.keyReference)" -ne 'RQLicensePlateTypeYearOut') { continue }
+    $set = @($cb.requirements.set)
+    $any = @($cb.requirements.any)
+    foreach ($f in @('LicensePlateTypeCode', 'LicensePlateYear')) {
+      if ($set -notcontains $f) { $set += $f; $rqFixed++ }
+      $any = @($any | Where-Object { $_ -ne $f })
+    }
+    $cb.requirements.set = $set
+    $cb.requirements.any = $any
+  }
+}
+Write-Output ("C. RQLicensePlateTypeYearOut promoted any[] -> set[]: {0}" -f $rqFixed)
+
+# ---- B. ordering: SUBSET is the hard constraint, IDENTIFIER PRIORITY is the tiebreak ---------
+# NOT a size sort. The rule is the SUBSET relation: if A's set[] is a strict subset of B's, then A
+# matches whenever B does, so A ahead of B makes B unreachable.
+#
+# THE TIEBREAK IS LOAD-BEARING AND MY FIRST DRAFT GOT IT WRONG. A pure subset sort put
+# L1OperatorLicenseNumberIn (the OLN search) LAST on DriverLicenseQuery, behind all four Name
+# combos -- so an officer filling OLN *and* a full name would have fired the Name query. That is
+# forced by the subset relation, not a quirk: L1NameIn sat first in the live config with three
+# supersets behind it, so all three must move ahead of it, and OLN falls off the end.
+# The portfolio convention (11 providers carry "identifier-priority guardrails") is Plate > VIN >
+# SSN > Name, OLN > Name, Hull > Reg. So among combos with NO subset relationship, the one whose
+# set[] carries the stronger identifier goes first. Rank 0 = strongest.
+$identRank = @(
+  @('LicensePlateNumber'), @('VehicleIdentificationNumber'), @('BoatHullIdNumber'),
+  @('OperatorLicenseNumber'), @('RegistrationNumber'), @('FirearmSerialNumber'),
+  @('ArticleSerialNumber'), @('SocialSecurityNumber'), @('LojackId', 'LojackID')
+)
+function Get-IdentRank($setFields) {
+  for ($r = 0; $r -lt $identRank.Count; $r++) {
+    foreach ($tok in $identRank[$r]) { if ($setFields -contains $tok) { return $r } }
+  }
+  return 99   # no recognised identifier (name-only paths) -- weakest, sorts last
+}
+$reordered = 0
+foreach ($c in $q0) {
+  $orig = @($c.combinations)
+  if ($orig.Count -lt 2) { continue }
+  $out = New-Object System.Collections.ArrayList
+  foreach ($cb in $orig) {
+    $mySet = @($cb.requirements.set)
+    $myRank = Get-IdentRank $mySet
+    $idx = $out.Count
+    for ($i = 0; $i -lt $out.Count; $i++) {
+      $other = @($out[$i].requirements.set)
+      $foreign = @($other | Where-Object { $mySet -notcontains $_ }).Count
+      $isStrictSubset = ($other.Count -lt $mySet.Count) -and ($foreign -eq 0)
+      # hard constraint: I am a strict superset of what is placed here, so I must precede it
+      if ($isStrictSubset) { $idx = $i; break }
+      # tiebreak: neither contains the other, and I carry the stronger identifier
+      $otherRank = Get-IdentRank $other
+      $mineForeign = @($mySet | Where-Object { $other -notcontains $_ }).Count
+      $unrelated = ($foreign -gt 0) -and ($mineForeign -gt 0)
+      if ($unrelated -and ($myRank -lt $otherRank)) { $idx = $i; break }
+    }
+    [void]$out.Insert($idx, $cb)
+  }
+  $before = (($orig | ForEach-Object { "$($_.keyReference)" }) -join ' > ')
+  $after = (($out | ForEach-Object { "$($_.keyReference)" }) -join ' > ')
+  if ($before -ne $after) {
+    $reordered++
+    Write-Output ("   reordered {0}" -f $c.name)
+    Write-Output ("      was: {0}" -f $before)
+    Write-Output ("      now: {0}" -f $after)
+  }
+  $c.combinations = @($out)
+}
+Write-Output ("B. QIDMs reordered: {0}" -f $reordered)
+
+# ---- D. remove the RegistrationState prefill -- LIMITATION #30 ------------------------------
+# Rob's call 2026-09-02, asked BEFORE the sweep rather than discovered after it.
+# RegistrationState carried initialValue='CA' on Vehicle, Person and Boat. LIMITATION #30: do NOT
+# set initialValue on State when the provider has separate in-state and out-of-state keyRefs,
+# because it changes which combo fires. It does exactly that here -- with State always present the
+# OOS combos always match, so once combinations are ordered most-specific-first the IN-STATE combos
+# (4LicensePlateTypeIn, L1OperatorLicenseNumberIn, KQOperatorLicenseNumberIn) can never fire.
+# This is the ONLY form-affecting change in v2 and it is a DEFAULT, not a control: no card, row,
+# width, type or label moves. The assertion below proves that claim rather than asserting it.
+$statePrefill = 0
+foreach ($b in $j.bundles) {
+  foreach ($c in $b.configurations) {
+    if ("$($c.type)" -ne 'QUERYINPUTFORM') { continue }
+    foreach ($vp in $c.layout.PSObject.Properties) {
+      foreach ($np in $vp.Value.PSObject.Properties) {
+        $n = $np.Value
+        if (-not $n.props) { continue }
+        if ("$($n.props.fieldId)" -ne 'RegistrationState') { continue }
+        if ("$($n.props.initialValue)" -eq '') { continue }
+        $n.props.initialValue = ''
+        $statePrefill++
+      }
+    }
+  }
+}
+Write-Output ("D. RegistrationState initialValue cleared on: {0} control(s)" -f $statePrefill)
+if ($statePrefill -eq 0) { throw "ABORT: expected to clear State prefills, cleared none" }
+
+# ---- E. put OriginatingAgencyORI in the HEADER, where the devdoc says it belongs -------------
+# Rob 2026-09-02: "leave that piece in the header and rebuild".
+# v2.0 removed the field from the QIDMs and the wire STILL carried it -- inside <Request>, where
+# no transaction's metadata defines it, which is why gate 6d FAILs 19 of 22 v2.0 logs. Proven not
+# to be stale rows: DQNameBirthSexCodeOut / VPBirthDateIn / VPAgeIn were structurally DEAD at v1.0
+# and v1.1 and fired for the first time on the v2.0 sweep, and all six of their logs carry it.
+# Devdoc line 8 names TWO legal placements -- <OriginatingAgencyORI> and
+# <Authentication/OriginatingAgencyORI> -- and the second is the header. So this declares it as an
+# AUTHENTICATION attribute sourcing the same ORI the header already carries. The AUTH combination
+# already requires 'ORI' in its set[], so no combination change is needed.
+# THIS IS AN EXPERIMENT WITH A WIRE-VISIBLE ANSWER, and it is stated as one rather than as a fix:
+#   header only  -> <Authentication> gains it, <Request> loses it, 6d clears. Placement was the fix.
+#   both places  -> the platform injects the <Request> copy independently of us; confirms the
+#                   hypothesis recorded at 90cab5c4 and the finding goes to the platform team.
+# Either outcome is worth the rebuild because it converts an inference into evidence.
+$authAdded = 0
+foreach ($b in $j.bundles) {
+  foreach ($c in $b.configurations) {
+    if ("$($c.type)" -ne 'AUTHENTICATION') { continue }
+    if (@($c.attributes) | Where-Object { "$($_.targetField)" -eq 'OriginatingAgencyORI' }) { continue }
+    $c.attributes = @(@($c.attributes) + [PSCustomObject]@{
+      description = 'Agency ORI carried in the ConnectCIC header per devdoc line 8 (<Authentication/OriginatingAgencyORI>), NOT in the request body'
+      name        = 'OriginatingAgencyORI'
+      size        = 12
+      sourceField = @('ORI')
+      targetField = 'OriginatingAgencyORI'
+    })
+    $authAdded++
+  }
+}
+Write-Output ("E. OriginatingAgencyORI declared as an AUTH (header) attribute on: {0} config(s)" -f $authAdded)
+if ($authAdded -eq 0) { throw "ABORT: expected to add the AUTH attribute, added none" }
+
+# ---- F. IDENTIFIER-PRIORITY GUARDRAILS (v2.2) -----------------------------------------------
+# Rob: "we need a guardrail fix for over filling the forms ... guardrails and priority combos",
+# then "build v2.2 with the guardrails".
+#
+# THE GAP: this provider had ZERO NOT_EXISTS conditions, so it had no identifier-priority
+# guardrails at all, and emit_test_plan generated NO guardrail tests (it derives them FROM
+# NOT_EXISTS). v2.1 governs an over-filled form by COMBO ORDER alone -- correct as far as it goes,
+# but ordering only decides between combos that BOTH match, and it is invisible to every gate that
+# reads conditions. The portfolio convention (11 providers) is an explicit NOT_EXISTS gate on the
+# WEAKER path: Plate > VIN > Name, OLN > Name, Hull > Reg, Serial > Name.
+#
+# ⚠️ THE RISK, STATED BEFORE BUILDING RATHER THAN DISCOVERED AFTER: most of these combos already
+# carry IN / NOT_EQUALS / EXCLUSIVE conditions, so adding NOT_EXISTS produces a MIXED array. The
+# documented poisoned-array model (QIDM_REFERENCE Sec 2a, _sim_helpers line 32) says any array
+# containing a value-comparison operator is disabled IN ITS ENTIRETY -- under which these
+# guardrails would be inert AND the existing State gating would break with them.
+# That model is already contradicted by live evidence on this provider: T9 (State blank) submits
+# and T10 (same fill + State=GA) does not, across five runs and three versions, which is only
+# possible if the IN condition is evaluated. But MIXED arrays specifically are UNPROVEN.
+# So the v2.2 sweep is the discriminating test, and it has a clear failure signature:
+#   guardrails work AND State gating still routes  -> mixed arrays are fine, convention adopted
+#   State gating stops routing (in-state combos fire out-of-state) -> mixing poisons; REVERT F
+$guardrails = @(
+  # entity/QIDM              keyRef                          field(s) that must be ABSENT
+  @('VehicleRegistrationQuery','IdentificationNumberInOut', @('LicensePlateNumber')),
+  @('VehicleRegistrationQuery','VPNameBirthDateIn',         @('LicensePlateNumber','VehicleIdentificationNumber')),
+  @('VehicleRegistrationQuery','NameAddressIn',             @('LicensePlateNumber','VehicleIdentificationNumber')),
+  @('GunQuery','PurposeCodeNameLastBirthDate',              @('SerialNumber')),
+  @('GunQuery','PurposeCodeNameLastAge',                    @('SerialNumber')),
+  @('DriverLicenseQuery','DQNameBirthSexCodeOut',           @('OperatorLicenseNumber')),
+  @('DriverLicenseQuery','VPBirthDateIn',                   @('OperatorLicenseNumber')),
+  @('DriverLicenseQuery','VPAgeIn',                         @('OperatorLicenseNumber')),
+  @('DriverLicenseQuery','L1NameIn',                        @('OperatorLicenseNumber')),
+  @('DriverHistoryQuery','KQName',                          @('OperatorLicenseNumber')),
+  @('DriverHistoryQuery','L1Name',                          @('OperatorLicenseNumber')),
+  @('BoatQuery','PurposeCodeRegistrationNumber',            @('BoatHullIdNumber'))
+)
+# AFS and ArticleSingleQuery are deliberately EXCLUDED: AFS is name-only (no stronger identifier to
+# outrank) and Article has a single identifier. A guardrail with nothing to defer to is noise.
+$gAdded = 0; $gCombos = 0
+foreach ($c in $q0) {
+  $short = "$($c.name)" -replace '^CA_eSUN_',''
+  foreach ($cb in @($c.combinations)) {
+    $rule = $guardrails | Where-Object { $_[0] -eq $short -and $_[1] -eq "$($cb.keyReference)" }
+    if (-not $rule) { continue }
+    $conds = @($cb.requirements.conditions | Where-Object { $_ })
+    $added = 0
+    foreach ($fld in $rule[2]) {
+      # Never duplicate an existing gate on the same field.
+      if ($conds | Where-Object { (@($_.field) -contains $fld) -and "$($_.operator)" -eq 'NOT_EXISTS' }) { continue }
+      $conds += [PSCustomObject]@{ field = @($fld); operator = 'NOT_EXISTS' }
+      $added++; $gAdded++
+    }
+    if ($added -gt 0) { $gCombos++ }
+    $cb.requirements.conditions = @($conds)
+  }
+}
+Write-Output ("F. identifier-priority guardrails added: {0} condition(s) across {1} combo(s)" -f $gAdded, $gCombos)
+if ($gAdded -eq 0) { throw "ABORT: expected to add guardrail conditions, added none" }
+
+# ---- version ------------------------------------------------------------------------------
+foreach ($b in $j.bundles) {
+  if ("$($b.provider)" -eq 'CA_eSUN') {
+    $b.description = "Provider configuration for CA_eSUN v2.2 -- ENGINEERED RADIOBUTTON LINE, separate from the San Diego Sheriff live v1.0/v1.1 line. Derived from v1.1: layout byte-identical, radio-group PurposeCode retained. QIDM-only fixes: OriginatingAgencyORI attribute removed (devdoc scopes it to entry/edit and on-behalf-of; proven identical to Authentication/ORI across 25 logs), combinations ordered most-specific-first, RQLicensePlateTypeYearOut requirements aligned to metadata, and OriginatingAgencyORI moved to the ConnectCIC HEADER as an AUTHENTICATION attribute per devdoc line 8 (it was reaching <Request> where no transaction metadata defines it), and identifier-priority guardrails added (Plate > VIN > Name, OLN > Name, Hull > Reg, Serial > Name) as NOT_EXISTS gates on the weaker path."
+  }
+}
+
+# ONE JSON IN ROOT. This script writes the file directly rather than through Write-ProviderJson,
+# so it does not inherit that helper's stale-sibling cleanup -- and the v2.0 -> v2.1 bump duly left
+# BOTH in the root, which enforce FAILs on and which makes Get-ProviderRootJson's answer depend on
+# glob order. Remove any other root JSON for this provider before writing the new one.
+[IO.File]::WriteAllText($dst, ($j | ConvertTo-Json -Depth 100), (New-Object Text.UTF8Encoding($false)))
+Write-Output ""
+Write-Output ("wrote: {0}" -f (Split-Path $dst -Leaf))
+
+# ---- verify from disk ----------------------------------------------------------------------
+$v = Get-Content $dst -Raw | ConvertFrom-Json
+$q1 = Get-Qidms $v
+$combo1 = (@($q1) | ForEach-Object { @($_.combinations).Count } | Measure-Object -Sum).Sum
+$ori1 = (@($q1) | Where-Object { @($_.attributes) | Where-Object { "$($_.targetField)" -eq 'OriginatingAgencyORI' } }).Count
+Write-Output ("AFTER : {0} QIDMs / {1} combinations / {2} carry OriginatingAgencyORI" -f @($q1).Count, $combo1, $ori1)
+if ($combo1 -ne $combo0) { throw "ABORT: combination count moved $combo0 -> $combo1; v2 must not add or drop a combination" }
+if ($ori1 -ne 0) { throw "ABORT: OriginatingAgencyORI still present on $ori1 QIDM(s)" }
+
+# LAYOUT MUST BE BYTE-IDENTICAL -- the promise to Rob, so it is ASSERTED, not assumed.
+function Get-LayoutSig($o) {
+  $parts = @()
+  foreach ($b in $o.bundles) {
+    foreach ($c in $b.configurations) {
+      if ("$($c.type)" -eq 'QUERYINPUTFORM') { $parts += "$($c.targetEntity)=" + ($c.layout | ConvertTo-Json -Depth 60 -Compress) }
+    }
+  }
+  return (($parts | Sort-Object) -join '')
+}
+# ---- DELIVERABLE COPY, NAMED FOR THE LINE ---------------------------------------------------
+# Rob: "all these jsons need to be saved and available in file form and the naming needs to include
+# radiobuttons in the name somewhere. this line will be distinct from the mainline which is not yet
+# built."
+# The ROOT filename cannot carry the token -- Get-ProviderRootJson matches
+# ^<PROVIDER>_v[\d.]+\.json$ EXACTLY, and any extra word makes every gate stop finding the provider.
+# So the token goes on the deliverable, which is the file that is actually handed over and imported,
+# and it is a byte-identical copy of the root. Every version of this line keeps its own copy: they
+# are not superseded by the next one, because the whole point is being able to hand over or compare
+# any of them.
+# \d+\.\d+ not [\d.]+ -- the greedy character class swallowed the dot before "json" and produced
+# CA_eSUN_v2.2._RADIOBUTTON.json on the first run.
+# $dst IS the deliverable now -- this script no longer writes a root JSON at all, so the old
+# root-to-deliverable copy would be a file copying onto itself. The line's artefact is the
+# deliverable, full stop.
+$deliv = $dst
+Write-Output ("deliverable: {0}" -f (Split-Path $deliv -Leaf))
+
+# DROP IT WHERE THE OPERATOR ACTUALLY LOOKS. Rob went hunting for a built JSON twice -- "i don't see
+# that version anywhere?" and "i don't see that file name anywhere" -- because docs/deliverables/ is
+# three folders deep and is not a place anyone browses to. The import happens from the browser, so
+# the file belongs beside everything else that gets imported. Best-effort by design: a missing or
+# unwritable Downloads folder must never fail an otherwise good build.
+try {
+    $dl = Join-Path $env:USERPROFILE 'Downloads'
+    if (Test-Path $dl) {
+        $dlTarget = Join-Path $dl (Split-Path $deliv -Leaf)
+        Copy-Item $deliv $dlTarget -Force
+        Write-Output ("READY TO IMPORT -> {0}" -f $dlTarget)
+    }
+} catch {
+    Write-Output ("   (could not copy to Downloads -- not fatal: " + $_.Exception.Message + ")")
+}
+
+$h0 = Get-LayoutSig (Get-Content $src -Raw | ConvertFrom-Json)
+$h1 = Get-LayoutSig $v
+# The ONLY sanctioned layout delta is change D: RegistrationState initialValue 'CA' -> ''.
+# Rather than weaken the check to "close enough", normalise EXACTLY that one edit out of the v1.1
+# signature and demand byte-equality on everything else. If any other prop, node, card, row, width
+# or label moved -- including a second State-like field I did not intend to touch -- this throws.
+$h0n = $h0.Replace('"fieldId":"RegistrationState","initialValue":"CA"', '"fieldId":"RegistrationState","initialValue":""')
+$h0n = $h0n.Replace('"initialValue":"CA","fieldId":"RegistrationState"', '"initialValue":"","fieldId":"RegistrationState"')
+Write-Output ("LAYOUT identical to v1.1 apart from the {0} State default(s): {1}" -f $statePrefill, ($h0n -eq $h1))
+if ($h0n -ne $h1) { throw "ABORT: layout changed beyond the sanctioned State-default edit -- v2 must not touch cards, controls, widths or labels" }

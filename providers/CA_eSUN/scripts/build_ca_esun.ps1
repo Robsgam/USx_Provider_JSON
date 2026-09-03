@@ -1,365 +1,644 @@
-# CA_eSUN v2.0 -- FIRST BUILD OF THE ENGINEERED LINE.
+# =====================================================================
+#  CA_eSUN v3.0 -- THE MAINLINE. First FROM-SCRATCH build of this provider,
+#  driven by the DEVDOC (query authority) + METADATA (field authority), using the
+#  shared modules every other provider uses.
 #
-# Rob 2026-09-02: "anything after 1.1 will be its own line ... at some point we will need to build
-# out the json like the others", and for this version: "fixes as much as possible in the
-# combinations without makign any changes to the cad interoperability and no form changes except
-# maybe some field labels", then "drop the ori and build v2".
+#  Rob 2026-09-03: "start a new josn at 3.0 from scratch using the build skill ...
+#  this line will be distinct from the mainline which is not yet built."
 #
-# So v2.0 DERIVES from v1.1 and touches QIDMs ONLY. It is deliberately NOT yet a from-scratch build
-# like the other 19 providers -- that is the "at some point" step. Deriving is what lets the script
-# ASSERT the layout is byte-identical; a ground-up rebuild could not promise that.
+#  THIS IS A DIFFERENT LINE FROM v1.x/v2.x AND DELIBERATELY SO. Those are the
+#  RADIOBUTTON line: a faithful capture of the hand-built San Diego Sheriff config
+#  (v1.0) plus the RND-71815 radio conversion. This one owes nothing to that form.
+#  It therefore carries NO "RADIOBUTTON" token -- that token marks the other line.
 #
-# CHANGES (A-D are v2.0; E added at v2.1 after the v2.0 sweep falsified A's stated effect):
-#   A1. drop the OriginatingAgencyORI attribute from every QIDM
-#   A2. drop bare 'ORI' from 20 combinations' any[]
-#   B.  order combinations most-specific-first (a strict superset must precede its subset)
-#   C.  RQLicensePlateTypeYearOut: LicensePlateTypeCode + LicensePlateYear any[] -> set[]
-#   D.  clear the RegistrationState 'CA' prefill (LIMITATION #30) -- Rob's call
-#   E.  declare OriginatingAgencyORI as an AUTH (header) attribute -- Rob: "leave that piece in
-#       the header and rebuild"
+#  SCOPE, MEASURED NOT ASSUMED (tools/_probes/esun_v3_scope.ps1):
+#    devdoc "Basic Queries Supported" authorizes SIX queries (devdoc lines 33-288).
+#    Those six hold 26 metadata combinations / 27 variant branches.
+#    The XML holds 63 transactions / 144 combinations in total -- the remaining 118
+#    are ENTRY / MODIFY / CANCEL record operations and Expanded transactions, a
+#    different product surface. Building those would be scope invention.
+#
+#  DELIBERATELY NOT BUILT, on Rob's explicit ruling 2026-09-03:
+#    AFS         -- appears ZERO times in 145 KB of devdoc. No authority anywhere.
+#    LojackQuery -- devdoc line 7070, but under EXPANDED Transactions, not Basic.
+#  Both remain available on the v2.2 radiobutton line, which is the capture of what
+#  San Diego actually runs.
+#
+#  STATE ROUTING USES EXISTENCE-ONLY GATES, unlike the captured line.
+#  v1.0/v2.x fork in/out-of-state with IN / NOT_IN value lists like
+#  ["CA","null","59872938171"] -- note the stray platform id sitting beside a state
+#  code. The portfolio convention is EXISTS / NOT_EXISTS, which needs no value list,
+#  cannot rot when a code changes, and sidesteps the poisoned-array question
+#  entirely. The v2.2 sweep proved value-comparison operators DO evaluate here, so
+#  this is a cleanliness choice rather than a correctness fix.
+# =====================================================================
+param([string]$Version = '3.0')
 $ErrorActionPreference = 'Stop'
-$repo = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
-$repo = Split-Path $repo -Parent
-$src  = Join-Path $repo 'providers\CA_eSUN\docs\deliverables\CA_eSUN_v1.1_RADIOBUTTON.json'
-$dst  = Join-Path $repo 'providers\CA_eSUN\CA_eSUN_v2.2.json'
-if (-not (Test-Path $src)) { throw "ABORT: v1.1 source not found at $src" }
 
-$j = Get-Content $src -Raw | ConvertFrom-Json
+$DIR  = Split-Path $PSScriptRoot -Parent
+$OUT  = Join-Path $DIR "CA_eSUN_v${Version}.json"
+$PROV = 'CA_eSUN'
 
-function Get-Qidms($o) {
-  $r = @()
-  foreach ($b in $o.bundles) {
-    foreach ($c in $b.configurations) {
-      if ("$($c.type)" -eq 'QUERYINPUTDATAMAPPING' -and "$($c.provider)" -ne 'RMS') { $r += $c }
+. "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"
+. "$PSScriptRoot\..\..\..\tools\_build_layout_helpers.ps1"
+. "$PSScriptRoot\..\..\..\tools\_build_provider_helpers.ps1"
+
+$currentYear = (Get-Date).Year.ToString()
+
+# ---------------------------------------------------------------------
+#  AUTH / QMF / QRDM -- standard 3-attribute AUTH plus DeviceId, which THIS
+#  provider's devdoc line 8 requires in the ConnectCIC header alongside ORI,
+#  Mnemonic and UserName.
+# ---------------------------------------------------------------------
+$auth    = Build-Auth -ProviderName $PROV
+$results = Build-ProviderQrdm -ProviderName $PROV
+$qmf     = Build-Qmf -ProviderName $PROV
+
+# ---------------------------------------------------------------------
+#  Shared attribute builders -- every QIDM needs the same purpose code and name
+#  composition, and repeating them by hand is how one drifts.
+# ---------------------------------------------------------------------
+function PurposeAttr([string]$src = 'PurposeCode') {
+    # CaRequestPurposeCode is MANDATORY on all 27 metadata branches of all six
+    # transactions -- there is no variant that omits it.
+    [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1; sourceField = @($src); targetField = 'CaRequestPurposeCode' }
+}
+function NameAttr([string]$last = 'NameLast', [string]$first = 'NameFirst', [string]$mid = 'nameMiddle', [string]$sfx = 'nameSuffix') {
+    # ConnectCIC name format is LAST-first: "LAST, FIRST MIDDLE SUFFIX".
+    # sourceField ORDER is the contract (knowledge-base/FIELD_REFERENCE.txt Sec 7).
+    [PSCustomObject]@{
+        name = 'Name'
+        rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ', ' ', ' ') }
+        size = 30; sourceField = @($last, $first, $mid, $sfx); targetField = 'Name'
     }
-  }
-  return ,$r
 }
-
-# ---- census BEFORE ----------------------------------------------------------------------
-$q0 = Get-Qidms $j
-$combo0 = (@($q0) | ForEach-Object { @($_.combinations).Count } | Measure-Object -Sum).Sum
-$ori0 = (@($q0) | Where-Object { @($_.attributes) | Where-Object { "$($_.targetField)" -eq 'OriginatingAgencyORI' } }).Count
-Write-Output ("BEFORE: {0} QIDMs / {1} combinations / {2} carry OriginatingAgencyORI" -f @($q0).Count, $combo0, $ori0)
-if (@($q0).Count -eq 0) { throw "ABORT: no CommSys QIDMs found -- the transform would be a silent no-op" }
-
-# ---- A. drop the ORI attribute -----------------------------------------------------------
-# Devdoc line 8 scopes <OriginatingAgencyORI> to running a transaction ON BEHALF OF ANOTHER AGENCY,
-# or to an ENTRY/EDIT transaction (suffix Entry|Modify|Clear|Locate|Cancel). We build neither --
-# all 8 query mappings are Query transactions. It is also PROVEN INERT here: across 25 committed
-# v1.1 logs it carries the SAME value as <Authentication>/<ORI> ('MK1234567' x21), so the devdoc's
-# "ConnectCIC may replace the Authentication/ORI value with the provided OriginatingAgencyORI" is a
-# no-op today.
-# !! CORRECTED 2026-09-02 (commit 90cab5c4). This comment used to end "Removing it stops the send
-# !! that fails gate 6d without changing a transmitted value." THE FIRST HALF IS FALSE and the v2.0
-# !! sweep proved it: 19 of 22 v2.0 logs still carry <OriginatingAgencyORI> inside <Request> with the
-# !! field present ZERO times in the v2.0 JSON. Not stale rows -- DQNameBirthSexCodeOut/VPBirthDateIn/
-# !! VPAgeIn were structurally dead before v2.0 and all six of their logs carry it. This removal is
-# !! still correct cleanup (a QIDM attribute that emits nothing should not be declared) and it
-# !! provably changed no transmitted value -- but it was NOT the fix. See change E.
-$dropped = 0
-foreach ($c in $q0) {
-  $keep = @(@($c.attributes) | Where-Object { "$($_.targetField)" -ne 'OriginatingAgencyORI' })
-  $dropped += (@($c.attributes).Count - $keep.Count)
-  $c.attributes = $keep
-}
-Write-Output ("A1. OriginatingAgencyORI attributes removed: {0}" -f $dropped)
-if ($dropped -eq 0) { throw "ABORT: expected to remove ORI attributes, removed none" }
-
-# A2. ...and the OTHER half of the drop, which the first pass missed: bare 'ORI' rides in 20
-# combinations' any[]. Devdoc line 8 puts the device/site ORI in <Authentication>/<ORI> -- the
-# ConnectCIC HEADER -- and it is already an AUTHENTICATION attribute here (ORI, Mnemonic, DeviceId,
-# UserName). Carrying it in a combination's any[] additionally offers it as a QUERY-BODY field,
-# which no transaction's metadata defines; that is the residual OVER-PERMITTED finding. Removing it
-# from any[] does NOT touch the envelope, so the authenticated ORI still transmits exactly as today.
-$oriAny = 0
-foreach ($c in $q0) {
-  foreach ($cb in @($c.combinations)) {
-    $any = @($cb.requirements.any)
-    $trimmed = @($any | Where-Object { $_ -ne 'ORI' })
-    if ($trimmed.Count -ne $any.Count) { $oriAny++ }
-    $cb.requirements.any = $trimmed
-  }
-}
-Write-Output ("A2. bare 'ORI' removed from combination any[]: {0}" -f $oriAny)
-
-# ---- C. RQ under-required (BEFORE ordering, so ordering sees the final sets) --------------
-$rqFixed = 0
-foreach ($c in $q0) {
-  foreach ($cb in @($c.combinations)) {
-    if ("$($cb.keyReference)" -ne 'RQLicensePlateTypeYearOut') { continue }
-    $set = @($cb.requirements.set)
-    $any = @($cb.requirements.any)
-    foreach ($f in @('LicensePlateTypeCode', 'LicensePlateYear')) {
-      if ($set -notcontains $f) { $set += $f; $rqFixed++ }
-      $any = @($any | Where-Object { $_ -ne $f })
+function DateAttr([string]$name, [string]$src, [string]$target) {
+    [PSCustomObject]@{
+        name = $name
+        rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd', 'MMddyyyy') }
+        size = 10; sourceField = @($src); targetField = $target
     }
-    $cb.requirements.set = $set
-    $cb.requirements.any = $any
-  }
 }
-Write-Output ("C. RQLicensePlateTypeYearOut promoted any[] -> set[]: {0}" -f $rqFixed)
+function StateAttr([string]$src = 'RegistrationState') {
+    [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @($src); targetField = 'State'; codeTypeProvider = 'NCIC' }
+}
+# Existence-only state gates -- the house convention. See the header note.
+function StateOut([string]$f = 'RegistrationState') { [PSCustomObject]@{ field = @($f); operator = 'EXISTS' } }
+function StateIn ([string]$f = 'RegistrationState') { [PSCustomObject]@{ field = @($f); operator = 'NOT_EXISTS' } }
+function Absent  ([string[]]$f) { $f | ForEach-Object { [PSCustomObject]@{ field = @($_); operator = 'NOT_EXISTS' } } }
 
-# ---- B. ordering: SUBSET is the hard constraint, IDENTIFIER PRIORITY is the tiebreak ---------
-# NOT a size sort. The rule is the SUBSET relation: if A's set[] is a strict subset of B's, then A
-# matches whenever B does, so A ahead of B makes B unreachable.
-#
-# THE TIEBREAK IS LOAD-BEARING AND MY FIRST DRAFT GOT IT WRONG. A pure subset sort put
-# L1OperatorLicenseNumberIn (the OLN search) LAST on DriverLicenseQuery, behind all four Name
-# combos -- so an officer filling OLN *and* a full name would have fired the Name query. That is
-# forced by the subset relation, not a quirk: L1NameIn sat first in the live config with three
-# supersets behind it, so all three must move ahead of it, and OLN falls off the end.
-# The portfolio convention (11 providers carry "identifier-priority guardrails") is Plate > VIN >
-# SSN > Name, OLN > Name, Hull > Reg. So among combos with NO subset relationship, the one whose
-# set[] carries the stronger identifier goes first. Rank 0 = strongest.
-$identRank = @(
-  @('LicensePlateNumber'), @('VehicleIdentificationNumber'), @('BoatHullIdNumber'),
-  @('OperatorLicenseNumber'), @('RegistrationNumber'), @('FirearmSerialNumber'),
-  @('ArticleSerialNumber'), @('SocialSecurityNumber'), @('LojackId', 'LojackID')
+# =====================================================================
+#  1. VehicleRegistrationQuery -- 7 metadata branches, 6 built.
+#     QV{Plate} QV{VIN} 4{Plate+Type} 4V{VIN} RQ{Plate+Type+Year} RQ{VIN} VP{Name}
+#     4V{VIN} is NOT built: its set[] is identical to QV{VIN} and its <Any> adds
+#     nothing QV{VIN} lacks, so no fill can distinguish them and whichever is
+#     ordered first takes everything. Routing impossibility, registered.
+# =====================================================================
+$vehQuery = [PSCustomObject]@{
+    attributes = @(
+        (PurposeAttr)
+        [PSCustomObject]@{ name = 'LicensePlateNumber';  size = 10; sourceField = @('LicensePlateNumber');  targetField = 'LicensePlateNumber' }
+        [PSCustomObject]@{ name = 'LicensePlateTypeCode'; size = 2; sourceField = @('LicensePlateTypeCode'); targetField = 'LicensePlateTypeCode' }
+        [PSCustomObject]@{ name = 'LicensePlateYear';     size = 4; sourceField = @('LicensePlateYear');     targetField = 'LicensePlateYear' }
+        [PSCustomObject]@{ name = 'VehicleIdentificationNumber'; size = 20; sourceField = @('VehicleIdentificationNumber'); targetField = 'VehicleIdentificationNumber' }
+        [PSCustomObject]@{ name = 'VehicleMakeCode'; size = 24; sourceField = @('VehicleMakeCode'); targetField = 'VehicleMakeCode' }
+        [PSCustomObject]@{ name = 'VehicleYear';     size = 4;  sourceField = @('vehicleYear');     targetField = 'VehicleYear' }
+        (NameAttr)
+        [PSCustomObject]@{ name = 'AddressCity';          size = 20; sourceField = @('AddressCity');          targetField = 'AddressCity' }
+        [PSCustomObject]@{ name = 'AddressStreetNumber';  size = 10; sourceField = @('AddressStreetNumber');  targetField = 'AddressStreetNumber' }
+        (StateAttr)
+    )
+    combinations = @(
+        # --- PLATE family, most-specific first -------------------------------
+        [PSCustomObject]@{   # RQ{Plate+Type+Year} -- out of state
+            requirements = [PSCustomObject]@{
+                set = @('PurposeCode','LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear')
+                any = @('RegistrationState'); conditions = @((StateOut))
+                defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' },
+                             [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear })
+            }
+            primaryFieldReference = 'LicensePlateNumber'; keyReference = 'RQ.P'; state = 'Out'
+        }
+        [PSCustomObject]@{   # 4{Plate+Type} -- in state
+            requirements = [PSCustomObject]@{
+                set = @('PurposeCode','LicensePlateNumber','LicensePlateTypeCode')
+                any = @(); conditions = @((StateIn))
+                defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' })
+            }
+            primaryFieldReference = 'LicensePlateNumber'; keyReference = '4.P'; state = 'In'
+        }
+        [PSCustomObject]@{   # QV{Plate} -- in state, plain
+            requirements = [PSCustomObject]@{
+                set = @('PurposeCode','LicensePlateNumber'); any = @(); conditions = @((StateIn))
+            }
+            primaryFieldReference = 'LicensePlateNumber'; keyReference = 'QV.P'; state = 'In'
+        }
+        # --- VIN family. Plate outranks VIN, so both are gated on Plate absent.
+        [PSCustomObject]@{   # RQ{VIN} -- out of state
+            requirements = [PSCustomObject]@{
+                set = @('PurposeCode','VehicleIdentificationNumber')
+                any = @('RegistrationState','VehicleMakeCode','vehicleYear')
+                conditions = @((StateOut)) + (Absent @('LicensePlateNumber'))
+            }
+            primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'RQ.V'; state = 'Out'
+        }
+        [PSCustomObject]@{   # QV{VIN} -- in state
+            requirements = [PSCustomObject]@{
+                set = @('PurposeCode','VehicleIdentificationNumber')
+                any = @('VehicleMakeCode','vehicleYear')
+                conditions = @((StateIn)) + (Absent @('LicensePlateNumber'))
+            }
+            primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'QV.V'; state = 'In'
+        }
+        # --- OWNER NAME. Weakest identifier: gated on both Plate and VIN absent.
+        [PSCustomObject]@{   # VP{Name}
+            requirements = [PSCustomObject]@{
+                set = @('PurposeCode','NameLast','NameFirst')
+                any = @('AddressCity','AddressStreetNumber','nameMiddle','nameSuffix')
+                conditions = (Absent @('LicensePlateNumber','VehicleIdentificationNumber'))
+            }
+            primaryFieldReference = 'Name'; keyReference = 'VP.N'; state = 'In/Out'
+        }
+    )
+    description     = 'VehicleRegistrationQuery -- 6 of 7 metadata branches. Plate (RQ out / 4 in / QV in), VIN (RQ out / QV in), owner Name (VP). 4V{VIN} not built: set[] identical to QV{VIN}, routing-impossible.'
+    handlerFunction = 'CommsysTransactionRequestHandler'
+    name            = "${PROV}_VehicleRegistrationQuery"
+    type            = 'QUERYINPUTDATAMAPPING'
+    autoSelect      = $true
+    provider        = $PROV
+    providerType    = 'Commsys'
+    query           = 'VehicleRegistrationQuery'
+    queryLabel      = 'Vehicle Registration'
+    targetEntity    = 'Vehicle'
+}
+
+# =====================================================================
+#  2. DriverLicenseQuery -- 6 metadata branches, 5 built.
+#     QW{OLN} is NOT built: identical set[] to L1{OLN} with an empty <Any>.
+# =====================================================================
+$dlQuery = [PSCustomObject]@{
+    attributes = @(
+        (PurposeAttr)
+        [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
+        (NameAttr)
+        (DateAttr 'BirthDate' 'BirthDate' 'BirthDate')
+        [PSCustomObject]@{ name = 'Age';     size = 3; sourceField = @('Age');     targetField = 'Age' }
+        [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('SexCode'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
+        (StateAttr)
+    )
+    combinations = @(
+        # OLN outranks Name, so the OLN family is ordered first.
+        [PSCustomObject]@{   # DQ{OLN} -- out of state
+            requirements = [PSCustomObject]@{
+                set = @('PurposeCode','OperatorLicenseNumber'); any = @('RegistrationState'); conditions = @((StateOut))
+            }
+            primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'DQ.O'; state = 'Out'
+        }
+        [PSCustomObject]@{   # L1{OLN} -- in state
+            requirements = [PSCustomObject]@{
+                set = @('PurposeCode','OperatorLicenseNumber'); any = @(); conditions = @((StateIn))
+            }
+            primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'L1.O'; state = 'In'
+        }
+        [PSCustomObject]@{   # DQ{Name} -- most specific name path
+            requirements = [PSCustomObject]@{
+                set = @('PurposeCode','NameLast','NameFirst','SexCode','BirthDate')
+                any = @('RegistrationState','nameMiddle','nameSuffix')
+                conditions = (Absent @('OperatorLicenseNumber'))
+            }
+            primaryFieldReference = 'Name'; keyReference = 'DQ.N'; state = 'In/Out'
+        }
+        [PSCustomObject]@{   # QW{Name+DOB}
+            requirements = [PSCustomObject]@{
+                set = @('PurposeCode','NameLast','NameFirst','BirthDate')
+                any = @('Age','SexCode','nameMiddle','nameSuffix')
+                conditions = (Absent @('OperatorLicenseNumber'))
+            }
+            primaryFieldReference = 'Name'; keyReference = 'QW.N'; state = 'In/Out'
+        }
+        [PSCustomObject]@{   # L1{Name} -- plain name
+            requirements = [PSCustomObject]@{
+                set = @('PurposeCode','NameLast','NameFirst')
+                any = @('Age','BirthDate','nameMiddle','nameSuffix')
+                conditions = (Absent @('OperatorLicenseNumber'))
+            }
+            primaryFieldReference = 'Name'; keyReference = 'L1.N'; state = 'In/Out'
+        }
+    )
+    description        = 'DriverLicenseQuery -- 5 of 6 metadata branches. OLN (DQ out / L1 in) then Name (DQ full / QW +DOB / L1 plain), all gated OLN NOT_EXISTS. QW{OLN} not built: identical to L1{OLN}.'
+    handlerFunction    = 'CommsysTransactionRequestHandler'
+    name               = "${PROV}_DriverLicenseQuery"
+    type               = 'QUERYINPUTDATAMAPPING'
+    autoSelect         = $true
+    queriesToDeselect  = @('DriverHistoryQuery')
+    provider           = $PROV
+    providerType       = 'Commsys'
+    query              = 'DriverLicenseQuery'
+    queryLabel         = 'Driver License'
+    targetEntity       = 'Person'
+}
+
+# =====================================================================
+#  3. DriverHistoryQuery -- 4 metadata branches, all 4 built.
+#     DH-SUFFIX fieldIds throughout (Scenario A): DL and DH share the Person
+#     entity, so a shared field pool would make queriesToDeselect ineffective and
+#     every DL fill would co-fire DH.
+#     Attention is a HIDDEN gate-feeder: membership in any[] alone feeds
+#     CommsysGetLastNameFirstNameInitialRuleHandler. No prefill, no combo default.
+# =====================================================================
+$dhQuery = [PSCustomObject]@{
+    attributes = @(
+        (PurposeAttr 'PurposeCodeDH')
+        [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
+        (NameAttr 'NameLastDH' 'NameFirstDH' 'nameMiddleDH' 'nameSuffixDH')
+        (DateAttr 'BirthDate' 'BirthDateDH' 'BirthDate')
+        [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('SexCodeDH'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
+        [PSCustomObject]@{
+            name = 'Attention'
+            rule = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler'; arguments = @() }
+            size = 30; sourceField = @('AttentionDH'); targetField = 'Attention'
+        }
+        (StateAttr 'RegistrationStateDH')
+    )
+    combinations = @(
+        [PSCustomObject]@{   # KQ{OLN} -- out of state
+            requirements = [PSCustomObject]@{
+                set = @('PurposeCodeDH','OperatorLicenseNumberDH')
+                any = @('AttentionDH','RegistrationStateDH'); conditions = @((StateOut 'RegistrationStateDH'))
+            }
+            primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'KQ.O'; state = 'Out'
+        }
+        [PSCustomObject]@{   # L1{OLN} -- in state
+            requirements = [PSCustomObject]@{
+                set = @('PurposeCodeDH','OperatorLicenseNumberDH')
+                any = @(); conditions = @((StateIn 'RegistrationStateDH'))
+            }
+            primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'L1.O'; state = 'In'
+        }
+        [PSCustomObject]@{   # KQ{Name+Sex+DOB}
+            requirements = [PSCustomObject]@{
+                set = @('PurposeCodeDH','NameLastDH','NameFirstDH','SexCodeDH','BirthDateDH')
+                any = @('AttentionDH','RegistrationStateDH','nameMiddleDH','nameSuffixDH')
+                conditions = (Absent @('OperatorLicenseNumberDH'))
+            }
+            primaryFieldReference = 'Name'; keyReference = 'KQ.N'; state = 'In/Out'
+        }
+        [PSCustomObject]@{   # L1{Name} -- plain
+            requirements = [PSCustomObject]@{
+                set = @('PurposeCodeDH','NameLastDH','NameFirstDH')
+                any = @('nameMiddleDH','nameSuffixDH')
+                conditions = (Absent @('OperatorLicenseNumberDH'))
+            }
+            primaryFieldReference = 'Name'; keyReference = 'L1.N'; state = 'In/Out'
+        }
+    )
+    combinationsNote   = 'DH-suffix isolation'
+    description        = 'DriverHistoryQuery -- all 4 metadata branches. DH-suffix fieldIds isolate it from DriverLicenseQuery on the shared Person entity. Attention auto-populated by handler from the DH name fields.'
+    handlerFunction    = 'CommsysTransactionRequestHandler'
+    name               = "${PROV}_DriverHistoryQuery"
+    type               = 'QUERYINPUTDATAMAPPING'
+    autoSelect         = $false
+    queriesToDeselect  = @('DriverLicenseQuery')
+    provider           = $PROV
+    providerType       = 'Commsys'
+    query              = 'DriverHistoryQuery'
+    queryLabel         = 'Driver History'
+    targetEntity       = 'Person'
+}
+
+# =====================================================================
+#  4. GunQuery -- 3 metadata branches, all 3 built.
+#     QGH splits into two <Choice> branches: Name+BirthDate and Name+Age. The
+#     Choice sits inside <Set>, so the qualifier is MANDATORY -- which is why this
+#     is two combos and not one combo with both in any[]. That exact misreading
+#     shipped a request no CA_CLETS variant accepted.
+# =====================================================================
+$gunQuery = [PSCustomObject]@{
+    attributes = @(
+        (PurposeAttr)
+        [PSCustomObject]@{ name = 'GunSerialNumber'; size = 20; sourceField = @('GunSerialNumber'); targetField = 'GunSerialNumber' }
+        [PSCustomObject]@{ name = 'GunCaliber'; size = 6; sourceField = @('GunCaliber'); targetField = 'GunCaliber' }
+        [PSCustomObject]@{ name = 'GunMake';    size = 6; sourceField = @('GunMake');    targetField = 'GunMake' }
+        [PSCustomObject]@{ name = 'GunTypeCode'; size = 6; sourceField = @('GunTypeCode'); targetField = 'GunTypeCode' }
+        [PSCustomObject]@{ name = 'RelatedSearchHitIndicator'; size = 1; sourceField = @('relatedHitSearchIndicator'); targetField = 'RelatedSearchHitIndicator' }
+        (NameAttr)
+        (DateAttr 'BirthDate' 'BirthDate' 'BirthDate')
+        [PSCustomObject]@{ name = 'Age'; size = 3; sourceField = @('Age'); targetField = 'Age' }
+    )
+    combinations = @(
+        [PSCustomObject]@{   # QGB{Serial} -- serial outranks name
+            requirements = [PSCustomObject]@{
+                set = @('PurposeCode','GunSerialNumber')
+                any = @('GunCaliber','GunMake','GunTypeCode','relatedHitSearchIndicator'); conditions = @()
+            }
+            primaryFieldReference = 'GunSerialNumber'; keyReference = 'QGB'; state = 'In/Out'
+        }
+        [PSCustomObject]@{   # QGH{Name+BirthDate}
+            requirements = [PSCustomObject]@{
+                set = @('PurposeCode','NameLast','NameFirst','BirthDate')
+                any = @('nameMiddle','nameSuffix'); conditions = (Absent @('GunSerialNumber'))
+            }
+            primaryFieldReference = 'Name'; keyReference = 'QGH.B'; state = 'In/Out'
+        }
+        [PSCustomObject]@{   # QGH{Name+Age}
+            requirements = [PSCustomObject]@{
+                set = @('PurposeCode','NameLast','NameFirst','Age')
+                any = @('nameMiddle','nameSuffix'); conditions = (Absent @('GunSerialNumber','BirthDate'))
+            }
+            primaryFieldReference = 'Name'; keyReference = 'QGH.A'; state = 'In/Out'
+        }
+    )
+    description     = 'GunQuery -- all 3 metadata branches. QGB serial, then QGH split by its mandatory Choice qualifier (BirthDate | Age), both gated GunSerialNumber NOT_EXISTS.'
+    handlerFunction = 'CommsysTransactionRequestHandler'
+    name            = "${PROV}_GunQuery"
+    type            = 'QUERYINPUTDATAMAPPING'
+    autoSelect      = $true
+    provider        = $PROV
+    providerType    = 'Commsys'
+    query           = 'GunQuery'
+    queryLabel      = 'Firearm'
+    targetEntity    = 'Firearm'
+}
+
+# =====================================================================
+#  5. ArticleSingleQuery -- 1 metadata branch.
+#     ArticleCategory and ArticleTypeCode are BOTH optionals of the same variant.
+#     The live SDSO form feeds both from one picker and lets the platform split the
+#     NCIC code; here they are separate optionals per the metadata.
+# =====================================================================
+$artQuery = [PSCustomObject]@{
+    attributes = @(
+        (PurposeAttr)
+        [PSCustomObject]@{ name = 'ArticleSerialNumber'; size = 20; sourceField = @('ArticleSerialNumber'); targetField = 'ArticleSerialNumber' }
+        [PSCustomObject]@{ name = 'ArticleBrand';    size = 6; sourceField = @('ArticleBrand');    targetField = 'ArticleBrand' }
+        [PSCustomObject]@{ name = 'ArticleCategory'; size = 1; sourceField = @('ArticleCategory'); targetField = 'ArticleCategory' }
+        [PSCustomObject]@{ name = 'ArticleTypeCode'; size = 6; sourceField = @('ArticleTypeCode'); targetField = 'ArticleTypeCode' }
+    )
+    combinations = @(
+        [PSCustomObject]@{
+            requirements = [PSCustomObject]@{
+                set = @('PurposeCode','ArticleSerialNumber')
+                any = @('ArticleBrand','ArticleCategory','ArticleTypeCode'); conditions = @()
+            }
+            primaryFieldReference = 'ArticleSerialNumber'; keyReference = 'QA'; state = 'In/Out'
+        }
+    )
+    description     = 'ArticleSingleQuery -- the single metadata branch. Serial mandatory; brand, category and type optional.'
+    handlerFunction = 'CommsysTransactionRequestHandler'
+    name            = "${PROV}_ArticleSingleQuery"
+    type            = 'QUERYINPUTDATAMAPPING'
+    autoSelect      = $true
+    provider        = $PROV
+    providerType    = 'Commsys'
+    query           = 'ArticleSingleQuery'
+    queryLabel      = 'Article'
+    targetEntity    = 'Article'
+}
+
+# =====================================================================
+#  6. BoatQuery -- 6 metadata branches, 4 built.
+#     BQ carries State in <Any> (out-of-state path); 4B/4V/QB do not (in-state).
+#     4B{Reg} is identical to QB{Reg}, and 4V{Hull} identical to QB{Hull} -- same
+#     set[], same empty <Any> -- so each pair is one routable branch, not two.
+#     Hull outranks Registration Number, so both Reg combos are gated Hull absent.
+# =====================================================================
+$boatQuery = [PSCustomObject]@{
+    attributes = @(
+        (PurposeAttr)
+        [PSCustomObject]@{ name = 'BoatHullIdNumber';   size = 20; sourceField = @('BoatHullIdNumber');   targetField = 'BoatHullIdNumber' }
+        [PSCustomObject]@{ name = 'RegistrationNumber'; size = 10; sourceField = @('RegistrationNumber'); targetField = 'RegistrationNumber' }
+        (StateAttr)
+    )
+    combinations = @(
+        [PSCustomObject]@{   # BQ{Hull} -- out of state
+            requirements = [PSCustomObject]@{
+                set = @('PurposeCode','BoatHullIdNumber'); any = @('RegistrationState'); conditions = @((StateOut))
+            }
+            primaryFieldReference = 'BoatHullIdNumber'; keyReference = 'BQ.H'; state = 'Out'
+        }
+        [PSCustomObject]@{   # QB{Hull} -- in state
+            requirements = [PSCustomObject]@{
+                set = @('PurposeCode','BoatHullIdNumber'); any = @(); conditions = @((StateIn))
+            }
+            primaryFieldReference = 'BoatHullIdNumber'; keyReference = 'QB.H'; state = 'In'
+        }
+        [PSCustomObject]@{   # BQ{Reg} -- out of state
+            requirements = [PSCustomObject]@{
+                set = @('PurposeCode','RegistrationNumber'); any = @('RegistrationState')
+                conditions = @((StateOut)) + (Absent @('BoatHullIdNumber'))
+            }
+            primaryFieldReference = 'RegistrationNumber'; keyReference = 'BQ.R'; state = 'Out'
+        }
+        [PSCustomObject]@{   # QB{Reg} -- in state
+            requirements = [PSCustomObject]@{
+                set = @('PurposeCode','RegistrationNumber'); any = @()
+                conditions = @((StateIn)) + (Absent @('BoatHullIdNumber'))
+            }
+            primaryFieldReference = 'RegistrationNumber'; keyReference = 'QB.R'; state = 'In'
+        }
+    )
+    description     = 'BoatQuery -- 4 of 6 metadata branches. Hull (BQ out / QB in) then Registration Number (BQ out / QB in), gated Hull NOT_EXISTS. 4B and 4V not built: identical set[] and empty Any to their QB twins.'
+    handlerFunction = 'CommsysTransactionRequestHandler'
+    name            = "${PROV}_BoatQuery"
+    type            = 'QUERYINPUTDATAMAPPING'
+    autoSelect      = $true
+    provider        = $PROV
+    providerType    = 'Commsys'
+    query           = 'BoatQuery'
+    queryLabel      = 'Boat'
+    targetEntity    = 'Boat'
+}
+
+# =====================================================================
+#  LAYOUTS -- one card per entity, except Person which gets two (DL + DH),
+#  which is the portfolio standard wherever both queries share the entity.
+#  PurposeCode is a visible officer-selectable control on every entity: it is
+#  MANDATORY on all 27 metadata branches, and it is NOT prefilled, so the officer
+#  states the purpose deliberately.
+# =====================================================================
+$vehLayout = MakeLayouts @(
+    @{
+        id    = 'CARD_VEH'
+        title = 'VEHICLE -- plate, VIN or registered owner (leave State blank for California)'
+        rows  = @(
+            @{ id = 'ROW_VEH_1'; cols = @('4','4','4'); fields = @(
+                @{ id = 'PurposeCode_Input';        node = Sel 'PurposeCode' 'CA Purpose Code' @{ attributeTypeId = 'DEX_INQUIRY_PURPOSE_CODE' } 'ROW_VEH_1' }
+                @{ id = 'LicensePlateNumber_Input'; node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
+                @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
+            )}
+            @{ id = 'ROW_VEH_2'; cols = @('6','6'); fields = @(
+                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC' } 'ROW_VEH_2' }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' }
+            )}
+            @{ id = 'ROW_VEH_3'; cols = @('4','4','4'); fields = @(
+                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_3' }
+                @{ id = 'VehicleMakeCode_Input'; node = Sel 'VehicleMakeCode' 'Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_3' }
+                @{ id = 'VehicleYear_Input';     node = Inp 'vehicleYear' 'Year' '4' 'ROW_VEH_3' }
+            )}
+            @{ id = 'ROW_VEH_4'; cols = @('6','6'); fields = @(
+                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Owner Last Name'  '30' 'ROW_VEH_4' }
+                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'Owner First Name' '30' 'ROW_VEH_4' }
+            )}
+            @{ id = 'ROW_VEH_5'; cols = @('6','6'); fields = @(
+                @{ id = 'AddressStreetNumber_Input'; node = Inp 'AddressStreetNumber' 'Street Number' '10' 'ROW_VEH_5' }
+                @{ id = 'AddressCity_Input';         node = Inp 'AddressCity' 'City' '20' 'ROW_VEH_5' }
+            )}
+        )
+    }
 )
-function Get-IdentRank($setFields) {
-  for ($r = 0; $r -lt $identRank.Count; $r++) {
-    foreach ($tok in $identRank[$r]) { if ($setFields -contains $tok) { return $r } }
-  }
-  return 99   # no recognised identifier (name-only paths) -- weakest, sorts last
+$vehicleForm = [PSCustomObject]@{
+    description  = 'Vehicle -- 1 card: plate (RQ/4/QV), VIN (RQ/QV), registered owner (VP).'
+    label = 'Vehicle'; layout = $vehLayout; name = 'ENTITY_Vehicle'
+    type  = 'QUERYINPUTFORM'; targetEntity = 'Vehicle'
 }
-$reordered = 0
-foreach ($c in $q0) {
-  $orig = @($c.combinations)
-  if ($orig.Count -lt 2) { continue }
-  $out = New-Object System.Collections.ArrayList
-  foreach ($cb in $orig) {
-    $mySet = @($cb.requirements.set)
-    $myRank = Get-IdentRank $mySet
-    $idx = $out.Count
-    for ($i = 0; $i -lt $out.Count; $i++) {
-      $other = @($out[$i].requirements.set)
-      $foreign = @($other | Where-Object { $mySet -notcontains $_ }).Count
-      $isStrictSubset = ($other.Count -lt $mySet.Count) -and ($foreign -eq 0)
-      # hard constraint: I am a strict superset of what is placed here, so I must precede it
-      if ($isStrictSubset) { $idx = $i; break }
-      # tiebreak: neither contains the other, and I carry the stronger identifier
-      $otherRank = Get-IdentRank $other
-      $mineForeign = @($mySet | Where-Object { $other -notcontains $_ }).Count
-      $unrelated = ($foreign -gt 0) -and ($mineForeign -gt 0)
-      if ($unrelated -and ($myRank -lt $otherRank)) { $idx = $i; break }
+
+$perLayout = MakeLayouts @(
+    @{
+        id    = 'CARD_DL'
+        title = 'DRIVER LICENSE -- OLN, or name with a qualifier (leave State blank for California)'
+        rows  = @(
+            @{ id = 'ROW_DL_1'; cols = @('4','4','4'); fields = @(
+                @{ id = 'PurposeCode_Input';           node = Sel 'PurposeCode' 'CA Purpose Code' @{ attributeTypeId = 'DEX_INQUIRY_PURPOSE_CODE' } 'ROW_DL_1' }
+                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_DL_1' }
+                @{ id = 'RegistrationState_Input';     node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_DL_1' }
+            )}
+            @{ id = 'ROW_DL_2'; cols = @('6','6'); fields = @(
+                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_DL_2' }
+                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_DL_2' }
+            )}
+            @{ id = 'ROW_DL_3'; cols = @('4','4','4'); fields = @(
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_DL_3' }
+                @{ id = 'Age_Input';       node = Inp 'Age' 'Age' '3' 'ROW_DL_3' }
+                @{ id = 'SexCode_Input';   node = Sel 'SexCode' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DL_3' }
+            )}
+        )
     }
-    [void]$out.Insert($idx, $cb)
-  }
-  $before = (($orig | ForEach-Object { "$($_.keyReference)" }) -join ' > ')
-  $after = (($out | ForEach-Object { "$($_.keyReference)" }) -join ' > ')
-  if ($before -ne $after) {
-    $reordered++
-    Write-Output ("   reordered {0}" -f $c.name)
-    Write-Output ("      was: {0}" -f $before)
-    Write-Output ("      now: {0}" -f $after)
-  }
-  $c.combinations = @($out)
-}
-Write-Output ("B. QIDMs reordered: {0}" -f $reordered)
-
-# ---- D. remove the RegistrationState prefill -- LIMITATION #30 ------------------------------
-# Rob's call 2026-09-02, asked BEFORE the sweep rather than discovered after it.
-# RegistrationState carried initialValue='CA' on Vehicle, Person and Boat. LIMITATION #30: do NOT
-# set initialValue on State when the provider has separate in-state and out-of-state keyRefs,
-# because it changes which combo fires. It does exactly that here -- with State always present the
-# OOS combos always match, so once combinations are ordered most-specific-first the IN-STATE combos
-# (4LicensePlateTypeIn, L1OperatorLicenseNumberIn, KQOperatorLicenseNumberIn) can never fire.
-# This is the ONLY form-affecting change in v2 and it is a DEFAULT, not a control: no card, row,
-# width, type or label moves. The assertion below proves that claim rather than asserting it.
-$statePrefill = 0
-foreach ($b in $j.bundles) {
-  foreach ($c in $b.configurations) {
-    if ("$($c.type)" -ne 'QUERYINPUTFORM') { continue }
-    foreach ($vp in $c.layout.PSObject.Properties) {
-      foreach ($np in $vp.Value.PSObject.Properties) {
-        $n = $np.Value
-        if (-not $n.props) { continue }
-        if ("$($n.props.fieldId)" -ne 'RegistrationState') { continue }
-        if ("$($n.props.initialValue)" -eq '') { continue }
-        $n.props.initialValue = ''
-        $statePrefill++
-      }
+    @{
+        id    = 'CARD_DH'
+        title = 'DRIVER HISTORY -- separate query; fill these fields to run it'
+        rows  = @(
+            @{ id = 'ROW_DH_1'; cols = @('4','4','4'); fields = @(
+                @{ id = 'PurposeCodeDH_Input';           node = Sel 'PurposeCodeDH' 'CA Purpose Code (DH)' @{ attributeTypeId = 'DEX_INQUIRY_PURPOSE_CODE' } 'ROW_DH_1' }
+                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN (DH)' '20' 'ROW_DH_1' }
+                @{ id = 'RegistrationStateDH_Input';     node = Sel 'RegistrationStateDH' 'State (DH)' @{ attributeTypeId = 'STATE' } 'ROW_DH_1' }
+            )}
+            @{ id = 'ROW_DH_2'; cols = @('6','6'); fields = @(
+                @{ id = 'NameLastDH_Input';  node = Inp 'NameLastDH'  'Last Name (DH)'  '30' 'ROW_DH_2' }
+                @{ id = 'NameFirstDH_Input'; node = Inp 'NameFirstDH' 'First Name (DH)' '30' 'ROW_DH_2' }
+            )}
+            @{ id = 'ROW_DH_3'; cols = @('6','6'); fields = @(
+                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth (DH)' 'ROW_DH_3' }
+                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH' 'Sex (DH)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DH_3' }
+            )}
+            # Attention is auto-populated by CommsysGetLastNameFirstNameInitialRuleHandler from the
+            # DH name fields. HIDDEN and NOT prefilled: any[] membership alone feeds the handler.
+            @{ id = 'ROW_DH_HID'; cols = @('12'); fields = @(
+                @{ id = 'AttentionDH_Input'; node = InpH 'AttentionDH' 'Attention (auto)' $null 'ROW_DH_HID' }
+            )}
+        )
     }
-  }
-}
-Write-Output ("D. RegistrationState initialValue cleared on: {0} control(s)" -f $statePrefill)
-if ($statePrefill -eq 0) { throw "ABORT: expected to clear State prefills, cleared none" }
-
-# ---- E. put OriginatingAgencyORI in the HEADER, where the devdoc says it belongs -------------
-# Rob 2026-09-02: "leave that piece in the header and rebuild".
-# v2.0 removed the field from the QIDMs and the wire STILL carried it -- inside <Request>, where
-# no transaction's metadata defines it, which is why gate 6d FAILs 19 of 22 v2.0 logs. Proven not
-# to be stale rows: DQNameBirthSexCodeOut / VPBirthDateIn / VPAgeIn were structurally DEAD at v1.0
-# and v1.1 and fired for the first time on the v2.0 sweep, and all six of their logs carry it.
-# Devdoc line 8 names TWO legal placements -- <OriginatingAgencyORI> and
-# <Authentication/OriginatingAgencyORI> -- and the second is the header. So this declares it as an
-# AUTHENTICATION attribute sourcing the same ORI the header already carries. The AUTH combination
-# already requires 'ORI' in its set[], so no combination change is needed.
-# THIS IS AN EXPERIMENT WITH A WIRE-VISIBLE ANSWER, and it is stated as one rather than as a fix:
-#   header only  -> <Authentication> gains it, <Request> loses it, 6d clears. Placement was the fix.
-#   both places  -> the platform injects the <Request> copy independently of us; confirms the
-#                   hypothesis recorded at 90cab5c4 and the finding goes to the platform team.
-# Either outcome is worth the rebuild because it converts an inference into evidence.
-$authAdded = 0
-foreach ($b in $j.bundles) {
-  foreach ($c in $b.configurations) {
-    if ("$($c.type)" -ne 'AUTHENTICATION') { continue }
-    if (@($c.attributes) | Where-Object { "$($_.targetField)" -eq 'OriginatingAgencyORI' }) { continue }
-    $c.attributes = @(@($c.attributes) + [PSCustomObject]@{
-      description = 'Agency ORI carried in the ConnectCIC header per devdoc line 8 (<Authentication/OriginatingAgencyORI>), NOT in the request body'
-      name        = 'OriginatingAgencyORI'
-      size        = 12
-      sourceField = @('ORI')
-      targetField = 'OriginatingAgencyORI'
-    })
-    $authAdded++
-  }
-}
-Write-Output ("E. OriginatingAgencyORI declared as an AUTH (header) attribute on: {0} config(s)" -f $authAdded)
-if ($authAdded -eq 0) { throw "ABORT: expected to add the AUTH attribute, added none" }
-
-# ---- F. IDENTIFIER-PRIORITY GUARDRAILS (v2.2) -----------------------------------------------
-# Rob: "we need a guardrail fix for over filling the forms ... guardrails and priority combos",
-# then "build v2.2 with the guardrails".
-#
-# THE GAP: this provider had ZERO NOT_EXISTS conditions, so it had no identifier-priority
-# guardrails at all, and emit_test_plan generated NO guardrail tests (it derives them FROM
-# NOT_EXISTS). v2.1 governs an over-filled form by COMBO ORDER alone -- correct as far as it goes,
-# but ordering only decides between combos that BOTH match, and it is invisible to every gate that
-# reads conditions. The portfolio convention (11 providers) is an explicit NOT_EXISTS gate on the
-# WEAKER path: Plate > VIN > Name, OLN > Name, Hull > Reg, Serial > Name.
-#
-# ⚠️ THE RISK, STATED BEFORE BUILDING RATHER THAN DISCOVERED AFTER: most of these combos already
-# carry IN / NOT_EQUALS / EXCLUSIVE conditions, so adding NOT_EXISTS produces a MIXED array. The
-# documented poisoned-array model (QIDM_REFERENCE Sec 2a, _sim_helpers line 32) says any array
-# containing a value-comparison operator is disabled IN ITS ENTIRETY -- under which these
-# guardrails would be inert AND the existing State gating would break with them.
-# That model is already contradicted by live evidence on this provider: T9 (State blank) submits
-# and T10 (same fill + State=GA) does not, across five runs and three versions, which is only
-# possible if the IN condition is evaluated. But MIXED arrays specifically are UNPROVEN.
-# So the v2.2 sweep is the discriminating test, and it has a clear failure signature:
-#   guardrails work AND State gating still routes  -> mixed arrays are fine, convention adopted
-#   State gating stops routing (in-state combos fire out-of-state) -> mixing poisons; REVERT F
-$guardrails = @(
-  # entity/QIDM              keyRef                          field(s) that must be ABSENT
-  @('VehicleRegistrationQuery','IdentificationNumberInOut', @('LicensePlateNumber')),
-  @('VehicleRegistrationQuery','VPNameBirthDateIn',         @('LicensePlateNumber','VehicleIdentificationNumber')),
-  @('VehicleRegistrationQuery','NameAddressIn',             @('LicensePlateNumber','VehicleIdentificationNumber')),
-  @('GunQuery','PurposeCodeNameLastBirthDate',              @('SerialNumber')),
-  @('GunQuery','PurposeCodeNameLastAge',                    @('SerialNumber')),
-  @('DriverLicenseQuery','DQNameBirthSexCodeOut',           @('OperatorLicenseNumber')),
-  @('DriverLicenseQuery','VPBirthDateIn',                   @('OperatorLicenseNumber')),
-  @('DriverLicenseQuery','VPAgeIn',                         @('OperatorLicenseNumber')),
-  @('DriverLicenseQuery','L1NameIn',                        @('OperatorLicenseNumber')),
-  @('DriverHistoryQuery','KQName',                          @('OperatorLicenseNumber')),
-  @('DriverHistoryQuery','L1Name',                          @('OperatorLicenseNumber')),
-  @('BoatQuery','PurposeCodeRegistrationNumber',            @('BoatHullIdNumber'))
 )
-# AFS and ArticleSingleQuery are deliberately EXCLUDED: AFS is name-only (no stronger identifier to
-# outrank) and Article has a single identifier. A guardrail with nothing to defer to is noise.
-$gAdded = 0; $gCombos = 0
-foreach ($c in $q0) {
-  $short = "$($c.name)" -replace '^CA_eSUN_',''
-  foreach ($cb in @($c.combinations)) {
-    $rule = $guardrails | Where-Object { $_[0] -eq $short -and $_[1] -eq "$($cb.keyReference)" }
-    if (-not $rule) { continue }
-    $conds = @($cb.requirements.conditions | Where-Object { $_ })
-    $added = 0
-    foreach ($fld in $rule[2]) {
-      # Never duplicate an existing gate on the same field.
-      if ($conds | Where-Object { (@($_.field) -contains $fld) -and "$($_.operator)" -eq 'NOT_EXISTS' }) { continue }
-      $conds += [PSCustomObject]@{ field = @($fld); operator = 'NOT_EXISTS' }
-      $added++; $gAdded++
+$personForm = [PSCustomObject]@{
+    description  = 'Person -- 2 cards: Driver License and Driver History. DH-suffix fieldIds keep the two query pools separate.'
+    label = 'Person'; layout = $perLayout; name = 'ENTITY_Person'
+    type  = 'QUERYINPUTFORM'; targetEntity = 'Person'
+}
+
+$faLayout = MakeLayouts @(
+    @{
+        id    = 'CARD_FA'
+        title = 'FIREARM -- serial number, or name with date of birth or age'
+        rows  = @(
+            @{ id = 'ROW_FA_1'; cols = @('6','6'); fields = @(
+                @{ id = 'PurposeCode_Input';     node = Sel 'PurposeCode' 'CA Purpose Code' @{ attributeTypeId = 'DEX_INQUIRY_PURPOSE_CODE' } 'ROW_FA_1' }
+                @{ id = 'GunSerialNumber_Input'; node = Inp 'GunSerialNumber' 'Serial Number' '20' 'ROW_FA_1' }
+            )}
+            @{ id = 'ROW_FA_2'; cols = @('4','4','4'); fields = @(
+                @{ id = 'GunMake_Input';     node = Sel 'GunMake' 'Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_FA_2' }
+                @{ id = 'GunCaliber_Input';  node = Sel 'GunCaliber' 'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_FA_2' }
+                @{ id = 'GunTypeCode_Input'; node = Sel 'GunTypeCode' 'Type' @{ codeTypeCategory = 'NCIC_FIREARM_TYPE'; codeTypeSource = 'NCIC' } 'ROW_FA_2' }
+            )}
+            @{ id = 'ROW_FA_3'; cols = @('6','6'); fields = @(
+                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_FA_3' }
+                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_FA_3' }
+            )}
+            @{ id = 'ROW_FA_4'; cols = @('4','4','4'); fields = @(
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_FA_4' }
+                @{ id = 'Age_Input';       node = Inp 'Age' 'Age' '3' 'ROW_FA_4' }
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_FA_4' }
+            )}
+        )
     }
-    if ($added -gt 0) { $gCombos++ }
-    $cb.requirements.conditions = @($conds)
-  }
-}
-Write-Output ("F. identifier-priority guardrails added: {0} condition(s) across {1} combo(s)" -f $gAdded, $gCombos)
-if ($gAdded -eq 0) { throw "ABORT: expected to add guardrail conditions, added none" }
-
-# ---- version ------------------------------------------------------------------------------
-foreach ($b in $j.bundles) {
-  if ("$($b.provider)" -eq 'CA_eSUN') {
-    $b.description = "Provider configuration for CA_eSUN v2.2 -- ENGINEERED RADIOBUTTON LINE, separate from the San Diego Sheriff live v1.0/v1.1 line. Derived from v1.1: layout byte-identical, radio-group PurposeCode retained. QIDM-only fixes: OriginatingAgencyORI attribute removed (devdoc scopes it to entry/edit and on-behalf-of; proven identical to Authentication/ORI across 25 logs), combinations ordered most-specific-first, RQLicensePlateTypeYearOut requirements aligned to metadata, and OriginatingAgencyORI moved to the ConnectCIC HEADER as an AUTHENTICATION attribute per devdoc line 8 (it was reaching <Request> where no transaction metadata defines it), and identifier-priority guardrails added (Plate > VIN > Name, OLN > Name, Hull > Reg, Serial > Name) as NOT_EXISTS gates on the weaker path."
-  }
+)
+$firearmForm = [PSCustomObject]@{
+    description  = 'Firearm -- 1 card: serial (QGB) or name with the mandatory DOB/Age qualifier (QGH).'
+    label = 'Firearm'; layout = $faLayout; name = 'ENTITY_Firearm'
+    type  = 'QUERYINPUTFORM'; targetEntity = 'Firearm'
 }
 
-# ONE JSON IN ROOT. This script writes the file directly rather than through Write-ProviderJson,
-# so it does not inherit that helper's stale-sibling cleanup -- and the v2.0 -> v2.1 bump duly left
-# BOTH in the root, which enforce FAILs on and which makes Get-ProviderRootJson's answer depend on
-# glob order. Remove any other root JSON for this provider before writing the new one.
-$rootDir = Split-Path $dst -Parent
-Get-ChildItem (Join-Path $rootDir 'CA_eSUN*.json') -File -ErrorAction SilentlyContinue |
-  Where-Object { $_.FullName -ne $dst } |
-  ForEach-Object { Write-Output ("   removed stale root JSON: {0}" -f $_.Name); Remove-Item $_.FullName -Force }
-
-[IO.File]::WriteAllText($dst, ($j | ConvertTo-Json -Depth 100), (New-Object Text.UTF8Encoding($false)))
-Write-Output ""
-Write-Output ("wrote: {0}" -f (Split-Path $dst -Leaf))
-
-# ---- verify from disk ----------------------------------------------------------------------
-$v = Get-Content $dst -Raw | ConvertFrom-Json
-$q1 = Get-Qidms $v
-$combo1 = (@($q1) | ForEach-Object { @($_.combinations).Count } | Measure-Object -Sum).Sum
-$ori1 = (@($q1) | Where-Object { @($_.attributes) | Where-Object { "$($_.targetField)" -eq 'OriginatingAgencyORI' } }).Count
-Write-Output ("AFTER : {0} QIDMs / {1} combinations / {2} carry OriginatingAgencyORI" -f @($q1).Count, $combo1, $ori1)
-if ($combo1 -ne $combo0) { throw "ABORT: combination count moved $combo0 -> $combo1; v2 must not add or drop a combination" }
-if ($ori1 -ne 0) { throw "ABORT: OriginatingAgencyORI still present on $ori1 QIDM(s)" }
-
-# LAYOUT MUST BE BYTE-IDENTICAL -- the promise to Rob, so it is ASSERTED, not assumed.
-function Get-LayoutSig($o) {
-  $parts = @()
-  foreach ($b in $o.bundles) {
-    foreach ($c in $b.configurations) {
-      if ("$($c.type)" -eq 'QUERYINPUTFORM') { $parts += "$($c.targetEntity)=" + ($c.layout | ConvertTo-Json -Depth 60 -Compress) }
+$artLayout = MakeLayouts @(
+    @{
+        id    = 'CARD_ART'
+        title = 'ARTICLE -- serial number'
+        rows  = @(
+            @{ id = 'ROW_ART_1'; cols = @('6','6'); fields = @(
+                @{ id = 'PurposeCode_Input';         node = Sel 'PurposeCode' 'CA Purpose Code' @{ attributeTypeId = 'DEX_INQUIRY_PURPOSE_CODE' } 'ROW_ART_1' }
+                @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number / OAN' '20' 'ROW_ART_1' }
+            )}
+            @{ id = 'ROW_ART_2'; cols = @('4','4','4'); fields = @(
+                @{ id = 'ArticleTypeCode_Input'; node = Sel 'ArticleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_2' }
+                @{ id = 'ArticleCategory_Input'; node = Inp 'ArticleCategory' 'Article Category' '1' 'ROW_ART_2' }
+                @{ id = 'ArticleBrand_Input';    node = Inp 'ArticleBrand' 'Brand' '6' 'ROW_ART_2' }
+            )}
+        )
     }
-  }
-  return (($parts | Sort-Object) -join '')
+)
+$articleForm = [PSCustomObject]@{
+    description  = 'Article -- 1 card: serial mandatory, brand/category/type optional.'
+    label = 'Article'; layout = $artLayout; name = 'ENTITY_Article'
+    type  = 'QUERYINPUTFORM'; targetEntity = 'Article'
 }
-# ---- DELIVERABLE COPY, NAMED FOR THE LINE ---------------------------------------------------
-# Rob: "all these jsons need to be saved and available in file form and the naming needs to include
-# radiobuttons in the name somewhere. this line will be distinct from the mainline which is not yet
-# built."
-# The ROOT filename cannot carry the token -- Get-ProviderRootJson matches
-# ^<PROVIDER>_v[\d.]+\.json$ EXACTLY, and any extra word makes every gate stop finding the provider.
-# So the token goes on the deliverable, which is the file that is actually handed over and imported,
-# and it is a byte-identical copy of the root. Every version of this line keeps its own copy: they
-# are not superseded by the next one, because the whole point is being able to hand over or compare
-# any of them.
-# \d+\.\d+ not [\d.]+ -- the greedy character class swallowed the dot before "json" and produced
-# CA_eSUN_v2.2._RADIOBUTTON.json on the first run.
-$ver = [regex]::Match((Split-Path $dst -Leaf), 'v(\d+\.\d+)').Groups[1].Value
-$deliv = Join-Path $repo "providers\CA_eSUN\docs\deliverables\CA_eSUN_v${ver}_RADIOBUTTON.json"
-Copy-Item $dst $deliv -Force
-$same = ((Get-FileHash $dst -Algorithm SHA256).Hash -eq (Get-FileHash $deliv -Algorithm SHA256).Hash)
-Write-Output ("deliverable: {0}  byte-identical to root: {1}" -f (Split-Path $deliv -Leaf), $same)
-if (-not $same) { throw "ABORT: deliverable copy differs from the root JSON" }
 
-# DROP IT WHERE THE OPERATOR ACTUALLY LOOKS. Rob went hunting for a built JSON twice -- "i don't see
-# that version anywhere?" and "i don't see that file name anywhere" -- because docs/deliverables/ is
-# three folders deep and is not a place anyone browses to. The import happens from the browser, so
-# the file belongs beside everything else that gets imported. Best-effort by design: a missing or
-# unwritable Downloads folder must never fail an otherwise good build.
-try {
-    $dl = Join-Path $env:USERPROFILE 'Downloads'
-    if (Test-Path $dl) {
-        $dlTarget = Join-Path $dl (Split-Path $deliv -Leaf)
-        Copy-Item $deliv $dlTarget -Force
-        Write-Output ("READY TO IMPORT -> {0}" -f $dlTarget)
+$boaLayout = MakeLayouts @(
+    @{
+        id    = 'CARD_BOA'
+        title = 'BOAT -- hull ID or registration number (leave State blank for California)'
+        rows  = @(
+            @{ id = 'ROW_BOA_1'; cols = @('6','6'); fields = @(
+                @{ id = 'PurposeCode_Input';      node = Sel 'PurposeCode' 'CA Purpose Code' @{ attributeTypeId = 'DEX_INQUIRY_PURPOSE_CODE' } 'ROW_BOA_1' }
+                @{ id = 'BoatHullIdNumber_Input'; node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_1' }
+            )}
+            @{ id = 'ROW_BOA_2'; cols = @('6','6'); fields = @(
+                @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '10' 'ROW_BOA_2' }
+                @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_BOA_2' }
+            )}
+        )
     }
-} catch {
-    Write-Output ("   (could not copy to Downloads -- not fatal: " + $_.Exception.Message + ")")
+)
+$boatForm = [PSCustomObject]@{
+    description  = 'Boat -- 1 card: hull (BQ/QB) outranks registration number (BQ/QB).'
+    label = 'Boat'; layout = $boaLayout; name = 'ENTITY_Boat'
+    type  = 'QUERYINPUTFORM'; targetEntity = 'Boat'
 }
 
-$h0 = Get-LayoutSig (Get-Content $src -Raw | ConvertFrom-Json)
-$h1 = Get-LayoutSig $v
-# The ONLY sanctioned layout delta is change D: RegistrationState initialValue 'CA' -> ''.
-# Rather than weaken the check to "close enough", normalise EXACTLY that one edit out of the v1.1
-# signature and demand byte-equality on everything else. If any other prop, node, card, row, width
-# or label moved -- including a second State-like field I did not intend to touch -- this throws.
-$h0n = $h0.Replace('"fieldId":"RegistrationState","initialValue":"CA"', '"fieldId":"RegistrationState","initialValue":""')
-$h0n = $h0n.Replace('"initialValue":"CA","fieldId":"RegistrationState"', '"initialValue":"","fieldId":"RegistrationState"')
-Write-Output ("LAYOUT identical to v1.1 apart from the {0} State default(s): {1}" -f $statePrefill, ($h0n -eq $h1))
-if ($h0n -ne $h1) { throw "ABORT: layout changed beyond the sanctioned State-default edit -- v2 must not touch cards, controls, widths or labels" }
+# =====================================================================
+#  ASSEMBLE -- ENTITIES first (forms do not render otherwise), then PROVIDER,
+#  then RMS built from the KB specs.
+# =====================================================================
+$entitiesBundle = Build-EntitiesBundle -Configurations @(
+    $vehicleForm, $personForm, $firearmForm, $articleForm, $boatForm)
+
+$providerBundle = [PSCustomObject]@{
+    configurations = @($auth, $qmf, $results,
+        $vehQuery, $dlQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
+    description = "Provider configuration for ${PROV} v${Version} -- MAINLINE, built from scratch from the devdoc (query authority) and metadata (field authority). Six devdoc-Basic queries, 23 of 27 metadata variant branches built; 4 are routing-impossible duplicates and are registered. Existence-only State gates and identifier-priority guardrails throughout. Distinct from the v1.x/v2.x RADIOBUTTON line, which is a capture of the hand-built San Diego Sheriff configuration."
+    name        = $PROV
+    type        = 'BUNDLE'
+    provider    = $PROV
+}
+
+$rmsBundle = Build-RmsBundle -PascalCaseUsxFields
+
+$output = [PSCustomObject]@{ bundles = @($entitiesBundle, $providerBundle, $rmsBundle) }
+
+Write-ProviderJson -BundleObject $output -OutPath $OUT -Label "${PROV} v${Version} (mainline, from scratch)" -Version $Version

@@ -207,12 +207,37 @@ foreach ($ent in $order) {
 
             $reqHtml = if ($reqParts.Count -gt 0) { $reqParts -join ', ' } else { '&mdash;' }
             $optHtml = if ($optParts.Count -gt 0) { $optParts -join ', ' } else { '&mdash;' }
-            [void]$rows.AppendLine("<tr><td class='sb'>$(Esc $pname)$(Esc $hint)</td><td class='req'>$reqHtml</td><td class='opt'>$optHtml</td></tr>")
+
+            # MESSAGE KEY COLUMN (added 2026-09-03, Rob: "on the left side with each combination
+            # notate the message key or best interpratation of it").
+            # The keyReference IS the message key -- QV, RQ, DQ, KQ, QGB, QA, BQ and so on are the
+            # state's own transaction mnemonics, and a supervisor reading a wire log or a CLETS
+            # manual sees those, not our friendly labels. Until now the guide showed only "Search
+            # by: Plate", so there was no way to tie a row on this sheet to a row in a log.
+            #
+            # THE INTERPRETATION IS DERIVED, NEVER INVENTED. It is composed from the combination's
+            # OWN content -- query label, the identifier it searches by, and its in/out marking --
+            # so it cannot drift from the build and needs no hand-maintained glossary that would go
+            # stale the first time a key changed. Writing "QV = DMV vehicle inquiry" from memory
+            # would be exactly the unsourced-claim class this repo keeps catching.
+            $mkey = [string]$c.keyReference
+            $mkeyHtml = if ($mkey) { "<span class='pre'>$(Esc $mkey)</span>" } else { '&mdash;' }
+            $interp = "$qlabel by $pname"
+            $stateMark = [string]$c.state
+            if ($stateMark -eq 'In')  { $interp += ' - in-state' }
+            elseif ($stateMark -eq 'Out') { $interp += ' - out-of-state' }
+            $mkeyHtml += "<br><span class='mk'>$(Esc $interp)</span>"
+
+            [void]$rows.AppendLine("<tr><td class='mk'>$mkeyHtml</td><td class='sb'>$(Esc $pname)$(Esc $hint)</td><td class='req'>$reqHtml</td><td class='opt'>$optHtml</td></tr>")
             $rowCount++
         }
         if ($rowCount -eq 0) { continue }
 
-        [void]$sb.AppendLine("<table class='qt'><caption>$(Esc $qlabel)</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>")
+        # Headers name REQUIRED and OPTIONAL explicitly (Rob 2026-09-03: "the officer guide pdf to
+        # be updated to say required and optional field names"). "Must enter" / "You can also add"
+        # read well but do not use the words a spec conversation uses, so the sheet could not be
+        # matched against a devdoc or a metadata reference without translating in your head.
+        [void]$sb.AppendLine("<table class='qt'><caption>$(Esc $qlabel)</caption><thead><tr><th class='mk'>Message key</th><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>")
         [void]$sb.Append($rows.ToString())
         [void]$sb.AppendLine("</tbody></table>")
     }
@@ -231,9 +256,14 @@ table.qt { width:100%; border-collapse:collapse; table-layout:fixed; margin: 0 0
 table.qt caption { caption-side: top; text-align:left; font-weight:600; color:#1f3b57; font-size:9pt; padding:2px 0 1px; }
 table.qt th, table.qt td { border:1px solid #cdd8e3; padding:2px 5px; text-align:left; vertical-align:top; overflow-wrap:break-word; }
 table.qt thead th { background:#eef3f8; font-size:8pt; font-weight:700; }
-th.sb, td.sb { width:24%; font-weight:600; }
-th.req, td.req { width:38%; }
-th.opt, td.opt { width:38%; }
+/* Message key sits FIRST, hard left -- it is the tie-back to a wire log or a CLETS manual.
+   Percentages re-balanced so the four columns still total 100 and nothing wraps oddly in print. */
+th.mk, td.mk { width:20%; }
+td.mk { font-size:11px; line-height:1.35; }
+td.mk .mk { color:#555; font-style:italic; }
+th.sb, td.sb { width:20%; font-weight:600; }
+th.req, td.req { width:30%; }
+th.opt, td.opt { width:30%; }
 td.req { color:#7a1f1f; }
 td.opt { color:#3a5a3a; }
 thead th.req { color:#7a1f1f; }
