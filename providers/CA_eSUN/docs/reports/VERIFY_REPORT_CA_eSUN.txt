@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_eSUN
   Source: CA_eSUN_v2.2.json
-  Generated: 2026-09-02 23:39
+  Generated: 2026-09-03 11:58
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -55,7 +55,12 @@ POST-BUILD VERIFICATION
   [PASS] Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard
 
 --- CHECK 7: Synthetic keyRef Documentation ---
-  [INFO] Build script 'build_ca_esun.ps1' not found -- skipping synthetic keyRef documentation check
+  [FAIL] QIDM 'CA_eSUN_VehicleRegistrationQuery' has 6 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'VehicleRegistrationQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
+  [INFO] QIDM 'CA_eSUN_GunQuery': keyRef 'PurposeCodeFirearmSerialNumber' not found in build script -- skipping
+  [INFO] QIDM 'CA_eSUN_DriverLicenseQuery': keyRef 'KQOperatorLicenseNumberOut' not found in build script -- skipping
+  [INFO] QIDM 'CA_eSUN_DriverHistoryQuery': keyRef 'KQOperatorLicenseNumberOut' not found in build script -- skipping
+  [FAIL] QIDM 'CA_eSUN_AFS' has 2 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'AFS') -- add synthetic keyRef doc (BUILD_RULES Section 15)
+  [INFO] QIDM 'CA_eSUN_BoatQuery': keyRef 'PurposeCodeBoatHullIdNumber' not found in build script -- skipping
 
 --- CHECK 8: RMS combos subset of CommSys combos ---
   [INFO] No RMS+CommSys bundle pair -- skipping RMS subset check
@@ -95,7 +100,7 @@ POST-BUILD VERIFICATION
   [PASS] No duplicate targetField in any REQUEST QIDM (3 in response mappings -- INFO, see CHECK 15 header)
 
 ========================================
- VERIFICATION FAILED: 27 FAIL / 10 WARN / 9 PASS
+ VERIFICATION FAILED: 29 FAIL / 10 WARN / 9 PASS
 ========================================
 
 
