@@ -273,3 +273,57 @@ OPEN RISK -- THE SWEEP IS THE TEST:
   gating with them. That model is already contradicted here (T9 submits with State
   blank, T10 does not with State=GA, five runs) but mixed arrays are UNPROVEN.
   Failure signature to watch: an in-state combo firing on an out-of-state fill.
+
+================================================================================
+v2.2 -- KNOWN ITEMS CARRIED, NOT FIXED. Recorded 2026-09-03.
+================================================================================
+WHY THIS BLOCK EXISTS: these two items were drafted onto DEX-1313 and Rob removed
+them -- correctly, per JIRA_COMMENT_TEMPLATE, which deleted the "known limits" and
+"documented skips" sections from the ticket format on 2026-08-13 ("way too many
+details") and relocated that content to the repo. The template's own warning is that
+a caveat living ONLY in a comment is lost, so it is written here FIRST and the ticket
+carries the gate numbers alone.
+
+ITEM 1 -- THE 7 VALIDATOR FAILs ARE NOT REPRODUCED ON THE WIRE. DO NOT "FIX" THEM.
+  validate.ps1 reports 7 FAIL on every version of this line, an identical set on
+  v1.0 / v1.1 / v2.2 -- so they are inherited from the engineering-built baseline and
+  were introduced by neither the radio-button nor the guardrail work.
+  Composition (my first write-up called them "all one class" and that was wrong):
+      5 x AP #1  'State'   -- attributeTypeId=STATE on the form, no codeTypeProvider
+                              on the QIDM attr (VehicleRegistrationQuery,
+                              DriverLicenseQuery, DriverHistoryQuery, AFS, BoatQuery)
+      2 x AP #2  'SexCode' -- attributeTypeId=SEX mapped without codeTypeProvider
+                              (DriverLicenseQuery, DriverHistoryQuery)
+  The rule predicts a NUMERIC ID reaching the wire where a code is expected. THE 53
+  USx-TENANT CAPTURES REFUTE THAT ON THIS PROVIDER:
+      <State>    'CA' x3, 'GA' x6      -- two-letter codes
+      <SexCode>  'M'  x5               -- a code
+  Adding codeTypeProvider to green the validator would be a change to a configuration
+  the captures show is already transmitting correctly, on a JSON whose v1.0 runs at
+  SDSO. That is the risk, not the fix. If this is ever revisited, the discriminating
+  question is what the PLATFORM resolves the attribute against -- not what the
+  validator predicts.
+  NOTE the build script has never touched codeTypeProvider: this was not a considered
+  deferral at the time, it was an omission. It is a considered deferral now.
+
+ITEM 2 -- VPNameBirthDateIn TRANSMITS A FIELD THE TRANSACTION DOES NOT DEFINE.
+  2 of 53 captures FAIL gate 6d. VPNameBirthDateIn sends BirthDate on
+  VehicleRegistrationQuery, and the string BirthDate appears ZERO times inside that
+  transaction in CA_eSUN.xml. The _any variant also sends State, which VP{Name}
+  likewise does not define (its <Any> is AddressCity + AddressStreetNumber only).
+  Present in v1.0 unchanged -- inherited, not introduced.
+  WHY IT IS NOT SIMPLY REMOVED: the metadata-legal sibling NameAddressIn
+  (Set[PurposeCode, Name], Any[AddressCity, AddressStreetNumber]) IS built, sits
+  directly after it, and carries IDENTICAL conditions. Strip BirthDate from
+  VPNameBirthDateIn and the two become byte-identical, so first-match collapses them
+  -- and NameAddressIn is registered unreachable (0 of 5 plan tests ever submitted on
+  the USx tenant over three driver runs). The likely outcome is losing the owner-name
+  search altogether rather than fixing anything.
+  *** THE EVIDENCE CEILING, AND IT IS PERMANENT (Rob 2026-09-03): "no response data
+  will be forth coming." *** Both captures carry "Not captured" responses, and no
+  further response data is available from any tenant. So whether the provider ACCEPTS
+  BirthDate on this transaction is UNANSWERABLE from evidence and will stay that way.
+  Any future change here is a judgement call made without it -- say so when making it,
+  and do not describe it as verified.
+  SCOPE: all 53 captures are USx Provider Tenant. NOTHING on the v1.x/v2.x line has
+  been tested at SDSO. v1.0 runs there; that is a different statement.
