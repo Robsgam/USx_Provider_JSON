@@ -1,0 +1,21 @@
+# MUTUALLY EXCLUSIVE FORM FIELDS -- CA_eSUN
+#
+# Fields the TENANT FORM refuses to accept together, enforced client-side with a message like:
+#   "You cannot enter a value in both of these fields {Article Type, Article Brand}
+#    please remove one of the values"
+#
+# WHY THIS FILE EXISTS AT ALL: the constraint is in NEITHER authority. The metadata's
+# ArticleSingleQuery block contains no <Choice> grouping these fields (checked 2026-09-02), and the
+# devdoc lists them as plain optionals. So no gate that reads the devdoc or the XML can know about
+# it, and emit_test_plan's all-any[] test dutifully fills every optional at once -- producing a test
+# that can never submit. Live-caught on the CA_eSUN v2.1 sweep: T39 was the only genuine send
+# failure in 43 tests, and Rob read the cause off the form itself.
+#
+# Format:  <Entity>: <FieldA> | <FieldB> [ | <FieldC> ... ]
+# Effect:  in the ALL-ANY test, only the FIRST listed member of a group is filled. The per-field
+#          toggle tests are untouched -- each field individually is legal, and those are what prove
+#          the field works.
+#
+# Source: live tenant validation message, San Diego Sheriff, 2026-09-02.
+
+Article: ArticleTypeCode | ArticleBrand

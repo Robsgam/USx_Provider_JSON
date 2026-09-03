@@ -196,6 +196,46 @@ $script:ToggleStats = @{ anyField = 0; inverted = 0; hollow = 0 }
 $script:CondSkips = New-Object System.Collections.ArrayList
 
 # ---------------------------------------------------------------------------------------------
+# MUTUALLY EXCLUSIVE FORM FIELDS -- a constraint that lives in NEITHER authority.
+# The tenant form can refuse a pair of otherwise-legal optionals outright:
+#   "You cannot enter a value in both of these fields {Article Type, Article Brand}"
+# CA_eSUN's metadata has no <Choice> grouping those two and the devdoc lists both as plain
+# optionals, so nothing derived from the sources can know. Declared per provider in
+# docs/reference/<PROVIDER>_EXCLUSIVE_FIELDS.txt, lines of "<Entity>: <FieldA> | <FieldB>".
+# ABSENT FILE = NO GROUPS, which is the correct default: 19 of 20 providers have never hit this,
+# and inventing exclusions would silently drop real coverage.
+function Read-ExclusiveGroups($jsonPath, $providerName) {
+    $groups = @{}
+    $p = Join-Path (Split-Path (Resolve-Path $jsonPath) -Parent) "docs\reference\${providerName}_EXCLUSIVE_FIELDS.txt"
+    if (-not (Test-Path $p)) { return $groups }
+    $n = 0
+    foreach ($line in (Get-Content $p)) {
+        $t = "$line".Trim()
+        if (-not $t -or $t.StartsWith('#')) { continue }
+        $parts = $t -split ':', 2
+        if ($parts.Count -ne 2) { continue }
+        $ent = $parts[0].Trim()
+        $members = @($parts[1] -split '\|' | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+        if ($members.Count -lt 2) { continue }
+        $n++
+        $groups["$ent|$n"] = $members
+    }
+    if ($n -gt 0) { Write-Host ("[plan] {0} mutually-exclusive field group(s) loaded from {1}_EXCLUSIVE_FIELDS.txt" -f $n, $providerName) -ForegroundColor Cyan }
+    return $groups
+}
+# Returns the group key a (entity, fieldId) belongs to, or $null.
+function Get-ExclusiveGroupFor($ent, $fieldId, $groups) {
+    foreach ($k in $groups.Keys) {
+        if (($k -split '\|')[0] -ne $ent) { continue }
+        if (@($groups[$k]) -contains $fieldId) { return $k }
+    }
+    return $null
+}
+# Loaded AFTER the functions above -- a script-scope call placed before its function definition
+# does not resolve in PowerShell, which is how the first wiring of this broke.
+$exclusiveGroups = Read-ExclusiveGroups $Path $provName
+
+# ---------------------------------------------------------------------------------------------
 # A COMBO'S OWN IN / NOT_IN LIST CONSTRAINS WHAT AN any[] TOGGLE MAY FILL.
 #
 # Rob 2026-09-02: "fix the plan generator first". CA_eSUN v2.1 T10 filled the VPNameBirthDateIn
@@ -491,9 +531,25 @@ foreach ($ent in $entities) {
                 # test also carries non-default optionals (CountStats=$false -- the per-field loop
                 # above already counted/flagged each field, don't double-count here).
                 $anyFills = @(@($fills))
+                $usedExclusiveGroups = @{}
                 foreach ($af in $anyNames) {
                     $ff = Resolve-FieldId $af $q $fieldIds
                     if (@($hiddenIds) -icontains $ff) { continue }
+                    # MUTUALLY EXCLUSIVE FIELDS -- fill only the FIRST member of a declared group.
+                    # The tenant form refuses some pairs outright ("You cannot enter a value in both
+                    # of these fields {Article Type, Article Brand}"), and that constraint is in
+                    # NEITHER authority: no <Choice> in the metadata, plain optionals in the devdoc.
+                    # So the all-any test happily filled both and produced the only genuine send
+                    # failure in CA_eSUN's 43-test v2.1 sweep. Per-field toggle tests are unaffected
+                    # -- each field alone is legal, and those are what prove the field works.
+                    $grp = Get-ExclusiveGroupFor $ent $ff $exclusiveGroups
+                    if ($grp) {
+                        if ($usedExclusiveGroups.ContainsKey($grp)) {
+                            [void]$script:CondSkips.Add("$ent $kr (all-any) -- '$ff' omitted: mutually exclusive with '$($usedExclusiveGroups[$grp])' per $provName EXCLUSIVE_FIELDS")
+                            continue
+                        }
+                        $usedExclusiveGroups[$grp] = $ff
+                    }
                     $v = Get-AnyFillValue $ent $ff $true $entFormDefaults $false
                     # SAME CONSTRAINT AS THE PER-FIELD LOOP ABOVE -- and this is the branch that
                     # actually produced CA_eSUN's T10/T23. Note the hardcoded $true above: the
@@ -861,7 +917,10 @@ $tests | Where-Object { $_.kind -eq 'combo' } | ForEach-Object { "  T$($_.n) $($
 # indistinguishable from the check never running -- and this file's whole purpose is to stop
 # generating tests that cannot run, so it must say when it acted.
 if ($script:CondSkips.Count -gt 0) {
-    Write-Host ("[plan] {0} any[] toggle test(s) SKIPPED -- the combo's own IN/NOT_IN list rejects every available value:" -f $script:CondSkips.Count) -ForegroundColor Yellow
+    # Header stays GENERIC because this list now carries two distinct causes -- a combo's own
+    # IN/NOT_IN value list, and a tenant-enforced mutually-exclusive field pair. Each entry says
+    # which; a header naming only one of them would misattribute the other.
+    Write-Host ("[plan] {0} any[] fill(s) omitted -- each line says why:" -f $script:CondSkips.Count) -ForegroundColor Yellow
     $script:CondSkips | ForEach-Object { Write-Host "         $_" -ForegroundColor DarkYellow }
 }
 Write-Host ("[{0}] Toggle coverage: {1} any-field test(s), {2} inverted from default, {3} hollow (flagged below)" -f `

@@ -1,0 +1,76 @@
+﻿================================================================
+TEST LOG: CA_eSUN Firearm GunQuery
+Combo: PurposeCodeNameLastAge (PurposeCodeNameLastAge (auto))
+Date: 2026-09-02 21:40:49
+Result: PASS
+JSON Version: 2.1
+Entity Fingerprint: 7ded6f8f51d37f17fb15b8645b87a6f8710bd565d74a7282f31aa7674784e05d
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"Age":"35","NameFirst":"JOHN","NameLast":"DOE","PurposeCode":"Criminal Justice"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M1JEM3EVDTGD758CDHKF1EEP">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <DeviceId>MK43RS</DeviceId>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>GunQuery</MessageType>
+            <Id>01M1JEM3EVDTGD758CDHKF1EEP</Id>
+            <Age>35</Age>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+            <Name>DOE, JOHN</Name>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  DeviceId                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M1JEM3EVDTGD758CDHKF1EEP
+  Age                            35
+  CaRequestPurposeCode           C
+  Name                           DOE, JOHN
+
+NOTES
+-----
+Automated capture (txId 01M1JEM3EVDTGD758CDHKF1EEP). kind=combo; anyField=; expectedKeyRef=PurposeCodeNameLastAge; firedMessageType=GunQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
