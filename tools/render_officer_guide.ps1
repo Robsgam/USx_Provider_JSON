@@ -257,6 +257,46 @@ foreach ($ent in $order) {
                 }
             }
 
+            # STATE-AGNOSTIC PATH, ADDED 2026-09-03. Rob, on the IL guide: the sheet showed 3 Vehicle
+            # rows against 5 devdoc combinations, and asked whether they were "truly accounted for"
+            # -- adding "you can repeated teh message key. there is no expectation that every query
+            # has different message keys."
+            #
+            # They ARE accounted for, and the reason one row was doing two jobs is here. IL metadata
+            # defines Z2{VehicleIdentificationNumber} with State in its <Any>, so ONE variant serves
+            # devdoc #2 "(In) VIN" and devdoc #4 "(Out) VIN, State". The plate paths needed two combos
+            # only because Z5's <Any> carries NO State, forcing an out-of-state plate onto Z2. So the
+            # guide showed a bare "Vehicle Identification Number" row and never said it also covers
+            # the out-of-state search.
+            #
+            # WHY THIS IS A HINT AND NOT AN EXTRA ROW. The obvious fix -- split a state-agnostic combo
+            # into an "(in-state)" row and an "(out-of-state)" row, repeating the key -- was written,
+            # MEASURED ACROSS ALL 14 PROVIDERS, AND REJECTED. It would add 54 rows over 238 combos,
+            # and comparing the result against audit_devdoc_combinations' own item counts it DIFFERED
+            # on 44 of 81 query blocks. Worse, it split blocks that ALREADY matched the devdoc exactly
+            # (NJ Vehicle 2-vs-2 would have become 4; same for HI DL, OH DH, NM DL, IL Boat). Of IL's
+            # own 4 candidate splits only the Vehicle one was right.
+            #
+            # The measurement's real lesson: THERE IS NO ARITHMETIC MAPPING between devdoc items and
+            # built combos, in EITHER direction -- devdoc > built where one variant serves two paths
+            # (IL Z2.V), built > devdoc where routing splits one path several ways (FL Boat: 12 built
+            # against 3 devdoc items), and the parser skips all-optional items (IL's devdoc #3, which
+            # has no mandatory field and is not a search path at all). So a ROW COUNT can never be the
+            # coverage test; audit_devdoc_combinations is, and it reads 0 FAIL on IL.
+            #
+            # What survives is the part that is true by construction rather than inferred: if State is
+            # optional on this combo and NOTHING gates on it, this one path genuinely works with or
+            # without a state. Say that, in one row, and do not invent the second row.
+            if (-not $hint) {
+                $stateOptional = @($anyFields | Where-Object { "$_" -match '(?i)^(registration)?state' }).Count -gt 0
+                $stateGated = $false
+                foreach ($cond in @($c.requirements.conditions)) {
+                    if (-not $cond) { continue }
+                    if (@($cond.field | ForEach-Object { "$_" } | Where-Object { $_ -match '(?i)^(registration)?state' }).Count -gt 0) { $stateGated = $true; break }
+                }
+                if ($stateOptional -and -not $stateGated) { $hint = ' (in-state or out-of-state)' }
+            }
+
             # required (set) and optional (any) -> field names, skipping hidden; default shown as (value)
             $reqParts = @()
             foreach ($f in $setFields) {
@@ -269,7 +309,11 @@ foreach ($ent in $order) {
             foreach ($f in $anyFields) {
                 $fs = [string]$f; if (IsHidden $fs ([string]$q.targetEntity)) { continue }
                 $nm = FieldName $fs ([string]$q.targetEntity); $dv = DefaultValue $fs ([string]$q.targetEntity)
-                if ($dv) { $optParts += "$(Esc $nm) <span class='pre'>($(Esc $dv))</span>" }
+                if ($dv) { $optParts += "$(Esc $nm) <span class='pre'>($(Esc $dv))</span>"
+                           # The legend illustrates a pre-filled value with a REAL one from THIS
+                           # provider -- a hard-coded "Plate Year (2026)" would be a foreign example
+                           # on a sheet whose form has no such field.
+                           if (-not $script:sampleDefault) { $script:sampleDefault = "$(Esc $nm) <span class='pre'>($(Esc $dv))</span>" } }
                 else { $optParts += (Esc $nm) }
             }
             if ($reqParts.Count -eq 0 -and $optParts.Count -eq 0) { continue }
@@ -312,6 +356,7 @@ foreach ($ent in $order) {
             # lists, which is where the long content actually is.
             $num = $rowCount + 1
             $keyBit = if ($mkey) { " <span class='pre'>$(Esc $mkey)</span>" } else { '' }
+            if ($mkey -and -not $script:sampleKey) { $script:sampleKey = (Esc $mkey) }
             [void]$rows.AppendLine("<tr><td class='sb'><span class='num'>$num.</span> $(Esc $pname)$(Esc $hint)$keyBit</td><td class='req'>$reqHtml</td><td class='opt'>$optHtml</td></tr>")
             $rowCount++
         }
@@ -345,7 +390,25 @@ body { font-family: Arial, Helvetica, sans-serif; color:#1a1a1a; font-size: 8.5p
 .brandbar .wordmark { font-size:17pt; font-weight:700; letter-spacing:-0.5px; color:$BRAND_NAVY; }
 .brandbar .brandright { font-size:8pt; color:$BRAND_BLUE; font-weight:600; text-transform:uppercase; letter-spacing:0.6px; }
 h1 { font-size: 15pt; margin: 0 0 2px; }
-.howto { color:#444; font-size: 8pt; margin: 0 0 8px; }
+/* HOW TO READ THIS SHEET. Rob 2026-09-03: "we hve a place to explain these queires so lets make
+   good use of it." It was one grey sentence; the things an officer actually has to be told are the
+   numbering (first match wins), what a message key IS, that the SAME KEY LEGITIMATELY REPEATS
+   because one transaction serves several search paths, and that a parenthesised value is already
+   on the form. Each legend row shows the thing itself in the left cell, so it is recognised on the
+   page rather than described in the abstract. */
+.howto { color:#333; font-size: 8pt; margin: 0 0 9px; border:1px solid $BRAND_GREY;
+         border-left:3px solid $BRAND_BLUE; border-radius:3px; padding:5px 8px 4px; background:#fbfcfd; }
+.howto .lead { margin:0 0 4px; }
+.howto .tail { margin:4px 0 0; color:#555; font-style:italic; }
+.howto .rq { color:#7a1f1f; }
+.howto .op { color:#3a5a3a; }
+table.legend { width:100%; border-collapse:collapse; }
+table.legend td { border:0; padding:1px 0; vertical-align:top; line-height:1.25; }
+table.legend td.lk { width:16%; white-space:nowrap; padding-right:7px; color:#555; }
+table.legend .num { color:$BRAND_BLUE; font-weight:700; }
+table.legend .pre { font-family:Consolas,'Courier New',monospace; font-size:10px; color:#555;
+                    background:#f2f4f7; border:1px solid #dde3ea; border-radius:2px; padding:0 3px;
+                    font-style:normal; }
 section.entity { margin: 0 0 7px; page-break-inside: avoid; }
 h2 { font-size: 10.5pt; background:#1f3b57; color:#fff; padding:3px 7px; border-radius:3px; margin: 7px 0 3px; }
 table.qt { width:100%; border-collapse:collapse; table-layout:fixed; margin: 0 0 5px; }
@@ -380,6 +443,12 @@ $guideVersion = 'unversioned'
 $vm = [regex]::Match([IO.Path]::GetFileName($resolved), '_v([0-9]+\.[0-9]+)\.json$')
 if ($vm.Success) { $guideVersion = "v$($vm.Groups[1].Value)" }
 
+# Legend examples, taken from THIS provider's own sheet (collected during the row loop above) so the
+# officer recognises them on the page below. Fallbacks keep the legend sensible on a provider that
+# emits no message key or has no pre-filled optional at all -- an empty cell would read as a defect.
+$legendKey = if ($script:sampleKey) { $script:sampleKey } else { 'key' }
+$legendDefault = if ($script:sampleDefault) { $script:sampleDefault } else { "a field <span class='pre'>(value)</span>" }
+
 $html = @"
 <!DOCTYPE html><html><head><meta charset='utf-8'><title>$(Esc $providerName) &mdash; Officer Query Guide $(Esc $guideVersion)</title>
 <style>$css</style></head><body>
@@ -388,7 +457,16 @@ $html = @"
   <div class='brandright'>Universal Search &middot; Query Guide</div>
 </div>
 <h1>$(Esc $providerName) &mdash; Query Guide <span style='font-weight:normal;font-size:60%;color:#555'>(build $(Esc $guideVersion))</span></h1>
-<p class='howto'>Find your entity, pick a row by what you want to <b>search by</b>, fill the <b style='color:#7a1f1f'>Must enter</b> fields; <span style='color:#3a5a3a'>You can also add</span> fields are optional. Values in (parentheses) are pre-filled &mdash; change only if needed.</p>
+<div class='howto'>
+<p class='lead'>Find your entity, then pick the row for what you want to <b>search by</b>. Fill every field in <b class='rq'>Required</b>; anything in <b class='op'>Optional</b> narrows the search but is not needed to run it.</p>
+<table class='legend'><tbody>
+<tr><td class='lk'><span class='num'>2.</span></td><td>Rows are numbered per query, in the order the system tries them. If what you typed fits more than one row, the <b>lowest-numbered</b> row wins &mdash; so the more you fill in, the more specific the search.</td></tr>
+<tr><td class='lk'><span class='pre'>$legendKey</span></td><td>The <b>message key</b> &mdash; the state's own name for that transaction. It is what appears in a wire log, so quote it when asking about a specific search. <b>The same key can appear on more than one row:</b> one transaction often covers several search paths, and that is normal, not a duplicate.</td></tr>
+<tr><td class='lk'>(in-state)<br>(out-of-state)</td><td>Which path the search takes. Leaving <b>State</b> blank searches in-state; entering a state sends it out-of-state. Where a row says <b>(in-state or out-of-state)</b>, that one row does both &mdash; add a State only if the record is from another state.</td></tr>
+<tr><td class='lk'>$legendDefault</td><td>A value in parentheses is <b>already filled in</b> on the form. Leave it alone unless you know it should be different.</td></tr>
+</tbody></table>
+<p class='tail'>Only these paths run a search. Filling extra fields that are not listed for your row does not broaden the search &mdash; it can send you to a different row, or to none at all.</p>
+</div>
 $($sb.ToString())
 <footer><strong>Mark43</strong> &middot; Universal Search &middot; mark43.com<br>
 $(Esc $providerName) build $(Esc $guideVersion) &middot; Generated $genDate &middot; Reference only &mdash; supported search paths and field requirements. If the form on your screen does not match this sheet, this sheet is out of date &mdash; ask for the current one.</footer>
