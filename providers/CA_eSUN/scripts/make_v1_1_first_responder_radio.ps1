@@ -17,7 +17,7 @@
 $ErrorActionPreference = 'Stop'
 $repo = Split-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) -Parent
 $src  = Join-Path $repo 'providers\CA_eSUN\docs\deliverables\CA_eSUN_v1.0_PRE_RADIOBUTTON_ORIGINAL_LIVE.json'
-$dst  = Join-Path $repo 'providers\CA_eSUN\docs\deliverables\CA_eSUN_v1.1_RADIOBUTTON.json'
+$dst  = Join-Path $repo 'providers\CA_eSUN\docs\deliverables\CA_eSUN_v1.1_RADIOBUTTON_FIRST_RESPONDER_ONLY.json'
 if (-not (Test-Path $src)) { throw "ABORT: v1.0 baseline not found at $src" }
 
 $TARGET_VARIANT = 'FIRST_RESPONDER'

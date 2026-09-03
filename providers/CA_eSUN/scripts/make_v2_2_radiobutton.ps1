@@ -20,7 +20,7 @@
 $ErrorActionPreference = 'Stop'
 $repo = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $repo = Split-Path $repo -Parent
-$src  = Join-Path $repo 'providers\CA_eSUN\docs\deliverables\CA_eSUN_v1.1_RADIOBUTTON.json'
+$src  = Join-Path $repo 'providers\CA_eSUN\docs\deliverables\CA_eSUN_v1.1_RADIOBUTTON_FIRST_RESPONDER_ONLY.json'
 # WRITES TO docs/deliverables ONLY -- NEVER the provider root. That is the fix for a real collision
 # I caused: this script and the mainline build BOTH wrote CA_eSUN_v*.json in the root, and BOTH
 # delete "stale" root siblings on the way. So whichever ran last silently deleted the other's
@@ -28,7 +28,7 @@ $src  = Join-Path $repo 'providers\CA_eSUN\docs\deliverables\CA_eSUN_v1.1_RADIOB
 # freshly-built v3.0 root vanished and left v2.2 sitting there instead.
 # ONE PROVIDER, ONE ROOT JSON, ONE CANONICAL BUILD SCRIPT (build_ca_esun.ps1 = the v3.0 mainline).
 # The radiobutton line is a set of DELIVERABLES, not a competing root.
-$dst  = Join-Path $repo 'providers\CA_eSUN\docs\deliverables\CA_eSUN_v2.2_RADIOBUTTON.json'
+$dst  = Join-Path $repo 'providers\CA_eSUN\docs\deliverables\CA_eSUN_v2.2_RADIOBUTTON_FIRST_RESPONDER_ONLY_GUARDRAILS.json'
 if (-not (Test-Path $src)) { throw "ABORT: v1.1 source not found at $src" }
 
 $j = Get-Content $src -Raw | ConvertFrom-Json
