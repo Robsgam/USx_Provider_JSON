@@ -297,6 +297,45 @@ foreach ($ent in $order) {
                 if ($stateOptional -and -not $stateGated) { $hint = ' (in-state or out-of-state)' }
             }
 
+            # ROUTING CONDITIONS ARE REQUIREMENTS. ADDED 2026-09-03, Rob on the IL sheet:
+            #   "il for instance z2.p and z5 are the same so in required fields we need to have
+            #    state otherwise z5 and z2.p ar conflicted ... to be clear out of state quiery will
+            #    onyl work with a state. that is logic we need noted by taggin optional as required"
+            #
+            # He is right, and this was a genuine hole in the sheet rather than a wording problem.
+            # IL's Z2.P and Z5 declare the SAME set[] -- [LicensePlateNumber] -- because the metadata
+            # variants they implement differ only in whether <Any> carries State. What actually
+            # separates them is the ROUTING CONDITION: Z2.P is gated `RegistrationState EXISTS` and
+            # Z5 `RegistrationState NOT_EXISTS`. The guide read set[] for Required and any[] for
+            # Optional, so both rows printed "Required: Plate Number" and the officer was shown two
+            # identical rows with no way to pick one.
+            #
+            # So: a field the combo's own condition requires to be PRESENT is mandatory for that
+            # path, whatever grammar slot the metadata puts it in. Promote it out of Optional and
+            # into Required. This is a presentation move only -- the wire contract is unchanged, and
+            # nothing here touches set[]/any[]. It is also not a devdoc reading: the condition is
+            # config we wrote, so this is the sheet finally reporting our own routing.
+            #
+            # NOT_EXISTS is the mirror and needs the opposite treatment: the path only fires when the
+            # field is EMPTY, so offering it under "Optional" is actively wrong. Drop it. (It stays
+            # off Required too -- there is nothing to type.) That is what makes Z5 read as the plain
+            # in-state plate search instead of appearing to accept a State it would be rejected for.
+            $condRequired = @()   # field must EXIST for this row to fire
+            $condForbidden = @()  # field must be EMPTY for this row to fire
+            foreach ($cond in @($c.requirements.conditions)) {
+                if (-not $cond) { continue }
+                $op = "$($cond.operator)".ToUpperInvariant()
+                foreach ($cf in @($cond.field)) {
+                    $cfs = "$cf"; if (-not $cfs) { continue }
+                    if     ($op -eq 'EXISTS'     -or $op -eq 'IN')     { $condRequired  += $cfs }
+                    elseif ($op -eq 'NOT_EXISTS' -or $op -eq 'NOT_IN') { $condForbidden += $cfs }
+                }
+            }
+            # A condition field already carried in set[] is spelled out there -- do not double-print.
+            $condRequired = @($condRequired | Where-Object { $setFields -notcontains $_ } | Select-Object -Unique)
+            $setFields = @($setFields) + $condRequired
+            $anyFields = @($anyFields | Where-Object { $condRequired -notcontains $_ -and $condForbidden -notcontains $_ })
+
             # required (set) and optional (any) -> field names, skipping hidden; default shown as (value)
             $reqParts = @()
             foreach ($f in $setFields) {
@@ -457,16 +496,7 @@ $html = @"
   <div class='brandright'>Universal Search &middot; Query Guide</div>
 </div>
 <h1>$(Esc $providerName) &mdash; Query Guide <span style='font-weight:normal;font-size:60%;color:#555'>(build $(Esc $guideVersion))</span></h1>
-<div class='howto'>
-<p class='lead'>Find your entity, then pick the row for what you want to <b>search by</b>. Fill every field in <b class='rq'>Required</b>; anything in <b class='op'>Optional</b> narrows the search but is not needed to run it.</p>
-<table class='legend'><tbody>
-<tr><td class='lk'><span class='num'>2.</span></td><td>Rows are numbered per query, in the order the system tries them. If what you typed fits more than one row, the <b>lowest-numbered</b> row wins &mdash; so the more you fill in, the more specific the search.</td></tr>
-<tr><td class='lk'><span class='pre'>$legendKey</span></td><td>The <b>message key</b> &mdash; the state's own name for that transaction. It is what appears in a wire log, so quote it when asking about a specific search. <b>The same key can appear on more than one row:</b> one transaction often covers several search paths, and that is normal, not a duplicate.</td></tr>
-<tr><td class='lk'>(in-state)<br>(out-of-state)</td><td>Which path the search takes. Leaving <b>State</b> blank searches in-state; entering a state sends it out-of-state. Where a row says <b>(in-state or out-of-state)</b>, that one row does both &mdash; add a State only if the record is from another state.</td></tr>
-<tr><td class='lk'>$legendDefault</td><td>A value in parentheses is <b>already filled in</b> on the form. Leave it alone unless you know it should be different.</td></tr>
-</tbody></table>
-<p class='tail'>Only these paths run a search. Filling extra fields that are not listed for your row does not broaden the search &mdash; it can send you to a different row, or to none at all.</p>
-</div>
+<p class='howto'>Pick the row for what you want to <b>search by</b> and fill every <b class='rq'>Required</b> field &mdash; <b class='op'>Optional</b> ones only narrow it. Values in (parentheses) are already on the form. An <b>out-of-state</b> search requires a State; leave State blank to search in-state.</p>
 $($sb.ToString())
 <footer><strong>Mark43</strong> &middot; Universal Search &middot; mark43.com<br>
 $(Esc $providerName) build $(Esc $guideVersion) &middot; Generated $genDate &middot; Reference only &mdash; supported search paths and field requirements. If the form on your screen does not match this sheet, this sheet is out of date &mdash; ask for the current one.</footer>

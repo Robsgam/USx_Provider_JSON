@@ -58,16 +58,7 @@ footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777;
   <div class='brandright'>Universal Search &middot; Query Guide</div>
 </div>
 <h1>AZ_AZDPS &mdash; Query Guide <span style='font-weight:normal;font-size:60%;color:#555'>(build v3.12)</span></h1>
-<div class='howto'>
-<p class='lead'>Find your entity, then pick the row for what you want to <b>search by</b>. Fill every field in <b class='rq'>Required</b>; anything in <b class='op'>Optional</b> narrows the search but is not needed to run it.</p>
-<table class='legend'><tbody>
-<tr><td class='lk'><span class='num'>2.</span></td><td>Rows are numbered per query, in the order the system tries them. If what you typed fits more than one row, the <b>lowest-numbered</b> row wins &mdash; so the more you fill in, the more specific the search.</td></tr>
-<tr><td class='lk'><span class='pre'>ACVR</span></td><td>The <b>message key</b> &mdash; the state's own name for that transaction. It is what appears in a wire log, so quote it when asking about a specific search. <b>The same key can appear on more than one row:</b> one transaction often covers several search paths, and that is normal, not a duplicate.</td></tr>
-<tr><td class='lk'>(in-state)<br>(out-of-state)</td><td>Which path the search takes. Leaving <b>State</b> blank searches in-state; entering a state sends it out-of-state. Where a row says <b>(in-state or out-of-state)</b>, that one row does both &mdash; add a State only if the record is from another state.</td></tr>
-<tr><td class='lk'>Plate Year <span class='pre'>(2026)</span></td><td>A value in parentheses is <b>already filled in</b> on the form. Leave it alone unless you know it should be different.</td></tr>
-</tbody></table>
-<p class='tail'>Only these paths run a search. Filling extra fields that are not listed for your row does not broaden the search &mdash; it can send you to a different row, or to none at all.</p>
-</div>
+<p class='howto'>Pick the row for what you want to <b>search by</b> and fill every <b class='rq'>Required</b> field &mdash; <b class='op'>Optional</b> ones only narrow it. Values in (parentheses) are already on the form. An <b>out-of-state</b> search requires a State; leave State blank to search in-state.</p>
 <section class='entity'><h2>Vehicle</h2>
 <table class='qt'><caption>Vehicle Registration</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
 <tr><td class='sb'><span class='num'>1.</span> Plate Number (in-state or out-of-state) <span class='pre'>ACVR</span></td><td class='req'>Badge <span class='pre'>(X)</span>, Plate Number</td><td class='opt'>Plate Year <span class='pre'>(2026)</span>, Plate Type <span class='pre'>(PC)</span>, State</td></tr>
@@ -101,8 +92,8 @@ footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777;
 <table class='qt'><caption>Boat</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
 <tr><td class='sb'><span class='num'>1.</span> Registration Number (out-of-state) <span class='pre'>ACQB</span></td><td class='req'>Badge <span class='pre'>(X)</span>, Registration Number</td><td class='opt'>Stolen Check <span class='pre'>(Y)</span></td></tr>
 <tr><td class='sb'><span class='num'>2.</span> Hull ID Number (out-of-state) <span class='pre'>ACQBH</span></td><td class='req'>Badge <span class='pre'>(X)</span>, Hull ID Number</td><td class='opt'>Registration Number, Stolen Check <span class='pre'>(Y)</span></td></tr>
-<tr><td class='sb'><span class='num'>3.</span> Registration Number (out-of-state) <span class='pre'>BQ</span></td><td class='req'>Registration Number</td><td class='opt'>Badge <span class='pre'>(X)</span>, State, Stolen Check <span class='pre'>(Y)</span></td></tr>
-<tr><td class='sb'><span class='num'>4.</span> Hull ID Number (out-of-state) <span class='pre'>BQH</span></td><td class='req'>Hull ID Number</td><td class='opt'>Registration Number, Badge <span class='pre'>(X)</span>, State, Stolen Check <span class='pre'>(Y)</span></td></tr>
+<tr><td class='sb'><span class='num'>3.</span> Registration Number (out-of-state) <span class='pre'>BQ</span></td><td class='req'>Registration Number, State</td><td class='opt'>Badge <span class='pre'>(X)</span>, Stolen Check <span class='pre'>(Y)</span></td></tr>
+<tr><td class='sb'><span class='num'>4.</span> Hull ID Number (out-of-state) <span class='pre'>BQH</span></td><td class='req'>Hull ID Number, State</td><td class='opt'>Registration Number, Badge <span class='pre'>(X)</span>, Stolen Check <span class='pre'>(Y)</span></td></tr>
 </tbody></table>
 </section>
 
