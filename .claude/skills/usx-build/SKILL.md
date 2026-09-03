@@ -316,8 +316,51 @@ Person, exactly as the form shows two cards. THREE columns:
 
 | Search by | Required fields | Optional fields |
 |---|---|---|
-| **1.** Plate Number *(out-of-state)* `RQ.P` | CA Purpose Code, Plate Number, Plate Type, Plate Year | State |
-| **2.** Plate Number *(in-state)* `4.P` | CA Purpose Code, Plate Number, Plate Type | — |
+| **1.** Plate Number *(out-of-state)* `RQ.P` | CA Purpose Code, Plate Number, Plate Type, **State** | — |
+| **2.** Plate Number *(in-state)* `4.P` | CA Purpose Code, Plate Number, Plate Type<br>*State — leave blank* | — |
+
+### THE IN/OUT-OF-STATE RULE — the part that took three passes to get right
+
+**Rob, 2026-09-03: *"we need to show out of stte path that requires a state to make it meaningful …
+you need to say leave state blank for the instate entries."*** This is a standing directive, not a
+one-off for IL. It is mechanised in `render_officer_guide.ps1`, so it applies to every provider
+automatically — but understand it before changing that code, because two obvious-looking versions
+of it were wrong.
+
+**A combination emits ONE ROW PER STATE PATH, and the message key repeats.** Rob authorised the
+repetition explicitly: *"you can repeated teh message key. there is no expectation that every query
+has different message keys."*
+
+| The combination | Rows emitted |
+|---|---|
+| State **`EXISTS`**-gated | 1 — *(out-of-state)*, **State in Required** |
+| State **`NOT_EXISTS`**-gated | 1 — *(in-state)*, plus the line **“State — leave blank”** |
+| State **optional and ungated** | **2** — *(in-state)* and *(out-of-state)*, **same key** |
+| no State field at all | 1, unchanged |
+
+**Why "leave blank" has to be written out:** on an in-state row it is the *absence* of State that
+makes it in-state, and an absence is not something a reader notices. The row looked complete and
+silently taught the wrong thing.
+
+**A ROUTING CONDITION IS A REQUIREMENT.** IL's `Z2.P` and `Z5` declare the *same* `set[]` —
+`[LicensePlateNumber]` — because the metadata variants differ only in whether `<Any>` carries State.
+The sheet read `set[]`→Required and `any[]`→Optional and nothing else, so both rows printed
+"Required: Plate Number" and were indistinguishable. A field the combo's own condition requires to be
+**present** is mandatory for that path whatever grammar slot metadata puts it in. Across the portfolio
+that promoted 24 fields and resolved **17 pairs of identical-looking rows**.
+
+**DO NOT re-litigate the split using devdoc item COUNTS.** That test was tried and it is the wrong
+test: the devdoc↔combo mapping is many-to-many in *both* directions — one variant can serve two
+devdoc paths (IL `Z2.V` covers `#2 (In) VIN` and `#4 (Out) VIN, State`), routing can split one devdoc
+path across several combos (FL Boat: 12 built vs 3 devdoc items), and all-optional devdoc items are
+not search paths at all (IL's `#3`). Coverage is `audit_devdoc_combinations`' question and nothing
+rendered here affects it. **I rejected this split on that count test and had to reverse it a commit
+later** — having discarded the test, the verdict it produced should have been reopened at the same
+time.
+
+**A row that says *(in-state)* and still requires State is not necessarily a bug** — check before
+"fixing". TX's `QVLicensePlateNumber` declares `state='In'` *and* carries `RegistrationState` in its
+own `set[]`; the sheet is reporting the config correctly.
 
 - **First column = number + search path + in/out + message key, in that order.** The devdoc writes
   `Possible Combinations 1. (In/Out) ArticleSerialNumber, ArticleTypeCode  2. …` — numbered, required
@@ -349,6 +392,40 @@ Person, exactly as the form shows two cards. THREE columns:
 none of it from memory:** palette `#24364E` navy / `#134DD1` blue / `#B4C7CF` grey; **Arial**, because
 that page assigns Archivo to website and marketing collateral and Arial to "all other internal and
 external docs"; and the company name is **Mark43** — no space, and never "M43", not even internally.
+
+### Regenerating, and the ONE verification that is not optional
+
+The convention is mechanised, so applying it to a provider is just a re-render — no JSON change, no
+version bump, no test package archived:
+
+```
+tools\render_officer_guide.ps1 -Path <json> -OutFile <docs\deliverables\OFFICER_GUIDE_<P>.html> -PdfFile <...pdf>
+```
+
+**PDF generation runs headless Edge and takes ~40s per provider — batch about 5, or a full-portfolio
+loop hits the 10-minute tool timeout and truncates mid-sweep** (it did, once, and the partial result
+looked like a completed run).
+
+**NEVER verify a PDF with `Test-Path`.** A pre-existing file satisfies it, so a conversion that fails
+*over an existing PDF* is indistinguishable from one that succeeds — and it is the worse outcome,
+because it ships a document that looks current and is not. It happened: IL's PDF sat 24 minutes stale
+while both the tool and the post-run check printed green, and Rob found it the only way it could be
+found — *"i don't see an updated user guide for il."* **Compare the PDF's write time against the
+HTML's**, which is the only thing that separates "just produced" from "left over":
+
+```powershell
+$h=(Get-Item $html).LastWriteTime; $f=(Get-Item $pdf).LastWriteTime; if ($f -lt $h) { 'STALE' }
+```
+
+The renderer now polls for the write and prints `[WARN] PDF NOT REWRITTEN` itself — **read that line**;
+it is red for a reason. Usual cause is the PDF being open in a browser tab or viewer, which holds an
+exclusive lock. Check the lock holder rather than guessing, and never kill an interactive browser to
+clear it. (The guard's own first cut sampled once at 1200ms and false-flagged five providers, because
+Edge returns before the flush and the real gap runs 1–4s. If you touch its timing, re-prove it still
+FAILS on a locked file — a guard loosened until it passes is worth nothing.)
+
+**Portfolio state, 2026-09-03: all 20 providers on this convention, 473 rows, 0 stale PDFs.** Check it
+with the sweep above before assuming a provider is current.
 
 **The logo lives at `tools/assets/mark43_logo.png`** and every guide picks it up with no argument.
 It is Mark43's own published file from the site header, and it is **embedded as a base64 data URI**,

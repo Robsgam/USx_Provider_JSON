@@ -1,75 +1,125 @@
-<!DOCTYPE html><html><head><meta charset='utf-8'><title>CA_CONTRA_COSTA â€” Officer Query Guide v2.4</title>
+<!DOCTYPE html><html><head><meta charset='utf-8'><title>CA_CONTRA_COSTA &mdash; Officer Query Guide v2.4</title>
 <style>@page { size: portrait; margin: 0.6cm; }
 * { box-sizing: border-box; }
-body { font-family: 'Segoe UI', Arial, sans-serif; color:#1a1a1a; font-size: 8.5pt; line-height:1.25; margin: 0; padding: 4px 8px; }
+/* Arial leads, per the brand page: "Arial can be used for all other internal and external docs".
+   Archivo is reserved for website and marketing collateral, which this sheet is not. */
+body { font-family: Arial, Helvetica, sans-serif; color:#1a1a1a; font-size: 8.5pt; line-height:1.25; margin: 0; padding: 4px 8px; }
+/* Brand bar: navy rule under the mark, blue accent. Prints cleanly in mono as well as colour. */
+.brandbar { display:flex; align-items:center; justify-content:space-between;
+            border-bottom:2px solid #24364E; padding:2px 0 4px; margin-bottom:4px; }
+.brandbar .logo { height:26px; width:auto; display:block; }
+.brandbar .wordmark { font-size:17pt; font-weight:700; letter-spacing:-0.5px; color:#24364E; }
+.brandbar .brandright { font-size:8pt; color:#134DD1; font-weight:600; text-transform:uppercase; letter-spacing:0.6px; }
 h1 { font-size: 15pt; margin: 0 0 2px; }
-.howto { color:#444; font-size: 8pt; margin: 0 0 8px; }
+/* HOW TO READ THIS SHEET. Rob 2026-09-03: "we hve a place to explain these queires so lets make
+   good use of it." It was one grey sentence; the things an officer actually has to be told are the
+   numbering (first match wins), what a message key IS, that the SAME KEY LEGITIMATELY REPEATS
+   because one transaction serves several search paths, and that a parenthesised value is already
+   on the form. Each legend row shows the thing itself in the left cell, so it is recognised on the
+   page rather than described in the abstract. */
+.howto { color:#333; font-size: 8pt; margin: 0 0 9px; border:1px solid #B4C7CF;
+         border-left:3px solid #134DD1; border-radius:3px; padding:5px 8px 4px; background:#fbfcfd; }
+.howto .lead { margin:0 0 4px; }
+.howto .tail { margin:4px 0 0; color:#555; font-style:italic; }
+.howto .rq { color:#7a1f1f; }
+.howto .op { color:#3a5a3a; }
+table.legend { width:100%; border-collapse:collapse; }
+table.legend td { border:0; padding:1px 0; vertical-align:top; line-height:1.25; }
+table.legend td.lk { width:16%; white-space:nowrap; padding-right:7px; color:#555; }
+table.legend .num { color:#134DD1; font-weight:700; }
+table.legend .pre { font-family:Consolas,'Courier New',monospace; font-size:10px; color:#555;
+                    background:#f2f4f7; border:1px solid #dde3ea; border-radius:2px; padding:0 3px;
+                    font-style:normal; }
 section.entity { margin: 0 0 7px; page-break-inside: avoid; }
 h2 { font-size: 10.5pt; background:#1f3b57; color:#fff; padding:3px 7px; border-radius:3px; margin: 7px 0 3px; }
 table.qt { width:100%; border-collapse:collapse; table-layout:fixed; margin: 0 0 5px; }
 table.qt caption { caption-side: top; text-align:left; font-weight:600; color:#1f3b57; font-size:9pt; padding:2px 0 1px; }
 table.qt th, table.qt td { border:1px solid #cdd8e3; padding:2px 5px; text-align:left; vertical-align:top; overflow-wrap:break-word; }
 table.qt thead th { background:#eef3f8; font-size:8pt; font-weight:700; }
-th.sb, td.sb { width:24%; font-weight:600; }
-th.req, td.req { width:38%; }
-th.opt, td.opt { width:38%; }
+/* THREE columns, not four. The message key now rides inside "Search by" -- it is a short token and
+   did not earn 20% of the page, while the field lists (the long content) were being squeezed. */
+th.sb, td.sb { width:30%; font-weight:600; }
+th.req, td.req { width:35%; }
+th.opt, td.opt { width:35%; }
+/* Devdoc-style enumeration: the combination number leads the row, as the devdoc writes it. */
+td.sb .num { color:#134DD1; font-weight:700; margin-right:2px; }
+/* The message key is a machine token -- monospace so it reads as one, and quiet so it never
+   competes with the plain-English search path beside it. */
+td.sb .pre { font-family:Consolas,'Courier New',monospace; font-size:10px; color:#555;
+             background:#f2f4f7; border:1px solid #dde3ea; border-radius:2px; padding:0 3px; }
 td.req { color:#7a1f1f; }
+/* "State - leave blank" on an in-state row. It sits in the Required cell because that is where the
+   officer looks for what to DO, but it is an instruction rather than a field to fill, so it gets its
+   own line and a quieter weight -- reading it as a fifth required field would be worse than silence. */
+td.req .blank { color:#555; font-style:italic; font-weight:normal; margin-top:1px; }
 td.opt { color:#3a5a3a; }
 thead th.req { color:#7a1f1f; }
 thead th.opt { color:#3a5a3a; }
 .pre { color:#666; font-style:italic; }
 footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777; font-size:7.5pt; }</style></head><body>
-<h1>CA_CONTRA_COSTA â€” Query Guide <span style='font-weight:normal;font-size:60%;color:#555'>(build v2.4)</span></h1>
-<p class='howto'>Find your entity, pick a row by what you want to <b>search by</b>, fill the <b style='color:#7a1f1f'>Must enter</b> fields; <span style='color:#3a5a3a'>You can also add</span> fields are optional. Values in (parentheses) are pre-filled â€” change only if needed.</p>
+<div class='brandbar'>
+  <div class='brandleft'><img class='logo' src='data:image/png;base64,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' alt='Mark43'></div>
+  <div class='brandright'>Universal Search &middot; Query Guide</div>
+</div>
+<h1>CA_CONTRA_COSTA &mdash; Query Guide <span style='font-weight:normal;font-size:60%;color:#555'>(build v2.4)</span></h1>
+<p class='howto'>Pick the row for what you want to <b>search by</b> and fill every <b class='rq'>Required</b> field &mdash; <b class='op'>Optional</b> ones only narrow it. Values in (parentheses) are already on the form. An <b>out-of-state</b> search requires a State; leave State blank to search in-state.</p>
 <section class='entity'><h2>Vehicle</h2>
-<table class='qt'><caption>Vehicle Registration</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
-<tr><td class='sb'>Plate Number (with Plate Type + Plate Year + State)</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Plate Number, Plate Type <span class='pre'>(PC)</span>, Plate Year <span class='pre'>(2026)</span>, State</td><td class='opt'>Vehicle Make, Vehicle Year</td></tr>
-<tr><td class='sb'>Vehicle Identification Number (with State)</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Vehicle Identification Number, State</td><td class='opt'>Vehicle Make, Vehicle Year</td></tr>
-<tr><td class='sb'>Name</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Last Name, First Name</td><td class='opt'>City, Street Number, Middle Name, Suffix</td></tr>
-<tr><td class='sb'>Vehicle Identification Number</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Vehicle Identification Number</td><td class='opt'>Vehicle Make, State</td></tr>
-<tr><td class='sb'>Plate Number</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Plate Number</td><td class='opt'>State</td></tr>
+<table class='qt'><caption>Vehicle Registration</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
+<tr><td class='sb'><span class='num'>1.</span> Plate Number (with Plate Type + Plate Year + State) <span class='pre'>NLTS.RQ.P</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Plate Number, Plate Type <span class='pre'>(PC)</span>, Plate Year <span class='pre'>(2026)</span>, State</td><td class='opt'>Vehicle Make, Vehicle Year</td></tr>
+<tr><td class='sb'><span class='num'>2.</span> Vehicle Identification Number (out-of-state) <span class='pre'>NLTS.RQ.V</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Vehicle Identification Number, State</td><td class='opt'>Vehicle Make, Vehicle Year</td></tr>
+<tr><td class='sb'><span class='num'>3.</span> Name <span class='pre'>IN.VP</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Last Name, First Name</td><td class='opt'>City, Street Number, Middle Name, Suffix</td></tr>
+<tr><td class='sb'><span class='num'>4.</span> Vehicle Identification Number (in-state) <span class='pre'>IA.QVK</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Vehicle Identification Number<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>Vehicle Make</td></tr>
+<tr><td class='sb'><span class='num'>5.</span> Vehicle Identification Number (out-of-state) <span class='pre'>IA.QVK</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Vehicle Identification Number, State</td><td class='opt'>Vehicle Make</td></tr>
+<tr><td class='sb'><span class='num'>6.</span> Plate Number (in-state) <span class='pre'>IA.QV</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Plate Number<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'><span class='num'>7.</span> Plate Number (out-of-state) <span class='pre'>IA.QV</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Plate Number, State</td><td class='opt'>&mdash;</td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Person</h2>
-<table class='qt'><caption>Driver License</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
-<tr><td class='sb'>Name (with State)</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Last Name, First Name, State</td><td class='opt'>Date of Birth, Middle Name, Suffix</td></tr>
-<tr><td class='sb'>OLN (with State)</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, OLN, State</td><td class='opt'>&mdash;</td></tr>
-<tr><td class='sb'>Name (with Sex)</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Last Name, First Name, Sex</td><td class='opt'>Date of Birth, Age, County, Height, Race, Middle Name, Suffix</td></tr>
-<tr><td class='sb'>OLN</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, OLN</td><td class='opt'>CII Number, SSN, Age</td></tr>
-<tr><td class='sb'>OLN</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, OLN</td><td class='opt'>SSN, Age</td></tr>
-<tr><td class='sb'>CII Number</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, CII Number</td><td class='opt'>SSN, Age</td></tr>
-<tr><td class='sb'>SSN</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, SSN</td><td class='opt'>CII Number, Age</td></tr>
-<tr><td class='sb'>OLN</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, OLN</td><td class='opt'>&mdash;</td></tr>
-<tr><td class='sb'>Name</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Last Name, First Name</td><td class='opt'>Date of Birth, Middle Name, Suffix</td></tr>
+<table class='qt'><caption>Driver License</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
+<tr><td class='sb'><span class='num'>1.</span> Name (out-of-state) <span class='pre'>NLTS.DQ.N</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Last Name, First Name, State</td><td class='opt'>Date of Birth, Middle Name, Suffix</td></tr>
+<tr><td class='sb'><span class='num'>2.</span> OLN (out-of-state) <span class='pre'>NLTS.DQ</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, OLN, State</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'><span class='num'>3.</span> Name (in-state) <span class='pre'>IR.QVC.N</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Last Name, First Name, Sex<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>Date of Birth, Age, County, Height, Race, Middle Name, Suffix</td></tr>
+<tr><td class='sb'><span class='num'>4.</span> OLN (in-state) <span class='pre'>IR.QVC.O</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, OLN, CII Number<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>SSN, Age</td></tr>
+<tr><td class='sb'><span class='num'>5.</span> OLN (in-state) <span class='pre'>IR.QVC.OS</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, OLN, SSN<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>Age</td></tr>
+<tr><td class='sb'><span class='num'>6.</span> CII Number <span class='pre'>IR.QVC.C</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, CII Number</td><td class='opt'>SSN, Age</td></tr>
+<tr><td class='sb'><span class='num'>7.</span> SSN <span class='pre'>IR.QVC.S</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, SSN</td><td class='opt'>CII Number, Age</td></tr>
+<tr><td class='sb'><span class='num'>8.</span> OLN (in-state) <span class='pre'>ID.L1</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, OLN<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'><span class='num'>9.</span> Name (in-state) <span class='pre'>IN.L1</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Last Name, First Name<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>Date of Birth, Middle Name, Suffix</td></tr>
 </tbody></table>
-<table class='qt'><caption>Driver History</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
-<tr><td class='sb'>Name</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Date of Birth, Last Name, First Name, Sex</td><td class='opt'>State, Attention <span class='pre'>(X)</span>, Middle Name, Suffix</td></tr>
-<tr><td class='sb'>OLN</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, OLN</td><td class='opt'>State, Attention <span class='pre'>(X)</span></td></tr>
+<table class='qt'><caption>Driver History</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
+<tr><td class='sb'><span class='num'>1.</span> Name (in-state) <span class='pre'>NLTS.KQ.N</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Date of Birth, Last Name, First Name, Sex<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>Attention <span class='pre'>(X)</span>, Middle Name, Suffix</td></tr>
+<tr><td class='sb'><span class='num'>2.</span> Name (out-of-state) <span class='pre'>NLTS.KQ.N</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Date of Birth, Last Name, First Name, Sex, State</td><td class='opt'>Attention <span class='pre'>(X)</span>, Middle Name, Suffix</td></tr>
+<tr><td class='sb'><span class='num'>3.</span> OLN (in-state) <span class='pre'>NLTS.KQ.O</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, OLN<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>Attention <span class='pre'>(X)</span></td></tr>
+<tr><td class='sb'><span class='num'>4.</span> OLN (out-of-state) <span class='pre'>NLTS.KQ.O</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, OLN, State</td><td class='opt'>Attention <span class='pre'>(X)</span></td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Firearm</h2>
-<table class='qt'><caption>Firearm</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
-<tr><td class='sb'>Name (with Age)</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Last Name, First Name, Age</td><td class='opt'>Middle Name, Suffix</td></tr>
-<tr><td class='sb'>Name (with Date of Birth)</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Last Name, First Name, Date of Birth</td><td class='opt'>Middle Name, Suffix</td></tr>
-<tr><td class='sb'>Serial Number</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Serial Number</td><td class='opt'>Caliber, Make, Type</td></tr>
+<table class='qt'><caption>Firearm</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
+<tr><td class='sb'><span class='num'>1.</span> Name (with Age) <span class='pre'>IG.QGH.A</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Last Name, First Name, Age</td><td class='opt'>Middle Name, Suffix</td></tr>
+<tr><td class='sb'><span class='num'>2.</span> Name (with Date of Birth) <span class='pre'>IG.QGH.B</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Last Name, First Name, Date of Birth</td><td class='opt'>Middle Name, Suffix</td></tr>
+<tr><td class='sb'><span class='num'>3.</span> Serial Number <span class='pre'>IG.QGB</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Serial Number</td><td class='opt'>Caliber, Make, Type</td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Article</h2>
-<table class='qt'><caption>Article</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
-<tr><td class='sb'>Serial Number</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Serial Number</td><td class='opt'>Brand, Article Type, Category</td></tr>
-<tr><td class='sb'>Owner Applied Number</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Owner Applied Number</td><td class='opt'>Brand, Article Type, Category</td></tr>
+<table class='qt'><caption>Article</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
+<tr><td class='sb'><span class='num'>1.</span> Serial Number <span class='pre'>IP.QA.S</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Serial Number</td><td class='opt'>Brand, Article Type, Category</td></tr>
+<tr><td class='sb'><span class='num'>2.</span> Owner Applied Number <span class='pre'>IP.QA.O</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Owner Applied Number</td><td class='opt'>Brand, Article Type, Category</td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Boat</h2>
-<table class='qt'><caption>Boat</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
-<tr><td class='sb'>Name</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Last Name, First Name, Date of Birth, State</td><td class='opt'>Middle Name, Suffix</td></tr>
-<tr><td class='sb'>Hull ID Number (with State)</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Hull ID Number, State</td><td class='opt'>&mdash;</td></tr>
-<tr><td class='sb'>Registration Number (with State)</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Registration Number, State</td><td class='opt'>&mdash;</td></tr>
-<tr><td class='sb'>Hull ID Number</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Hull ID Number</td><td class='opt'>State</td></tr>
-<tr><td class='sb'>Owner Applied Number</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Owner Applied Number</td><td class='opt'>State</td></tr>
-<tr><td class='sb'>Registration Number</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Registration Number</td><td class='opt'>State</td></tr>
+<table class='qt'><caption>Boat</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
+<tr><td class='sb'><span class='num'>1.</span> Name <span class='pre'>NLTS.BQ.N</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Last Name, First Name, Date of Birth, State</td><td class='opt'>Middle Name, Suffix</td></tr>
+<tr><td class='sb'><span class='num'>2.</span> Hull ID Number (out-of-state) <span class='pre'>NLTS.BQ.H</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Hull ID Number, State</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'><span class='num'>3.</span> Registration Number (out-of-state) <span class='pre'>NLTS.BQ.R</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Registration Number, State</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'><span class='num'>4.</span> Hull ID Number (in-state) <span class='pre'>IA.QB.H</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Hull ID Number<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'><span class='num'>5.</span> Hull ID Number (out-of-state) <span class='pre'>IA.QB.H</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Hull ID Number, State</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'><span class='num'>6.</span> Owner Applied Number (in-state) <span class='pre'>IA.QB.O</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Owner Applied Number<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'><span class='num'>7.</span> Owner Applied Number (out-of-state) <span class='pre'>IA.QB.O</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Owner Applied Number, State</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'><span class='num'>8.</span> Registration Number (in-state) <span class='pre'>IA.QB.R</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Registration Number<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'><span class='num'>9.</span> Registration Number (out-of-state) <span class='pre'>IA.QB.R</span></td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Registration Number, State</td><td class='opt'>&mdash;</td></tr>
 </tbody></table>
 </section>
 
-<footer>CA_CONTRA_COSTA build v2.4 &middot; Generated 2026-08-20 &middot; Reference only â€” supported search paths and field requirements. If the form on your screen does not match this sheet, this sheet is out of date â€” ask for the current one.</footer>
+<footer><strong>Mark43</strong> &middot; Universal Search &middot; mark43.com<br>
+CA_CONTRA_COSTA build v2.4 &middot; Generated 2026-09-03 &middot; Reference only &mdash; supported search paths and field requirements. If the form on your screen does not match this sheet, this sheet is out of date &mdash; ask for the current one.</footer>
 </body></html>
