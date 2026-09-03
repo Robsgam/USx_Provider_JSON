@@ -307,18 +307,28 @@ portfolio is uniform; a provider rebuilt after that date inherits it automatical
 
 **Four columns, message key hard left:**
 
-| Message key | Search by | Required fields | Optional fields |
-|---|---|---|---|
-| `RQ.P` | Plate Number **(out-of-state)** | CA Purpose Code, Plate Number, Plate Type, Plate Year | State |
-| `4.P` | Plate Number **(in-state)** | CA Purpose Code, Plate Number, Plate Type | — |
+**It mirrors the FORM, and each query's rows are enumerated the way the devdoc lists them.**
+Entity section (Vehicle / Person / Firearm / Article / Boat), then one table per QUERY inside it — so
+a provider building both Driver License and Driver History shows them as two separate blocks under
+Person, exactly as the form shows two cards. THREE columns:
 
-- **The message key column carries the `keyReference` AND NOTHING ELSE.** `QV`, `RQ`, `DQ`, `KQ`,
-  `QGB` are the state's own transaction mnemonics — what a supervisor sees in a wire log or a CLETS
-  manual. Without this column there was no way to tie a row on the sheet to a row in a log.
-  The first cut also printed a derived sentence beneath it ("Vehicle Registration by Plate Number -
-  out-of-state") and **every word of it was already on the page**: the query label is the table
-  caption, the identifier is the Search-by column, and the in/out marking is the hint inside that
-  same column. Pure duplication; removed.
+**Vehicle** → *Vehicle Registration*
+
+| Search by | Required fields | Optional fields |
+|---|---|---|
+| **1.** Plate Number *(out-of-state)* `RQ.P` | CA Purpose Code, Plate Number, Plate Type, Plate Year | State |
+| **2.** Plate Number *(in-state)* `4.P` | CA Purpose Code, Plate Number, Plate Type | — |
+
+- **First column = number + search path + in/out + message key, in that order.** The devdoc writes
+  `Possible Combinations 1. (In/Out) ArticleSerialNumber, ArticleTypeCode  2. …` — numbered, required
+  fields then bracketed optionals — and this table is that list, per query, in the same order.
+- **The message key rides INSIDE the first column, it does not get its own.** `QV`, `RQ`, `DQ`, `KQ`,
+  `QGB` are the state's transaction mnemonics and the tie-back to a wire log, but they are short
+  tokens: giving them 20% of the page squeezed the field lists, which is where the long content is.
+- **Two earlier cuts were wrong and both are worth not repeating.** The first printed a derived
+  sentence under the key ("Vehicle Registration by Plate Number - out-of-state") — every word already
+  on the page, since the query label is the caption and the in/out is the Search-by hint. The second
+  kept a standalone key column, which cost width and split the row's identity across two cells.
 - **NEVER add a hand-written key dictionary** ("QV = DMV vehicle inquiry"). That is an unsourced
   claim that goes stale the first time a keyRef moves, and it is the class this repo refuses
   everywhere else. If a key needs explaining, the devdoc explains it.

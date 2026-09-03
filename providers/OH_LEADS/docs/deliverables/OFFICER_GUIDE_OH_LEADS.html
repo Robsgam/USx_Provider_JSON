@@ -18,14 +18,17 @@ table.qt { width:100%; border-collapse:collapse; table-layout:fixed; margin: 0 0
 table.qt caption { caption-side: top; text-align:left; font-weight:600; color:#1f3b57; font-size:9pt; padding:2px 0 1px; }
 table.qt th, table.qt td { border:1px solid #cdd8e3; padding:2px 5px; text-align:left; vertical-align:top; overflow-wrap:break-word; }
 table.qt thead th { background:#eef3f8; font-size:8pt; font-weight:700; }
-/* Message key sits FIRST, hard left -- it is the tie-back to a wire log or a CLETS manual.
-   Percentages re-balanced so the four columns still total 100 and nothing wraps oddly in print. */
-th.mk, td.mk { width:20%; }
-td.mk { font-size:11px; line-height:1.35; }
-td.mk .mk { color:#555; font-style:italic; }
-th.sb, td.sb { width:20%; font-weight:600; }
-th.req, td.req { width:30%; }
-th.opt, td.opt { width:30%; }
+/* THREE columns, not four. The message key now rides inside "Search by" -- it is a short token and
+   did not earn 20% of the page, while the field lists (the long content) were being squeezed. */
+th.sb, td.sb { width:30%; font-weight:600; }
+th.req, td.req { width:35%; }
+th.opt, td.opt { width:35%; }
+/* Devdoc-style enumeration: the combination number leads the row, as the devdoc writes it. */
+td.sb .num { color:#134DD1; font-weight:700; margin-right:2px; }
+/* The message key is a machine token -- monospace so it reads as one, and quiet so it never
+   competes with the plain-English search path beside it. */
+td.sb .pre { font-family:Consolas,'Courier New',monospace; font-size:10px; color:#555;
+             background:#f2f4f7; border:1px solid #dde3ea; border-radius:2px; padding:0 3px; }
 td.req { color:#7a1f1f; }
 td.opt { color:#3a5a3a; }
 thead th.req { color:#7a1f1f; }
@@ -39,46 +42,46 @@ footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777;
 <h1>OH_LEADS &mdash; Query Guide <span style='font-weight:normal;font-size:60%;color:#555'>(build v2.11)</span></h1>
 <p class='howto'>Find your entity, pick a row by what you want to <b>search by</b>, fill the <b style='color:#7a1f1f'>Must enter</b> fields; <span style='color:#3a5a3a'>You can also add</span> fields are optional. Values in (parentheses) are pre-filled &mdash; change only if needed.</p>
 <section class='entity'><h2>Vehicle</h2>
-<table class='qt'><caption>Vehicle Registration</caption><thead><tr><th class='mk'>Message key</th><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='mk'><span class='pre'>ATDP</span></td><td class='sb'>Plate Number (in-state)</td><td class='req'>Plate Number, Plate Type <span class='pre'>(PC)</span>, Dealer Plate Type</td><td class='opt'>&mdash;</td></tr>
-<tr><td class='mk'><span class='pre'>RQ.P</span></td><td class='sb'>Plate Number (out-of-state)</td><td class='req'>State, Plate Number, Plate Type <span class='pre'>(PC)</span>, Plate Year <span class='pre'>(2026)</span></td><td class='opt'>&mdash;</td></tr>
-<tr><td class='mk'><span class='pre'>RP</span></td><td class='sb'>Plate Number (in-state)</td><td class='req'>Plate Number, Plate Type <span class='pre'>(PC)</span></td><td class='opt'>&mdash;</td></tr>
-<tr><td class='mk'><span class='pre'>RQ.V</span></td><td class='sb'>Vehicle Identification Number (out-of-state)</td><td class='req'>Vehicle Identification Number, Vehicle Make, Vehicle Year</td><td class='opt'>State</td></tr>
-<tr><td class='mk'><span class='pre'>RV</span></td><td class='sb'>Vehicle Identification Number (in-state)</td><td class='req'>Vehicle Identification Number</td><td class='opt'>&mdash;</td></tr>
-<tr><td class='mk'><span class='pre'>RS</span></td><td class='sb'>SSN</td><td class='req'>SSN</td><td class='opt'>&mdash;</td></tr>
-<tr><td class='mk'><span class='pre'>RN</span></td><td class='sb'>Name</td><td class='req'>Last Name, First Name</td><td class='opt'>County Code, Middle Name, Suffix</td></tr>
+<table class='qt'><caption>Vehicle Registration</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
+<tr><td class='sb'><span class='num'>1.</span> Plate Number (in-state) <span class='pre'>ATDP</span></td><td class='req'>Plate Number, Plate Type <span class='pre'>(PC)</span>, Dealer Plate Type</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'><span class='num'>2.</span> Plate Number (out-of-state) <span class='pre'>RQ.P</span></td><td class='req'>State, Plate Number, Plate Type <span class='pre'>(PC)</span>, Plate Year <span class='pre'>(2026)</span></td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'><span class='num'>3.</span> Plate Number (in-state) <span class='pre'>RP</span></td><td class='req'>Plate Number, Plate Type <span class='pre'>(PC)</span></td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'><span class='num'>4.</span> Vehicle Identification Number (out-of-state) <span class='pre'>RQ.V</span></td><td class='req'>Vehicle Identification Number, Vehicle Make, Vehicle Year</td><td class='opt'>State</td></tr>
+<tr><td class='sb'><span class='num'>5.</span> Vehicle Identification Number (in-state) <span class='pre'>RV</span></td><td class='req'>Vehicle Identification Number</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'><span class='num'>6.</span> SSN <span class='pre'>RS</span></td><td class='req'>SSN</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'><span class='num'>7.</span> Name <span class='pre'>RN</span></td><td class='req'>Last Name, First Name</td><td class='opt'>County Code, Middle Name, Suffix</td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Person</h2>
-<table class='qt'><caption>Driver License</caption><thead><tr><th class='mk'>Message key</th><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='mk'><span class='pre'>DQ.O</span></td><td class='sb'>OLN (out-of-state)</td><td class='req'>OLN</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, State</td></tr>
-<tr><td class='mk'><span class='pre'>DL</span></td><td class='sb'>OLN (in-state)</td><td class='req'>OLN</td><td class='opt'>&mdash;</td></tr>
-<tr><td class='mk'><span class='pre'>DQ.N</span></td><td class='sb'>Name (out-of-state)</td><td class='req'>Last Name, First Name, Date of Birth, Sex</td><td class='opt'>State, Middle Name, Suffix</td></tr>
-<tr><td class='mk'><span class='pre'>QWA</span></td><td class='sb'>Name (in-state)</td><td class='req'>Last Name, First Name, Date of Birth</td><td class='opt'>Middle Name, Suffix</td></tr>
-<tr><td class='mk'><span class='pre'>DN</span></td><td class='sb'>Name (in-state)</td><td class='req'>Last Name, First Name</td><td class='opt'>Middle Name, Suffix</td></tr>
+<table class='qt'><caption>Driver License</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
+<tr><td class='sb'><span class='num'>1.</span> OLN (out-of-state) <span class='pre'>DQ.O</span></td><td class='req'>OLN</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, State</td></tr>
+<tr><td class='sb'><span class='num'>2.</span> OLN (in-state) <span class='pre'>DL</span></td><td class='req'>OLN</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'><span class='num'>3.</span> Name (out-of-state) <span class='pre'>DQ.N</span></td><td class='req'>Last Name, First Name, Date of Birth, Sex</td><td class='opt'>State, Middle Name, Suffix</td></tr>
+<tr><td class='sb'><span class='num'>4.</span> Name (in-state) <span class='pre'>QWA</span></td><td class='req'>Last Name, First Name, Date of Birth</td><td class='opt'>Middle Name, Suffix</td></tr>
+<tr><td class='sb'><span class='num'>5.</span> Name (in-state) <span class='pre'>DN</span></td><td class='req'>Last Name, First Name</td><td class='opt'>Middle Name, Suffix</td></tr>
 </tbody></table>
-<table class='qt'><caption>Driver History</caption><thead><tr><th class='mk'>Message key</th><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='mk'><span class='pre'>KQ.N</span></td><td class='sb'>Name</td><td class='req'>Last Name, First Name, Date of Birth, Sex</td><td class='opt'>Purpose Code <span class='pre'>(C)</span>, State, Attention, Middle Name, Suffix</td></tr>
-<tr><td class='mk'><span class='pre'>KQ.O</span></td><td class='sb'>OLN</td><td class='req'>OLN</td><td class='opt'>Purpose Code <span class='pre'>(C)</span>, State, Attention</td></tr>
+<table class='qt'><caption>Driver History</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
+<tr><td class='sb'><span class='num'>1.</span> Name <span class='pre'>KQ.N</span></td><td class='req'>Last Name, First Name, Date of Birth, Sex</td><td class='opt'>Purpose Code <span class='pre'>(C)</span>, State, Attention, Middle Name, Suffix</td></tr>
+<tr><td class='sb'><span class='num'>2.</span> OLN <span class='pre'>KQ.O</span></td><td class='req'>OLN</td><td class='opt'>Purpose Code <span class='pre'>(C)</span>, State, Attention</td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Firearm</h2>
-<table class='qt'><caption>Firearm</caption><thead><tr><th class='mk'>Message key</th><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='mk'><span class='pre'>QG</span></td><td class='sb'>Serial Number</td><td class='req'>Serial Number</td><td class='opt'>Make, Caliber, Stolen Check <span class='pre'>(Y)</span></td></tr>
+<table class='qt'><caption>Firearm</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
+<tr><td class='sb'><span class='num'>1.</span> Serial Number <span class='pre'>QG</span></td><td class='req'>Serial Number</td><td class='opt'>Make, Caliber, Stolen Check <span class='pre'>(Y)</span></td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Article</h2>
-<table class='qt'><caption>Article</caption><thead><tr><th class='mk'>Message key</th><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='mk'><span class='pre'>QA.S</span></td><td class='sb'>Serial Number</td><td class='req'>Article Type, Serial Number</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Stolen Check <span class='pre'>(Y)</span></td></tr>
-<tr><td class='mk'><span class='pre'>QA.N</span></td><td class='sb'>NCIC Number</td><td class='req'>NCIC Number</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Stolen Check <span class='pre'>(Y)</span></td></tr>
+<table class='qt'><caption>Article</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
+<tr><td class='sb'><span class='num'>1.</span> Serial Number <span class='pre'>QA.S</span></td><td class='req'>Article Type, Serial Number</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Stolen Check <span class='pre'>(Y)</span></td></tr>
+<tr><td class='sb'><span class='num'>2.</span> NCIC Number <span class='pre'>QA.N</span></td><td class='req'>NCIC Number</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Stolen Check <span class='pre'>(Y)</span></td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Boat</h2>
-<table class='qt'><caption>Boat</caption><thead><tr><th class='mk'>Message key</th><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='mk'><span class='pre'>BQ.H</span></td><td class='sb'>Hull ID Number (out-of-state)</td><td class='req'>Hull ID Number</td><td class='opt'>State</td></tr>
-<tr><td class='mk'><span class='pre'>QB.H</span></td><td class='sb'>Hull ID Number (in-state)</td><td class='req'>Hull ID Number</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Stolen Check <span class='pre'>(Y)</span></td></tr>
-<tr><td class='mk'><span class='pre'>BQ.R</span></td><td class='sb'>Registration Number (out-of-state)</td><td class='req'>Registration Number</td><td class='opt'>State</td></tr>
-<tr><td class='mk'><span class='pre'>QB.R</span></td><td class='sb'>Registration Number (in-state)</td><td class='req'>Registration Number</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Stolen Check <span class='pre'>(Y)</span></td></tr>
+<table class='qt'><caption>Boat</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
+<tr><td class='sb'><span class='num'>1.</span> Hull ID Number (out-of-state) <span class='pre'>BQ.H</span></td><td class='req'>Hull ID Number</td><td class='opt'>State</td></tr>
+<tr><td class='sb'><span class='num'>2.</span> Hull ID Number (in-state) <span class='pre'>QB.H</span></td><td class='req'>Hull ID Number</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Stolen Check <span class='pre'>(Y)</span></td></tr>
+<tr><td class='sb'><span class='num'>3.</span> Registration Number (out-of-state) <span class='pre'>BQ.R</span></td><td class='req'>Registration Number</td><td class='opt'>State</td></tr>
+<tr><td class='sb'><span class='num'>4.</span> Registration Number (in-state) <span class='pre'>QB.R</span></td><td class='req'>Registration Number</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Stolen Check <span class='pre'>(Y)</span></td></tr>
 </tbody></table>
 </section>
 

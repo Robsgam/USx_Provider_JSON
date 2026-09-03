@@ -18,14 +18,17 @@ table.qt { width:100%; border-collapse:collapse; table-layout:fixed; margin: 0 0
 table.qt caption { caption-side: top; text-align:left; font-weight:600; color:#1f3b57; font-size:9pt; padding:2px 0 1px; }
 table.qt th, table.qt td { border:1px solid #cdd8e3; padding:2px 5px; text-align:left; vertical-align:top; overflow-wrap:break-word; }
 table.qt thead th { background:#eef3f8; font-size:8pt; font-weight:700; }
-/* Message key sits FIRST, hard left -- it is the tie-back to a wire log or a CLETS manual.
-   Percentages re-balanced so the four columns still total 100 and nothing wraps oddly in print. */
-th.mk, td.mk { width:20%; }
-td.mk { font-size:11px; line-height:1.35; }
-td.mk .mk { color:#555; font-style:italic; }
-th.sb, td.sb { width:20%; font-weight:600; }
-th.req, td.req { width:30%; }
-th.opt, td.opt { width:30%; }
+/* THREE columns, not four. The message key now rides inside "Search by" -- it is a short token and
+   did not earn 20% of the page, while the field lists (the long content) were being squeezed. */
+th.sb, td.sb { width:30%; font-weight:600; }
+th.req, td.req { width:35%; }
+th.opt, td.opt { width:35%; }
+/* Devdoc-style enumeration: the combination number leads the row, as the devdoc writes it. */
+td.sb .num { color:#134DD1; font-weight:700; margin-right:2px; }
+/* The message key is a machine token -- monospace so it reads as one, and quiet so it never
+   competes with the plain-English search path beside it. */
+td.sb .pre { font-family:Consolas,'Courier New',monospace; font-size:10px; color:#555;
+             background:#f2f4f7; border:1px solid #dde3ea; border-radius:2px; padding:0 3px; }
 td.req { color:#7a1f1f; }
 td.opt { color:#3a5a3a; }
 thead th.req { color:#7a1f1f; }
@@ -39,39 +42,39 @@ footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777;
 <h1>MD_METERS &mdash; Query Guide <span style='font-weight:normal;font-size:60%;color:#555'>(build v2.4)</span></h1>
 <p class='howto'>Find your entity, pick a row by what you want to <b>search by</b>, fill the <b style='color:#7a1f1f'>Must enter</b> fields; <span style='color:#3a5a3a'>You can also add</span> fields are optional. Values in (parentheses) are pre-filled &mdash; change only if needed.</p>
 <section class='entity'><h2>Vehicle</h2>
-<table class='qt'><caption>Vehicle Registration</caption><thead><tr><th class='mk'>Message key</th><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='mk'><span class='pre'>ZLRG.P</span></td><td class='sb'>Plate Number (with Plate Type + Plate Year)</td><td class='req'>Plate Number, Plate Type, Plate Year</td><td class='opt'>State, NCIC Image <span class='pre'>(Y)</span></td></tr>
-<tr><td class='mk'><span class='pre'>ZLRG.V</span></td><td class='sb'>Vehicle Identification Number (out-of-state)</td><td class='req'>Vehicle Identification Number</td><td class='opt'>State, NCIC Image <span class='pre'>(Y)</span></td></tr>
-<tr><td class='mk'><span class='pre'>ZVEH.V</span></td><td class='sb'>Vehicle Identification Number (in-state)</td><td class='req'>Vehicle Identification Number</td><td class='opt'>Vehicle Make, NCIC Image <span class='pre'>(Y)</span></td></tr>
-<tr><td class='mk'><span class='pre'>ZVEH.P</span></td><td class='sb'>Plate Number (in-state)</td><td class='req'>Plate Number</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span></td></tr>
+<table class='qt'><caption>Vehicle Registration</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
+<tr><td class='sb'><span class='num'>1.</span> Plate Number (with Plate Type + Plate Year) <span class='pre'>ZLRG.P</span></td><td class='req'>Plate Number, Plate Type, Plate Year</td><td class='opt'>State, NCIC Image <span class='pre'>(Y)</span></td></tr>
+<tr><td class='sb'><span class='num'>2.</span> Vehicle Identification Number (out-of-state) <span class='pre'>ZLRG.V</span></td><td class='req'>Vehicle Identification Number</td><td class='opt'>State, NCIC Image <span class='pre'>(Y)</span></td></tr>
+<tr><td class='sb'><span class='num'>3.</span> Vehicle Identification Number (in-state) <span class='pre'>ZVEH.V</span></td><td class='req'>Vehicle Identification Number</td><td class='opt'>Vehicle Make, NCIC Image <span class='pre'>(Y)</span></td></tr>
+<tr><td class='sb'><span class='num'>4.</span> Plate Number (in-state) <span class='pre'>ZVEH.P</span></td><td class='req'>Plate Number</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span></td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Person</h2>
-<table class='qt'><caption>Driver License</caption><thead><tr><th class='mk'>Message key</th><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='mk'><span class='pre'>ZWAR.O</span></td><td class='sb'>Name (with Last Name + First Name + License Expiration Year + Race + Sex)</td><td class='req'>Last Name, First Name, License Expiration Year, OLN, Race, Sex</td><td class='opt'>State, NCIC Image <span class='pre'>(Y)</span>, Middle Name, Suffix</td></tr>
-<tr><td class='mk'><span class='pre'>ZWAR.N</span></td><td class='sb'>Name (in-state)</td><td class='req'>Date of Birth, Last Name, First Name, Race, Sex</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Middle Name, Suffix</td></tr>
-<tr><td class='mk'><span class='pre'>ZLDR.N</span></td><td class='sb'>Name</td><td class='req'>Date of Birth, Last Name, First Name, Sex</td><td class='opt'>State, NCIC Image <span class='pre'>(Y)</span>, Middle Name, Suffix</td></tr>
-<tr><td class='mk'><span class='pre'>ZLDR.O</span></td><td class='sb'>OLN (on its own)</td><td class='req'>OLN</td><td class='opt'>State, NCIC Image <span class='pre'>(Y)</span></td></tr>
+<table class='qt'><caption>Driver License</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
+<tr><td class='sb'><span class='num'>1.</span> Name (with Last Name + First Name + License Expiration Year + Race + Sex) <span class='pre'>ZWAR.O</span></td><td class='req'>Last Name, First Name, License Expiration Year, OLN, Race, Sex</td><td class='opt'>State, NCIC Image <span class='pre'>(Y)</span>, Middle Name, Suffix</td></tr>
+<tr><td class='sb'><span class='num'>2.</span> Name (in-state) <span class='pre'>ZWAR.N</span></td><td class='req'>Date of Birth, Last Name, First Name, Race, Sex</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Middle Name, Suffix</td></tr>
+<tr><td class='sb'><span class='num'>3.</span> Name <span class='pre'>ZLDR.N</span></td><td class='req'>Date of Birth, Last Name, First Name, Sex</td><td class='opt'>State, NCIC Image <span class='pre'>(Y)</span>, Middle Name, Suffix</td></tr>
+<tr><td class='sb'><span class='num'>4.</span> OLN (on its own) <span class='pre'>ZLDR.O</span></td><td class='req'>OLN</td><td class='opt'>State, NCIC Image <span class='pre'>(Y)</span></td></tr>
 </tbody></table>
-<table class='qt'><caption>Driver History</caption><thead><tr><th class='mk'>Message key</th><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='mk'><span class='pre'>ZDRV.N</span></td><td class='sb'>Name</td><td class='req'>Date of Birth, Last Name, First Name, Sex</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Middle Name, Suffix</td></tr>
-<tr><td class='mk'><span class='pre'>ZDRV.O</span></td><td class='sb'>OLN</td><td class='req'>OLN</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span></td></tr>
+<table class='qt'><caption>Driver History</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
+<tr><td class='sb'><span class='num'>1.</span> Name <span class='pre'>ZDRV.N</span></td><td class='req'>Date of Birth, Last Name, First Name, Sex</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Middle Name, Suffix</td></tr>
+<tr><td class='sb'><span class='num'>2.</span> OLN <span class='pre'>ZDRV.O</span></td><td class='req'>OLN</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span></td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Firearm</h2>
-<table class='qt'><caption>Firearm</caption><thead><tr><th class='mk'>Message key</th><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='mk'><span class='pre'>ZGUN</span></td><td class='sb'>Make</td><td class='req'>Caliber, Make, Serial Number</td><td class='opt'>&mdash;</td></tr>
+<table class='qt'><caption>Firearm</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
+<tr><td class='sb'><span class='num'>1.</span> Make <span class='pre'>ZGUN</span></td><td class='req'>Caliber, Make, Serial Number</td><td class='opt'>&mdash;</td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Article</h2>
-<table class='qt'><caption>Article</caption><thead><tr><th class='mk'>Message key</th><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='mk'><span class='pre'>ZART</span></td><td class='sb'>Serial Number</td><td class='req'>Serial Number, Article Type</td><td class='opt'>&mdash;</td></tr>
+<table class='qt'><caption>Article</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
+<tr><td class='sb'><span class='num'>1.</span> Serial Number <span class='pre'>ZART</span></td><td class='req'>Serial Number, Article Type</td><td class='opt'>&mdash;</td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Boat</h2>
-<table class='qt'><caption>Boat</caption><thead><tr><th class='mk'>Message key</th><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='mk'><span class='pre'>ZBOA.H</span></td><td class='sb'>Hull ID Number</td><td class='req'>Hull ID Number</td><td class='opt'>Registration Number, NCIC Image <span class='pre'>(Y)</span></td></tr>
-<tr><td class='mk'><span class='pre'>ZBOA.R</span></td><td class='sb'>Registration Number</td><td class='req'>Registration Number</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span></td></tr>
+<table class='qt'><caption>Boat</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
+<tr><td class='sb'><span class='num'>1.</span> Hull ID Number <span class='pre'>ZBOA.H</span></td><td class='req'>Hull ID Number</td><td class='opt'>Registration Number, NCIC Image <span class='pre'>(Y)</span></td></tr>
+<tr><td class='sb'><span class='num'>2.</span> Registration Number <span class='pre'>ZBOA.R</span></td><td class='req'>Registration Number</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span></td></tr>
 </tbody></table>
 </section>
 

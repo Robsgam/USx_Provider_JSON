@@ -18,14 +18,17 @@ table.qt { width:100%; border-collapse:collapse; table-layout:fixed; margin: 0 0
 table.qt caption { caption-side: top; text-align:left; font-weight:600; color:#1f3b57; font-size:9pt; padding:2px 0 1px; }
 table.qt th, table.qt td { border:1px solid #cdd8e3; padding:2px 5px; text-align:left; vertical-align:top; overflow-wrap:break-word; }
 table.qt thead th { background:#eef3f8; font-size:8pt; font-weight:700; }
-/* Message key sits FIRST, hard left -- it is the tie-back to a wire log or a CLETS manual.
-   Percentages re-balanced so the four columns still total 100 and nothing wraps oddly in print. */
-th.mk, td.mk { width:20%; }
-td.mk { font-size:11px; line-height:1.35; }
-td.mk .mk { color:#555; font-style:italic; }
-th.sb, td.sb { width:20%; font-weight:600; }
-th.req, td.req { width:30%; }
-th.opt, td.opt { width:30%; }
+/* THREE columns, not four. The message key now rides inside "Search by" -- it is a short token and
+   did not earn 20% of the page, while the field lists (the long content) were being squeezed. */
+th.sb, td.sb { width:30%; font-weight:600; }
+th.req, td.req { width:35%; }
+th.opt, td.opt { width:35%; }
+/* Devdoc-style enumeration: the combination number leads the row, as the devdoc writes it. */
+td.sb .num { color:#134DD1; font-weight:700; margin-right:2px; }
+/* The message key is a machine token -- monospace so it reads as one, and quiet so it never
+   competes with the plain-English search path beside it. */
+td.sb .pre { font-family:Consolas,'Courier New',monospace; font-size:10px; color:#555;
+             background:#f2f4f7; border:1px solid #dde3ea; border-radius:2px; padding:0 3px; }
 td.req { color:#7a1f1f; }
 td.opt { color:#3a5a3a; }
 thead th.req { color:#7a1f1f; }
@@ -39,40 +42,40 @@ footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777;
 <h1>AZ_AZDPS &mdash; Query Guide <span style='font-weight:normal;font-size:60%;color:#555'>(build v3.12)</span></h1>
 <p class='howto'>Find your entity, pick a row by what you want to <b>search by</b>, fill the <b style='color:#7a1f1f'>Must enter</b> fields; <span style='color:#3a5a3a'>You can also add</span> fields are optional. Values in (parentheses) are pre-filled &mdash; change only if needed.</p>
 <section class='entity'><h2>Vehicle</h2>
-<table class='qt'><caption>Vehicle Registration</caption><thead><tr><th class='mk'>Message key</th><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='mk'><span class='pre'>ACVR</span></td><td class='sb'>Plate Number</td><td class='req'>Badge <span class='pre'>(X)</span>, Plate Number</td><td class='opt'>Plate Year <span class='pre'>(2026)</span>, Plate Type <span class='pre'>(PC)</span>, State</td></tr>
-<tr><td class='mk'><span class='pre'>ACVRV</span></td><td class='sb'>VIN</td><td class='req'>Badge <span class='pre'>(X)</span>, VIN</td><td class='opt'>State, Make, Year</td></tr>
+<table class='qt'><caption>Vehicle Registration</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
+<tr><td class='sb'><span class='num'>1.</span> Plate Number <span class='pre'>ACVR</span></td><td class='req'>Badge <span class='pre'>(X)</span>, Plate Number</td><td class='opt'>Plate Year <span class='pre'>(2026)</span>, Plate Type <span class='pre'>(PC)</span>, State</td></tr>
+<tr><td class='sb'><span class='num'>2.</span> VIN <span class='pre'>ACVRV</span></td><td class='req'>Badge <span class='pre'>(X)</span>, VIN</td><td class='opt'>State, Make, Year</td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Person</h2>
-<table class='qt'><caption>Driver License</caption><thead><tr><th class='mk'>Message key</th><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='mk'><span class='pre'>ACWL</span></td><td class='sb'>Name (out-of-state)</td><td class='req'>Badge <span class='pre'>(X)</span>, Date of Birth, Last Name, First Name, Sex</td><td class='opt'>Middle Name, Suffix, State</td></tr>
-<tr><td class='mk'><span class='pre'>DQPN</span></td><td class='sb'>Name (in-state)</td><td class='req'>Badge <span class='pre'>(X)</span>, NCIC Image, Last Name, First Name, Requestor <span class='pre'>(X)</span></td><td class='opt'>Date of Birth, Sex, Middle Name, Suffix</td></tr>
-<tr><td class='mk'><span class='pre'>DQP</span></td><td class='sb'>OLN (in-state)</td><td class='req'>Badge <span class='pre'>(X)</span>, NCIC Image, OLN, Requestor <span class='pre'>(X)</span></td><td class='opt'>&mdash;</td></tr>
-<tr><td class='mk'><span class='pre'>DQN</span></td><td class='sb'>Name</td><td class='req'>Last Name, First Name</td><td class='opt'>Date of Birth, Sex, Badge <span class='pre'>(X)</span>, Middle Name, Suffix, State</td></tr>
-<tr><td class='mk'><span class='pre'>DQ</span></td><td class='sb'>OLN (on its own)</td><td class='req'>OLN</td><td class='opt'>State</td></tr>
+<table class='qt'><caption>Driver License</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
+<tr><td class='sb'><span class='num'>1.</span> Name (out-of-state) <span class='pre'>ACWL</span></td><td class='req'>Badge <span class='pre'>(X)</span>, Date of Birth, Last Name, First Name, Sex</td><td class='opt'>Middle Name, Suffix, State</td></tr>
+<tr><td class='sb'><span class='num'>2.</span> Name (in-state) <span class='pre'>DQPN</span></td><td class='req'>Badge <span class='pre'>(X)</span>, NCIC Image, Last Name, First Name, Requestor <span class='pre'>(X)</span></td><td class='opt'>Date of Birth, Sex, Middle Name, Suffix</td></tr>
+<tr><td class='sb'><span class='num'>3.</span> OLN (in-state) <span class='pre'>DQP</span></td><td class='req'>Badge <span class='pre'>(X)</span>, NCIC Image, OLN, Requestor <span class='pre'>(X)</span></td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'><span class='num'>4.</span> Name <span class='pre'>DQN</span></td><td class='req'>Last Name, First Name</td><td class='opt'>Date of Birth, Sex, Badge <span class='pre'>(X)</span>, Middle Name, Suffix, State</td></tr>
+<tr><td class='sb'><span class='num'>5.</span> OLN (on its own) <span class='pre'>DQ</span></td><td class='req'>OLN</td><td class='opt'>State</td></tr>
 </tbody></table>
-<table class='qt'><caption>Driver History</caption><thead><tr><th class='mk'>Message key</th><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='mk'><span class='pre'>KQH</span></td><td class='sb'>Name</td><td class='req'>State <span class='pre'>(AZ)</span>, Last Name, First Name, Date of Birth, Sex</td><td class='opt'>Attention, Middle Name, Suffix, Purpose Code</td></tr>
-<tr><td class='mk'><span class='pre'>KQ</span></td><td class='sb'>OLN</td><td class='req'>State <span class='pre'>(AZ)</span>, OLN</td><td class='opt'>Attention, Purpose Code</td></tr>
+<table class='qt'><caption>Driver History</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
+<tr><td class='sb'><span class='num'>1.</span> Name <span class='pre'>KQH</span></td><td class='req'>State <span class='pre'>(AZ)</span>, Last Name, First Name, Date of Birth, Sex</td><td class='opt'>Attention, Middle Name, Suffix, Purpose Code</td></tr>
+<tr><td class='sb'><span class='num'>2.</span> OLN <span class='pre'>KQ</span></td><td class='req'>State <span class='pre'>(AZ)</span>, OLN</td><td class='opt'>Attention, Purpose Code</td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Firearm</h2>
-<table class='qt'><caption>Firearm</caption><thead><tr><th class='mk'>Message key</th><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='mk'><span class='pre'>ACQG</span></td><td class='sb'>Serial Number</td><td class='req'>Badge <span class='pre'>(X)</span>, Serial Number</td><td class='opt'>Caliber, Make, Model, Stolen Check <span class='pre'>(Y)</span></td></tr>
+<table class='qt'><caption>Firearm</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
+<tr><td class='sb'><span class='num'>1.</span> Serial Number <span class='pre'>ACQG</span></td><td class='req'>Badge <span class='pre'>(X)</span>, Serial Number</td><td class='opt'>Caliber, Make, Model, Stolen Check <span class='pre'>(Y)</span></td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Article</h2>
-<table class='qt'><caption>Article</caption><thead><tr><th class='mk'>Message key</th><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='mk'><span class='pre'>ACQA</span></td><td class='sb'>Article Type</td><td class='req'>Badge <span class='pre'>(X)</span>, Article Type, Serial Number</td><td class='opt'>Stolen Check <span class='pre'>(Y)</span></td></tr>
+<table class='qt'><caption>Article</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
+<tr><td class='sb'><span class='num'>1.</span> Article Type <span class='pre'>ACQA</span></td><td class='req'>Badge <span class='pre'>(X)</span>, Article Type, Serial Number</td><td class='opt'>Stolen Check <span class='pre'>(Y)</span></td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Boat</h2>
-<table class='qt'><caption>Boat</caption><thead><tr><th class='mk'>Message key</th><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='mk'><span class='pre'>ACQB</span></td><td class='sb'>Registration Number (out-of-state)</td><td class='req'>Badge <span class='pre'>(X)</span>, Registration Number</td><td class='opt'>Stolen Check <span class='pre'>(Y)</span></td></tr>
-<tr><td class='mk'><span class='pre'>ACQBH</span></td><td class='sb'>Hull ID Number (out-of-state)</td><td class='req'>Badge <span class='pre'>(X)</span>, Hull ID Number</td><td class='opt'>Registration Number, Stolen Check <span class='pre'>(Y)</span></td></tr>
-<tr><td class='mk'><span class='pre'>BQ</span></td><td class='sb'>Registration Number (out-of-state)</td><td class='req'>Registration Number</td><td class='opt'>Badge <span class='pre'>(X)</span>, State, Stolen Check <span class='pre'>(Y)</span></td></tr>
-<tr><td class='mk'><span class='pre'>BQH</span></td><td class='sb'>Hull ID Number (out-of-state)</td><td class='req'>Hull ID Number</td><td class='opt'>Registration Number, Badge <span class='pre'>(X)</span>, State, Stolen Check <span class='pre'>(Y)</span></td></tr>
+<table class='qt'><caption>Boat</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
+<tr><td class='sb'><span class='num'>1.</span> Registration Number (out-of-state) <span class='pre'>ACQB</span></td><td class='req'>Badge <span class='pre'>(X)</span>, Registration Number</td><td class='opt'>Stolen Check <span class='pre'>(Y)</span></td></tr>
+<tr><td class='sb'><span class='num'>2.</span> Hull ID Number (out-of-state) <span class='pre'>ACQBH</span></td><td class='req'>Badge <span class='pre'>(X)</span>, Hull ID Number</td><td class='opt'>Registration Number, Stolen Check <span class='pre'>(Y)</span></td></tr>
+<tr><td class='sb'><span class='num'>3.</span> Registration Number (out-of-state) <span class='pre'>BQ</span></td><td class='req'>Registration Number</td><td class='opt'>Badge <span class='pre'>(X)</span>, State, Stolen Check <span class='pre'>(Y)</span></td></tr>
+<tr><td class='sb'><span class='num'>4.</span> Hull ID Number (out-of-state) <span class='pre'>BQH</span></td><td class='req'>Hull ID Number</td><td class='opt'>Registration Number, Badge <span class='pre'>(X)</span>, State, Stolen Check <span class='pre'>(Y)</span></td></tr>
 </tbody></table>
 </section>
 

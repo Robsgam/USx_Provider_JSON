@@ -299,9 +299,20 @@ foreach ($ent in $order) {
             # The in/out distinction is NOT lost by this -- it stays where officers were already
             # reading it, in the Search by column, and $hint below is what puts it there.
             $mkey = [string]$c.keyReference
-            $mkeyHtml = if ($mkey) { "<span class='pre'>$(Esc $mkey)</span>" } else { '&mdash;' }
 
-            [void]$rows.AppendLine("<tr><td class='mk'>$mkeyHtml</td><td class='sb'>$(Esc $pname)$(Esc $hint)</td><td class='req'>$reqHtml</td><td class='opt'>$optHtml</td></tr>")
+            # FIRST COLUMN = how the devdoc presents a combination: a NUMBER, the way you search,
+            # and (folded in, not given its own column) the message key.
+            # Rob 2026-09-03: "i want the first column to be like it was before we started reworking
+            # this and include in that first colum the message key. i want the combos enumerated the
+            # way the devdoc lists them".
+            # The devdoc writes "Possible Combinations 1. (In/Out) ArticleSerialNumber, ArticleTypeCode
+            # 2. (In/Out) OwnerAppliedNumber, ArticleTypeCode" -- numbered, one per line, required
+            # fields then bracketed optionals. This table is that list, per query, in the same order.
+            # Dropping the separate key column also buys back 20% of the page width for the field
+            # lists, which is where the long content actually is.
+            $num = $rowCount + 1
+            $keyBit = if ($mkey) { " <span class='pre'>$(Esc $mkey)</span>" } else { '' }
+            [void]$rows.AppendLine("<tr><td class='sb'><span class='num'>$num.</span> $(Esc $pname)$(Esc $hint)$keyBit</td><td class='req'>$reqHtml</td><td class='opt'>$optHtml</td></tr>")
             $rowCount++
         }
         if ($rowCount -eq 0) { continue }
@@ -310,7 +321,11 @@ foreach ($ent in $order) {
         # be updated to say required and optional field names"). "Must enter" / "You can also add"
         # read well but do not use the words a spec conversation uses, so the sheet could not be
         # matched against a devdoc or a metadata reference without translating in your head.
-        [void]$sb.AppendLine("<table class='qt'><caption>$(Esc $qlabel)</caption><thead><tr><th class='mk'>Message key</th><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>")
+        # One table per QUERY, so the sheet mirrors the FORM the officer is looking at: a Vehicle
+        # section, a Person section holding Driver License and Driver History as separate blocks
+        # wherever the provider builds both (Rob 2026-09-03). The caption is the query's officer-facing
+        # queryLabel, which is also what the form card is titled.
+        [void]$sb.AppendLine("<table class='qt'><caption>$(Esc $qlabel)</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>")
         [void]$sb.Append($rows.ToString())
         [void]$sb.AppendLine("</tbody></table>")
     }
@@ -337,14 +352,17 @@ table.qt { width:100%; border-collapse:collapse; table-layout:fixed; margin: 0 0
 table.qt caption { caption-side: top; text-align:left; font-weight:600; color:#1f3b57; font-size:9pt; padding:2px 0 1px; }
 table.qt th, table.qt td { border:1px solid #cdd8e3; padding:2px 5px; text-align:left; vertical-align:top; overflow-wrap:break-word; }
 table.qt thead th { background:#eef3f8; font-size:8pt; font-weight:700; }
-/* Message key sits FIRST, hard left -- it is the tie-back to a wire log or a CLETS manual.
-   Percentages re-balanced so the four columns still total 100 and nothing wraps oddly in print. */
-th.mk, td.mk { width:20%; }
-td.mk { font-size:11px; line-height:1.35; }
-td.mk .mk { color:#555; font-style:italic; }
-th.sb, td.sb { width:20%; font-weight:600; }
-th.req, td.req { width:30%; }
-th.opt, td.opt { width:30%; }
+/* THREE columns, not four. The message key now rides inside "Search by" -- it is a short token and
+   did not earn 20% of the page, while the field lists (the long content) were being squeezed. */
+th.sb, td.sb { width:30%; font-weight:600; }
+th.req, td.req { width:35%; }
+th.opt, td.opt { width:35%; }
+/* Devdoc-style enumeration: the combination number leads the row, as the devdoc writes it. */
+td.sb .num { color:#134DD1; font-weight:700; margin-right:2px; }
+/* The message key is a machine token -- monospace so it reads as one, and quiet so it never
+   competes with the plain-English search path beside it. */
+td.sb .pre { font-family:Consolas,'Courier New',monospace; font-size:10px; color:#555;
+             background:#f2f4f7; border:1px solid #dde3ea; border-radius:2px; padding:0 3px; }
 td.req { color:#7a1f1f; }
 td.opt { color:#3a5a3a; }
 thead th.req { color:#7a1f1f; }
