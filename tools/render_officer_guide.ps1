@@ -15,10 +15,53 @@
 param(
     [Parameter(Mandatory=$true)][string]$Path,
     [Parameter(Mandatory=$true)][string]$OutFile,
-    [string]$PdfFile
+    [string]$PdfFile,
+    # Optional path to the official Mark43 logo (.png / .svg / .jpg). See the branding block below
+    # for why this is a parameter and not something the tool draws for itself.
+    [string]$LogoFile
 )
 
 $ErrorActionPreference = 'Stop'
+
+# =====================================================================================
+#  MARK43 BRANDING -- sourced from Confluence "Brand Resources" (Marketing space,
+#  page 4462313473, brand refresh August 2024), NOT from memory:
+#    Primary palette   #24364E Dark Navy - #134DD1 Blue - #B4C7CF Grey
+#    Font              Arial for "all other internal and external docs and slides"
+#                      (Archivo is reserved for website/marketing collateral)
+#    Company name      "Mark43" -- no space, and never "M43", not even internally
+#
+#  THE LOGO IS DELIBERATELY NOT DRAWN OR APPROXIMATED. The same page states plainly:
+#  "Do not stretch or compress / Do not alter scale or alignment / Do not use outlines
+#  or effects / Do not alter colors". The official files live in the All-Employees-Global
+#  SharePoint, which this tooling cannot reach, so hand-rolling an SVG lookalike would
+#  breach the guideline it is meant to honour and would be an invented asset of exactly
+#  the kind this repo refuses elsewhere.
+#  Instead: pass -LogoFile, or drop the official file at tools\assets\mark43_logo.(svg|png|jpg)
+#  and every guide picks it up automatically from then on. Until then the header carries
+#  the company NAME set in brand navy -- which is text, not a logo, and breaches nothing.
+#  It is EMBEDDED AS A BASE64 DATA URI, not linked: the PDF is produced by headless Edge
+#  and an external <img src> would silently render as a broken box in the printed sheet.
+# =====================================================================================
+$BRAND_NAVY = '#24364E'; $BRAND_BLUE = '#134DD1'; $BRAND_GREY = '#B4C7CF'
+$logoHtml = ''
+$logoNote = ''
+if (-not $LogoFile) {
+    foreach ($ext in @('svg','png','jpg')) {
+        $cand = Join-Path $PSScriptRoot "assets\mark43_logo.$ext"
+        if (Test-Path $cand) { $LogoFile = $cand; break }
+    }
+}
+if ($LogoFile -and (Test-Path $LogoFile)) {
+    $lx   = [System.IO.Path]::GetExtension($LogoFile).TrimStart('.').ToLower()
+    $mime = switch ($lx) { 'svg' { 'image/svg+xml' } 'jpg' { 'image/jpeg' } 'jpeg' { 'image/jpeg' } default { 'image/png' } }
+    $b64  = [Convert]::ToBase64String([IO.File]::ReadAllBytes($LogoFile))
+    $logoHtml = "<img class='logo' src='data:$mime;base64,$b64' alt='Mark43'>"
+    $logoNote = "logo embedded from $(Split-Path $LogoFile -Leaf)"
+} else {
+    $logoHtml = "<span class='wordmark'>Mark43</span>"
+    $logoNote = 'no logo file found -- using the company name in brand navy (see -LogoFile)'
+}
 
 $resolved = (Resolve-Path $Path).Path
 $data = Get-Content $resolved -Raw -Encoding UTF8 | ConvertFrom-Json
@@ -247,7 +290,15 @@ foreach ($ent in $order) {
 $css = @"
 @page { size: portrait; margin: 0.6cm; }
 * { box-sizing: border-box; }
-body { font-family: 'Segoe UI', Arial, sans-serif; color:#1a1a1a; font-size: 8.5pt; line-height:1.25; margin: 0; padding: 4px 8px; }
+/* Arial leads, per the brand page: "Arial can be used for all other internal and external docs".
+   Archivo is reserved for website and marketing collateral, which this sheet is not. */
+body { font-family: Arial, Helvetica, sans-serif; color:#1a1a1a; font-size: 8.5pt; line-height:1.25; margin: 0; padding: 4px 8px; }
+/* Brand bar: navy rule under the mark, blue accent. Prints cleanly in mono as well as colour. */
+.brandbar { display:flex; align-items:center; justify-content:space-between;
+            border-bottom:2px solid $BRAND_NAVY; padding:2px 0 4px; margin-bottom:4px; }
+.brandbar .logo { height:26px; width:auto; display:block; }
+.brandbar .wordmark { font-size:17pt; font-weight:700; letter-spacing:-0.5px; color:$BRAND_NAVY; }
+.brandbar .brandright { font-size:8pt; color:$BRAND_BLUE; font-weight:600; text-transform:uppercase; letter-spacing:0.6px; }
 h1 { font-size: 15pt; margin: 0 0 2px; }
 .howto { color:#444; font-size: 8pt; margin: 0 0 8px; }
 section.entity { margin: 0 0 7px; page-break-inside: avoid; }
@@ -284,10 +335,15 @@ if ($vm.Success) { $guideVersion = "v$($vm.Groups[1].Value)" }
 $html = @"
 <!DOCTYPE html><html><head><meta charset='utf-8'><title>$(Esc $providerName) — Officer Query Guide $(Esc $guideVersion)</title>
 <style>$css</style></head><body>
+<div class='brandbar'>
+  <div class='brandleft'>$logoHtml</div>
+  <div class='brandright'>Universal Search &middot; Query Guide</div>
+</div>
 <h1>$(Esc $providerName) — Query Guide <span style='font-weight:normal;font-size:60%;color:#555'>(build $(Esc $guideVersion))</span></h1>
 <p class='howto'>Find your entity, pick a row by what you want to <b>search by</b>, fill the <b style='color:#7a1f1f'>Must enter</b> fields; <span style='color:#3a5a3a'>You can also add</span> fields are optional. Values in (parentheses) are pre-filled — change only if needed.</p>
 $($sb.ToString())
-<footer>$(Esc $providerName) build $(Esc $guideVersion) &middot; Generated $genDate &middot; Reference only — supported search paths and field requirements. If the form on your screen does not match this sheet, this sheet is out of date — ask for the current one.</footer>
+<footer><strong>Mark43</strong> &middot; Universal Search &middot; mark43.com<br>
+$(Esc $providerName) build $(Esc $guideVersion) &middot; Generated $genDate &middot; Reference only — supported search paths and field requirements. If the form on your screen does not match this sheet, this sheet is out of date — ask for the current one.</footer>
 </body></html>
 "@
 
@@ -302,6 +358,7 @@ $($sb.ToString())
 # ancillary-artifact currency check found stale render artifacts on 18 of 20 providers.
 # `-Encoding utf8` would ALSO be wrong under 5.1: it writes a BOM, and validate.ps1 rightly FAILs on one.
 [System.IO.File]::WriteAllText($OutFile, ($html -join "`r`n"), (New-Object System.Text.UTF8Encoding($false)))
+Write-Host "  BRANDING: $logoNote" -ForegroundColor DarkGray
 Write-Host "Officer guide HTML: $OutFile" -ForegroundColor Green
 
 if ($PdfFile) {

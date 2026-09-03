@@ -1,7 +1,15 @@
 <!DOCTYPE html><html><head><meta charset='utf-8'><title>CA_eSUN â€” Officer Query Guide v3.0</title>
 <style>@page { size: portrait; margin: 0.6cm; }
 * { box-sizing: border-box; }
-body { font-family: 'Segoe UI', Arial, sans-serif; color:#1a1a1a; font-size: 8.5pt; line-height:1.25; margin: 0; padding: 4px 8px; }
+/* Arial leads, per the brand page: "Arial can be used for all other internal and external docs".
+   Archivo is reserved for website and marketing collateral, which this sheet is not. */
+body { font-family: Arial, Helvetica, sans-serif; color:#1a1a1a; font-size: 8.5pt; line-height:1.25; margin: 0; padding: 4px 8px; }
+/* Brand bar: navy rule under the mark, blue accent. Prints cleanly in mono as well as colour. */
+.brandbar { display:flex; align-items:center; justify-content:space-between;
+            border-bottom:2px solid #24364E; padding:2px 0 4px; margin-bottom:4px; }
+.brandbar .logo { height:26px; width:auto; display:block; }
+.brandbar .wordmark { font-size:17pt; font-weight:700; letter-spacing:-0.5px; color:#24364E; }
+.brandbar .brandright { font-size:8pt; color:#134DD1; font-weight:600; text-transform:uppercase; letter-spacing:0.6px; }
 h1 { font-size: 15pt; margin: 0 0 2px; }
 .howto { color:#444; font-size: 8pt; margin: 0 0 8px; }
 section.entity { margin: 0 0 7px; page-break-inside: avoid; }
@@ -24,6 +32,10 @@ thead th.req { color:#7a1f1f; }
 thead th.opt { color:#3a5a3a; }
 .pre { color:#666; font-style:italic; }
 footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777; font-size:7.5pt; }</style></head><body>
+<div class='brandbar'>
+  <div class='brandleft'><span class='wordmark'>Mark43</span></div>
+  <div class='brandright'>Universal Search &middot; Query Guide</div>
+</div>
 <h1>CA_eSUN â€” Query Guide <span style='font-weight:normal;font-size:60%;color:#555'>(build v3.0)</span></h1>
 <p class='howto'>Find your entity, pick a row by what you want to <b>search by</b>, fill the <b style='color:#7a1f1f'>Must enter</b> fields; <span style='color:#3a5a3a'>You can also add</span> fields are optional. Values in (parentheses) are pre-filled â€” change only if needed.</p>
 <section class='entity'><h2>Vehicle</h2>
@@ -72,5 +84,6 @@ footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777;
 </tbody></table>
 </section>
 
-<footer>CA_eSUN build v3.0 &middot; Generated 2026-09-03 &middot; Reference only â€” supported search paths and field requirements. If the form on your screen does not match this sheet, this sheet is out of date â€” ask for the current one.</footer>
+<footer><strong>Mark43</strong> &middot; Universal Search &middot; mark43.com<br>
+CA_eSUN build v3.0 &middot; Generated 2026-09-03 &middot; Reference only â€” supported search paths and field requirements. If the form on your screen does not match this sheet, this sheet is out of date â€” ask for the current one.</footer>
 </body></html>
