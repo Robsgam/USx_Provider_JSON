@@ -309,15 +309,28 @@ portfolio is uniform; a provider rebuilt after that date inherits it automatical
 
 | Message key | Search by | Required fields | Optional fields |
 |---|---|---|---|
-| `RQ.P`<br>*Vehicle Registration by Plate Number - out-of-state* | Plate Number | CA Purpose Code, Plate Number, Plate Type, Plate Year | State |
+| `RQ.P` | Plate Number **(out-of-state)** | CA Purpose Code, Plate Number, Plate Type, Plate Year | State |
+| `4.P` | Plate Number **(in-state)** | CA Purpose Code, Plate Number, Plate Type | — |
 
-- **The message key is the `keyReference`.** `QV`, `RQ`, `DQ`, `KQ`, `QGB` are the state's own
-  transaction mnemonics — what a supervisor sees in a wire log or a CLETS manual. Without this
-  column there was no way to tie a row on the sheet to a row in a log.
-- **The interpretation underneath is DERIVED, never glossed.** It is composed from the combination's
-  own query label, the identifier it searches by, and its `state` marking. Do **not** add a
-  hand-written key dictionary ("QV = DMV vehicle inquiry") — that is an unsourced claim that goes
-  stale the first time a keyRef moves, and it is the same class this repo refuses everywhere else.
+- **The message key column carries the `keyReference` AND NOTHING ELSE.** `QV`, `RQ`, `DQ`, `KQ`,
+  `QGB` are the state's own transaction mnemonics — what a supervisor sees in a wire log or a CLETS
+  manual. Without this column there was no way to tie a row on the sheet to a row in a log.
+  The first cut also printed a derived sentence beneath it ("Vehicle Registration by Plate Number -
+  out-of-state") and **every word of it was already on the page**: the query label is the table
+  caption, the identifier is the Search-by column, and the in/out marking is the hint inside that
+  same column. Pure duplication; removed.
+- **NEVER add a hand-written key dictionary** ("QV = DMV vehicle inquiry"). That is an unsourced
+  claim that goes stale the first time a keyRef moves, and it is the class this repo refuses
+  everywhere else. If a key needs explaining, the devdoc explains it.
+- **In-state / out-of-state stays in the Search-by column**, which is where officers already read it.
+  Derivation order: the combo's own `state` marking first; then, when every sibling says `In/Out` and
+  so distinguishes nothing, **the routing condition** — a State `EXISTS` gate *is* the out-of-state
+  fork, `NOT_EXISTS` the in-state one (`IN`/`NOT_IN` honoured too, for the value-list providers).
+  Only if neither exists does it fall back to naming the field that differs between siblings.
+  That second step is grounded in the mechanism the platform actually routes on, and it is what
+  moved TX_TLETS from 1 marked row to 5. Where a provider genuinely does not fork on state — TX's
+  plate rows differ by Plate Type vs Financial Responsibility Type — the fallback wording is the
+  honest answer and must not be forced into an in/out label it does not have.
 - **Headers say REQUIRED and OPTIONAL**, not "Must enter" / "You can also add". The old wording read
   well but did not use the words a spec conversation uses, so the sheet could not be matched against
   a devdoc or a metadata reference without translating in your head.

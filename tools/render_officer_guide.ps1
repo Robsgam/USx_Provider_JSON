@@ -210,6 +210,29 @@ foreach ($ent in $order) {
                 if ($c.state -eq 'Out') { $hint = ' (out-of-state)' }
                 elseif ($c.state -eq 'In') { $hint = ' (in-state)' }
                 else {
+                    # SECOND PREFERENCE, ADDED 2026-09-03: read the ROUTING CONDITION.
+                    # Where `state` says 'In/Out' on every sibling it distinguishes nothing, but the
+                    # combo's own State gate does -- an EXISTS on the State field IS the
+                    # out-of-state fork and a NOT_EXISTS IS the in-state one. That is the mechanism
+                    # the platform actually routes on, so this is derived from real config, not
+                    # inferred from a label. It is why TX_TLETS printed "(with Plate Type)" where an
+                    # officer needed "(out-of-state)".
+                    # IN / NOT_IN are honoured too: the captured CA lines fork on a state VALUE LIST
+                    # rather than presence, and the v2.2 sweep proved those conditions do evaluate.
+                    foreach ($cond in @($c.requirements.conditions)) {
+                        if (-not $cond) { continue }
+                        $cf = @($cond.field) | ForEach-Object { "$_" }
+                        if (-not ($cf | Where-Object { $_ -match '(?i)state' })) { continue }
+                        switch ("$($cond.operator)".ToUpperInvariant()) {
+                            'EXISTS'     { $hint = ' (out-of-state)' }
+                            'NOT_EXISTS' { $hint = ' (in-state)' }
+                            'NOT_IN'     { $hint = ' (out-of-state)' }
+                            'IN'         { $hint = ' (in-state)' }
+                        }
+                        if ($hint) { break }
+                    }
+                }
+                if (-not $hint) {
                     # FALLBACK ADDED 2026-07-30. On TX_TLETS every Vehicle and Person combo carries
                     # state='In/Out', so neither branch above ever fired and the guide printed TWO
                     # IDENTICAL "Search by Plate Number" rows (and two "VIN" rows) -- the officer had
@@ -266,13 +289,17 @@ foreach ($ent in $order) {
             # so it cannot drift from the build and needs no hand-maintained glossary that would go
             # stale the first time a key changed. Writing "QV = DMV vehicle inquiry" from memory
             # would be exactly the unsourced-claim class this repo keeps catching.
+            # THE KEY ALONE. The first cut also printed a derived sentence underneath
+            # ("Vehicle Registration by Plate Number - out-of-state"), and every word of it was
+            # already on the page: the query label is the table CAPTION, the identifier is the
+            # "Search by" column, and the in/out marking is the hint inside that same column --
+            # so the row read "RQ.P = Vehicle Registration by Plate Number - out-of-state |
+            # Plate Number (out-of-state)". Rob 2026-09-03: show the in-state / out-of-state combo
+            # as before, and put the message key in the same place it is now.
+            # The in/out distinction is NOT lost by this -- it stays where officers were already
+            # reading it, in the Search by column, and $hint below is what puts it there.
             $mkey = [string]$c.keyReference
             $mkeyHtml = if ($mkey) { "<span class='pre'>$(Esc $mkey)</span>" } else { '&mdash;' }
-            $interp = "$qlabel by $pname"
-            $stateMark = [string]$c.state
-            if ($stateMark -eq 'In')  { $interp += ' - in-state' }
-            elseif ($stateMark -eq 'Out') { $interp += ' - out-of-state' }
-            $mkeyHtml += "<br><span class='mk'>$(Esc $interp)</span>"
 
             [void]$rows.AppendLine("<tr><td class='mk'>$mkeyHtml</td><td class='sb'>$(Esc $pname)$(Esc $hint)</td><td class='req'>$reqHtml</td><td class='opt'>$optHtml</td></tr>")
             $rowCount++

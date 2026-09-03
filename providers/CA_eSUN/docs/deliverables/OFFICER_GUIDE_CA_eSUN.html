@@ -40,47 +40,47 @@ footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777;
 <p class='howto'>Find your entity, pick a row by what you want to <b>search by</b>, fill the <b style='color:#7a1f1f'>Must enter</b> fields; <span style='color:#3a5a3a'>You can also add</span> fields are optional. Values in (parentheses) are pre-filled &mdash; change only if needed.</p>
 <section class='entity'><h2>Vehicle</h2>
 <table class='qt'><caption>Vehicle Registration</caption><thead><tr><th class='mk'>Message key</th><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='mk'><span class='pre'>RQ.P</span><br><span class='mk'>Vehicle Registration by Plate Number - out-of-state</span></td><td class='sb'>Plate Number (out-of-state)</td><td class='req'>CA Purpose Code, Plate Number, Plate Type, Plate Year</td><td class='opt'>State</td></tr>
-<tr><td class='mk'><span class='pre'>4.P</span><br><span class='mk'>Vehicle Registration by Plate Number - in-state</span></td><td class='sb'>Plate Number (in-state)</td><td class='req'>CA Purpose Code, Plate Number, Plate Type</td><td class='opt'>&mdash;</td></tr>
-<tr><td class='mk'><span class='pre'>QV.P</span><br><span class='mk'>Vehicle Registration by Plate Number - in-state</span></td><td class='sb'>Plate Number (in-state)</td><td class='req'>CA Purpose Code, Plate Number</td><td class='opt'>&mdash;</td></tr>
-<tr><td class='mk'><span class='pre'>RQ.V</span><br><span class='mk'>Vehicle Registration by VIN - out-of-state</span></td><td class='sb'>VIN (out-of-state)</td><td class='req'>CA Purpose Code, VIN</td><td class='opt'>State, Make, Year</td></tr>
-<tr><td class='mk'><span class='pre'>QV.V</span><br><span class='mk'>Vehicle Registration by VIN - in-state</span></td><td class='sb'>VIN (in-state)</td><td class='req'>CA Purpose Code, VIN</td><td class='opt'>Make, Year</td></tr>
-<tr><td class='mk'><span class='pre'>VP.N</span><br><span class='mk'>Vehicle Registration by Name</span></td><td class='sb'>Name</td><td class='req'>CA Purpose Code, Owner Last Name, Owner First Name</td><td class='opt'>City, Street Number, Name Middle, Name Suffix</td></tr>
+<tr><td class='mk'><span class='pre'>RQ.P</span></td><td class='sb'>Plate Number (out-of-state)</td><td class='req'>CA Purpose Code, Plate Number, Plate Type, Plate Year</td><td class='opt'>State</td></tr>
+<tr><td class='mk'><span class='pre'>4.P</span></td><td class='sb'>Plate Number (in-state)</td><td class='req'>CA Purpose Code, Plate Number, Plate Type</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='mk'><span class='pre'>QV.P</span></td><td class='sb'>Plate Number (in-state)</td><td class='req'>CA Purpose Code, Plate Number</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='mk'><span class='pre'>RQ.V</span></td><td class='sb'>VIN (out-of-state)</td><td class='req'>CA Purpose Code, VIN</td><td class='opt'>State, Make, Year</td></tr>
+<tr><td class='mk'><span class='pre'>QV.V</span></td><td class='sb'>VIN (in-state)</td><td class='req'>CA Purpose Code, VIN</td><td class='opt'>Make, Year</td></tr>
+<tr><td class='mk'><span class='pre'>VP.N</span></td><td class='sb'>Name</td><td class='req'>CA Purpose Code, Owner Last Name, Owner First Name</td><td class='opt'>City, Street Number, Name Middle, Name Suffix</td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Person</h2>
 <table class='qt'><caption>Driver License</caption><thead><tr><th class='mk'>Message key</th><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='mk'><span class='pre'>DQ.O</span><br><span class='mk'>Driver License by OLN - out-of-state</span></td><td class='sb'>OLN (out-of-state)</td><td class='req'>CA Purpose Code, OLN</td><td class='opt'>State</td></tr>
-<tr><td class='mk'><span class='pre'>L1.O</span><br><span class='mk'>Driver License by OLN - in-state</span></td><td class='sb'>OLN (in-state)</td><td class='req'>CA Purpose Code, OLN</td><td class='opt'>&mdash;</td></tr>
-<tr><td class='mk'><span class='pre'>DQ.N</span><br><span class='mk'>Driver License by Name</span></td><td class='sb'>Name (with Sex)</td><td class='req'>CA Purpose Code, Last Name, First Name, Sex, Date of Birth</td><td class='opt'>State, Name Middle, Name Suffix</td></tr>
-<tr><td class='mk'><span class='pre'>QW.N</span><br><span class='mk'>Driver License by Name</span></td><td class='sb'>Name</td><td class='req'>CA Purpose Code, Last Name, First Name, Date of Birth</td><td class='opt'>Age, Sex, Name Middle, Name Suffix</td></tr>
-<tr><td class='mk'><span class='pre'>L1.N</span><br><span class='mk'>Driver License by Name</span></td><td class='sb'>Name</td><td class='req'>CA Purpose Code, Last Name, First Name</td><td class='opt'>Age, Date of Birth, Name Middle, Name Suffix</td></tr>
+<tr><td class='mk'><span class='pre'>DQ.O</span></td><td class='sb'>OLN (out-of-state)</td><td class='req'>CA Purpose Code, OLN</td><td class='opt'>State</td></tr>
+<tr><td class='mk'><span class='pre'>L1.O</span></td><td class='sb'>OLN (in-state)</td><td class='req'>CA Purpose Code, OLN</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='mk'><span class='pre'>DQ.N</span></td><td class='sb'>Name (with Sex)</td><td class='req'>CA Purpose Code, Last Name, First Name, Sex, Date of Birth</td><td class='opt'>State, Name Middle, Name Suffix</td></tr>
+<tr><td class='mk'><span class='pre'>QW.N</span></td><td class='sb'>Name</td><td class='req'>CA Purpose Code, Last Name, First Name, Date of Birth</td><td class='opt'>Age, Sex, Name Middle, Name Suffix</td></tr>
+<tr><td class='mk'><span class='pre'>L1.N</span></td><td class='sb'>Name</td><td class='req'>CA Purpose Code, Last Name, First Name</td><td class='opt'>Age, Date of Birth, Name Middle, Name Suffix</td></tr>
 </tbody></table>
 <table class='qt'><caption>Driver History</caption><thead><tr><th class='mk'>Message key</th><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='mk'><span class='pre'>KQ.O</span><br><span class='mk'>Driver History by OLN - out-of-state</span></td><td class='sb'>OLN (out-of-state)</td><td class='req'>CA Purpose Code, OLN</td><td class='opt'>Attention, State</td></tr>
-<tr><td class='mk'><span class='pre'>L1.O</span><br><span class='mk'>Driver History by OLN - in-state</span></td><td class='sb'>OLN (in-state)</td><td class='req'>CA Purpose Code, OLN</td><td class='opt'>&mdash;</td></tr>
-<tr><td class='mk'><span class='pre'>KQ.N</span><br><span class='mk'>Driver History by Name</span></td><td class='sb'>Name (with Sex + Date of Birth)</td><td class='req'>CA Purpose Code, Last Name, First Name, Sex, Date of Birth</td><td class='opt'>Attention, State, Name Middle Dh, Name Suffix Dh</td></tr>
-<tr><td class='mk'><span class='pre'>L1.N</span><br><span class='mk'>Driver History by Name</span></td><td class='sb'>Name</td><td class='req'>CA Purpose Code, Last Name, First Name</td><td class='opt'>Name Middle Dh, Name Suffix Dh</td></tr>
+<tr><td class='mk'><span class='pre'>KQ.O</span></td><td class='sb'>OLN (out-of-state)</td><td class='req'>CA Purpose Code, OLN</td><td class='opt'>Attention, State</td></tr>
+<tr><td class='mk'><span class='pre'>L1.O</span></td><td class='sb'>OLN (in-state)</td><td class='req'>CA Purpose Code, OLN</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='mk'><span class='pre'>KQ.N</span></td><td class='sb'>Name (with Sex + Date of Birth)</td><td class='req'>CA Purpose Code, Last Name, First Name, Sex, Date of Birth</td><td class='opt'>Attention, State, Name Middle Dh, Name Suffix Dh</td></tr>
+<tr><td class='mk'><span class='pre'>L1.N</span></td><td class='sb'>Name</td><td class='req'>CA Purpose Code, Last Name, First Name</td><td class='opt'>Name Middle Dh, Name Suffix Dh</td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Firearm</h2>
 <table class='qt'><caption>Firearm</caption><thead><tr><th class='mk'>Message key</th><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='mk'><span class='pre'>QGB</span><br><span class='mk'>Firearm by Serial Number</span></td><td class='sb'>Serial Number</td><td class='req'>CA Purpose Code, Serial Number</td><td class='opt'>Caliber, Make, Type, Stolen Check</td></tr>
-<tr><td class='mk'><span class='pre'>QGH.B</span><br><span class='mk'>Firearm by Name</span></td><td class='sb'>Name (with Date of Birth)</td><td class='req'>CA Purpose Code, Last Name, First Name, Date of Birth</td><td class='opt'>Name Middle, Name Suffix</td></tr>
-<tr><td class='mk'><span class='pre'>QGH.A</span><br><span class='mk'>Firearm by Name</span></td><td class='sb'>Name (with Age)</td><td class='req'>CA Purpose Code, Last Name, First Name, Age</td><td class='opt'>Name Middle, Name Suffix</td></tr>
+<tr><td class='mk'><span class='pre'>QGB</span></td><td class='sb'>Serial Number</td><td class='req'>CA Purpose Code, Serial Number</td><td class='opt'>Caliber, Make, Type, Stolen Check</td></tr>
+<tr><td class='mk'><span class='pre'>QGH.B</span></td><td class='sb'>Name (with Date of Birth)</td><td class='req'>CA Purpose Code, Last Name, First Name, Date of Birth</td><td class='opt'>Name Middle, Name Suffix</td></tr>
+<tr><td class='mk'><span class='pre'>QGH.A</span></td><td class='sb'>Name (with Age)</td><td class='req'>CA Purpose Code, Last Name, First Name, Age</td><td class='opt'>Name Middle, Name Suffix</td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Article</h2>
 <table class='qt'><caption>Article</caption><thead><tr><th class='mk'>Message key</th><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='mk'><span class='pre'>QA</span><br><span class='mk'>Article by Serial Number / OAN</span></td><td class='sb'>Serial Number / OAN</td><td class='req'>CA Purpose Code, Serial Number / OAN</td><td class='opt'>Brand, Article Category, Article Type</td></tr>
+<tr><td class='mk'><span class='pre'>QA</span></td><td class='sb'>Serial Number / OAN</td><td class='req'>CA Purpose Code, Serial Number / OAN</td><td class='opt'>Brand, Article Category, Article Type</td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Boat</h2>
 <table class='qt'><caption>Boat</caption><thead><tr><th class='mk'>Message key</th><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='mk'><span class='pre'>BQ.H</span><br><span class='mk'>Boat by Hull ID Number - out-of-state</span></td><td class='sb'>Hull ID Number (out-of-state)</td><td class='req'>CA Purpose Code, Hull ID Number</td><td class='opt'>State</td></tr>
-<tr><td class='mk'><span class='pre'>QB.H</span><br><span class='mk'>Boat by Hull ID Number - in-state</span></td><td class='sb'>Hull ID Number (in-state)</td><td class='req'>CA Purpose Code, Hull ID Number</td><td class='opt'>&mdash;</td></tr>
-<tr><td class='mk'><span class='pre'>BQ.R</span><br><span class='mk'>Boat by Registration Number - out-of-state</span></td><td class='sb'>Registration Number (out-of-state)</td><td class='req'>CA Purpose Code, Registration Number</td><td class='opt'>State</td></tr>
-<tr><td class='mk'><span class='pre'>QB.R</span><br><span class='mk'>Boat by Registration Number - in-state</span></td><td class='sb'>Registration Number (in-state)</td><td class='req'>CA Purpose Code, Registration Number</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='mk'><span class='pre'>BQ.H</span></td><td class='sb'>Hull ID Number (out-of-state)</td><td class='req'>CA Purpose Code, Hull ID Number</td><td class='opt'>State</td></tr>
+<tr><td class='mk'><span class='pre'>QB.H</span></td><td class='sb'>Hull ID Number (in-state)</td><td class='req'>CA Purpose Code, Hull ID Number</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='mk'><span class='pre'>BQ.R</span></td><td class='sb'>Registration Number (out-of-state)</td><td class='req'>CA Purpose Code, Registration Number</td><td class='opt'>State</td></tr>
+<tr><td class='mk'><span class='pre'>QB.R</span></td><td class='sb'>Registration Number (in-state)</td><td class='req'>CA Purpose Code, Registration Number</td><td class='opt'>&mdash;</td></tr>
 </tbody></table>
 </section>
 
