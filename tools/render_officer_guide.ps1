@@ -80,7 +80,10 @@ function Esc($s) {
 function CleanName([string]$lbl) {
     if (-not $lbl) { return '' }
     $s = $lbl -replace '\([^)]*\)',''        # drop any (...) hint groups, anywhere
-    $s = $s -replace '\s*[-–—].*$',''         # drop a trailing " - hint" clause
+    # – en dash, — em dash -- written as ESCAPES so this file stays pure ASCII.
+    # A literal dash here is what started the mojibake: PowerShell 5.1 reads a BOM-less .ps1 as
+    # cp1252, so a UTF-8 em dash arrives as three characters and gets re-encoded on write.
+    $s = $s -replace '\s*[-–—].*$', ''   # drop a trailing " - hint" clause
     return (($s -replace '\s{2,}',' ').Trim())
 }
 # Prettify a camelCase/PascalCase token: 'operatorLicenseNumber' -> 'Operator License Number'
@@ -333,17 +336,17 @@ $vm = [regex]::Match([IO.Path]::GetFileName($resolved), '_v([0-9]+\.[0-9]+)\.jso
 if ($vm.Success) { $guideVersion = "v$($vm.Groups[1].Value)" }
 
 $html = @"
-<!DOCTYPE html><html><head><meta charset='utf-8'><title>$(Esc $providerName) — Officer Query Guide $(Esc $guideVersion)</title>
+<!DOCTYPE html><html><head><meta charset='utf-8'><title>$(Esc $providerName) &mdash; Officer Query Guide $(Esc $guideVersion)</title>
 <style>$css</style></head><body>
 <div class='brandbar'>
   <div class='brandleft'>$logoHtml</div>
   <div class='brandright'>Universal Search &middot; Query Guide</div>
 </div>
-<h1>$(Esc $providerName) — Query Guide <span style='font-weight:normal;font-size:60%;color:#555'>(build $(Esc $guideVersion))</span></h1>
-<p class='howto'>Find your entity, pick a row by what you want to <b>search by</b>, fill the <b style='color:#7a1f1f'>Must enter</b> fields; <span style='color:#3a5a3a'>You can also add</span> fields are optional. Values in (parentheses) are pre-filled — change only if needed.</p>
+<h1>$(Esc $providerName) &mdash; Query Guide <span style='font-weight:normal;font-size:60%;color:#555'>(build $(Esc $guideVersion))</span></h1>
+<p class='howto'>Find your entity, pick a row by what you want to <b>search by</b>, fill the <b style='color:#7a1f1f'>Must enter</b> fields; <span style='color:#3a5a3a'>You can also add</span> fields are optional. Values in (parentheses) are pre-filled &mdash; change only if needed.</p>
 $($sb.ToString())
 <footer><strong>Mark43</strong> &middot; Universal Search &middot; mark43.com<br>
-$(Esc $providerName) build $(Esc $guideVersion) &middot; Generated $genDate &middot; Reference only — supported search paths and field requirements. If the form on your screen does not match this sheet, this sheet is out of date — ask for the current one.</footer>
+$(Esc $providerName) build $(Esc $guideVersion) &middot; Generated $genDate &middot; Reference only &mdash; supported search paths and field requirements. If the form on your screen does not match this sheet, this sheet is out of date &mdash; ask for the current one.</footer>
 </body></html>
 "@
 
