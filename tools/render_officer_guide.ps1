@@ -531,9 +531,26 @@ if ($PdfFile) {
         $htmlFull = (Resolve-Path $OutFile).Path
         $pdfFull  = [System.IO.Path]::GetFullPath($PdfFile)
         $uri = 'file:///' + ($htmlFull -replace '\\','/')
+        # STALE-PDF GUARD, ADDED 2026-09-03. The old check was `Test-Path $pdfFull`, which is
+        # satisfied by a PDF from a PREVIOUS run -- so when a conversion failed over an existing
+        # file the tool printed the green "Officer guide PDF: ..." success line and left the old
+        # document in place. Rob found it the only way it could be found: "i don't see an updated
+        # user guide for il". IL's HTML was 24 minutes newer than its PDF, it was the ONLY provider
+        # of 14 affected (a transient lock -- that PDF had just been opened), and BOTH the tool and
+        # my own post-run check reported it green. A success line that a stale file can satisfy is
+        # the same success-shaped silence this repo keeps finding in inert gates.
+        # Compare the WRITE TIME, which is the only thing that distinguishes "just produced" from
+        # "left over", and report a failure over an existing file as loudly as one over no file --
+        # louder, in fact, because that case ships a document that looks current and is not.
+        $pdfBefore = if (Test-Path $pdfFull) { (Get-Item $pdfFull).LastWriteTimeUtc } else { [datetime]::MinValue }
         & $edge --headless=new --disable-gpu --no-pdf-header-footer --virtual-time-budget=3000 "--print-to-pdf=$pdfFull" $uri 2>$null
         Start-Sleep -Milliseconds 1200
-        if (Test-Path $pdfFull) { Write-Host "Officer guide PDF: $pdfFull" -ForegroundColor Green }
+        $pdfAfter = if (Test-Path $pdfFull) { (Get-Item $pdfFull).LastWriteTimeUtc } else { [datetime]::MinValue }
+        if ($pdfAfter -gt $pdfBefore) { Write-Host "Officer guide PDF: $pdfFull" -ForegroundColor Green }
+        elseif ($pdfAfter -ne [datetime]::MinValue) {
+            Write-Host "[WARN] PDF NOT REWRITTEN -- the file on disk is STALE and does not match the HTML just produced." -ForegroundColor Red
+            Write-Host "       (last written $pdfBefore UTC). Usually the PDF is open in a viewer and locked. Close it and re-run." -ForegroundColor Red
+        }
         else { Write-Host "[NOTE] PDF conversion did not produce a file; HTML is available (open it and Print > Save as PDF)." -ForegroundColor Yellow }
     }
 }
