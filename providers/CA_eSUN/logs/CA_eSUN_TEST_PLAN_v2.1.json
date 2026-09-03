@@ -3,7 +3,7 @@
     "version":  "2.1",
     "tier":  "Full",
     "note":  "Full pass (tiers removed 2026-07-01): every combo + individual any[] per field + all-any[] together + guardrail tests. render/negative are manual one-time checks done at initial provider build only and are NOT part of the recurring test matrix (2026-07-01). The driver auto-submits all four kinds (combo/any-field/any/guardrail, 2026-07-01) -- guardrail fills[] already contains BOTH competing identifier fields, so it captures formState/RMS the same as any other test, no manual popup-capture workaround needed.",
-    "testCount":  43,
+    "testCount":  41,
     "formDefaults":  {
                          "Vehicle":  {
                                          "LicensePlateYear":  "2026",
@@ -978,30 +978,6 @@
                       "expectedKeyRef":  "ArticleSerialNumber",
                       "kind":  "any-field",
                       "tier":  "Full",
-                      "anyField":  "ArticleTypeCodeRemainder",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "PurposeCode",
-                                        "value":  "C"
-                                    },
-                                    {
-                                        "fieldId":  "ArticleSerialNumber",
-                                        "value":  "ART99999"
-                                    },
-                                    {
-                                        "fieldId":  "ArticleTypeCodeRemainder",
-                                        "value":  "BBICYCL"
-                                    }
-                                ]
-                  },
-                  {
-                      "n":  38,
-                      "entity":  "Article",
-                      "query":  "ArticleSingleQuery",
-                      "comboKeyRef":  "ArticleSerialNumber",
-                      "expectedKeyRef":  "ArticleSerialNumber",
-                      "kind":  "any-field",
-                      "tier":  "Full",
                       "anyField":  "ArticleBrand",
                       "fills":  [
                                     {
@@ -1019,34 +995,7 @@
                                 ]
                   },
                   {
-                      "n":  39,
-                      "entity":  "Article",
-                      "query":  "ArticleSingleQuery",
-                      "comboKeyRef":  "ArticleSerialNumber",
-                      "expectedKeyRef":  "ArticleSerialNumber",
-                      "kind":  "any",
-                      "tier":  "Full",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "PurposeCode",
-                                        "value":  "C"
-                                    },
-                                    {
-                                        "fieldId":  "ArticleSerialNumber",
-                                        "value":  "ART99999"
-                                    },
-                                    {
-                                        "fieldId":  "ArticleTypeCode",
-                                        "value":  "BBICYCL"
-                                    },
-                                    {
-                                        "fieldId":  "ArticleTypeCodeRemainder",
-                                        "value":  "BBICYCL"
-                                    }
-                                ]
-                  },
-                  {
-                      "n":  40,
+                      "n":  38,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "PurposeCodeBoatHullIdNumber",
@@ -1065,7 +1014,7 @@
                                 ]
                   },
                   {
-                      "n":  41,
+                      "n":  39,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "PurposeCodeBoatHullIdNumber",
@@ -1088,7 +1037,7 @@
                                 ]
                   },
                   {
-                      "n":  42,
+                      "n":  40,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "PurposeCodeRegistrationNumber",
@@ -1107,7 +1056,7 @@
                                 ]
                   },
                   {
-                      "n":  43,
+                      "n":  41,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "PurposeCodeRegistrationNumber",

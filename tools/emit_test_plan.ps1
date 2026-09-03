@@ -196,44 +196,40 @@ $script:ToggleStats = @{ anyField = 0; inverted = 0; hollow = 0 }
 $script:CondSkips = New-Object System.Collections.ArrayList
 
 # ---------------------------------------------------------------------------------------------
-# MUTUALLY EXCLUSIVE FORM FIELDS -- a constraint that lives in NEITHER authority.
-# The tenant form can refuse a pair of otherwise-legal optionals outright:
+# MUTUALLY EXCLUSIVE FORM FIELDS -- declared by the COMBO, via the EXCLUSIVE condition operator.
+# The tenant form refuses some pairs of otherwise-legal optionals outright:
 #   "You cannot enter a value in both of these fields {Article Type, Article Brand}"
-# CA_eSUN's metadata has no <Choice> grouping those two and the devdoc lists both as plain
-# optionals, so nothing derived from the sources can know. Declared per provider in
-# docs/reference/<PROVIDER>_EXCLUSIVE_FIELDS.txt, lines of "<Entity>: <FieldA> | <FieldB>".
-# ABSENT FILE = NO GROUPS, which is the correct default: 19 of 20 providers have never hit this,
-# and inventing exclusions would silently drop real coverage.
-function Read-ExclusiveGroups($jsonPath, $providerName) {
-    $groups = @{}
-    $p = Join-Path (Split-Path (Resolve-Path $jsonPath) -Parent) "docs\reference\${providerName}_EXCLUSIVE_FIELDS.txt"
-    if (-not (Test-Path $p)) { return $groups }
-    $n = 0
-    foreach ($line in (Get-Content $p)) {
-        $t = "$line".Trim()
-        if (-not $t -or $t.StartsWith('#')) { continue }
-        $parts = $t -split ':', 2
-        if ($parts.Count -ne 2) { continue }
-        $ent = $parts[0].Trim()
-        $members = @($parts[1] -split '\|' | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+# and the all-any[] test, which fills every optional at once, therefore produced a test that could
+# never submit -- the only genuine send failure in CA_eSUN's 43-test v2.1 sweep.
+#
+# THE CONFIG ALREADY SAYS SO AND I MISSED IT FIRST TIME. I looked for a metadata <Choice> (none
+# exists) and a devdoc note (both are listed as plain optionals), concluded the rule lived nowhere
+# in our sources, and wrote a hand-maintained per-provider file. It was redundant: CA_eSUN's
+# combinations carry SEVEN of these --
+#     ArticleSingleQuery/ArticleSerialNumber  EXCLUSIVE [ArticleTypeCode | ArticleBrand]
+#     GunQuery, DriverLicenseQuery, AFS       EXCLUSIVE [BirthDate | Age]   (x6)
+# -- so the file would have covered one of seven and gone stale the first time a combo moved.
+# Reading the operator needs no per-provider file and works on every provider automatically.
+# THE LESSON: I searched the two AUTHORITIES and stopped. The BUILT ARTEFACT is also a place a
+# constraint can be stated, and here it was the only one that had it.
+# Returns a key identifying the combo's EXCLUSIVE group this field belongs to, or $null.
+# The condition names SOURCE fields (attribute names); the caller may hold either the attribute
+# name or the resolved fieldId, so both are accepted -- the same reason audit_optional_scope
+# narrows on (query, keyRef, primaryFieldReference) rather than trusting one spelling.
+function Get-ExclusiveGroupFor($combo, $attrName, $fieldId) {
+    # REFUSE A NULL COMBO rather than reporting "no groups". Passing the wrong variable here
+    # returned $null silently and the plan regenerated looking perfectly clean with zero
+    # exclusions applied -- the success-shaped failure this repo keeps rediscovering.
+    if ($null -eq $combo) { throw "Get-ExclusiveGroupFor: null combination passed (wrong variable in scope?)" }
+    foreach ($cd in @($combo.requirements.conditions)) {
+        if (-not $cd) { continue }
+        if ("$($cd.operator)".ToUpperInvariant() -ne 'EXCLUSIVE') { continue }
+        $members = @($cd.field | ForEach-Object { "$_" })
         if ($members.Count -lt 2) { continue }
-        $n++
-        $groups["$ent|$n"] = $members
-    }
-    if ($n -gt 0) { Write-Host ("[plan] {0} mutually-exclusive field group(s) loaded from {1}_EXCLUSIVE_FIELDS.txt" -f $n, $providerName) -ForegroundColor Cyan }
-    return $groups
-}
-# Returns the group key a (entity, fieldId) belongs to, or $null.
-function Get-ExclusiveGroupFor($ent, $fieldId, $groups) {
-    foreach ($k in $groups.Keys) {
-        if (($k -split '\|')[0] -ne $ent) { continue }
-        if (@($groups[$k]) -contains $fieldId) { return $k }
+        if (($members -contains "$attrName") -or ($members -contains "$fieldId")) { return ($members -join '|') }
     }
     return $null
 }
-# Loaded AFTER the functions above -- a script-scope call placed before its function definition
-# does not resolve in PowerShell, which is how the first wiring of this broke.
-$exclusiveGroups = Read-ExclusiveGroups $Path $provName
 
 # ---------------------------------------------------------------------------------------------
 # A COMBO'S OWN IN / NOT_IN LIST CONSTRAINS WHAT AN any[] TOGGLE MAY FILL.
@@ -508,6 +504,24 @@ foreach ($ent in $entities) {
                 foreach ($af in $anyNames) {
                     $ff  = Resolve-FieldId $af $q $fieldIds
                     if (@($hiddenIds) -icontains $ff) { continue }   # hidden gate-feeder (e.g. automated Attention): nothing to type
+                    # NO CONTROL ON THE FORM -> NOTHING TO TYPE. Not every sourceField is a box.
+                    # CA_eSUN's Article QIDM feeds TWO attributes from one picker: ArticleCategory
+                    # from the ArticleTypeCode control, and ArticleTypeCode from a sourceField named
+                    # ArticleTypeCodeRemainder that has no control and appears ZERO times in the
+                    # metadata. It is DERIVED, not entered -- the platform splits the NCIC code, and
+                    # the wire proves it: picking "BBICYCL - Bicycle" in the single box sends
+                    # ArticleCategory=B and ArticleTypeCode=BICYCL. So the field is working exactly
+                    # as designed, and the only thing broken was the plan trying to type into it,
+                    # which produced 'field "ArticleTypeCodeRemainder" did not fill' on every run
+                    # and left 2 tests permanently unloggable.
+                    # I FIRST CALLED THIS A MISSING CONTROL NEEDING A v3 FORM CHANGE. It is not --
+                    # reading the wire refuted that in one command, and audit_wiring_closure's
+                    # matching "UNFILLABLE REQ" finding is a false positive for the same reason:
+                    # that gate cannot tell a derived sourceField from an unbuilt one.
+                    if (@($fieldIds) -notcontains $ff) {
+                        [void]$script:CondSkips.Add("$ent $kr any[$ff] -- no control on the $ent form; treated as platform-DERIVED, not typed")
+                        continue
+                    }
                     $val = Get-AnyFillValue $ent $ff $isOOS $entFormDefaults
                     Note-IfUnresolved "$ent $kr any[]" $ff $val
                     # HONOUR THE COMBO'S OWN VALUE LIST. See Test-AnyValueAgainstConditions.
@@ -535,6 +549,9 @@ foreach ($ent in $entities) {
                 foreach ($af in $anyNames) {
                     $ff = Resolve-FieldId $af $q $fieldIds
                     if (@($hiddenIds) -icontains $ff) { continue }
+                    # Same derived-field guard as the per-field loop above; without it here the
+                    # all-any test still types into the phantom control and still fails.
+                    if (@($fieldIds) -notcontains $ff) { continue }
                     # MUTUALLY EXCLUSIVE FIELDS -- fill only the FIRST member of a declared group.
                     # The tenant form refuses some pairs outright ("You cannot enter a value in both
                     # of these fields {Article Type, Article Brand}"), and that constraint is in
@@ -542,10 +559,25 @@ foreach ($ent in $entities) {
                     # So the all-any test happily filled both and produced the only genuine send
                     # failure in CA_eSUN's 43-test v2.1 sweep. Per-field toggle tests are unaffected
                     # -- each field alone is legal, and those are what prove the field works.
-                    $grp = Get-ExclusiveGroupFor $ent $ff $exclusiveGroups
+                    # THE COMBO ITSELF DECLARES THIS -- read it, do not re-state it elsewhere.
+                    # My first version loaded these from a hand-written
+                    # docs/reference/<P>_EXCLUSIVE_FIELDS.txt. That file was REDUNDANT: this
+                    # provider's own combinations carry
+                    #     { field: [ArticleTypeCode, ArticleBrand], operator: 'EXCLUSIVE' }
+                    # and six more of the same shape (BirthDate|Age on GunQuery, DriverLicenseQuery
+                    # and AFS). A hand-maintained copy would have covered ONE of the seven and gone
+                    # stale the first time a combo changed. Reading the operator instead works on
+                    # every provider with no per-provider file to write or remember.
+                    # $c is the COMBINATION in this scope (see `foreach ($c in $q.combinations)`).
+                    # My first attempt passed $cb, which is not defined here -- and the lookup then
+                    # returned $null SILENTLY, so the plan regenerated with no exclusions applied
+                    # and every sign of having worked. A wrong variable that throws is a nuisance;
+                    # one that returns "nothing found" is a false clean run, which is why the
+                    # function now refuses a null combo instead of treating it as "no groups".
+                    $grp = Get-ExclusiveGroupFor $c $af $ff
                     if ($grp) {
                         if ($usedExclusiveGroups.ContainsKey($grp)) {
-                            [void]$script:CondSkips.Add("$ent $kr (all-any) -- '$ff' omitted: mutually exclusive with '$($usedExclusiveGroups[$grp])' per $provName EXCLUSIVE_FIELDS")
+                            [void]$script:CondSkips.Add("$ent $kr (all-any) -- '$ff' omitted: the combo declares it EXCLUSIVE with '$($usedExclusiveGroups[$grp])'")
                             continue
                         }
                         $usedExclusiveGroups[$grp] = $ff
