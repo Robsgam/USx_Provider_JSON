@@ -1,8 +1,8 @@
-﻿CA_eSUN -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
+CA_eSUN -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-09-02
-JSON version: v2.1
+JSON version: v2.2
 Live test: PARTIAL -- 25 logs captured 2026-09-02 across three driver runs (all PASS)
 
 v1.0 IS A FAITHFUL CAPTURE of the San Diego Sheriff live configuration, HAND BUILT BY
@@ -13,13 +13,13 @@ are derived from the emitted JSON, the committed logs and the accepted-divergenc
 AFS -- Person Entity
 ================================================================================
 
-  PurposeCodeNameLastAge -- Name [CONFIRMED] -- 1 log(s) at v1.0
+  PurposeCodeNameLastAge -- Name [PENDING] -- 1 log(s) at v1.0
     keyReference: PurposeCodeNameLastAge
     set[]: PurposeCode, NameFirst, NameLast, Age
     any[]: ORI, RegistrationState
       log: CA_eSUN_v1.0_PurposeCodeNameLastAge.txt
 
-  PurposeCodeNameLastBirthDate -- Name [CONFIRMED] -- 1 log(s) at v1.0
+  PurposeCodeNameLastBirthDate -- Name [PENDING] -- 1 log(s) at v1.0
     keyReference: PurposeCodeNameLastBirthDate
     set[]: PurposeCode, NameFirst, NameLast, BirthDate
     any[]: ORI
@@ -29,7 +29,7 @@ AFS -- Person Entity
 ArticleSingleQuery -- Article Entity
 ================================================================================
 
-  ArticleSerialNumber -- ArticleSerialNumber [CONFIRMED] -- 3 log(s) at v1.0
+  ArticleSerialNumber -- ArticleSerialNumber [PENDING] -- 3 log(s) at v1.0
     keyReference: ArticleSerialNumber
     set[]: PurposeCode, ArticleSerialNumber
     any[]: ArticleTypeCode, ArticleTypeCodeRemainder, ArticleBrand
@@ -41,14 +41,14 @@ ArticleSingleQuery -- Article Entity
 BoatQuery -- Boat Entity
 ================================================================================
 
-  PurposeCodeBoatHullIdNumber -- BoatHullIdNumber [CONFIRMED] -- 2 log(s) at v1.0
+  PurposeCodeBoatHullIdNumber -- BoatHullIdNumber [PENDING] -- 2 log(s) at v1.0
     keyReference: PurposeCodeBoatHullIdNumber
     set[]: PurposeCode, BoatHullIdNumber
     any[]: ORI, RegistrationState
       log: CA_eSUN_v1.0_PurposeCodeBoatHullIdNumber_af_RegistrationState.txt
       log: CA_eSUN_v1.0_PurposeCodeBoatHullIdNumber.txt
 
-  PurposeCodeRegistrationNumber -- RegistrationNumber [CONFIRMED] -- 2 log(s) at v1.0
+  PurposeCodeRegistrationNumber -- RegistrationNumber [PENDING] -- 2 log(s) at v1.0
     keyReference: PurposeCodeRegistrationNumber
     set[]: PurposeCode, RegistrationNumber
     any[]: ORI, RegistrationState
@@ -59,7 +59,7 @@ BoatQuery -- Boat Entity
 CAILojackQuery -- Vehicle Entity
 ================================================================================
 
-  LojackID -- LojackID [CONFIRMED] -- 1 log(s) at v1.0
+  LojackID -- LojackID [PENDING] -- 1 log(s) at v1.0
     keyReference: LojackID
     set[]: PurposeCode, LojackID
     any[]: ORI
@@ -79,7 +79,7 @@ DriverHistoryQuery -- Person Entity
     set[]: PurposeCode, OperatorLicenseNumber
     any[]: RegistrationState
 
-  KQOperatorLicenseNumberOut -- OperatorLicenseNumber [CONFIRMED] -- no log
+  KQOperatorLicenseNumberOut -- OperatorLicenseNumber [PENDING] -- no log
     keyReference: KQOperatorLicenseNumberOut
     set[]: PurposeCode, OperatorLicenseNumber, RegistrationState
     any[]: Attention, ORI
@@ -93,7 +93,7 @@ DriverHistoryQuery -- Person Entity
 DriverLicenseQuery -- Person Entity
 ================================================================================
 
-  DQNameBirthSexCodeOut -- BirthDate [CONFIRMED] -- no log
+  DQNameBirthSexCodeOut -- BirthDate [PENDING] -- no log
     keyReference: DQNameBirthSexCodeOut
     set[]: PurposeCode, NameFirst, NameLast, BirthDate, SexCode, RegistrationState
     any[]: ORI
@@ -103,13 +103,13 @@ DriverLicenseQuery -- Person Entity
     set[]: PurposeCode, OperatorLicenseNumber, RegistrationState
     any[]: ORI
 
-  L1NameIn -- Name [CONFIRMED] -- 1 log(s) at v1.0
+  L1NameIn -- Name [PENDING] -- 1 log(s) at v1.0
     keyReference: L1NameIn
     set[]: PurposeCode, NameFirst, NameLast
     any[]: RegistrationState
       log: CA_eSUN_v1.0_L1NameIn.txt
 
-  L1OperatorLicenseNumberIn -- OperatorLicenseNumber [CONFIRMED] -- 1 log(s) at v1.0
+  L1OperatorLicenseNumberIn -- OperatorLicenseNumber [PENDING] -- 1 log(s) at v1.0
     keyReference: L1OperatorLicenseNumberIn
     set[]: PurposeCode, OperatorLicenseNumber
     any[]: ORI, RegistrationState
@@ -129,7 +129,7 @@ DriverLicenseQuery -- Person Entity
 GunQuery -- Firearm Entity
 ================================================================================
 
-  PurposeCodeFirearmSerialNumber -- FirearmSerialNumber [CONFIRMED] -- 5 log(s) at v1.0
+  PurposeCodeFirearmSerialNumber -- FirearmSerialNumber [PENDING] -- 5 log(s) at v1.0
     keyReference: PurposeCodeFirearmSerialNumber
     set[]: PurposeCode, SerialNumber
     any[]: FirearmCaliber, FirearmMake, FirearmType, ORI
@@ -160,7 +160,7 @@ VehicleRegistrationQuery -- Vehicle Entity
     set[]: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     any[]: RegistrationState
 
-  IdentificationNumberInOut -- VehicleIdentificationNumber [CONFIRMED] -- 5 log(s) at v1.0
+  IdentificationNumberInOut -- VehicleIdentificationNumber [PENDING] -- 5 log(s) at v1.0
     keyReference: IdentificationNumberInOut
     set[]: PurposeCode, VehicleIdentificationNumber
     any[]: ORI, VehicleMakeCode, VehicleYear, RegistrationState
@@ -175,19 +175,19 @@ VehicleRegistrationQuery -- Vehicle Entity
     set[]: PurposeCode, NameFirst, NameLast
     any[]: ORI, AddressCity, AddressStreetNumber, RegistrationState
 
-  QVLicensePlateNumberIn -- LicensePlateNumber [CONFIRMED] -- 2 log(s) at v1.0
+  QVLicensePlateNumberIn -- LicensePlateNumber [PENDING] -- 2 log(s) at v1.0
     keyReference: QVLicensePlateNumberIn
     set[]: PurposeCode, LicensePlateNumber
     any[]: ORI, RegistrationState
       log: CA_eSUN_v1.0_QVLicensePlateNumberIn_af_RegistrationState.txt
       log: CA_eSUN_v1.0_QVLicensePlateNumberIn.txt
 
-  RQLicensePlateTypeYearOut -- LicensePlateNumber [CONFIRMED] -- no log
+  RQLicensePlateTypeYearOut -- LicensePlateNumber [PENDING] -- no log
     keyReference: RQLicensePlateTypeYearOut
     set[]: PurposeCode, LicensePlateNumber, RegistrationState
     any[]: ORI, LicensePlateYear, LicensePlateTypeCode
 
-  VPNameBirthDateIn -- BirthDate [CONFIRMED] -- 1 log(s) at v1.0
+  VPNameBirthDateIn -- BirthDate [PENDING] -- 1 log(s) at v1.0
     keyReference: VPNameBirthDateIn
     set[]: PurposeCode, NameFirst, NameLast, BirthDate
     any[]: ORI, RegistrationState

@@ -21,7 +21,7 @@ $ErrorActionPreference = 'Stop'
 $repo = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $repo = Split-Path $repo -Parent
 $src  = Join-Path $repo 'providers\CA_eSUN\docs\deliverables\CA_eSUN_v1.1_RADIOBUTTON.json'
-$dst  = Join-Path $repo 'providers\CA_eSUN\CA_eSUN_v2.1.json'
+$dst  = Join-Path $repo 'providers\CA_eSUN\CA_eSUN_v2.2.json'
 if (-not (Test-Path $src)) { throw "ABORT: v1.1 source not found at $src" }
 
 $j = Get-Content $src -Raw | ConvertFrom-Json
@@ -219,10 +219,70 @@ foreach ($b in $j.bundles) {
 Write-Output ("E. OriginatingAgencyORI declared as an AUTH (header) attribute on: {0} config(s)" -f $authAdded)
 if ($authAdded -eq 0) { throw "ABORT: expected to add the AUTH attribute, added none" }
 
+# ---- F. IDENTIFIER-PRIORITY GUARDRAILS (v2.2) -----------------------------------------------
+# Rob: "we need a guardrail fix for over filling the forms ... guardrails and priority combos",
+# then "build v2.2 with the guardrails".
+#
+# THE GAP: this provider had ZERO NOT_EXISTS conditions, so it had no identifier-priority
+# guardrails at all, and emit_test_plan generated NO guardrail tests (it derives them FROM
+# NOT_EXISTS). v2.1 governs an over-filled form by COMBO ORDER alone -- correct as far as it goes,
+# but ordering only decides between combos that BOTH match, and it is invisible to every gate that
+# reads conditions. The portfolio convention (11 providers) is an explicit NOT_EXISTS gate on the
+# WEAKER path: Plate > VIN > Name, OLN > Name, Hull > Reg, Serial > Name.
+#
+# ⚠️ THE RISK, STATED BEFORE BUILDING RATHER THAN DISCOVERED AFTER: most of these combos already
+# carry IN / NOT_EQUALS / EXCLUSIVE conditions, so adding NOT_EXISTS produces a MIXED array. The
+# documented poisoned-array model (QIDM_REFERENCE Sec 2a, _sim_helpers line 32) says any array
+# containing a value-comparison operator is disabled IN ITS ENTIRETY -- under which these
+# guardrails would be inert AND the existing State gating would break with them.
+# That model is already contradicted by live evidence on this provider: T9 (State blank) submits
+# and T10 (same fill + State=GA) does not, across five runs and three versions, which is only
+# possible if the IN condition is evaluated. But MIXED arrays specifically are UNPROVEN.
+# So the v2.2 sweep is the discriminating test, and it has a clear failure signature:
+#   guardrails work AND State gating still routes  -> mixed arrays are fine, convention adopted
+#   State gating stops routing (in-state combos fire out-of-state) -> mixing poisons; REVERT F
+$guardrails = @(
+  # entity/QIDM              keyRef                          field(s) that must be ABSENT
+  @('VehicleRegistrationQuery','IdentificationNumberInOut', @('LicensePlateNumber')),
+  @('VehicleRegistrationQuery','VPNameBirthDateIn',         @('LicensePlateNumber','VehicleIdentificationNumber')),
+  @('VehicleRegistrationQuery','NameAddressIn',             @('LicensePlateNumber','VehicleIdentificationNumber')),
+  @('GunQuery','PurposeCodeNameLastBirthDate',              @('SerialNumber')),
+  @('GunQuery','PurposeCodeNameLastAge',                    @('SerialNumber')),
+  @('DriverLicenseQuery','DQNameBirthSexCodeOut',           @('OperatorLicenseNumber')),
+  @('DriverLicenseQuery','VPBirthDateIn',                   @('OperatorLicenseNumber')),
+  @('DriverLicenseQuery','VPAgeIn',                         @('OperatorLicenseNumber')),
+  @('DriverLicenseQuery','L1NameIn',                        @('OperatorLicenseNumber')),
+  @('DriverHistoryQuery','KQName',                          @('OperatorLicenseNumber')),
+  @('DriverHistoryQuery','L1Name',                          @('OperatorLicenseNumber')),
+  @('BoatQuery','PurposeCodeRegistrationNumber',            @('BoatHullIdNumber'))
+)
+# AFS and ArticleSingleQuery are deliberately EXCLUDED: AFS is name-only (no stronger identifier to
+# outrank) and Article has a single identifier. A guardrail with nothing to defer to is noise.
+$gAdded = 0; $gCombos = 0
+foreach ($c in $q0) {
+  $short = "$($c.name)" -replace '^CA_eSUN_',''
+  foreach ($cb in @($c.combinations)) {
+    $rule = $guardrails | Where-Object { $_[0] -eq $short -and $_[1] -eq "$($cb.keyReference)" }
+    if (-not $rule) { continue }
+    $conds = @($cb.requirements.conditions | Where-Object { $_ })
+    $added = 0
+    foreach ($fld in $rule[2]) {
+      # Never duplicate an existing gate on the same field.
+      if ($conds | Where-Object { (@($_.field) -contains $fld) -and "$($_.operator)" -eq 'NOT_EXISTS' }) { continue }
+      $conds += [PSCustomObject]@{ field = @($fld); operator = 'NOT_EXISTS' }
+      $added++; $gAdded++
+    }
+    if ($added -gt 0) { $gCombos++ }
+    $cb.requirements.conditions = @($conds)
+  }
+}
+Write-Output ("F. identifier-priority guardrails added: {0} condition(s) across {1} combo(s)" -f $gAdded, $gCombos)
+if ($gAdded -eq 0) { throw "ABORT: expected to add guardrail conditions, added none" }
+
 # ---- version ------------------------------------------------------------------------------
 foreach ($b in $j.bundles) {
   if ("$($b.provider)" -eq 'CA_eSUN') {
-    $b.description = "Provider configuration for CA_eSUN v2.1 -- ENGINEERED LINE, separate from the San Diego Sheriff live v1.0/v1.1 line. Derived from v1.1: layout byte-identical, radio-group PurposeCode retained. QIDM-only fixes: OriginatingAgencyORI attribute removed (devdoc scopes it to entry/edit and on-behalf-of; proven identical to Authentication/ORI across 25 logs), combinations ordered most-specific-first, RQLicensePlateTypeYearOut requirements aligned to metadata, and OriginatingAgencyORI moved to the ConnectCIC HEADER as an AUTHENTICATION attribute per devdoc line 8 (it was reaching <Request> where no transaction metadata defines it)."
+    $b.description = "Provider configuration for CA_eSUN v2.2 -- ENGINEERED RADIOBUTTON LINE, separate from the San Diego Sheriff live v1.0/v1.1 line. Derived from v1.1: layout byte-identical, radio-group PurposeCode retained. QIDM-only fixes: OriginatingAgencyORI attribute removed (devdoc scopes it to entry/edit and on-behalf-of; proven identical to Authentication/ORI across 25 logs), combinations ordered most-specific-first, RQLicensePlateTypeYearOut requirements aligned to metadata, and OriginatingAgencyORI moved to the ConnectCIC HEADER as an AUTHENTICATION attribute per devdoc line 8 (it was reaching <Request> where no transaction metadata defines it), and identifier-priority guardrails added (Plate > VIN > Name, OLN > Name, Hull > Reg, Serial > Name) as NOT_EXISTS gates on the weaker path."
   }
 }
 
@@ -258,6 +318,25 @@ function Get-LayoutSig($o) {
   }
   return (($parts | Sort-Object) -join '')
 }
+# ---- DELIVERABLE COPY, NAMED FOR THE LINE ---------------------------------------------------
+# Rob: "all these jsons need to be saved and available in file form and the naming needs to include
+# radiobuttons in the name somewhere. this line will be distinct from the mainline which is not yet
+# built."
+# The ROOT filename cannot carry the token -- Get-ProviderRootJson matches
+# ^<PROVIDER>_v[\d.]+\.json$ EXACTLY, and any extra word makes every gate stop finding the provider.
+# So the token goes on the deliverable, which is the file that is actually handed over and imported,
+# and it is a byte-identical copy of the root. Every version of this line keeps its own copy: they
+# are not superseded by the next one, because the whole point is being able to hand over or compare
+# any of them.
+# \d+\.\d+ not [\d.]+ -- the greedy character class swallowed the dot before "json" and produced
+# CA_eSUN_v2.2._RADIOBUTTON.json on the first run.
+$ver = [regex]::Match((Split-Path $dst -Leaf), 'v(\d+\.\d+)').Groups[1].Value
+$deliv = Join-Path $repo "providers\CA_eSUN\docs\deliverables\CA_eSUN_v${ver}_RADIOBUTTON.json"
+Copy-Item $dst $deliv -Force
+$same = ((Get-FileHash $dst -Algorithm SHA256).Hash -eq (Get-FileHash $deliv -Algorithm SHA256).Hash)
+Write-Output ("deliverable: {0}  byte-identical to root: {1}" -f (Split-Path $deliv -Leaf), $same)
+if (-not $same) { throw "ABORT: deliverable copy differs from the root JSON" }
+
 $h0 = Get-LayoutSig (Get-Content $src -Raw | ConvertFrom-Json)
 $h1 = Get-LayoutSig $v
 # The ONLY sanctioned layout delta is change D: RegistrationState initialValue 'CA' -> ''.

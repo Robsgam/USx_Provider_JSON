@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_eSUN
-  Source: CA_eSUN_v2.1.json
-  Generated: 2026-09-02 17:13
+  Source: CA_eSUN_v2.2.json
+  Generated: 2026-09-02 23:39
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: CA_eSUN_v2.1
+ POST-BUILD VERIFICATION: CA_eSUN_v2.2
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -64,14 +64,7 @@ POST-BUILD VERIFICATION
   [WARN] Value-comparison conditions present (poisoned-array; inert on CommSys form path) -- redesign at rebuild: CA_eSUN_VehicleRegistrationQuery/RQLicensePlateTypeYearOut: NOT_IN; CA_eSUN_VehicleRegistrationQuery/4LicensePlateTypeIn: IN; CA_eSUN_VehicleRegistrationQuery/QVLicensePlateNumberIn: IN; CA_eSUN_VehicleRegistrationQuery/VPNameBirthDateIn: IN; CA_eSUN_VehicleRegistrationQuery/NameAddressIn: IN; CA_eSUN_DriverLicenseQuery/KQOperatorLicenseNumberOut: NOT_EQUALS; CA_eSUN_DriverLicenseQuery/L1OperatorLicenseNumberIn: IN; CA_eSUN_DriverLicenseQuery/DQNameBirthSexCodeOut: NOT_EQUALS; CA_eSUN_DriverLicenseQuery/VPBirthDateIn: IN; CA_eSUN_DriverLicenseQuery/VPAgeIn: IN; CA_eSUN_DriverLicenseQuery/L1NameIn: IN; CA_eSUN_DriverHistoryQuery/KQOperatorLicenseNumberOut: NOT_EQUALS; CA_eSUN_DriverHistoryQuery/KQOperatorLicenseNumberIn: IN; CA_eSUN_DriverHistoryQuery/KQName: NOT_EQUALS; CA_eSUN_DriverHistoryQuery/L1Name: IN; CA_eSUN_AFS/PurposeCodeNameLastAge: IN
 
 --- CHECK 10: Identifier-Priority Guardrail ---
-  [FAIL] QIDM 'CA_eSUN_VehicleRegistrationQuery' VIN combo 'IdentificationNumberInOut' missing LicensePlateNumber NOT_EXISTS (plate>VIN guardrail; plate+VIN co-entry will bleed VIN into plate XML)
-  [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' Name combo 'DQNameBirthSexCodeOut' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
-  [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' Name combo 'VPBirthDateIn' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
-  [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' Name combo 'VPAgeIn' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
-  [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' Name combo 'L1NameIn' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
-  [FAIL] QIDM 'CA_eSUN_DriverHistoryQuery' Name combo 'KQName' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
-  [FAIL] QIDM 'CA_eSUN_DriverHistoryQuery' Name combo 'L1Name' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
-  [FAIL] QIDM 'CA_eSUN_BoatQuery' Reg combo 'PurposeCodeRegistrationNumber' missing BoatHullIdNumber NOT_EXISTS (Hull>Reg guardrail; Hull+Reg co-entry will bleed RegistrationNumber into Hull XML)
+  [PASS] Identifier-priority guardrail satisfied on 4 identifier pair(s)
 
 --- CHECK 11: conditions[].field references a valid QIF sourceField ---
   [PASS] All conditions[].field values reference valid QIF fieldIds (no inert conditions)
@@ -102,7 +95,7 @@ POST-BUILD VERIFICATION
   [PASS] No duplicate targetField in any REQUEST QIDM (3 in response mappings -- INFO, see CHECK 15 header)
 
 ========================================
- VERIFICATION FAILED: 35 FAIL / 10 WARN / 8 PASS
+ VERIFICATION FAILED: 27 FAIL / 10 WARN / 9 PASS
 ========================================
 
 

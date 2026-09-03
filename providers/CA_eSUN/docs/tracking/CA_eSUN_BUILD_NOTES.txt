@@ -243,3 +243,33 @@ NOT CHANGED, DELIBERATELY:
   combos carrying it were dead. Now reachable, so v2.0's sweep can settle it.
   The 35 remaining verify failures and 11 wiring breaks need FORM controls
   (ArticleTypeCodeRemainder, Attention x2, 8 vehicle attrs on the Person QIDM) -- v3.
+
+================================================================================
+v2.2 -- 2026-09-02 -- IDENTIFIER-PRIORITY GUARDRAILS
+================================================================================
+CHANGED:
+  F. 14 NOT_EXISTS guardrail conditions across 12 combinations, enforcing the
+     portfolio identifier priority: Plate > VIN > Name (Vehicle), OLN > Name
+     (DriverLicense + DriverHistory), Serial > Name (Firearm), Hull > Reg (Boat).
+     AFS and ArticleSingleQuery excluded -- name-only and single-identifier
+     respectively, so a guardrail would have nothing to defer to.
+  Deliverable copies now emitted as CA_eSUN_v<X.Y>_RADIOBUTTON.json for every
+  version of this line, byte-identical to the root and hash-checked.
+REASON:
+  v2.1 had ZERO NOT_EXISTS conditions, so it had no identifier-priority guardrails
+  and emit_test_plan generated NO guardrail tests (it derives them FROM NOT_EXISTS).
+  Over-filled forms were governed by COMBO ORDER alone -- correct as far as it goes,
+  but ordering only decides between combos that both match and is invisible to every
+  gate that reads conditions.
+EFFECT (measured):
+  plan 41 -> 53 tests; kind=guardrail 0 -> 12
+  reachability 23 checked, all reachable   prefill-shadow 0 FAIL (41 pairs)
+  fidelity 27 branches / 0 UNDER / 0 OVER  validator 59P/7F/53W/2LIM (unchanged)
+  layout still identical to v1.1 apart from the 9 State defaults
+OPEN RISK -- THE SWEEP IS THE TEST:
+  Most guarded combos already carry IN / NOT_EQUALS / EXCLUSIVE conditions, so these
+  are MIXED condition arrays. The documented poisoned-array model says a mixed array
+  is disabled entirely, which would make the guardrails inert AND break the State
+  gating with them. That model is already contradicted here (T9 submits with State
+  blank, T10 does not with State=GA, five runs) but mixed arrays are UNPROVEN.
+  Failure signature to watch: an in-state combo firing on an out-of-state fill.
