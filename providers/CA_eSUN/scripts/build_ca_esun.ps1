@@ -337,6 +337,22 @@ $same = ((Get-FileHash $dst -Algorithm SHA256).Hash -eq (Get-FileHash $deliv -Al
 Write-Output ("deliverable: {0}  byte-identical to root: {1}" -f (Split-Path $deliv -Leaf), $same)
 if (-not $same) { throw "ABORT: deliverable copy differs from the root JSON" }
 
+# DROP IT WHERE THE OPERATOR ACTUALLY LOOKS. Rob went hunting for a built JSON twice -- "i don't see
+# that version anywhere?" and "i don't see that file name anywhere" -- because docs/deliverables/ is
+# three folders deep and is not a place anyone browses to. The import happens from the browser, so
+# the file belongs beside everything else that gets imported. Best-effort by design: a missing or
+# unwritable Downloads folder must never fail an otherwise good build.
+try {
+    $dl = Join-Path $env:USERPROFILE 'Downloads'
+    if (Test-Path $dl) {
+        $dlTarget = Join-Path $dl (Split-Path $deliv -Leaf)
+        Copy-Item $deliv $dlTarget -Force
+        Write-Output ("READY TO IMPORT -> {0}" -f $dlTarget)
+    }
+} catch {
+    Write-Output ("   (could not copy to Downloads -- not fatal: " + $_.Exception.Message + ")")
+}
+
 $h0 = Get-LayoutSig (Get-Content $src -Raw | ConvertFrom-Json)
 $h1 = Get-LayoutSig $v
 # The ONLY sanctioned layout delta is change D: RegistrationState initialValue 'CA' -> ''.

@@ -1,0 +1,74 @@
+﻿================================================================
+TEST LOG: CA_eSUN Vehicle CAILojackQuery
+Combo: LojackID (LojackID (auto))
+Date: 2026-09-03 08:29:15
+Result: PASS
+JSON Version: 2.2
+Entity Fingerprint: a053d3bb8bac074f934d9aec60524aae6aafd72a3cb0e7450de5a526e0385de9
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"LicensePlateYear":"2026","LojackID":"LJ1234567","PurposeCode":"Criminal Justice","VehicleYear":"2026"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M1KKFX7SREH19G9YZHGD1HQF">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <DeviceId>MK43RS</DeviceId>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>CAILojackQuery</MessageType>
+            <Id>01M1KKFX7SREH19G9YZHGD1HQF</Id>
+            <LojackIdentifier>LJ1234567</LojackIdentifier>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  DeviceId                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M1KKFX7SREH19G9YZHGD1HQF
+  LojackIdentifier               LJ1234567
+  CaRequestPurposeCode           C
+
+NOTES
+-----
+Automated capture (txId 01M1KKFX7SREH19G9YZHGD1HQF). kind=combo; anyField=; expectedKeyRef=LojackID; firedMessageType=CAILojackQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

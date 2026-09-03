@@ -1,0 +1,78 @@
+﻿================================================================
+TEST LOG: CA_eSUN Article ArticleSingleQuery
+Combo: ArticleSerialNumber_af_ArticleBrand (ArticleSerialNumber_af_ArticleBrand (auto))
+Date: 2026-09-03 08:28:51
+Result: PASS
+JSON Version: 2.2
+Entity Fingerprint: b54b20bd513c8cbc173f95f2e2773c71551ad7d6f024567274021c2de4035a02
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ArticleBrand":"SONY","ArticleSerialNumber":"ART99999","PurposeCode":"Criminal Justice"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M1KKQJQ1XHSY30FKZ0KMBV5T">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <DeviceId>MK43RS</DeviceId>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>ArticleSingleQuery</MessageType>
+            <Id>01M1KKQJQ1XHSY30FKZ0KMBV5T</Id>
+            <ArticleBrand>SONY</ArticleBrand>
+            <ArticleTypeCode />
+            <ArticleCategory />
+            <ArticleSerialNumber>ART99999</ArticleSerialNumber>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  DeviceId                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M1KKQJQ1XHSY30FKZ0KMBV5T
+  ArticleBrand                   SONY
+  ArticleSerialNumber            ART99999
+  CaRequestPurposeCode           C
+
+NOTES
+-----
+Automated capture (txId 01M1KKQJQ1XHSY30FKZ0KMBV5T). kind=any-field; anyField=ArticleBrand; expectedKeyRef=ArticleSerialNumber; firedMessageType=ArticleSingleQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

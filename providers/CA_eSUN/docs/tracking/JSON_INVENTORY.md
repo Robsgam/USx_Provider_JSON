@@ -16,7 +16,7 @@ baseline, replacing the devdoc+metadata-driven 2.x line built by this repo. See
 
 | File | Captured | Notes |
 |------|----------|-------|
-| CA_eSUN_v1.0_SDSO_BASELINE_2026-09-02.json | 2026-09-02 12:55 | **The verbatim tenant export**, SHA-verified byte-identical to the download. The working root JSON differs from it in exactly two mechanical ways: unwrapped from the `departmentBundle` export envelope (our validator rejects that shape outright), and the version stamped into the bundle description (required by the Versioning Policy; without it `reset_test_package` and log provenance both fail). |
+| CA_eSUN_v1.0_PRE_RADIOBUTTON_SDSO_BASELINE_2026-09-02.json | 2026-09-02 12:55 | **The verbatim tenant export**, SHA-verified byte-identical to the download. The working root JSON differs from it in exactly two mechanical ways: unwrapped from the `departmentBundle` export envelope (our validator rejects that shape outright), and the version stamped into the bundle description (required by the Versioning Policy; without it `reset_test_package` and log provenance both fail). |
 
 ## Version tracking for a HAND-BUILT provider
 

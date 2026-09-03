@@ -82,7 +82,7 @@ IMPORT ARTIFACT: docs/deliverables/CA_eSUN_v1.1_RADIOBUTTON.json -- byte-identic
 
 ORIGIN: not built by this repo's process. This is the configuration engineering hand-built and  
   that San Diego Sheriff actually runs, exported from the tenant on 2026-09-02 12:55.  
-VERBATIM BASELINE ARCHIVE: source/CA_eSUN_v1.0_SDSO_BASELINE_2026-09-02.json  
+VERBATIM BASELINE ARCHIVE: source/CA_eSUN_v1.0_PRE_RADIOBUTTON_SDSO_BASELINE_2026-09-02.json  
   SHA-verified byte-identical to the download. That file is the archive point and is never edited.  
 THE WORKING v1.0 DIFFERS FROM THE ARCHIVE IN EXACTLY TWO WAYS, both mechanical, both required:  
   1. UNWRAPPED. The download is a DEPARTMENT EXPORT: {departmentBundle:{bundles,behaviors},  
