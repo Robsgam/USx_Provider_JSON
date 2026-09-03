@@ -48,6 +48,10 @@ td.sb .num { color:#134DD1; font-weight:700; margin-right:2px; }
 td.sb .pre { font-family:Consolas,'Courier New',monospace; font-size:10px; color:#555;
              background:#f2f4f7; border:1px solid #dde3ea; border-radius:2px; padding:0 3px; }
 td.req { color:#7a1f1f; }
+/* "State - leave blank" on an in-state row. It sits in the Required cell because that is where the
+   officer looks for what to DO, but it is an instruction rather than a field to fill, so it gets its
+   own line and a quieter weight -- reading it as a fifth required field would be worse than silence. */
+td.req .blank { color:#555; font-style:italic; font-weight:normal; margin-top:1px; }
 td.opt { color:#3a5a3a; }
 thead th.req { color:#7a1f1f; }
 thead th.opt { color:#3a5a3a; }
@@ -61,17 +65,22 @@ footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777;
 <p class='howto'>Pick the row for what you want to <b>search by</b> and fill every <b class='rq'>Required</b> field &mdash; <b class='op'>Optional</b> ones only narrow it. Values in (parentheses) are already on the form. An <b>out-of-state</b> search requires a State; leave State blank to search in-state.</p>
 <section class='entity'><h2>Vehicle</h2>
 <table class='qt'><caption>Vehicle Registration</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='sb'><span class='num'>1.</span> Plate Number (in-state or out-of-state) <span class='pre'>ACVR</span></td><td class='req'>Badge <span class='pre'>(X)</span>, Plate Number</td><td class='opt'>Plate Year <span class='pre'>(2026)</span>, Plate Type <span class='pre'>(PC)</span>, State</td></tr>
-<tr><td class='sb'><span class='num'>2.</span> VIN (in-state or out-of-state) <span class='pre'>ACVRV</span></td><td class='req'>Badge <span class='pre'>(X)</span>, VIN</td><td class='opt'>State, Make, Year</td></tr>
+<tr><td class='sb'><span class='num'>1.</span> Plate Number (in-state) <span class='pre'>ACVR</span></td><td class='req'>Badge <span class='pre'>(X)</span>, Plate Number<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>Plate Year <span class='pre'>(2026)</span>, Plate Type <span class='pre'>(PC)</span></td></tr>
+<tr><td class='sb'><span class='num'>2.</span> Plate Number (out-of-state) <span class='pre'>ACVR</span></td><td class='req'>Badge <span class='pre'>(X)</span>, Plate Number, State</td><td class='opt'>Plate Year <span class='pre'>(2026)</span>, Plate Type <span class='pre'>(PC)</span></td></tr>
+<tr><td class='sb'><span class='num'>3.</span> VIN (in-state) <span class='pre'>ACVRV</span></td><td class='req'>Badge <span class='pre'>(X)</span>, VIN<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>Make, Year</td></tr>
+<tr><td class='sb'><span class='num'>4.</span> VIN (out-of-state) <span class='pre'>ACVRV</span></td><td class='req'>Badge <span class='pre'>(X)</span>, VIN, State</td><td class='opt'>Make, Year</td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Person</h2>
 <table class='qt'><caption>Driver License</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='sb'><span class='num'>1.</span> Name (out-of-state) <span class='pre'>ACWL</span></td><td class='req'>Badge <span class='pre'>(X)</span>, Date of Birth, Last Name, First Name, Sex</td><td class='opt'>Middle Name, Suffix, State</td></tr>
-<tr><td class='sb'><span class='num'>2.</span> Name (in-state) <span class='pre'>DQPN</span></td><td class='req'>Badge <span class='pre'>(X)</span>, NCIC Image, Last Name, First Name, Requestor <span class='pre'>(X)</span></td><td class='opt'>Date of Birth, Sex, Middle Name, Suffix</td></tr>
-<tr><td class='sb'><span class='num'>3.</span> OLN (in-state) <span class='pre'>DQP</span></td><td class='req'>Badge <span class='pre'>(X)</span>, NCIC Image, OLN, Requestor <span class='pre'>(X)</span></td><td class='opt'>&mdash;</td></tr>
-<tr><td class='sb'><span class='num'>4.</span> Name (in-state or out-of-state) <span class='pre'>DQN</span></td><td class='req'>Last Name, First Name</td><td class='opt'>Date of Birth, Sex, Badge <span class='pre'>(X)</span>, Middle Name, Suffix, State</td></tr>
-<tr><td class='sb'><span class='num'>5.</span> OLN (on its own) <span class='pre'>DQ</span></td><td class='req'>OLN</td><td class='opt'>State</td></tr>
+<tr><td class='sb'><span class='num'>1.</span> Name (in-state) <span class='pre'>ACWL</span></td><td class='req'>Badge <span class='pre'>(X)</span>, Date of Birth, Last Name, First Name, Sex<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>Middle Name, Suffix</td></tr>
+<tr><td class='sb'><span class='num'>2.</span> Name (out-of-state) <span class='pre'>ACWL</span></td><td class='req'>Badge <span class='pre'>(X)</span>, Date of Birth, Last Name, First Name, Sex, State</td><td class='opt'>Middle Name, Suffix</td></tr>
+<tr><td class='sb'><span class='num'>3.</span> Name (in-state) <span class='pre'>DQPN</span></td><td class='req'>Badge <span class='pre'>(X)</span>, NCIC Image, Last Name, First Name, Requestor <span class='pre'>(X)</span></td><td class='opt'>Date of Birth, Sex, Middle Name, Suffix</td></tr>
+<tr><td class='sb'><span class='num'>4.</span> OLN (in-state) <span class='pre'>DQP</span></td><td class='req'>Badge <span class='pre'>(X)</span>, NCIC Image, OLN, Requestor <span class='pre'>(X)</span></td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'><span class='num'>5.</span> Name (in-state) <span class='pre'>DQN</span></td><td class='req'>Last Name, First Name<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>Date of Birth, Sex, Badge <span class='pre'>(X)</span>, Middle Name, Suffix</td></tr>
+<tr><td class='sb'><span class='num'>6.</span> Name (out-of-state) <span class='pre'>DQN</span></td><td class='req'>Last Name, First Name, State</td><td class='opt'>Date of Birth, Sex, Badge <span class='pre'>(X)</span>, Middle Name, Suffix</td></tr>
+<tr><td class='sb'><span class='num'>7.</span> OLN (in-state) <span class='pre'>DQ</span></td><td class='req'>OLN<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'><span class='num'>8.</span> OLN (out-of-state) <span class='pre'>DQ</span></td><td class='req'>OLN, State</td><td class='opt'>&mdash;</td></tr>
 </tbody></table>
 <table class='qt'><caption>Driver History</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
 <tr><td class='sb'><span class='num'>1.</span> Name <span class='pre'>KQH</span></td><td class='req'>State <span class='pre'>(AZ)</span>, Last Name, First Name, Date of Birth, Sex</td><td class='opt'>Attention, Middle Name, Suffix, Purpose Code</td></tr>
@@ -90,8 +99,8 @@ footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777;
 </section>
 <section class='entity'><h2>Boat</h2>
 <table class='qt'><caption>Boat</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='sb'><span class='num'>1.</span> Registration Number (out-of-state) <span class='pre'>ACQB</span></td><td class='req'>Badge <span class='pre'>(X)</span>, Registration Number</td><td class='opt'>Stolen Check <span class='pre'>(Y)</span></td></tr>
-<tr><td class='sb'><span class='num'>2.</span> Hull ID Number (out-of-state) <span class='pre'>ACQBH</span></td><td class='req'>Badge <span class='pre'>(X)</span>, Hull ID Number</td><td class='opt'>Registration Number, Stolen Check <span class='pre'>(Y)</span></td></tr>
+<tr><td class='sb'><span class='num'>1.</span> Registration Number (in-state) <span class='pre'>ACQB</span></td><td class='req'>Badge <span class='pre'>(X)</span>, Registration Number<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>Stolen Check <span class='pre'>(Y)</span></td></tr>
+<tr><td class='sb'><span class='num'>2.</span> Hull ID Number (in-state) <span class='pre'>ACQBH</span></td><td class='req'>Badge <span class='pre'>(X)</span>, Hull ID Number<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>Registration Number, Stolen Check <span class='pre'>(Y)</span></td></tr>
 <tr><td class='sb'><span class='num'>3.</span> Registration Number (out-of-state) <span class='pre'>BQ</span></td><td class='req'>Registration Number, State</td><td class='opt'>Badge <span class='pre'>(X)</span>, Stolen Check <span class='pre'>(Y)</span></td></tr>
 <tr><td class='sb'><span class='num'>4.</span> Hull ID Number (out-of-state) <span class='pre'>BQH</span></td><td class='req'>Hull ID Number, State</td><td class='opt'>Registration Number, Badge <span class='pre'>(X)</span>, Stolen Check <span class='pre'>(Y)</span></td></tr>
 </tbody></table>

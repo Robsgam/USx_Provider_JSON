@@ -48,6 +48,10 @@ td.sb .num { color:#134DD1; font-weight:700; margin-right:2px; }
 td.sb .pre { font-family:Consolas,'Courier New',monospace; font-size:10px; color:#555;
              background:#f2f4f7; border:1px solid #dde3ea; border-radius:2px; padding:0 3px; }
 td.req { color:#7a1f1f; }
+/* "State - leave blank" on an in-state row. It sits in the Required cell because that is where the
+   officer looks for what to DO, but it is an instruction rather than a field to fill, so it gets its
+   own line and a quieter weight -- reading it as a fifth required field would be worse than silence. */
+td.req .blank { color:#555; font-style:italic; font-weight:normal; margin-top:1px; }
 td.opt { color:#3a5a3a; }
 thead th.req { color:#7a1f1f; }
 thead th.opt { color:#3a5a3a; }
@@ -64,25 +68,27 @@ footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777;
 <tr><td class='sb'><span class='num'>1.</span> Plate Number (out-of-state) <span class='pre'>NLTS.RQ.P</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, Plate Number, Plate Type <span class='pre'>(PC)</span>, Plate Year <span class='pre'>(2026)</span>, State</td><td class='opt'>Vehicle Make, Vehicle Year</td></tr>
 <tr><td class='sb'><span class='num'>2.</span> Vehicle Identification Number (out-of-state) <span class='pre'>NLTS.RQ.V</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, Vehicle Identification Number, State</td><td class='opt'>Vehicle Make, Vehicle Year</td></tr>
 <tr><td class='sb'><span class='num'>3.</span> Name <span class='pre'>IN.VP</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, Last Name, First Name</td><td class='opt'>City, Street Number, Middle Name, Suffix</td></tr>
-<tr><td class='sb'><span class='num'>4.</span> Vehicle Identification Number (in-state) <span class='pre'>IA.QVK</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, Vehicle Identification Number</td><td class='opt'>Vehicle Make</td></tr>
-<tr><td class='sb'><span class='num'>5.</span> Plate Number (in-state) <span class='pre'>IA.QV</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, Plate Number</td><td class='opt'>Plate Type <span class='pre'>(PC)</span>, Vehicle Make, Vehicle Year</td></tr>
+<tr><td class='sb'><span class='num'>4.</span> Vehicle Identification Number (in-state) <span class='pre'>IA.QVK</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, Vehicle Identification Number<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>Vehicle Make</td></tr>
+<tr><td class='sb'><span class='num'>5.</span> Plate Number (in-state) <span class='pre'>IA.QV</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, Plate Number<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>Plate Type <span class='pre'>(PC)</span>, Vehicle Make, Vehicle Year</td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Person</h2>
 <table class='qt'><caption>Driver License</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
 <tr><td class='sb'><span class='num'>1.</span> Name (out-of-state) <span class='pre'>NLTS.DQ.N</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, Last Name, First Name, State</td><td class='opt'>Date of Birth, Sex, Middle Name, Suffix</td></tr>
 <tr><td class='sb'><span class='num'>2.</span> OLN (out-of-state) <span class='pre'>NLTS.DQ</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, OLN, State</td><td class='opt'>&mdash;</td></tr>
-<tr><td class='sb'><span class='num'>3.</span> Name (in-state) <span class='pre'>IR.QVC.N</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, Last Name, First Name, Sex</td><td class='opt'>Date of Birth, Age, County, Height, Race, Middle Name, Suffix</td></tr>
-<tr><td class='sb'><span class='num'>4.</span> OLN (in-state) <span class='pre'>IR.QVC.O</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, OLN, CII</td><td class='opt'>SSN, Age</td></tr>
-<tr><td class='sb'><span class='num'>5.</span> OLN (in-state) <span class='pre'>IR.QVC.OS</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, OLN, SSN</td><td class='opt'>Age</td></tr>
+<tr><td class='sb'><span class='num'>3.</span> Name (in-state) <span class='pre'>IR.QVC.N</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, Last Name, First Name, Sex<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>Date of Birth, Age, County, Height, Race, Middle Name, Suffix</td></tr>
+<tr><td class='sb'><span class='num'>4.</span> OLN (in-state) <span class='pre'>IR.QVC.O</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, OLN, CII<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>SSN, Age</td></tr>
+<tr><td class='sb'><span class='num'>5.</span> OLN (in-state) <span class='pre'>IR.QVC.OS</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, OLN, SSN<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>Age</td></tr>
 <tr><td class='sb'><span class='num'>6.</span> CII <span class='pre'>IR.QVC.C</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, CII</td><td class='opt'>SSN</td></tr>
 <tr><td class='sb'><span class='num'>7.</span> SSN <span class='pre'>IR.QVC.S</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, SSN</td><td class='opt'>CII, Age</td></tr>
-<tr><td class='sb'><span class='num'>8.</span> OLN (in-state) <span class='pre'>ID.L1</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, OLN</td><td class='opt'>&mdash;</td></tr>
-<tr><td class='sb'><span class='num'>9.</span> Name (in-state) <span class='pre'>IN.L1</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, Last Name, First Name</td><td class='opt'>Date of Birth, Middle Name, Suffix</td></tr>
+<tr><td class='sb'><span class='num'>8.</span> OLN (in-state) <span class='pre'>ID.L1</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, OLN<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'><span class='num'>9.</span> Name (in-state) <span class='pre'>IN.L1</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, Last Name, First Name<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>Date of Birth, Middle Name, Suffix</td></tr>
 </tbody></table>
 <table class='qt'><caption>Driver History</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='sb'><span class='num'>1.</span> Name (in-state or out-of-state) <span class='pre'>NLTS.KQ.N</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, Date of Birth, Last Name, First Name, Sex</td><td class='opt'>State, Attention, Middle Name, Suffix, Purpose Code <span class='pre'>(C)</span></td></tr>
-<tr><td class='sb'><span class='num'>2.</span> OLN (in-state or out-of-state) <span class='pre'>NLTS.KQ.O</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, OLN</td><td class='opt'>State, Attention, Purpose Code <span class='pre'>(C)</span></td></tr>
+<tr><td class='sb'><span class='num'>1.</span> Name (in-state) <span class='pre'>NLTS.KQ.N</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, Date of Birth, Last Name, First Name, Sex<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>Attention, Middle Name, Suffix, Purpose Code <span class='pre'>(C)</span></td></tr>
+<tr><td class='sb'><span class='num'>2.</span> Name (out-of-state) <span class='pre'>NLTS.KQ.N</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, Date of Birth, Last Name, First Name, Sex, State</td><td class='opt'>Attention, Middle Name, Suffix, Purpose Code <span class='pre'>(C)</span></td></tr>
+<tr><td class='sb'><span class='num'>3.</span> OLN (in-state) <span class='pre'>NLTS.KQ.O</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, OLN<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>Attention, Purpose Code <span class='pre'>(C)</span></td></tr>
+<tr><td class='sb'><span class='num'>4.</span> OLN (out-of-state) <span class='pre'>NLTS.KQ.O</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, OLN, State</td><td class='opt'>Attention, Purpose Code <span class='pre'>(C)</span></td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Firearm</h2>
@@ -103,9 +109,10 @@ footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777;
 <tr><td class='sb'><span class='num'>1.</span> Name <span class='pre'>NLTS.BQ.N</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, Last Name, First Name, Date of Birth, State</td><td class='opt'>Middle Name, Suffix</td></tr>
 <tr><td class='sb'><span class='num'>2.</span> Hull ID (out-of-state) <span class='pre'>NLTS.BQ.H</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, Hull ID, State</td><td class='opt'>&mdash;</td></tr>
 <tr><td class='sb'><span class='num'>3.</span> Registration Number (out-of-state) <span class='pre'>NLTS.BQ.R</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, Registration Number, State</td><td class='opt'>&mdash;</td></tr>
-<tr><td class='sb'><span class='num'>4.</span> Hull ID (in-state) <span class='pre'>IA.QB.H</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, Hull ID</td><td class='opt'>&mdash;</td></tr>
-<tr><td class='sb'><span class='num'>5.</span> Owner Applied Number (in-state or out-of-state) <span class='pre'>IA.QB.O</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, Owner Applied Number</td><td class='opt'>State</td></tr>
-<tr><td class='sb'><span class='num'>6.</span> Registration Number (in-state) <span class='pre'>IA.QB.R</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, Registration Number</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'><span class='num'>4.</span> Hull ID (in-state) <span class='pre'>IA.QB.H</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, Hull ID<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'><span class='num'>5.</span> Owner Applied Number (in-state) <span class='pre'>IA.QB.O</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, Owner Applied Number<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'><span class='num'>6.</span> Owner Applied Number (out-of-state) <span class='pre'>IA.QB.O</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, Owner Applied Number, State</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'><span class='num'>7.</span> Registration Number (in-state) <span class='pre'>IA.QB.R</span></td><td class='req'>CA Purpose Code <span class='pre'>(C)</span>, Registration Number<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>&mdash;</td></tr>
 </tbody></table>
 </section>
 

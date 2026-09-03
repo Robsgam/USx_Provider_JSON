@@ -48,6 +48,10 @@ td.sb .num { color:#134DD1; font-weight:700; margin-right:2px; }
 td.sb .pre { font-family:Consolas,'Courier New',monospace; font-size:10px; color:#555;
              background:#f2f4f7; border:1px solid #dde3ea; border-radius:2px; padding:0 3px; }
 td.req { color:#7a1f1f; }
+/* "State - leave blank" on an in-state row. It sits in the Required cell because that is where the
+   officer looks for what to DO, but it is an instruction rather than a field to fill, so it gets its
+   own line and a quieter weight -- reading it as a fifth required field would be worse than silence. */
+td.req .blank { color:#555; font-style:italic; font-weight:normal; margin-top:1px; }
 td.opt { color:#3a5a3a; }
 thead th.req { color:#7a1f1f; }
 thead th.opt { color:#3a5a3a; }
@@ -61,17 +65,17 @@ footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777;
 <p class='howto'>Pick the row for what you want to <b>search by</b> and fill every <b class='rq'>Required</b> field &mdash; <b class='op'>Optional</b> ones only narrow it. Values in (parentheses) are already on the form. An <b>out-of-state</b> search requires a State; leave State blank to search in-state.</p>
 <section class='entity'><h2>Vehicle</h2>
 <table class='qt'><caption>Vehicle Registration</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='sb'><span class='num'>1.</span> Decal Number <span class='pre'>FRQDecalNumber</span></td><td class='req'>Decal Number, Plate Year <span class='pre'>(2026)</span></td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Requestor</td></tr>
-<tr><td class='sb'><span class='num'>2.</span> Plate Number (in-state) <span class='pre'>FRQLicensePlateNumber</span></td><td class='req'>Plate Number</td><td class='opt'>Plate Year <span class='pre'>(2026)</span>, NCIC Image <span class='pre'>(Y)</span>, Requestor</td></tr>
-<tr><td class='sb'><span class='num'>3.</span> VIN (in-state) <span class='pre'>FRQVehicleIdentificationNumber</span></td><td class='req'>VIN</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Requestor, VIN Sequence Number</td></tr>
+<tr><td class='sb'><span class='num'>1.</span> Decal Number (in-state) <span class='pre'>FRQDecalNumber</span></td><td class='req'>Decal Number, Plate Year <span class='pre'>(2026)</span><div class='blank'>State &mdash; leave blank</div></td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Requestor</td></tr>
+<tr><td class='sb'><span class='num'>2.</span> Plate Number (in-state) <span class='pre'>FRQLicensePlateNumber</span></td><td class='req'>Plate Number<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>Plate Year <span class='pre'>(2026)</span>, NCIC Image <span class='pre'>(Y)</span>, Requestor</td></tr>
+<tr><td class='sb'><span class='num'>3.</span> VIN (in-state) <span class='pre'>FRQVehicleIdentificationNumber</span></td><td class='req'>VIN<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Requestor, VIN Sequence Number</td></tr>
 <tr><td class='sb'><span class='num'>4.</span> Plate Number (out-of-state) <span class='pre'>RQLicensePlateNumber</span></td><td class='req'>Plate Number, Plate Type <span class='pre'>(PC)</span>, Plate Year <span class='pre'>(2026)</span>, State</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Requestor</td></tr>
 <tr><td class='sb'><span class='num'>5.</span> VIN (with State) <span class='pre'>RQVehicleIdentificationNumber</span></td><td class='req'>VIN, State</td><td class='opt'>Vehicle Make, Vehicle Year, NCIC Image <span class='pre'>(Y)</span>, Requestor</td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Person</h2>
 <table class='qt'><caption>Driver License</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='sb'><span class='num'>1.</span> Name (in-state) <span class='pre'>FDQName</span></td><td class='req'>Date of Birth, Last Name, First Name, Sex</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Middle Name, Suffix</td></tr>
-<tr><td class='sb'><span class='num'>2.</span> OLN (in-state) <span class='pre'>FDQOperatorLicenseNumber</span></td><td class='req'>OLN</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span></td></tr>
+<tr><td class='sb'><span class='num'>1.</span> Name (in-state) <span class='pre'>FDQName</span></td><td class='req'>Date of Birth, Last Name, First Name, Sex<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Middle Name, Suffix</td></tr>
+<tr><td class='sb'><span class='num'>2.</span> OLN (in-state) <span class='pre'>FDQOperatorLicenseNumber</span></td><td class='req'>OLN<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>NCIC Image <span class='pre'>(Y)</span></td></tr>
 <tr><td class='sb'><span class='num'>3.</span> Name (with State) <span class='pre'>DQName</span></td><td class='req'>Date of Birth, Last Name, First Name, Sex, State</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Middle Name, Suffix</td></tr>
 <tr><td class='sb'><span class='num'>4.</span> OLN (out-of-state) <span class='pre'>DQOperatorLicenseNumber</span></td><td class='req'>OLN, State</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span></td></tr>
 </tbody></table>
@@ -97,10 +101,10 @@ footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777;
 </section>
 <section class='entity'><h2>Boat</h2>
 <table class='qt'><caption>Boat</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='sb'><span class='num'>1.</span> Hull ID Number (in-state) <span class='pre'>FBQBoatHullIdNumber</span></td><td class='req'>Hull ID Number</td><td class='opt'>Decal Number, Title/Lien Info, Registration Number, Requestor</td></tr>
-<tr><td class='sb'><span class='num'>2.</span> Decal Number <span class='pre'>FBQDecalNumber</span></td><td class='req'>Decal Number</td><td class='opt'>Hull ID Number, Title/Lien Info, Registration Number, Requestor</td></tr>
-<tr><td class='sb'><span class='num'>3.</span> Registration Number (in-state) <span class='pre'>FBQRegistrationNumber</span></td><td class='req'>Registration Number</td><td class='opt'>Decal Number, Title/Lien Info, Registration Number, Requestor</td></tr>
-<tr><td class='sb'><span class='num'>4.</span> Title/Lien Info <span class='pre'>FBQTitleLienInformation</span></td><td class='req'>Title/Lien Info</td><td class='opt'>Hull ID Number, Decal Number, Registration Number, Requestor</td></tr>
+<tr><td class='sb'><span class='num'>1.</span> Hull ID Number (in-state) <span class='pre'>FBQBoatHullIdNumber</span></td><td class='req'>Hull ID Number<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>Decal Number, Title/Lien Info, Registration Number, Requestor</td></tr>
+<tr><td class='sb'><span class='num'>2.</span> Decal Number (in-state) <span class='pre'>FBQDecalNumber</span></td><td class='req'>Decal Number<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>Hull ID Number, Title/Lien Info, Registration Number, Requestor</td></tr>
+<tr><td class='sb'><span class='num'>3.</span> Registration Number (in-state) <span class='pre'>FBQRegistrationNumber</span></td><td class='req'>Registration Number<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>Decal Number, Title/Lien Info, Registration Number, Requestor</td></tr>
+<tr><td class='sb'><span class='num'>4.</span> Title/Lien Info (in-state) <span class='pre'>FBQTitleLienInformation</span></td><td class='req'>Title/Lien Info<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>Hull ID Number, Decal Number, Registration Number, Requestor</td></tr>
 <tr><td class='sb'><span class='num'>5.</span> Name <span class='pre'>BQName</span></td><td class='req'>DOB, Last Name, First Name, State</td><td class='opt'>Hull ID Number, Registration Number, Middle Name, Suffix, Requestor</td></tr>
 <tr><td class='sb'><span class='num'>6.</span> Hull ID Number (out-of-state) <span class='pre'>BQBoatHullIdNumber</span></td><td class='req'>Hull ID Number, State</td><td class='opt'>Requestor</td></tr>
 <tr><td class='sb'><span class='num'>7.</span> Registration Number (out-of-state) <span class='pre'>BQRegistrationNumber</span></td><td class='req'>Registration Number, State</td><td class='opt'>Requestor</td></tr>

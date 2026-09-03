@@ -48,6 +48,10 @@ td.sb .num { color:#134DD1; font-weight:700; margin-right:2px; }
 td.sb .pre { font-family:Consolas,'Courier New',monospace; font-size:10px; color:#555;
              background:#f2f4f7; border:1px solid #dde3ea; border-radius:2px; padding:0 3px; }
 td.req { color:#7a1f1f; }
+/* "State - leave blank" on an in-state row. It sits in the Required cell because that is where the
+   officer looks for what to DO, but it is an instruction rather than a field to fill, so it gets its
+   own line and a quieter weight -- reading it as a fifth required field would be worse than silence. */
+td.req .blank { color:#555; font-style:italic; font-weight:normal; margin-top:1px; }
 td.opt { color:#3a5a3a; }
 thead th.req { color:#7a1f1f; }
 thead th.opt { color:#3a5a3a; }
@@ -63,20 +67,22 @@ footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777;
 <table class='qt'><caption>Vehicle Registration</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
 <tr><td class='sb'><span class='num'>1.</span> VIN (out-of-state) <span class='pre'>RVIN</span></td><td class='req'>VIN, State</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Vehicle Make, Vehicle Year</td></tr>
 <tr><td class='sb'><span class='num'>2.</span> Plate Number (out-of-state) <span class='pre'>RVEHOUT</span></td><td class='req'>Plate Number, State, Plate Type, Plate Year</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span></td></tr>
-<tr><td class='sb'><span class='num'>3.</span> Plate Number (in-state) <span class='pre'>RVEH</span></td><td class='req'>Plate Number</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Plate Type</td></tr>
-<tr><td class='sb'><span class='num'>4.</span> VIN (in-state) <span class='pre'>RCAR</span></td><td class='req'>VIN</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span></td></tr>
+<tr><td class='sb'><span class='num'>3.</span> Plate Number (in-state) <span class='pre'>RVEH</span></td><td class='req'>Plate Number<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Plate Type</td></tr>
+<tr><td class='sb'><span class='num'>4.</span> VIN (in-state) <span class='pre'>RCAR</span></td><td class='req'>VIN<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>NCIC Image <span class='pre'>(Y)</span></td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Person</h2>
 <table class='qt'><caption>Driver License</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
-<tr><td class='sb'><span class='num'>1.</span> Name (in-state or out-of-state) <span class='pre'>DLICN</span></td><td class='req'>Date of Birth, Last Name, First Name, Sex</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, State, Middle Name, Suffix</td></tr>
-<tr><td class='sb'><span class='num'>2.</span> OLN (in-state or out-of-state) <span class='pre'>DLIC</span></td><td class='req'>OLN</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, State</td></tr>
+<tr><td class='sb'><span class='num'>1.</span> Name (in-state) <span class='pre'>DLICN</span></td><td class='req'>Date of Birth, Last Name, First Name, Sex<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Middle Name, Suffix</td></tr>
+<tr><td class='sb'><span class='num'>2.</span> Name (out-of-state) <span class='pre'>DLICN</span></td><td class='req'>Date of Birth, Last Name, First Name, Sex, State</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Middle Name, Suffix</td></tr>
+<tr><td class='sb'><span class='num'>3.</span> OLN (in-state) <span class='pre'>DLIC</span></td><td class='req'>OLN<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>NCIC Image <span class='pre'>(Y)</span></td></tr>
+<tr><td class='sb'><span class='num'>4.</span> OLN (out-of-state) <span class='pre'>DLIC</span></td><td class='req'>OLN, State</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span></td></tr>
 </tbody></table>
 <table class='qt'><caption>Driver History</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
 <tr><td class='sb'><span class='num'>1.</span> Name (out-of-state) <span class='pre'>DALHOUT</span></td><td class='req'>Date of Birth, Last Name, First Name, Sex, Purpose Code <span class='pre'>(C)</span>, State</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Middle Name, Suffix, Transaction Type <span class='pre'>(DALL)</span>, Requestor</td></tr>
-<tr><td class='sb'><span class='num'>2.</span> Name (in-state) <span class='pre'>DALH</span></td><td class='req'>Date of Birth, Last Name, First Name, Sex</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Middle Name, Suffix, Transaction Type <span class='pre'>(DALL)</span></td></tr>
+<tr><td class='sb'><span class='num'>2.</span> Name (in-state) <span class='pre'>DALH</span></td><td class='req'>Date of Birth, Last Name, First Name, Sex<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Middle Name, Suffix, Transaction Type <span class='pre'>(DALL)</span></td></tr>
 <tr><td class='sb'><span class='num'>3.</span> OLN (out-of-state) <span class='pre'>DALLOUT</span></td><td class='req'>OLN, Purpose Code <span class='pre'>(C)</span>, State</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Transaction Type <span class='pre'>(DALL)</span>, Requestor</td></tr>
-<tr><td class='sb'><span class='num'>4.</span> OLN (in-state) <span class='pre'>DALL</span></td><td class='req'>OLN</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Transaction Type <span class='pre'>(DALL)</span></td></tr>
+<tr><td class='sb'><span class='num'>4.</span> OLN (in-state) <span class='pre'>DALL</span></td><td class='req'>OLN<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Transaction Type <span class='pre'>(DALL)</span></td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Firearm</h2>
@@ -93,8 +99,8 @@ footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777;
 <table class='qt'><caption>Boat</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Required fields</th><th class='opt'>Optional fields</th></tr></thead><tbody>
 <tr><td class='sb'><span class='num'>1.</span> Registration Number (out-of-state) <span class='pre'>BVEH</span></td><td class='req'>Registration Number, State</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span></td></tr>
 <tr><td class='sb'><span class='num'>2.</span> Hull ID Number (out-of-state) <span class='pre'>BVIN</span></td><td class='req'>Hull ID Number, State</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span></td></tr>
-<tr><td class='sb'><span class='num'>3.</span> Registration Number (in-state) <span class='pre'>RVEH</span></td><td class='req'>Registration Number</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span></td></tr>
-<tr><td class='sb'><span class='num'>4.</span> Hull ID Number (in-state) <span class='pre'>RCAR</span></td><td class='req'>Hull ID Number</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span></td></tr>
+<tr><td class='sb'><span class='num'>3.</span> Registration Number (in-state) <span class='pre'>RVEH</span></td><td class='req'>Registration Number<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>NCIC Image <span class='pre'>(Y)</span></td></tr>
+<tr><td class='sb'><span class='num'>4.</span> Hull ID Number (in-state) <span class='pre'>RCAR</span></td><td class='req'>Hull ID Number<div class='blank'>State &mdash; leave blank</div></td><td class='opt'>NCIC Image <span class='pre'>(Y)</span></td></tr>
 </tbody></table>
 </section>
 

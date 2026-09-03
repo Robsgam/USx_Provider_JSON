@@ -393,11 +393,72 @@ foreach ($ent in $order) {
             # fields then bracketed optionals. This table is that list, per query, in the same order.
             # Dropping the separate key column also buys back 20% of the page width for the field
             # lists, which is where the long content actually is.
-            $num = $rowCount + 1
             $keyBit = if ($mkey) { " <span class='pre'>$(Esc $mkey)</span>" } else { '' }
             if ($mkey -and -not $script:sampleKey) { $script:sampleKey = (Esc $mkey) }
-            [void]$rows.AppendLine("<tr><td class='sb'><span class='num'>$num.</span> $(Esc $pname)$(Esc $hint)$keyBit</td><td class='req'>$reqHtml</td><td class='opt'>$optHtml</td></tr>")
-            $rowCount++
+
+            # ================= IN-STATE / OUT-OF-STATE MADE EXPLICIT, 2026-09-03 =================
+            # Rob, third pass on IL: "i don't think you are getting this. lookin at person we need
+            # to show out of stte path that requires a state to make it meaningful on veh or person
+            # you need to say leave state blank for the instate entries."
+            #
+            # He is right and the two previous passes both stopped short. Promoting a condition-gated
+            # State into Required fixed the rows the CONFIG already forked (IL Z2.P vs Z5), but left
+            # the harder half untouched:
+            #   - a combo where State is merely OPTIONAL and ungated printed ONE row reading
+            #     "(in-state or out-of-state)" with State buried in the Optional list. IL Person had
+            #     exactly one OLN row and therefore NO out-of-state path an officer could see.
+            #   - an in-state row said nothing about State at all. Its absence from the row is what
+            #     makes it in-state, and absence is not something a reader notices.
+            #
+            # So a combo now emits ONE ROW PER STATE PATH, sharing the message key -- which is what
+            # Rob authorised at the start of this: "you can repeated teh message key. there is no
+            # expectation that every query has different message keys."
+            #   State EXISTS-gated      -> one row,  out-of-state, State in REQUIRED
+            #   State NOT_EXISTS-gated  -> one row,  in-state,     "State - leave blank"
+            #   State optional, ungated -> TWO rows, in-state AND out-of-state, same key
+            #   no State field at all   -> one row,  unchanged
+            #
+            # I REJECTED THIS SPLIT ONE COMMIT AGO AND THE REJECTION WAS WRONG. I measured it against
+            # audit_devdoc_combinations' item COUNTS, found it differed on 44 of 81 query blocks, and
+            # dropped it -- then concluded in the same commit that a row count can never be the
+            # coverage test, because the devdoc-to-combo mapping is many-to-many in both directions.
+            # Having discarded the test I should have re-opened the verdict it produced, and did not.
+            # The split is a USABILITY question and the guide is a usability artifact; coverage stays
+            # audit_devdoc_combinations', which is unaffected by anything rendered here.
+            $stateFld = $null
+            foreach ($f in (@($anyFields) + @($condRequired) + @($condForbidden))) {
+                if ("$f" -match '(?i)^(registration)?state') { $stateFld = "$f"; break }
+            }
+            $stateName = if ($stateFld) { FieldName $stateFld ([string]$q.targetEntity) } else { 'State' }
+            $blankNote = "<div class='blank'>$(Esc $stateName) &mdash; leave blank</div>"
+
+            $variants = @()
+            if ($condRequired | Where-Object { "$_" -match '(?i)^(registration)?state' }) {
+                # already forked out-of-state by its own condition; State is in $reqHtml already
+                $variants += ,@($hint, $reqHtml, $optHtml)
+            }
+            elseif ($condForbidden | Where-Object { "$_" -match '(?i)^(registration)?state' }) {
+                $variants += ,@(' (in-state)', "$reqHtml$blankNote", $optHtml)
+            }
+            elseif ($stateFld -and ($anyFields -contains $stateFld) -and -not $isStolen) {
+                # State is offered but nothing routes on it -> spell out BOTH paths.
+                # Out-of-state moves State into Required and drops it from Optional; in-state drops
+                # it from Optional too and says, in words, that leaving it empty is the point.
+                $optNoState = @($optParts | Where-Object { $_ -notmatch [regex]::Escape((Esc $stateName)) })
+                $optNoStateHtml = if ($optNoState.Count -gt 0) { $optNoState -join ', ' } else { '&mdash;' }
+                $reqPlusState = if ($reqParts.Count -gt 0) { (@($reqParts) + @(Esc $stateName)) -join ', ' } else { (Esc $stateName) }
+                $variants += ,@(' (in-state)',     "$reqHtml$blankNote", $optNoStateHtml)
+                $variants += ,@(' (out-of-state)', $reqPlusState,        $optNoStateHtml)
+            }
+            else {
+                $variants += ,@($hint, $reqHtml, $optHtml)
+            }
+
+            foreach ($v in $variants) {
+                $num = $rowCount + 1
+                [void]$rows.AppendLine("<tr><td class='sb'><span class='num'>$num.</span> $(Esc $pname)$(Esc $v[0])$keyBit</td><td class='req'>$($v[1])</td><td class='opt'>$($v[2])</td></tr>")
+                $rowCount++
+            }
         }
         if ($rowCount -eq 0) { continue }
 
@@ -466,6 +527,10 @@ td.sb .num { color:#134DD1; font-weight:700; margin-right:2px; }
 td.sb .pre { font-family:Consolas,'Courier New',monospace; font-size:10px; color:#555;
              background:#f2f4f7; border:1px solid #dde3ea; border-radius:2px; padding:0 3px; }
 td.req { color:#7a1f1f; }
+/* "State - leave blank" on an in-state row. It sits in the Required cell because that is where the
+   officer looks for what to DO, but it is an instruction rather than a field to fill, so it gets its
+   own line and a quieter weight -- reading it as a fifth required field would be worse than silence. */
+td.req .blank { color:#555; font-style:italic; font-weight:normal; margin-top:1px; }
 td.opt { color:#3a5a3a; }
 thead th.req { color:#7a1f1f; }
 thead th.opt { color:#3a5a3a; }
@@ -544,8 +609,23 @@ if ($PdfFile) {
         # louder, in fact, because that case ships a document that looks current and is not.
         $pdfBefore = if (Test-Path $pdfFull) { (Get-Item $pdfFull).LastWriteTimeUtc } else { [datetime]::MinValue }
         & $edge --headless=new --disable-gpu --no-pdf-header-footer --virtual-time-budget=3000 "--print-to-pdf=$pdfFull" $uri 2>$null
-        Start-Sleep -Milliseconds 1200
-        $pdfAfter = if (Test-Path $pdfFull) { (Get-Item $pdfFull).LastWriteTimeUtc } else { [datetime]::MinValue }
+        # POLL, DO NOT SAMPLE ONCE. The first cut of this guard slept 1200ms and then compared --
+        # and immediately reported all 5 providers in the first batch as STALE, which was the GUARD
+        # being wrong, not the PDFs. Edge returns before the file is flushed and the observed
+        # html->pdf gap ranges 1-4s (CA_CLETS took 3), so a single sample at 1.2s loses the race on
+        # the larger sheets. The OLD Test-Path check could not notice because a leftover file
+        # satisfied it either way -- the race was always there, masked.
+        # Waiting for the write to land is the whole point: a guard that cries wolf on every run is
+        # retired by whoever reads it, which would leave the real stale case undetected again.
+        $deadline = (Get-Date).AddSeconds(20)
+        $pdfAfter = [datetime]::MinValue
+        while ((Get-Date) -lt $deadline) {
+            Start-Sleep -Milliseconds 400
+            if (Test-Path $pdfFull) {
+                $pdfAfter = (Get-Item $pdfFull).LastWriteTimeUtc
+                if ($pdfAfter -gt $pdfBefore) { break }
+            }
+        }
         if ($pdfAfter -gt $pdfBefore) { Write-Host "Officer guide PDF: $pdfFull" -ForegroundColor Green }
         elseif ($pdfAfter -ne [datetime]::MinValue) {
             Write-Host "[WARN] PDF NOT REWRITTEN -- the file on disk is STALE and does not match the HTML just produced." -ForegroundColor Red
