@@ -68,6 +68,93 @@ $data = Get-Content $resolved -Raw -Encoding UTF8 | ConvertFrom-Json
 $providerName = [System.IO.Path]::GetFileNameWithoutExtension($resolved) -replace '_v[\d.]+$','' -replace '(?i)_(BASE|MC)$',''
 $genDate = Get-Date -Format 'yyyy-MM-dd'
 
+# ===================== THE MESSAGE KEY MUST BE THE METADATA'S, NOT OURS =====================
+# Rob 2026-09-03: "are you sing the message key from the metat data or the invented keys? i lok
+# at nj and do we have a full and a fulln for persons?"
+#
+# I was printing the BUILT keyReference, and it is mostly ours. Measured across the portfolio:
+# 269 of 381 built keyRefs (71%) do not exist in the metadata, and TX_TLETS is 0 of 20. So the
+# sheet was showing internal bookkeeping to a reader who would go looking for it in a state
+# manual. The column is labelled a MESSAGE KEY; that is the state's mnemonic or it is nothing.
+#
+# NJ IS THE EXAMPLE ROB PICKED AND IT IS THE CLEAREST ONE. Its metadata DriverLicenseQuery
+# declares ONE keyRef -- FULL -- with TWO primaryFields (Name, OperatorLicenseNumber). We build
+# FULL and FULLN. "FULLN" IS OURS: a keyRef is not a variant, and the platform needs distinct
+# keyReference values inside one QIDM, so the second variant had to be renamed. The honest sheet
+# shows FULL on BOTH Person rows -- which is precisely what Rob authorised earlier: "you can
+# repeated teh message key. there is no expectation that every query has different message keys."
+#
+# RESOLUTION REUSES THE CANONICAL MATCHER, it does not add a second heuristic (ENGINEERING_STANDARD
+# 4.4 -- five parsers were once written wrong in one session by re-deriving what existed).
+# _metadata_keyref_match.ps1 answers metadata->built, including each provider's own `built-as`
+# DECLARATIONS (NJ's RAND/FULL -> RANDFULL/RANDFULLN is declared, not guessable), so this inverts
+# it: ask every metadata keyRef which built combos it claims, and keep the reverse map.
+# A built key that no metadata keyRef claims falls back to the longest metadata keyRef that is a
+# prefix of it (RQV -> RQ, DQN -> DQ), and failing that prints unchanged -- never blank, and never
+# a fabricated key.
+$script:MetaKeyOf = @{}   # "<query>|<builtKeyRef>" -> metadata keyRef
+$script:MetaKeyStats = [pscustomobject]@{ Mapped = 0; Fallback = 0; Unresolved = 0; Source = 'none' }
+try {
+    $toolsDir = Split-Path -Parent $PSCommandPath
+    . (Join-Path $toolsDir '_resolve_provider_xml.ps1')
+    . (Join-Path $toolsDir '_metadata_parse.ps1')
+    . (Join-Path $toolsDir '_metadata_keyref_match.ps1')
+    $provDir = Split-Path -Parent $resolved
+    $xmlPath = Get-ProviderMetadataXml -ProvDir $provDir -Provider $providerName
+    if ($xmlPath) {
+        $metaTx = Get-MetadataTransactions -XmlPath $xmlPath
+        $decls  = Get-KeyRefDeclarations -JsonDir $provDir -ProviderName $providerName
+        $script:MetaKeyStats.Source = Split-Path $xmlPath -Leaf
+        foreach ($b in $data.bundles) {
+            foreach ($cfg in @($b.configurations)) {
+                if ("$($cfg.type)" -ne 'QUERYINPUTDATAMAPPING') { continue }
+                $qn = "$($cfg.query)"
+                if (-not $metaTx.ContainsKey($qn)) { continue }
+                $built = @(@($cfg.combinations) | ForEach-Object { "$($_.keyReference)" } | Where-Object { $_ })
+                if ($built.Count -eq 0) { continue }
+                $metaKeys = @()
+                foreach ($mc in @($metaTx[$qn].combos)) {
+                    $mk = "$($mc['keyReference'])"; if (-not $mk) { continue }
+                    $metaKeys += $mk
+                    $res = Resolve-XmlKeyRefBuild -XmlKeyRef $mk -XmlPrimaryField "$($mc['primaryField'])" `
+                             -Query $qn -BuiltKeyRefs $built -Declarations $decls
+                    if ($res.Status -eq 'built') {
+                        # COLLECT EVERY CLAIMANT, do not stop at the first. NJ_NJCJIS's registry
+                        # declares BOTH `RAND` and `FULL` as built-as RANDFULL/RANDFULLN, because
+                        # its devdoc defines four combinations across those two keyRefs with
+                        # identical Set/Any per identifier and NJ merged them into one physical
+                        # combo per identifier. First-wins printed "RAND" and silently dropped the
+                        # FULL half of a merge whose whole point is that it is both.
+                        foreach ($m in @($res.Matches)) {
+                            $kk = "$qn|$m"
+                            if (-not $script:MetaKeyOf.ContainsKey($kk)) { $script:MetaKeyOf[$kk] = @() }
+                            if ($script:MetaKeyOf[$kk] -notcontains $mk) { $script:MetaKeyOf[$kk] += $mk }
+                        }
+                    }
+                }
+                # prefix fallback for the keys the matcher did not claim
+                $metaKeys = @($metaKeys | Select-Object -Unique)
+                foreach ($bk in $built) {
+                    if ($script:MetaKeyOf.ContainsKey("$qn|$bk")) { continue }
+                    $stem = $bk -replace '\.[A-Za-z0-9]+$',''
+                    # Compare with punctuation normalised OUT of the metadata key. CA_SAN_LUIS_OBISPO's
+                    # metadata plate keyRef is literally `4#`, and a JSON keyRef cannot carry the '#',
+                    # so it is built as `4.P` -- the two differ only by a character the build had no
+                    # way to keep. This is a NORMALISATION, not a guess, and the longest-match rule
+                    # still protects it: stem '4' matches normalised '4#' and NOT '4V'.
+                    $cand = @($metaKeys |
+                        Where-Object { $n = ($_ -replace '[^A-Za-z0-9]',''); $n -and ($stem -like "$n*") } |
+                        Sort-Object { ($_ -replace '[^A-Za-z0-9]','').Length } -Descending) |
+                        Select-Object -First 1
+                    if ($cand) { $script:MetaKeyOf["$qn|$bk"] = @($cand) }
+                }
+            }
+        }
+    }
+} catch {
+    Write-Host "  [NOTE] metadata keyRefs unavailable ($($_.Exception.Message)) -- showing built keys." -ForegroundColor Yellow
+}
+
 $entitiesBundle = $data.bundles | Where-Object { $_.name -eq 'ENTITIES' } | Select-Object -First 1
 $providerBundle = $data.bundles | Where-Object { $_.name -ne 'ENTITIES' -and $_.name -ne 'RMS' } | Select-Object -First 1
 if (-not $entitiesBundle) { Write-Error "No ENTITIES bundle"; exit 1 }
@@ -381,7 +468,17 @@ foreach ($ent in $order) {
             # as before, and put the message key in the same place it is now.
             # The in/out distinction is NOT lost by this -- it stays where officers were already
             # reading it, in the Search by column, and $hint below is what puts it there.
-            $mkey = [string]$c.keyReference
+            # THE METADATA KEY WINS. $c.keyReference is the BUILT name and is ours 71% of the time
+            # (see the resolution block at the top of this file). Fall back to the built name only
+            # when nothing in the metadata claims it -- showing a real internal key beats showing
+            # nothing, and beats inventing one.
+            $builtKey = [string]$c.keyReference
+            $mkey = $builtKey
+            if ($script:MetaKeyOf.ContainsKey("$($q.query)|$builtKey")) {
+                $claims = @($script:MetaKeyOf["$($q.query)|$builtKey"])
+                $mkey = $claims -join ' + '
+                if ($mkey -eq $builtKey) { $script:MetaKeyStats.Mapped++ } else { $script:MetaKeyStats.Fallback++ }
+            } elseif ($builtKey) { $script:MetaKeyStats.Unresolved++ }
 
             # FIRST COLUMN = how the devdoc presents a combination: a NUMBER, the way you search,
             # and (folded in, not given its own column) the message key.
@@ -580,6 +677,12 @@ $(Esc $providerName) build $(Esc $guideVersion) &middot; Generated $genDate &mid
 # `-Encoding utf8` would ALSO be wrong under 5.1: it writes a BOM, and validate.ps1 rightly FAILs on one.
 [System.IO.File]::WriteAllText($OutFile, ($html -join "`r`n"), (New-Object System.Text.UTF8Encoding($false)))
 Write-Host "  BRANDING: $logoNote" -ForegroundColor DarkGray
+# Print the key-resolution denominator every run. A sheet whose message keys silently fell back to
+# our invented names looks EXACTLY like one showing the state's -- the failure this whole change
+# exists to fix -- so the run has to say which it did (ENGINEERING_STANDARD 4.3).
+$mks = $script:MetaKeyStats
+Write-Host ("  MESSAGE KEYS: {0} already metadata-exact, {1} resolved to the metadata key, {2} unresolved (showing the built key) -- source {3}" -f `
+    $mks.Mapped, $mks.Fallback, $mks.Unresolved, $mks.Source) -ForegroundColor $(if ($mks.Unresolved -gt 0) { 'Yellow' } else { 'Green' })
 Write-Host "Officer guide HTML: $OutFile" -ForegroundColor Green
 
 if ($PdfFile) {

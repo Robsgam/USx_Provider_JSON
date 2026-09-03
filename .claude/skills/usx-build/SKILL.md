@@ -372,6 +372,32 @@ own `set[]`; the sheet is reporting the config correctly.
   sentence under the key ("Vehicle Registration by Plate Number - out-of-state") — every word already
   on the page, since the query label is the caption and the in/out is the Search-by hint. The second
   kept a standalone key column, which cost width and split the row's identity across two cells.
+- **THE KEY SHOWN IS THE METADATA'S, NEVER OUR BUILT ONE.** Rob 2026-09-03: *"are you sing the
+  message key from the metat data or the invented keys?"* — and the honest answer was the invented
+  ones. **269 of 381 built keyRefs (71%) do not exist in the metadata; TX_TLETS is 0 of 20.** The
+  column is labelled a *message key*: that means the state's mnemonic, or it means nothing.
+  - **NJ is the clearest case.** Metadata `DriverLicenseQuery` declares **one** keyRef, `FULL`, with
+    two primaryFields (Name, OLN). We build `FULL` and `FULLN` — **`FULLN` is ours**, because a keyRef
+    is not a variant and the platform needs distinct `keyReference` values inside one QIDM. The sheet
+    shows `FULL` on both Person rows.
+  - **Resolution REUSES `_metadata_keyref_match.ps1`, inverted** — ask each metadata keyRef which
+    built combos it claims. Do not write a second heuristic (**§4.4**). That module also reads each
+    provider's `built-as` **declarations**, which is the only way NJ's `RAND`/`FULL` → `RANDFULL`
+    merge is knowable.
+  - **Collect EVERY claimant, not the first.** NJ declares *both* `RAND` and `FULL` as built-as
+    `RANDFULL`, so the row reads `RAND + FULL`. First-wins printed `RAND` and silently dropped half
+    of a merge whose whole point is that it is both.
+  - Fallback order after that: longest metadata keyRef that prefixes the built stem (`RQV`→`RQ`,
+    `DQN`→`DQ`), **with punctuation normalised out of the metadata key** — CA_SAN_LUIS_OBISPO's
+    metadata plate key is literally `4#` and a JSON keyRef cannot carry the `#`, so it builds as
+    `4.P`. That is a normalisation, not a guess.
+  - **Every run prints its denominator** (`MESSAGE KEYS: n exact, n resolved, n unresolved`) because a
+    sheet that silently fell back looks identical to one showing the state's key. **Read that line.**
+  - **Current: 112 exact / 265 resolved / 4 unresolved.** The 4 are NM_NMLETS_OFML `DL.NAME`/`DL.OLN`
+    (metadata key is literally `QUERY`) and NY_NYSPIN_EJUSTICE `DALH`/`DALHOUT` (metadata `DALL`).
+    No prefix rule can bridge those; the fix is a `built-as` row in **that provider's own registry, at
+    its own turn** — not a heuristic, and deliberately **not** a `flag_pending_fix`, which blocks
+    `enforce` and would present a cosmetic label as owed work on two tenant-verified providers.
 - **NEVER add a hand-written key dictionary** ("QV = DMV vehicle inquiry"). That is an unsourced
   claim that goes stale the first time a keyRef moves, and it is the class this repo refuses
   everywhere else. If a key needs explaining, the devdoc explains it.
