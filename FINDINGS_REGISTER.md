@@ -743,3 +743,47 @@ shares its sourceField with `State` and reaches the wire ZERO times across 62 lo
 the gate ambiguous. Take it at OCATS' own next rebuild: either remove it, or establish which
 transactions genuinely require `LicensePlateStateCode` rather than `State`. **Not a defect in the
 shipped request** — the wire is metadata-valid today.
+
+## CA_eSUN v2.2 cannot be driven by the v3.1 plan — 23 of 74 tests name controls it does not have
+
+**Opened 2026-09-04. Not a defect in either JSON. It decides HOW the radio fix gets proven.**
+
+Removing `PurposeCode`'s `initialValue='C'` made the driver's radio-selection path reachable for the
+first time (it had short-circuited on "already selected" in every test ever run). The natural next
+move — import v2.2 and drive it — hits a second wall: **v2.2 is a DELIVERABLE, and the only test
+plan on disk is the v3.1 MAINLINE's.** The two forms are not the same form.
+
+Measured (probe keyed on `targetEntity`, sanity-checked at 0 orphans against v3.1's own JSON):
+
+| Entity | drivable on v2.2 | blocked | why |
+|---|---|---|---|
+| Vehicle | 17 | 0 | — |
+| Boat | 5 | 0 | — |
+| Firearm | 9 | 8 | v2.2 uses the SDSO baseline names `SerialNumber` / `FirearmMake` / `FirearmCaliber` / `FirearmType`; v3.1 uses `GunSerialNumber` / `GunMake` / `GunCaliber` / `GunTypeCode` |
+| Person | 17 | 13 | v2.2 has **no Driver History card** — all 9 `*DH` controls are absent |
+| Article | 3 | 2 | `ArticleCategory` absent |
+| **TOTAL** | **51** | **23** | |
+
+**Driving the blocked 23 would reproduce the OH_LEADS defect exactly** — `field "undefined" did not
+fill (value="undefined")`, then Send stays DISABLED because a mandatory `set[]` field was never
+entered. That is the class `test_phase2` step 2 FILLABILITY now checks for, and it would not catch
+it here because that step is scoped to the ROOT json (v3.1), not to a deliverable.
+
+**THE RADIO FIX IS PROVABLE TODAY WITH NO PLAN WORK.** All five entities carry the `FormRadioGroup`
+in the FIRST_RESPONDER variant, and **Vehicle (17) + Boat (5) are 22 clean tests with zero blocked**.
+That exercises the now-live selection path 22 times on two entities. Do NOT regenerate or hand-edit
+a plan to chase the other 23 before that runs.
+
+**⚠️ A SEPARATE OBSERVATION, NOT AN ACTION.** `GunSerialNumber`, `GunMake` and `GunCaliber` are three
+of the 22 USx CAD-integration tokens; `SerialNumber` / `FirearmMake` / `FirearmCaliber` are not. So
+[Likely] a CAD-dispatched firearm query does not auto-populate on the SDSO baseline. **v1.0 is frozen
+and must stay recoverable as ingested, and Rob's ruling on v2.2 is explicit — "2.2 should make it
+workabnle but not change the forms layours for field positions".** This is for Rob to decide against
+the live SDSO tenant; it is not repo work and must not be "fixed" into v2.2.
+
+**Probe honesty:** my first two passes on this were wrong and neither reached the register. Reading
+`props.options` gave `opts=1` on every node — `@($null).Count` is 1 in PowerShell, and the radio has
+no static options at all (`attributeTypeId: DEX_INQUIRY_PURPOSE_CODE`, platform-populated, same as
+the select it replaced). Then a name-parsing regex missed `ENTTIY_Boat` — a typo inherited from the
+v1.0 baseline and correctly preserved — and reported all 5 Boat fills as orphans when Boat is 5/5
+clean. Key on `targetEntity`; never parse a config name.
