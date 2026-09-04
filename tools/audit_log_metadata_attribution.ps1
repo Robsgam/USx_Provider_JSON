@@ -139,7 +139,8 @@ foreach ($p in $targets) {
     # NY reuses RVEH and RCAR on both VehicleRegistrationQuery and BoatQuery, so a bare keyRef
     # lookup would silently read the wrong entity's combo.
     $json = Get-Content $jsonPath -Raw | ConvertFrom-Json
-    $labelOf = @{}   # "<query>|<keyRef>" -> @(declared required set, as metadata TARGETFIELD names)
+    $labelOf = @{}
+    $labelMultiOf = @{}   # "<query>|<keyRef>" -> @(declared required set, as metadata TARGETFIELD names)
     foreach ($b in $json.bundles) {
         foreach ($c in $b.configurations) {
             if ("$($c.type)" -ne 'QUERYINPUTDATAMAPPING') { continue }
@@ -147,19 +148,42 @@ foreach ($p in $targets) {
             # sourceField -> targetField, per QIDM. This is what un-suffixes the DH/CCH pools:
             # the attribute for sourceField 'OperatorLicenseNumberDH' has targetField
             # 'OperatorLicenseNumber', which is the metadata name. No string surgery required.
+            # ⚠️ ONE sourceField CAN FEED SEVERAL ATTRIBUTES. Fixed 2026-09-04.
+            # This was `$srcToTgt[$sf] = $a.targetField` -- a plain assignment, so when two
+            # attributes share a sourceField the LAST one enumerated silently won. CA_CLETS_OCATS
+            # maps RegistrationState to BOTH 'State' and 'LicensePlateStateCode'; the second
+            # overwrote the first, so RQ.P was reported as declaring LicensePlateStateCode -- a
+            # field that appears in ZERO of the provider's 62 wires -- and 6 logs were called
+            # DISAGREE on a build that is correct.
+            # It survived a full re-sweep, which is what proved it was the GATE and not the
+            # evidence: 6c 62/62, 6d 62/62 and 2i 62/62 all passed on the same logs, and the
+            # tool's own message listed three legal alternatives the wire DID satisfy.
+            # Now every targetField is kept, and a set[] entry is satisfied if ANY of its
+            # targetFields is. Where the ambiguity is what decides the verdict, the log is reported
+            # AMBIGUOUS -- never silently AGREE: a 1:many mapping is a real thing to look at (here
+            # it is a dead attribute), just not a wire defect.
             $srcToTgt = @{}
             foreach ($a in @($c.attributes)) {
-                foreach ($sf in @($a.sourceField)) { if ($sf) { $srcToTgt["$sf"] = "$($a.targetField)" } }
+                foreach ($sf in @($a.sourceField)) {
+                    if (-not $sf) { continue }
+                    if (-not $srcToTgt.ContainsKey("$sf")) { $srcToTgt["$sf"] = @() }
+                    if ($srcToTgt["$sf"] -notcontains "$($a.targetField)") { $srcToTgt["$sf"] += "$($a.targetField)" }
+                }
             }
             foreach ($cm in @($c.combinations)) {
                 $kr = if ($cm.keyReference) { "$($cm.keyReference)" } else { "$($cm.keyRef)" }
                 if (-not $kr) { continue }
-                $declared = @()
+                $declared = @(); $multi = @()
                 foreach ($sf in @($cm.requirements.set)) {
                     if (-not $sf) { continue }
-                    $declared += $(if ($srcToTgt.ContainsKey("$sf")) { $srcToTgt["$sf"] } else { "$sf" })
+                    if ($srcToTgt.ContainsKey("$sf")) {
+                        $tg = @($srcToTgt["$sf"])
+                        if ($tg.Count -gt 1) { $multi += "$sf -> $($tg -join '/')" }
+                        $declared += ,$tg          # keep the ALTERNATIVES for this slot
+                    } else { $declared += ,@("$sf") }
                 }
-                $labelOf["$q|$kr"] = @($declared | Sort-Object -Unique)
+                $labelOf["$q|$kr"]      = @($declared)
+                $labelMultiOf["$q|$kr"] = @($multi)
             }
         }
     }
@@ -233,7 +257,30 @@ foreach ($p in $targets) {
             $findings += "[NO-LABEL ] $p $rel [$mt]: filename combo '$named' matches NO built combination of this query -- the log cannot be attributed"
             continue
         }
-        $declared = @($labelOf["$mt|$named"])
+        # FLATTEN THE PER-SLOT ALTERNATIVES AGAINST THIS WIRE. Each slot is the set of targetFields
+        # its sourceField feeds (usually one). Where a slot offers several, choose the one the wire
+        # actually carries -- that is the attribute the platform emitted, and any other choice
+        # compares the combo against a field it never sends. Falls back to the first alternative so
+        # a slot the wire does not carry still reports as unsatisfied rather than vanishing.
+        $declared = @()
+        foreach ($slot in @($labelOf["$mt|$named"])) {
+            $alts = @($slot)
+            if ($alts.Count -le 1) { $declared += "$($alts[0])"; continue }
+            $picked = $null
+            foreach ($alt in $alts) {
+                foreach ($pf3 in $present) { if (Test-MetaFieldEquiv $pf3 $alt) { $picked = $alt; break } }
+                if ($picked) { break }
+            }
+            $declared += $(if ($picked) { $picked } else { "$($alts[0])" })
+        }
+        # RESTORE THE UNIQUE-SORT THE ORIGINAL HAD. Dropping it moved 27 OCATS logs from AGREE to
+        # AMBIGUOUS on the first attempt: Test-SetEquiv compares COUNTS first, so a duplicate slot
+        # (two sourceFields resolving to the same targetField) inflates the set and no alternative
+        # can ever equal it. The 6->0 DISAGREE looked like success while 27 correct AGREEs had
+        # silently become AMBIGUOUS -- a fix that moves a number the right way while moving another
+        # the wrong way is not a fix, and only the second number showed it.
+        $declared = @($declared | Sort-Object -Unique)
+        $multiSlots = @($labelMultiOf["$mt|$named"])
 
         # Does the FILED combo's declared required set equal a metadata alternative the WIRE
         # satisfies? Set equality modulo the shared field-equivalence rule (State<->RegistrationState,

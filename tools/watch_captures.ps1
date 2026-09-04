@@ -144,8 +144,22 @@ function Import-CaptureFile($path, $label) {
 
 # Startup catch-up sweep -- see header comment. Only runs if files already exist; harmless
 # (no-op) on a clean start.
+# ⚠️ SORT BY WRITE TIME. Added 2026-09-04, on a live queue that was about to demonstrate it.
+# This enumeration was UNSORTED, so it processed in directory order -- and Chrome's duplicate-name
+# suffix makes "usx_picklists_X (1).json" sort BEFORE "usx_picklists_X.json" (space 0x20 < dot 0x2E).
+# When the "(1)" copy is the NEWER capture, the older one is therefore imported LAST and overwrites
+# it. That is precisely the defect import_picklists.ps1:44-62 was hardened against on 2026-09-01
+# after a stale CA_CLETS_OCATS Article capture destroyed a verified one -- the CAPTURE path simply
+# never got the same guard, and CLAUDE.md mitigated it with a manual instruction ("clear Downloads
+# before starting a watcher") instead of a fix.
+# It was live at the moment this was written: the queue held Vehicle.json (13:23) and
+# Vehicle (1).json (13:39) simultaneously.
+# ORDERING ONLY -- this must NEVER become `Select-Object -Last 1`. The loop below deliberately
+# imports EVERY non-empty file, because a largest-only rule discarded 4 of 5 distinct NJ batches on
+# 2026-07-21. Fixing the order must not reintroduce a selection.
 $preExisting = @(Get-ChildItem -Path $downloads -Filter 'usx_*.json' -File -ErrorAction SilentlyContinue |
-    Where-Object { $_.Name -notlike '*.unmatched*' })
+    Where-Object { $_.Name -notlike '*.unmatched*' } |
+    Sort-Object LastWriteTime)
 # NOTE: exclude relabel's own audit sidecars ('<file>.unmatched.json') -- they still start with
 # 'usx_' so they match the watch filter, and re-sweeping one re-drops it (0 new) AND spawns a
 # deeper '.unmatched.unmatched.json' each pass (self-perpetuating chain, TX v4.8 run 2026-07-27).

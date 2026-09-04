@@ -16,6 +16,7 @@
 #>
 param(
     [switch]$SkipPoison,
+    [switch]$Strict,
     [string]$OutFile
 )
 $ErrorActionPreference = "Stop"
@@ -213,6 +214,45 @@ try {
         ForEach-Object { Emit ("  " + $_.TrimEnd()) }
 } catch { Emit "  [WARN] audit_buildnotes_fidelity.ps1 failed: $($_.Exception.Message)" }
 
+# ══════════════════════════════════════════════════════════════════════════════════════════════
+#  THREE GATES WIRED HERE 2026-09-04. Until today NO orchestrator ran them at all -- they existed,
+#  were documented in CLAUDE.md and the KB, and nothing executed them. That is the failure mode
+#  this repo keeps rediscovering: a gate nobody runs is indistinguishable from one that does not
+#  exist, and audit_log_metadata_attribution was born orphaned on 2026-09-02, two days old.
+#
+#  ADVISORY here, deliberately, and NOT wired into enforce: enforce is BLOCKING across all 20
+#  providers, and promoting three never-before-run gates straight to blocking is how a board goes
+#  red all at once with nothing actionable to do about it. Baselines first, blocking when the
+#  residue is zero -- the same staging PHASE 2w used.
+#
+#  audit_order_risk and audit_log_inflation had NO exit statement at all and were given one FIRST
+#  (see their tails). Wiring a gate that always returns 0 would have satisfied the new
+#  orphan-coverage check while proving nothing.
+# ══════════════════════════════════════════════════════════════════════════════════════════════
+Emit ""
+Emit "--- RESIDUAL ORDERING RISK (pairs only devdoc order decides; audit_order_risk.ps1) ---"
+try {
+    $orsk = & powershell -NoProfile -ExecutionPolicy Bypass -File "$tool\audit_order_risk.ps1" *>&1 | Out-String
+    ($orsk -split "`n" | Where-Object { $_ -match 'TOTALS:|NO-VERDICT' } | Select-Object -First 6) |
+        ForEach-Object { Emit ("  " + $_.TrimEnd()) }
+} catch { Emit "  [WARN] audit_order_risk.ps1 failed: $($_.Exception.Message)" }
+
+Emit ""
+Emit "--- COVERAGE INFLATION (are N logs really N distinct tests; audit_log_inflation.ps1) ---"
+try {
+    $infl = & powershell -NoProfile -ExecutionPolicy Bypass -File "$tool\audit_log_inflation.ps1" *>&1 | Out-String
+    ($infl -split "`n" | Where-Object { $_ -match 'EXAMINED:|LOGS COMPARED:|NO-VERDICT|SKIPPED:' } | Select-Object -First 6) |
+        ForEach-Object { Emit ("  " + $_.TrimEnd()) }
+} catch { Emit "  [WARN] audit_log_inflation.ps1 failed: $($_.Exception.Message)" }
+
+Emit ""
+Emit "--- WIRE-vs-METADATA ATTRIBUTION (which combo does the WIRE say this is; audit_log_metadata_attribution.ps1) ---"
+try {
+    $atr = & powershell -NoProfile -ExecutionPolicy Bypass -File "$tool\audit_log_metadata_attribution.ps1" -All *>&1 | Out-String
+    ($atr -split "`n" | Where-Object { $_ -match 'AGREE|DISAGREE|NO-LABEL|examined|NO-VERDICT' } | Select-Object -First 6) |
+        ForEach-Object { Emit ("  " + $_.TrimEnd()) }
+} catch { Emit "  [WARN] audit_log_metadata_attribution.ps1 failed: $($_.Exception.Message)" }
+
 Emit ""
 Emit "--- TOOL PORTABILITY (every shared gate must reach a verdict on every provider; audit_tool_portability.ps1) ---"
 try {
@@ -243,15 +283,48 @@ try {
 } catch { Emit "  [WARN] audit_provider_linkage.ps1 failed: $($_.Exception.Message)" }
 
 # --- 5. Verdict ----------------------------------------------------------------
+# ══════════════════════════════════════════════════════════════════════════════════════════════
+#  EXIT CODE, added 2026-09-04. THIS FILE HAD NONE -- zero `exit` statements in 251 lines, so it
+#  always returned 0. It computed `$fails` and NEVER USED IT, and that dead line was wrong anyway:
+#  the regex "\d+F\b" matches "0F", so a perfectly green board counted as a failure. Wiring the old
+#  variable to an exit code would have made doctor fail on success.
+#
+#  WHY IT MATTERS MORE THAN AN ORDINARY MISSING EXIT: doctor is the SOLE runner of 8 gates. Three of
+#  them were composed in here on 2026-08-02 with the note that they had been "ORPHANS that no
+#  orchestrator ran". They were moved from "nothing runs them" to "something that CANNOT FAIL runs
+#  them" -- by LAW 2 the same state, with the appearance of coverage.
+#
+#  DEFAULT STAYS EXIT 0. -Strict opts in. That is not timidity, it is LAW 2b: doctor's members
+#  include gates with known non-zero residue by design, and a dashboard that always exits 1 is one
+#  people stop running -- strictly worse than a dashboard they read. Promote sections to strict as
+#  their residue reaches zero.
+# ══════════════════════════════════════════════════════════════════════════════════════════════
+$blocking = @()
+foreach ($l in $lines) {
+    if ($l -match '^\s*\[FAIL\]') { $blocking += $l.Trim() }
+    if ($l -match '^\s*\[WARN\].*failed:') { $blocking += $l.Trim() }   # a crashed sub-gate is UNCHECKED, not a warning
+    if ($l -match '\[NO-VERDICT\]')        { $blocking += $l.Trim() }
+}
 Emit ""
 Emit "================================================================"
-$fails = ([regex]::Matches(($lines -join "`n"), "\d+F\b")).Count
+if ($blocking.Count -gt 0) {
+    Emit "  FINDINGS: $($blocking.Count) blocking line(s) across the sections above:"
+    $blocking | Select-Object -First 12 | ForEach-Object { Emit "    $_" }
+    if ($blocking.Count -gt 12) { Emit "    ... and $($blocking.Count - 12) more" }
+} else {
+    Emit "  FINDINGS: none -- every section reached a verdict and none of them failed."
+}
 Emit "  Review the scorecard for any non-zero FAIL/WARN, the poisoned sweep for"
 Emit "  exposure to fix at each provider's rebuild, and git for uncommitted work."
 Emit "  For the authoritative gate, run: enforce.ps1 -Provider <NAME>"
+if ($Strict) { Emit "  -Strict: exiting $(if ($blocking.Count) { 1 } else { 0 })" }
+else         { Emit "  (dashboard mode -- always exits 0. Use -Strict to gate on the findings above.)" }
 Emit "================================================================"
 
 if ($OutFile) {
     $lines -join "`r`n" | Set-Content -Path $OutFile -Encoding UTF8
     Write-Host "`n  Saved: $OutFile" -ForegroundColor Green
 }
+
+if ($Strict -and $blocking.Count -gt 0) { exit 1 }
+exit 0

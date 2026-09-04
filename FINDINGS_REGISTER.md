@@ -699,3 +699,47 @@ the difference matters:
 **Next action:** `usx-adjudicate` on one log (`RQ.P`), reading the raw
 `<Transaction name="VehicleRegistrationQuery">` `<Requirements>` for the `RQ` variants. Fix / register
 / dismiss — one decision, then apply it to the other five if and only if they share the cause.
+
+### ADJUDICATED 2026-09-04 — the 6 DISAGREE were a GATE ARTIFACT, not a build defect. Closed.
+
+**Verdict: the build is correct, the wire is correct, and the gate was wrong.** Reached only after a
+full 62-test re-sweep reproduced all six on brand-new captures — which is what ruled out stale
+evidence and pointed at the tool.
+
+**Root cause.** `audit_log_metadata_attribution` built its sourceField→targetField map with a plain
+assignment, so when ONE sourceField feeds SEVERAL attributes the last one enumerated silently won.
+CA_CLETS_OCATS maps `RegistrationState` to **both**:
+
+```
+attr State                  source=[RegistrationState] -> target 'State'
+attr LicensePlateStateCode  source=[RegistrationState] -> target 'LicensePlateStateCode'
+```
+
+`LicensePlateStateCode` is declared second, so `RQ.P` was reported as requiring it — a field that
+appears in **0 of the provider's 62 wires** (`<State>` appears in 12). The gate compared the combo
+against a field the platform never emits, and called six correct logs wrong.
+
+**Corroboration that it was the gate, not the evidence:** on the same logs, 6c content 62/62,
+6d metadata 62/62 and 2i attribution 62/62 all PASSED, and the tool's own message listed three legal
+alternatives the wire DID satisfy.
+
+**Fix.** Keep every targetField per sourceField; at comparison time pick the alternative the WIRE
+actually carries. Where the ambiguity decides the verdict the log reports **AMBIGUOUS, never
+silently AGREE** — a 1:many mapping is a real thing to look at, just not a wire defect.
+
+| | before | after | accounted for |
+|---|---|---|---|
+| OCATS | AGREE 53 / DIS 6 / AMB 3 | 53 / **0** / **9** | the 6 moved to AMBIGUOUS |
+| Portfolio | 767 / 6 / 76 | **769** / **0** / **82** | +6 AMB, +2 AGREE from OCATS' 2 new logs |
+
+⚠️ **The first version of the fix was wrong and the DISAGREE count hid it.** It reported 6 → 0 while
+silently moving **27 correct AGREEs to AMBIGUOUS** (53 → 32), because I dropped the original's
+`Sort-Object -Unique` and `Test-SetEquiv` compares set COUNTS first. A fix that moves one number the
+right way while moving another the wrong way is not a fix — and only the second number showed it.
+
+**STILL OPEN, and it is the real finding underneath (LOW, not blocking):**
+`LicensePlateStateCode` on CA_CLETS_OCATS' `VehicleRegistrationQuery` is a **dead attribute** — it
+shares its sourceField with `State` and reaches the wire ZERO times across 62 logs. It is what made
+the gate ambiguous. Take it at OCATS' own next rebuild: either remove it, or establish which
+transactions genuinely require `LicensePlateStateCode` rather than `State`. **Not a defect in the
+shipped request** — the wire is metadata-valid today.
