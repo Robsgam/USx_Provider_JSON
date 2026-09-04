@@ -9,7 +9,7 @@ Covers: 20 providers in consolidated monorepo (all galvanized to single-JSON, Pa
 
 CURRENT STATUS: See CLAUDE.md provider table for versions, counts, and import status.
   Each provider JSON is standalone. CLAUDE.md and KB docs are the build authority.
-  Phase model: single-entity, single-card QIFs. Confirm all QIDMs before layout work.
+  Phase model: single JSON, MULTI-CARD from the start (CLAUDE.md "Build Model"; BUILD_RULES.txt Section 6).
   NCIC state pattern confirmed NJ + AZ. NIBRS sex confirmed NJ + AZ + FL.
   Avoid old NJ v3.x (split entity) and old NY v1.0-v1.21 (multi-form) as templates.
 
@@ -283,7 +283,7 @@ TOOLS
       7. Render tool correctness
       8. CLAUDE.md consistency
       9. Provider canonical structure (dirs, docs)
-      10. Report file completeness (all 10 reports per variant)
+      10. Report file completeness (the required report set per provider -- audit_repo.ps1 CATEGORY 10 owns the list; it was trimmed 2026-07-06 and "per variant" predates galvanization)
       11. Cross-provider JSON consistency (RMS autoSelect, AUTH keyRef, queryLabels)
       12. Version consistency (build script vs STATUS/SQVR/CLAUDE.md)
       13. BUILD_NOTES version coverage (current version has an entry)

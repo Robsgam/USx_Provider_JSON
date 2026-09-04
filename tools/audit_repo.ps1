@@ -126,9 +126,21 @@ $stepCount = Get-StepCount
 if ($stepCount -gt 0) {
     Info "build_report.ps1 defines $stepCount steps (non-release)"
 
+    # ⚠️ THE PATH MUST END IN \* WHEN USING -Include. Fixed 2026-09-04.
+    # `Get-ChildItem <dir> -File -Include '*.txt','*.md'` returns ZERO files -- PowerShell requires
+    # either a wildcard path or -Recurse for -Include to apply, and silently returns nothing
+    # otherwise. So this check has scanned ONLY CLAUDE.md since it was written: the entire
+    # knowledge-base (16 files) was never examined, and the check reported
+    #     [PASS] All doc references match step count (17) -- 0 confirmed
+    # -- a textbook vacuous pass, green because it compared nothing. The "0 confirmed" was printing
+    # the evidence of its own emptiness the whole time, which is exactly why the denominator is
+    # printed; nobody read it.
+    # Measured at the fix: 0 -> 16 files, surfacing exactly one real stale reference
+    # (knowledge-base/README.txt:286, "all 10 reports per variant" -- Category 10 requires 4 and
+    # "per variant" predates galvanization).
     $docsToCheck = @(
         "$repoRoot\CLAUDE.md"
-    ) + @(Get-ChildItem "$repoRoot\knowledge-base" -File -Include '*.txt','*.md' |
+    ) + @(Get-ChildItem "$repoRoot\knowledge-base\*" -File -Include '*.txt','*.md' |
           Where-Object { $_.FullName -notmatch $excludePattern } |
           ForEach-Object { $_.FullName })
 
@@ -164,6 +176,15 @@ if ($stepCount -gt 0) {
 
     if ($mismatches.Count -gt 0) {
         foreach ($mm in $mismatches) { Fail $mm }
+    } elseif ($confirmations -eq 0) {
+        # "FOUND NOTHING" IS NOT "NEVER LOOKED" (ENGINEERING_STANDARD 4.3). With zero references
+        # AND zero mismatches this check compared NOTHING, and saying "All doc references match"
+        # about an empty set is how it hid a stale README line behind a broken glob for months.
+        # This is deliberately a NOTE and not a FAIL: zero is the CORRECT state here, because the
+        # right fix for a duplicated count is to stop stating it in prose and point at the code
+        # instead -- which is what knowledge-base/README.txt:286 now does. A FAIL would punish the
+        # very de-duplication this repo asks for. The NOTE keeps the emptiness VISIBLE.
+        Info "step-count references: 0 found across $($docsToCheck.Count) doc(s) -- nothing to compare, so this check proved NOTHING about step-count drift"
     } else {
         Pass "All doc references match step count ($stepCount) -- $confirmations confirmed"
     }

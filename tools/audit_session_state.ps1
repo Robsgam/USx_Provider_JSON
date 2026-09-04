@@ -100,6 +100,65 @@ if ($lineCount -gt 120) {
     Emit "  [PASS] $lineCount lines -- still short enough to actually be read" 'Green'
 }
 
+# ══════════════════════════════════════════════════════════════════════════════════════════════
+#  SUPPRESSION CURRENCY -- is every "do not re-raise" claim still TRUE?
+#
+#  ADDED 2026-09-04, after a stale suppression cost a full planning cycle. SESSION_STATE said
+#  "4 providers carry [FLAG:plan-dedupe-vacuous-tests] ... CORRECTLY deferred ... Not work owed"
+#  while every one of those flags had been marked TAKEN AND DONE on 2026-08-31. That sentence was
+#  then quoted into a documentation audit, into an adversarial agent's analysis, and into an
+#  implementation plan as a HARD CONSTRAINT forbidding work that was already finished.
+#
+#  WHY THIS CLASS IS WORSE THAN AN ORDINARY STALE FACT, and why it needed its own check: the rest
+#  of this tool verifies claims that ASSERT something (a version, a date, a line count), and a
+#  wrong assertion eventually trips a gate. A DO-NOT-RE-RAISE asserts that something needs no
+#  attention -- so when it rots it produces NO finding anywhere, by construction. It is the only
+#  class of stale claim that gets quieter as it gets more wrong.
+#
+#  The check: every '[FLAG:<id>]' named in SESSION_STATE as deferred/not-owed is looked up in the
+#  provider PENDING_UPDATES.txt files. If the flag's own record says TAKEN / DONE / RETIRED /
+#  CLEARED, the suppression is stale -> FAIL, naming the flag. Prints its denominator; a run that
+#  compares zero flags says so rather than contributing silence to a PASS.
+# ══════════════════════════════════════════════════════════════════════════════════════════════
+$ssText = $txt
+# A line only CLAIMS a deferral if it asserts one NOW. Exclude lines that themselves record the
+# flag as resolved -- otherwise the check false-positives on its own correction, which is exactly
+# what happened on the first run: the corrected entry QUOTES the old wording ("correctly deferred",
+# "not work owed") while explaining that it was wrong, and the naive match read the quotation as a
+# live claim. A gate that cannot tell an assertion from a citation of one is not reading English,
+# it is grepping.
+$deferBlock = @($ssText -split "`n" | Where-Object {
+    $_ -match '\[FLAG:[^\]]+\]' -and
+    $_ -match '(?i)defer|not work owed|not owed|do not|correctly' -and
+    $_ -notmatch '(?i)\bis DONE\b|\bTAKEN\b|\bRETIRED\b|\bCLEARED\b|used to say|previously said|corrected'
+})
+$flagsChecked = 0; $flagsStale = 0
+foreach ($line in $deferBlock) {
+    foreach ($m in [regex]::Matches($line, '\[FLAG:([^\]]+)\]')) {
+        $flagId = $m.Groups[1].Value
+        $flagsChecked++
+        $done = @()
+        foreach ($pu in (Get-ChildItem $providersDir -Directory -ErrorAction SilentlyContinue)) {
+            $puFile = Join-Path $pu.FullName 'docs\tracking\PENDING_UPDATES.txt'
+            if (-not (Test-Path $puFile)) { continue }
+            foreach ($pl in (Get-Content $puFile)) {
+                if ($pl -match [regex]::Escape($flagId) -and $pl -match '(?i)TAKEN|DONE|RETIRED|CLEARED') {
+                    $done += $pu.Name
+                }
+            }
+        }
+        if ($done.Count -gt 0) {
+            Emit ("  [FAIL] SUPPRESSION STALE: SESSION_STATE calls [FLAG:$flagId] deferred/not-owed, but it is recorded TAKEN/DONE on: " + (($done | Select-Object -Unique) -join ', ')) 'Red'
+            $fail++; $flagsStale++
+        }
+    }
+}
+if ($flagsChecked -eq 0) {
+    Emit "  [NOTE] suppression currency: 0 '[FLAG:...]' deferral claims found in SESSION_STATE -- nothing compared" 'Yellow'
+} else {
+    Emit "  [INFO] suppression currency: $flagsChecked deferral claim(s) checked, $flagsStale stale"
+}
+
 Emit ""
 if ($fail -eq 0) { Emit "  [PASS] SESSION_STATE.md is consistent with the repo" 'Green' }
 else { Emit "  [FAIL] $fail stale claim(s) -- fix SESSION_STATE.md before it misleads the next session" 'Red' }

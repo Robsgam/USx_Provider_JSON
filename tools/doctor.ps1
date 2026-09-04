@@ -197,8 +197,14 @@ try {
 } catch { Emit "  [WARN] audit_registry_currency.ps1 failed: $($_.Exception.Message)" }
 
 # Same family as registry currency: a RECORD contradicting its ARTIFACT. Here the record is the
-# BUILD_NOTES entry and the artifact is the emitted JSON. Baseline 2026-08-03 is 14 FAIL of 14
-# comparable -- deliberately NOT in enforce until those are repaired, so watch it here.
+# BUILD_NOTES entry and the artifact is the emitted JSON.
+# ⚠️ CORRECTED 2026-09-04. This comment used to read "Baseline 2026-08-03 is 14 FAIL of 14
+# comparable -- deliberately NOT in enforce until those are repaired, so watch it here." BOTH
+# halves are now false: all 14 were repaired at their own rebuilds (re-measured 2026-08-24 at
+# 20 checked / 0 GENERIC / 0 FAIL), and the gate IS in enforce as PHASE 2u, BLOCKING
+# (enforce.ps1:1015). It lands at zero, which is why wiring it was safe.
+# This matters beyond tidiness: it is the comment someone reads when judging whether doctor can
+# safely be given an exit code, and it argued for a permanent red section that no longer exists.
 Emit ""
 Emit "--- BUILD_NOTES FIDELITY (a generic entry hiding a real change; audit_buildnotes_fidelity.ps1) ---"
 try {

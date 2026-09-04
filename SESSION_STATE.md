@@ -66,12 +66,9 @@ form, so the capture precedes CHOOSING TEST VALUES; that is why CA_VENTURA canno
 
 ## OFFICER GUIDES -- 20/20 CURRENT, 473 rows, 0 stale (2026-09-04)
 
-Convention in `usx-build` Step 4c. Rows enumerate devdoc-style; in-state and out-of-state are
-SEPARATE rows sharing a message key; the key shown is the METADATA's, not our built one (269 of 381
-built keyRefs are invented); in-state rows say "State - leave blank for <the home state>".
-`audit_guide_completeness` proves every combination is on a sheet: **381 combos / 92 split / 0
-DROPPED**, predicted == actual on all 20. Step 13 runs on EVERY build -- CLAUDE.md wrongly called it
-opt-in until 2026-09-04.
+Convention + rules: `usx-build` Step 4c. Rows enumerate devdoc-style; in/out-of-state are SEPARATE
+rows sharing a metadata message key; in-state rows name the home state. `audit_guide_completeness`:
+**381 combos / 92 split / 0 DROPPED**, predicted == actual on all 20. Step 13 runs on EVERY build.
 
 ## ROB'S CALLS, NOT MINE
 
@@ -93,8 +90,7 @@ opt-in until 2026-09-04.
   be forthcoming** (Rob 2026-09-03), so the second is unanswerable from evidence.
 - **CA_VENTURA hollow toggle**: `LicensePlateTypeCode` toggles to its own form default. Needs
   TEST_VALUE_OVERRIDES -- choose the value AFTER its picklist capture.
-- **5 providers owe the one-time picklist capture** + TX_TLETS_CCH (parked); OCATS captured 5/5 at v2.11.
-- **LIMITATION #41** (populated HOME state routes a local plate to NLETS) -- paused pending CommSys.
+- **LIMITATION #41** (HOME state routes a local plate to NLETS) -- paused pending CommSys. 5 providers owe the picklist capture.
 - **NCIC hit blocks CONFIG-PRESENT, NOT RENDERING-VERIFIED** on HI and TN.
 
 ## DO NOT RE-RAISE
@@ -104,8 +100,12 @@ opt-in until 2026-09-04.
   TN `RQ01` + name-component casing CLOSED 08-24.
 - **A keyRef NEVER reaches the wire, and neither does `primaryFieldReference`.** Before calling an
   identity-label difference a defect, ask whether the label ships.
-- **4 providers carry `[FLAG:plan-dedupe-vacuous-tests]`** (FL, HI, IL, NJ). CORRECTLY deferred --
-  regenerating their plans orphans their logs and drops them out of ALL-PASS. **Not work owed.**
+- **`[FLAG:plan-dedupe-vacuous-tests]` is DONE, not deferred** (FL, HI, IL, NJ, NY). TAKEN
+  2026-08-31: plans regenerated at the CURRENT version, unmatched logs archived to
+  `_archive_dedupe_v<ver>/`. `audit_log_inflation` reads 851 logs / 0 findings. This line used to say
+  "correctly deferred -- not work owed", and that stale claim was quoted into an audit, an agent's
+  analysis and a plan as a hard rule. **A stale DO-NOT-RE-RAISE suppresses real work invisibly** --
+  the section is now currency-checked by `audit_session_state`.
 - **Jira is HELD and lifts ONE PROVIDER AT A TIME.** No approval carries to the next provider.
 
 ## RULES I BROKE -- READ BEFORE EDITING
