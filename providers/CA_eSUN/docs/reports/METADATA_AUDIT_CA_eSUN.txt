@@ -1,21 +1,21 @@
 ﻿================================================================
   Build Report: CA_eSUN
-  Source: CA_eSUN_v3.0.json
-  Generated: 2026-09-04 09:02
+  Source: CA_eSUN_v3.1.json
+  Generated: 2026-09-04 10:08
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-09-04 09:02
+ Generated: 2026-09-04 10:08
 ============================================================
 
 ============================================================
  METADATA AUDIT: CA_eSUN
 ============================================================
   XML: CA_eSUN.xml
-  JSON: CA_eSUN_v3.0.json
+  JSON: CA_eSUN_v3.1.json
 
 --- CHECK 1: Query Coverage ---
   [PASS] ArticleSingleQuery: in XML and JSON
@@ -115,10 +115,10 @@ METADATA AUDIT
   [PASS]   keyRef QB: set field 'CaRequestPurposeCode' covered by QB.H,QB.R
   [PASS]   keyRef QB: set field 'BoatHullIdNumber' covered by QB.H,QB.R
   DriverHistoryQuery:
-  [PASS]   keyRef L1: set field 'CaRequestPurposeCode' covered by L1.O,L1.N
-  [PASS]   keyRef L1: set field 'Name' covered by L1.O,L1.N
-  [PASS]   keyRef L1: set field 'CaRequestPurposeCode' covered by L1.O,L1.N
-  [PASS]   keyRef L1: set field 'OperatorLicenseNumber' covered by L1.O,L1.N
+  [PASS]   keyRef L1: set field 'CaRequestPurposeCode' covered by L1.ODH,L1.NDH
+  [PASS]   keyRef L1: set field 'Name' covered by L1.ODH,L1.NDH
+  [PASS]   keyRef L1: set field 'CaRequestPurposeCode' covered by L1.ODH,L1.NDH
+  [PASS]   keyRef L1: set field 'OperatorLicenseNumber' covered by L1.ODH,L1.NDH
   [PASS]   keyRef KQ: set field 'CaRequestPurposeCode' covered by KQ.O,KQ.N
   [PASS]   keyRef KQ: set field 'Name' covered by KQ.O,KQ.N
   [PASS]   keyRef KQ: set field 'SexCode' covered by KQ.O,KQ.N
@@ -220,27 +220,31 @@ METADATA AUDIT
   [WARN] RegistrationNumber: QIF maxLength 10 > XML maxLength 8 (RegistrationNumber) -- server may reject
   [PASS] NameLastDH: maxLength 30 matches XML (Name)
   [PASS] NameFirstDH: maxLength 30 matches XML (Name)
+  [PASS] nameMiddleDH: maxLength 30 matches XML (Name)
   [PASS] OperatorLicenseNumberDH: maxLength 20 matches XML (OperatorLicenseNumber)
   [WARN] Age: QIF maxLength 3 > XML maxLength 2 (Age) -- server may reject
   [PASS] NameLast: maxLength 30 matches XML (Name)
   [PASS] NameFirst: maxLength 30 matches XML (Name)
+  [PASS] nameMiddle: maxLength 30 matches XML (Name)
   [PASS] OperatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
   [WARN] Age: QIF maxLength 3 > XML maxLength 2 (Age) -- server may reject
   [WARN] GunSerialNumber: QIF maxLength 20 > XML maxLength 14 (GunSerialNumber) -- server may reject
   [PASS] NameLast: maxLength 30 matches XML (Name)
   [PASS] NameFirst: maxLength 30 matches XML (Name)
+  [PASS] nameMiddle: maxLength 30 matches XML (Name)
   [WARN] AddressCity: QIF maxLength 20 > XML maxLength 13 (AddressCity) -- server may reject
   [WARN] AddressStreetNumber: QIF maxLength 10 > XML maxLength 3 (AddressStreetNumber) -- server may reject
   [PASS] LicensePlateNumber: maxLength 10 matches XML (LicensePlateNumber)
   [PASS] LicensePlateYear: maxLength 4 matches XML (LicensePlateYear)
   [PASS] NameLast: maxLength 30 matches XML (Name)
   [PASS] NameFirst: maxLength 30 matches XML (Name)
+  [PASS] nameMiddle: maxLength 30 matches XML (Name)
   [PASS] vehicleYear: maxLength 4 matches XML (VehicleYear)
 
 ============================================================
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 162 PASS / 0 FAIL / 6 WARN
+Total: 166 PASS / 0 FAIL / 6 WARN
 ============================================================
 

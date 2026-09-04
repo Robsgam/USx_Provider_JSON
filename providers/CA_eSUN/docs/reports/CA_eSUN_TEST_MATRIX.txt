@@ -1,4 +1,4 @@
-CA_eSUN v3.0 -- TEST MATRIX
+CA_eSUN v3.1 -- TEST MATRIX
 ==================================================
 Generated: 2026-09-04
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -7,30 +7,30 @@ Validator: unknown
 
 FORM FIELDS
 ----------------------------------------
-Vehicle (1 card, 12 fields):
+Vehicle (1 card, 14 fields):
   CARD_VEH (VEHICLE -- plate, VIN or registered owner (leave State blank for California)):
     ROW 1: PurposeCode [Sel DEX_INQUIRY_PURPOSE_CODE], LicensePlateNumber [Inp 10], RegistrationState [Sel STATE]
     ROW 2: LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC], LicensePlateYear [Inp 4]
     ROW 3: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
-    ROW 4: NameLast [Inp 30], NameFirst [Inp 30]
+    ROW 4: NameLast [Inp 30], NameFirst [Inp 30], nameMiddle [Inp 30], nameSuffix [Inp 5]
     ROW 5: AddressStreetNumber [Inp 10], AddressCity [Inp 20]
 
-Person (2 cards, 16 fields):
+Person (2 cards, 20 fields):
   CARD_DL (DRIVER LICENSE -- OLN, or name with a qualifier (leave State blank for California)):
     ROW 1: PurposeCode [Sel DEX_INQUIRY_PURPOSE_CODE], OperatorLicenseNumber [Inp 20], RegistrationState [Sel STATE]
-    ROW 2: NameLast [Inp 30], NameFirst [Inp 30]
+    ROW 2: NameLast [Inp 30], NameFirst [Inp 30], nameMiddle [Inp 30], nameSuffix [Inp 5]
     ROW 3: BirthDate [FormDate], Age [Inp 3], SexCode [Sel SEX]
   CARD_DH (DRIVER HISTORY -- separate query; fill these fields to run it):
     ROW 1: PurposeCodeDH [Sel DEX_INQUIRY_PURPOSE_CODE], OperatorLicenseNumberDH [Inp 20], RegistrationStateDH [Sel STATE]
-    ROW 2: NameLastDH [Inp 30], NameFirstDH [Inp 30]
+    ROW 2: NameLastDH [Inp 30], NameFirstDH [Inp 30], nameMiddleDH [Inp 30], nameSuffixDH [Inp 5]
     ROW 3: BirthDateDH [FormDate], SexCodeDH [Sel SEX]
     ROW 4: AttentionDH [Inp]
 
-Firearm (1 card, 10 fields):
+Firearm (1 card, 12 fields):
   CARD_FA (FIREARM -- serial number, or name with date of birth or age):
     ROW 1: PurposeCode [Sel DEX_INQUIRY_PURPOSE_CODE], GunSerialNumber [Inp 20]
     ROW 2: GunMake [Sel NCIC_FIREARM_MAKE/NCIC], GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], GunTypeCode [Sel NCIC_FIREARM_TYPE/NCIC]
-    ROW 3: NameLast [Inp 30], NameFirst [Inp 30]
+    ROW 3: NameLast [Inp 30], NameFirst [Inp 30], nameMiddle [Inp 30], nameSuffix [Inp 5]
     ROW 4: BirthDate [FormDate], Age [Inp 3], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
 
 Article (1 card, 5 fields):
@@ -47,7 +47,7 @@ QIDM SUMMARY (6 QIDMs, 23 combos)
 ----------------------------------------
   VehicleRegistrationQuery: 6 combos (RQ x2, QV x2, VP.N x1, 4.P x1), autoSelect=true
   DriverLicenseQuery: 5 combos (DQ x2, QW x1, L1.N x1, L1.O x1), autoSelect=true, deselects: [DH]
-  DriverHistoryQuery: 4 combos (KQ x2, L1.N x1, L1.O x1), deselects: [DL]
+  DriverHistoryQuery: 4 combos (KQ x2, L1.NDH x1, L1.ODH x1), deselects: [DL]
   GunQuery: 3 combos (QG x3), autoSelect=true
   ArticleSingleQuery: 1 combos (QA x1), autoSelect=true
   BoatQuery: 4 combos (BQ x2, QB x2), autoSelect=true
@@ -91,12 +91,12 @@ ENTITY 1: PERSON (22 tests -- 2 cards, 9 combos)
               Expected: DriverHistoryQuery fires (KQ.O)
 13  Person      KQ+.O              + AttentionDH, RegistrationStateDH [    ]
               Expected: any[] fields present in XML output.
-14  Person      L1.N+L1.N          PurposeCodeDH=C, NameLastDH=DOE, Name... [    ]
-              Expected: DriverHistoryQuery fires (L1.N)
-15  Person      L1.N+L1.N          + nameMiddleDH, nameSuffixDH    [    ]
+14  Person      L1.NDH+L1.NDH      PurposeCodeDH=C, NameLastDH=DOE, Name... [    ]
+              Expected: DriverHistoryQuery fires (L1.NDH)
+15  Person      L1.NDH+L1.NDH      + nameMiddleDH, nameSuffixDH    [    ]
               Expected: any[] fields present in XML output.
-16  Person      L1.O+L1.O          PurposeCodeDH=C, OperatorLicenseNumbe... [    ]
-              Expected: DriverHistoryQuery fires (L1.O)
+16  Person      L1.ODH+L1.ODH      PurposeCodeDH=C, OperatorLicenseNumbe... [    ]
+              Expected: DriverHistoryQuery fires (L1.ODH)
 17  Person      Guardrail: DQ.O>DQ.N  OperatorLicenseNumber=D999888777, Pur... [    ]
               Expected: DriverLicenseQuery fires (DQ.O). PurposeCode+LastName+FirstName+SexCode+DOB absent from XML.
 18  Person      Guardrail: DQ.O>QW.N  OperatorLicenseNumber=D999888777, Pur... [    ]
@@ -105,7 +105,7 @@ ENTITY 1: PERSON (22 tests -- 2 cards, 9 combos)
               Expected: DriverLicenseQuery fires (DQ.O). PurposeCode+LastName+FirstName absent from XML.
 20  Person      Guardrail: KQ.O>KQ.N  OperatorLicenseNumberDH=D999888777, P... [    ]
               Expected: DriverHistoryQuery fires (KQ.O). PurposeCodeDH+LastName+FirstName+SexCodeDH+DOB absent from XML.
-21  Person      Guardrail: KQ.O>L1.N  OperatorLicenseNumberDH=D999888777, P... [    ]
+21  Person      Guardrail: KQ.O>L1.NDH  OperatorLicenseNumberDH=D999888777, P... [    ]
               Expected: DriverHistoryQuery fires (KQ.O). PurposeCodeDH+LastName+FirstName absent from XML.
 22  Person      Deselect: DL deselects DH.            [    ]
               Fill both query fields. Check deselect behavior.
@@ -202,9 +202,9 @@ TOTAL: 55 tests
 COMBO COVERAGE (23/23):
   VehicleRegistrationQuery: 6/6 -- T23(RQ+.V), T25(RQ+.P), T27(QV+.V), T29(QV+.P), T30(VP.N+VP.N), T32(4.P+4.P)
   DriverLicenseQuery: 5/5 -- T1(DQ+.N), T3(DQ+.O), T5(QW+.N), T7(L1.N+L1.N), T9(L1.O+L1.O)
-  DriverHistoryQuery: 4/4 -- T10(KQ+.N), T12(KQ+.O), T14(L1.N+L1.N), T16(L1.O+L1.O)
+  DriverHistoryQuery: 4/4 -- T10(KQ+.N), T12(KQ+.O), T14(L1.NDH+L1.NDH), T16(L1.ODH+L1.ODH)
   GunQuery: 3/3 -- T45(B), T47(H.A), T49(H.B)
   ArticleSingleQuery: 1/1 -- T54(PurposeCode)
   BoatQuery: 4/4 -- T37(BQ+.R), T39(BQ+.H), T41(QB+.R), T42(QB+.H)
 
-IMPORT FILE: CA_eSUN_v3.0.json
+IMPORT FILE: CA_eSUN_v3.1.json

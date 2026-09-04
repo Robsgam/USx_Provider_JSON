@@ -1,16 +1,16 @@
 ﻿================================================================
   Build Report: CA_eSUN
-  Source: CA_eSUN_v1.0.json
-  Generated: 2026-09-02 14:40
+  Source: CA_eSUN_v3.1.json
+  Generated: 2026-09-04 10:06
 ================================================================
 RESPONSE SIMULATION
 ==================
 
 
 ========================================================================
-  CJIS RESPONSE HANDLER SIMULATION -- CA_eSUN_v1.0
-  Generated: 2026-09-02 14:40
-  QRDM: CA_eSUN_Results  |  65 attributes  |  5 entity combos
+  CJIS RESPONSE HANDLER SIMULATION -- CA_eSUN_v3.1 v3.1
+  Generated: 2026-09-04 10:06
+  QRDM: CA_eSUN_Results  |  67 attributes  |  5 entity combos
   Mode: Standard + Edge Cases
 ========================================================================
 
@@ -66,6 +66,8 @@ RESPONSE SIMULATION
               Target: LicensePlateStateCode -> UI: NJ
   [MAPPED]    RegistrationStateCode              Raw: NJ
               Target: RegistrationStateCode -> UI: NJ
+  [MAPPED]    RelatedSearchHitIndicator          Raw: N
+              Target: RelatedSearchHitIndicator -> UI: N
   [MAPPED]    SecondaryRequests                  Raw: N
               Target: SecondaryRequests -> UI: N
   [MAPPED]    System                             Raw: Vehicle Registration Query Result
@@ -92,6 +94,8 @@ RESPONSE SIMULATION
               Handler: CommsysResultAttributeMappingRuleHandler
               table=VehicleStyleCode: '4D' -> '4-Door'
               Target: BodyStyle -> UI: 4-Door
+  [MAPPED]    VehicleTypeCode                    Raw: PA
+              Target: VehicleTypeCode -> UI: PA
   [MAPPED]    VehicleYear                        Raw: 2022
               Handler: ParseCommsysVehicleYearRuleHandler
               4-digit year: 2022 (passthrough)
@@ -99,7 +103,7 @@ RESPONSE SIMULATION
   [MAPPED]    Weight                             Raw: 3200
               Target: Weight -> UI: 3200
 
-  Summary: 22 MAPPED / 0 MISSING / 0 UNMAPPED codes
+  Summary: 24 MAPPED / 0 MISSING / 0 UNMAPPED codes
 
   EDGE CASES:
 
@@ -271,7 +275,13 @@ RESPONSE SIMULATION
               table=HairColorCode: 'BLK' -> 'Black'
               Target: HairColorCode -> UI: Black
   [MAPPED]    Height                             Raw: 511
-              Target: Height -> UI: 511
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '511' -> 5 feet 11 inches
+              Target: Height -> UI: 5'11"
+  [MAPPED]    HeightDisplay                      Raw: 511
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '511' -> 5 feet 11 inches
+              Target: HeightDisplay -> UI: 5'11"
   [MAPPED]    HeightFeet                         Raw: 5
               Handler: HeightParserRuleHandler
               Feet value: 5
@@ -320,6 +330,8 @@ RESPONSE SIMULATION
               Handler: CommsysResultAttributeMappingRuleHandler
               table=RaceCode: 'W' -> 'White'
               Target: RaceCode -> UI: White
+  [MAPPED]    RelatedSearchHitIndicator          Raw: N
+              Target: RelatedSearchHitIndicator -> UI: N
   [MAPPED]    SecondaryRequests                  Raw: N
               Target: SecondaryRequests -> UI: N
   [MAPPED]    SexCode                            Raw: M
@@ -335,7 +347,7 @@ RESPONSE SIMULATION
   [MAPPED]    Weight                             Raw: 180
               Target: Weight -> UI: 180
 
-  Summary: 37 MAPPED / 0 MISSING / 0 UNMAPPED codes
+  Summary: 39 MAPPED / 0 MISSING / 0 UNMAPPED codes
 
   EDGE CASES:
 
@@ -343,7 +355,13 @@ RESPONSE SIMULATION
   [MAPPED]    BirthDate                          Raw: 19850101
               Target: BirthDate -> UI: 19850101
   [MAPPED]    Height                             Raw: 600
-              Target: Height -> UI: 600
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '600' -> 6 feet 0 inches
+              Target: Height -> UI: 6'0"
+  [MAPPED]    HeightDisplay                      Raw: 600
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '600' -> 6 feet 0 inches
+              Target: HeightDisplay -> UI: 6'0"
   [MAPPED]    Name                               Raw: DOE,JOHN
               Handler: ParseCommsysNameRuleHandler
               Level 3: Parsing Name string 'DOE,JOHN' -> comma-separated: Last='DOE' First='JOHN' Middle=''
@@ -361,7 +379,13 @@ RESPONSE SIMULATION
   [MAPPED]    BirthDate                          Raw: 19920301
               Target: BirthDate -> UI: 19920301
   [MAPPED]    Height                             Raw: 505
-              Target: Height -> UI: 505
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '505' -> 5 feet 5 inches
+              Target: Height -> UI: 5'5"
+  [MAPPED]    HeightDisplay                      Raw: 505
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '505' -> 5 feet 5 inches
+              Target: HeightDisplay -> UI: 5'5"
   [MAPPED]    Name                               Raw: DOE JOHN
               Handler: ParseCommsysNameRuleHandler
               Level 3: Parsing Name string 'DOE JOHN' -> two tokens: Last='DOE' First='JOHN'
@@ -375,7 +399,13 @@ RESPONSE SIMULATION
   [MAPPED]    BirthDate                          Raw: 19750615
               Target: BirthDate -> UI: 19750615
   [MAPPED]    Height                             Raw: 510
-              Target: Height -> UI: 510
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '510' -> 5 feet 10 inches
+              Target: Height -> UI: 5'10"
+  [MAPPED]    HeightDisplay                      Raw: 510
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '510' -> 5 feet 10 inches
+              Target: HeightDisplay -> UI: 5'10"
   [MAPPED]    Name                               Raw: SMITH JOHN Q
               Handler: ParseCommsysNameRuleHandler
               Level 3: Parsing Name string 'SMITH JOHN Q' -> last-token=initial: Last='SMITH' First='JOHN' Middle='Q'
@@ -389,7 +419,13 @@ RESPONSE SIMULATION
   [MAPPED]    BirthDate                          Raw: 19900101
               Target: BirthDate -> UI: 19900101
   [MAPPED]    Height                             Raw: 0511
+              Handler: HeightParserRuleHandler
+              Unrecognized format: '0511' -- returned as-is
               Target: Height -> UI: 0511
+  [MAPPED]    HeightDisplay                      Raw: 0511
+              Handler: HeightParserRuleHandler
+              Unrecognized format: '0511' -- returned as-is
+              Target: HeightDisplay -> UI: 0511
   [MAPPED]    Name                               Raw: TEST,USER
               Handler: ParseCommsysNameRuleHandler
               Level 1: NormalizedName parts (Last='TEST', First='', Middle='')
@@ -407,7 +443,13 @@ RESPONSE SIMULATION
   [MAPPED]    BirthDate                          Raw: 19950301
               Target: BirthDate -> UI: 19950301
   [MAPPED]    Height                             Raw: 504
-              Target: Height -> UI: 504
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '504' -> 5 feet 4 inches
+              Target: Height -> UI: 5'4"
+  [MAPPED]    HeightDisplay                      Raw: 504
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '504' -> 5 feet 4 inches
+              Target: HeightDisplay -> UI: 5'4"
   [MAPPED]    NameFirst                          Raw: JANE
               Handler: ParseCommsysNameRuleHandler
               Level 1: NormalizedName parts (Last='DOE', First='JANE', Middle='')
@@ -429,7 +471,13 @@ RESPONSE SIMULATION
   [MAPPED]    BirthDate                          Raw: 19880901
               Target: BirthDate -> UI: 19880901
   [MAPPED]    Height                             Raw: 600
-              Target: Height -> UI: 600
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '600' -> 6 feet 0 inches
+              Target: Height -> UI: 6'0"
+  [MAPPED]    HeightDisplay                      Raw: 600
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '600' -> 6 feet 0 inches
+              Target: HeightDisplay -> UI: 6'0"
   [MAPPED]    NameFirst                          Raw: JOHN
               Handler: ParseCommsysNameRuleHandler
               Level 1: NormalizedName parts (Last='DOE', First='JOHN', Middle='')
@@ -451,7 +499,13 @@ RESPONSE SIMULATION
   [MAPPED]    BirthDate                          Raw: 19900101
               Target: BirthDate -> UI: 19900101
   [MAPPED]    Height                             Raw: 511
-              Target: Height -> UI: 511
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '511' -> 5 feet 11 inches
+              Target: Height -> UI: 5'11"
+  [MAPPED]    HeightDisplay                      Raw: 511
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '511' -> 5 feet 11 inches
+              Target: HeightDisplay -> UI: 5'11"
   [MAPPED]    NameLast                           Raw: DOE
               Handler: ParseCommsysNameRuleHandler
               Level 1: NormalizedName parts (Last='DOE', First='', Middle='')
@@ -467,7 +521,13 @@ RESPONSE SIMULATION
 
   -- Missing DOB --
   [MAPPED]    Height                             Raw: 511
-              Target: Height -> UI: 511
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '511' -> 5 feet 11 inches
+              Target: Height -> UI: 5'11"
+  [MAPPED]    HeightDisplay                      Raw: 511
+              Handler: HeightParserRuleHandler
+              3-digit Commsys format: '511' -> 5 feet 11 inches
+              Target: HeightDisplay -> UI: 5'11"
   [MAPPED]    NameFirst                          Raw: JOHN
               Handler: ParseCommsysNameRuleHandler
               Level 1: NormalizedName parts (Last='DOE', First='JOHN', Middle='')
@@ -527,6 +587,8 @@ RESPONSE SIMULATION
               Target: IntInterfaceName -> UI: NCIC Firearm File
   [MAPPED]    IntSystemName                      Raw: NCIC
               Target: IntSystemName -> UI: NCIC
+  [MAPPED]    RelatedSearchHitIndicator          Raw: N
+              Target: RelatedSearchHitIndicator -> UI: N
   [MAPPED]    SecondaryRequests                  Raw: N
               Target: SecondaryRequests -> UI: N
   [MAPPED]    SerialNumber                       Raw: SN12345678
@@ -534,7 +596,7 @@ RESPONSE SIMULATION
   [MAPPED]    System                             Raw: Firearm Query Result
               Target: System -> UI: Firearm Query Result
 
-  Summary: 13 MAPPED / 0 MISSING / 0 UNMAPPED codes
+  Summary: 14 MAPPED / 0 MISSING / 0 UNMAPPED codes
 
   EDGE CASES:
 
@@ -597,6 +659,8 @@ RESPONSE SIMULATION
               Target: IntInterfaceName -> UI: NCIC Article File
   [MAPPED]    IntSystemName                      Raw: NCIC
               Target: IntSystemName -> UI: NCIC
+  [MAPPED]    RelatedSearchHitIndicator          Raw: N
+              Target: RelatedSearchHitIndicator -> UI: N
   [MAPPED]    SecondaryRequests                  Raw: N
               Target: SecondaryRequests -> UI: N
   [MAPPED]    SerialNumber                       Raw: ART99999
@@ -604,7 +668,7 @@ RESPONSE SIMULATION
   [MAPPED]    System                             Raw: Article Query Result
               Target: System -> UI: Article Query Result
 
-  Summary: 12 MAPPED / 0 MISSING / 0 UNMAPPED codes
+  Summary: 13 MAPPED / 0 MISSING / 0 UNMAPPED codes
 
   ====================================================================
   ENTITY: Boat  |  Synthetic standard
@@ -647,15 +711,17 @@ RESPONSE SIMULATION
               Target: IntInterfaceName -> UI: NCIC Boat File
   [MAPPED]    IntSystemName                      Raw: NJSP
               Target: IntSystemName -> UI: NJSP
+  [MAPPED]    RelatedSearchHitIndicator          Raw: N
+              Target: RelatedSearchHitIndicator -> UI: N
   [MAPPED]    SecondaryRequests                  Raw: N
               Target: SecondaryRequests -> UI: N
   [MAPPED]    System                             Raw: Boat Query Result
               Target: System -> UI: Boat Query Result
 
-  Summary: 12 MAPPED / 0 MISSING / 0 UNMAPPED codes
+  Summary: 13 MAPPED / 0 MISSING / 0 UNMAPPED codes
 
 ========================================================================
-  TOTAL: 96 MAPPED / 0 MISSING / 0 UNMAPPED
+  TOTAL: 103 MAPPED / 0 MISSING / 0 UNMAPPED
 ========================================================================
 
 

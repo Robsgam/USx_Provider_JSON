@@ -2,7 +2,7 @@
 // Then render each entity form and run its line (one at a time; each downloads one file):
 var scope = {
     "provider":  "CA_eSUN",
-    "version":  "3.0",
+    "version":  "3.1",
     "note":  "Paste as scope; render each entity form; __usxScopePicklists(scope, \u0027\u003cEntity\u003e\u0027). One download per entity.",
     "fields":  [
                    {
@@ -16,7 +16,7 @@ var scope = {
                    {
                        "entity":  "Vehicle",
                        "fieldId":  "RegistrationState",
-                       "label":  "State",
+                       "label":  "State (leave blank for California)",
                        "codeTypeCategory":  "",
                        "codeTypeSource":  "",
                        "attributeTypeId":  "STATE"
@@ -32,7 +32,7 @@ var scope = {
                    {
                        "entity":  "Vehicle",
                        "fieldId":  "VehicleMakeCode",
-                       "label":  "Make",
+                       "label":  "Make (optional)",
                        "codeTypeCategory":  "",
                        "codeTypeSource":  "",
                        "attributeTypeId":  "VEHICLE_MAKE"
@@ -48,7 +48,7 @@ var scope = {
                    {
                        "entity":  "Person",
                        "fieldId":  "RegistrationState",
-                       "label":  "State",
+                       "label":  "State (leave blank for California)",
                        "codeTypeCategory":  "",
                        "codeTypeSource":  "",
                        "attributeTypeId":  "STATE"
@@ -72,7 +72,7 @@ var scope = {
                    {
                        "entity":  "Person",
                        "fieldId":  "RegistrationStateDH",
-                       "label":  "State (DH)",
+                       "label":  "State (DH) (leave blank for California)",
                        "codeTypeCategory":  "",
                        "codeTypeSource":  "",
                        "attributeTypeId":  "STATE"
@@ -96,7 +96,7 @@ var scope = {
                    {
                        "entity":  "Firearm",
                        "fieldId":  "GunMake",
-                       "label":  "Make",
+                       "label":  "Make (optional)",
                        "codeTypeCategory":  "NCIC_FIREARM_MAKE",
                        "codeTypeSource":  "NCIC",
                        "attributeTypeId":  ""
@@ -104,7 +104,7 @@ var scope = {
                    {
                        "entity":  "Firearm",
                        "fieldId":  "GunCaliber",
-                       "label":  "Caliber",
+                       "label":  "Caliber (optional)",
                        "codeTypeCategory":  "NCIC_FIREARM_CALIBER",
                        "codeTypeSource":  "NCIC",
                        "attributeTypeId":  ""
@@ -112,7 +112,7 @@ var scope = {
                    {
                        "entity":  "Firearm",
                        "fieldId":  "GunTypeCode",
-                       "label":  "Type",
+                       "label":  "Type (optional)",
                        "codeTypeCategory":  "NCIC_FIREARM_TYPE",
                        "codeTypeSource":  "NCIC",
                        "attributeTypeId":  ""
@@ -120,7 +120,7 @@ var scope = {
                    {
                        "entity":  "Firearm",
                        "fieldId":  "relatedHitSearchIndicator",
-                       "label":  "Stolen Check",
+                       "label":  "Stolen Check (optional)",
                        "codeTypeCategory":  "YES_NO_UNKNOWN",
                        "codeTypeSource":  "NCIC",
                        "attributeTypeId":  ""
@@ -136,7 +136,7 @@ var scope = {
                    {
                        "entity":  "Article",
                        "fieldId":  "ArticleTypeCode",
-                       "label":  "Article Type",
+                       "label":  "Article Type (optional)",
                        "codeTypeCategory":  "NCIC_ARTICLE_TYPE",
                        "codeTypeSource":  "CA_CLETS",
                        "attributeTypeId":  ""
@@ -152,11 +152,11 @@ var scope = {
                    {
                        "entity":  "Boat",
                        "fieldId":  "RegistrationState",
-                       "label":  "State",
+                       "label":  "State (leave blank for California)",
                        "codeTypeCategory":  "",
                        "codeTypeSource":  "",
                        "attributeTypeId":  "STATE"
                    }
                ]
 };
-console.log('%c[USx-SCOPE] scope loaded: CA_eSUN v3.0 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Boat')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')");
+console.log('%c[USx-SCOPE] scope loaded: CA_eSUN v3.1 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Boat')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')");

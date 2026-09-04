@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_eSUN
-  Source: CA_eSUN_v3.0.json
-  Generated: 2026-09-04 09:02
+  Source: CA_eSUN_v3.1.json
+  Generated: 2026-09-04 10:08
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -25,55 +25,23 @@ VALIDATOR RESULTS
   [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
   [PASS] QIF 'ENTITY_Vehicle' PlateType no initialValue (combo defaults expected)
   [PASS] QIF 'ENTITY_Vehicle' 'LicensePlateYear' no initialValue (OOS-only plate field; PlateType also blank)
-  [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 15 fieldIds
-  [PASS] QIF 'ENTITY_Person' -> Person : 19 fieldIds
-  [PASS] QIF 'ENTITY_Firearm' -> Firearm : 13 fieldIds
+  [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 17 fieldIds
+  [PASS] QIF 'ENTITY_Person' -> Person : 23 fieldIds
+  [PASS] QIF 'ENTITY_Firearm' -> Firearm : 15 fieldIds
   [PASS] QIF 'ENTITY_Article' -> Article : 8 fieldIds
   [PASS] QIF 'ENTITY_Boat' -> Boat : 7 fieldIds
 
 === PHASE 3: QIDM Validation ===
-  [WARN] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'VP.N' any[] references 'nameMiddle' not in QIF fieldIds
-    [FIX] Add field 'nameMiddle' to the Vehicle QIF, or remove 'nameMiddle' from this combo's any[] array
-  [WARN] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'VP.N' any[] references 'nameSuffix' not in QIF fieldIds
-    [FIX] Add field 'nameSuffix' to the Vehicle QIF, or remove 'nameSuffix' from this combo's any[] array
   [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' -> Vehicle : 11 attrs, 6 combos
   [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
-  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'DQ.N' any[] references 'nameMiddle' not in QIF fieldIds
-    [FIX] Add field 'nameMiddle' to the Person QIF, or remove 'nameMiddle' from this combo's any[] array
-  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'DQ.N' any[] references 'nameSuffix' not in QIF fieldIds
-    [FIX] Add field 'nameSuffix' to the Person QIF, or remove 'nameSuffix' from this combo's any[] array
-  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'QW.N' any[] references 'nameMiddle' not in QIF fieldIds
-    [FIX] Add field 'nameMiddle' to the Person QIF, or remove 'nameMiddle' from this combo's any[] array
-  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'QW.N' any[] references 'nameSuffix' not in QIF fieldIds
-    [FIX] Add field 'nameSuffix' to the Person QIF, or remove 'nameSuffix' from this combo's any[] array
-  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'L1.N' any[] references 'nameMiddle' not in QIF fieldIds
-    [FIX] Add field 'nameMiddle' to the Person QIF, or remove 'nameMiddle' from this combo's any[] array
-  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'L1.N' any[] references 'nameSuffix' not in QIF fieldIds
-    [FIX] Add field 'nameSuffix' to the Person QIF, or remove 'nameSuffix' from this combo's any[] array
   [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' -> Person : 7 attrs, 5 combos
   [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
-  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQ.N' any[] references 'nameMiddleDH' not in QIF fieldIds
-    [FIX] Add field 'nameMiddleDH' to the Person QIF, or remove 'nameMiddleDH' from this combo's any[] array
-  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQ.N' any[] references 'nameSuffixDH' not in QIF fieldIds
-    [FIX] Add field 'nameSuffixDH' to the Person QIF, or remove 'nameSuffixDH' from this combo's any[] array
-  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'L1.N' any[] references 'nameMiddleDH' not in QIF fieldIds
-    [FIX] Add field 'nameMiddleDH' to the Person QIF, or remove 'nameMiddleDH' from this combo's any[] array
-  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'L1.N' any[] references 'nameSuffixDH' not in QIF fieldIds
-    [FIX] Add field 'nameSuffixDH' to the Person QIF, or remove 'nameSuffixDH' from this combo's any[] array
   [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' -> Person : 7 attrs, 4 combos
   [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
-  [WARN] QIDM 'CA_eSUN_GunQuery' combo 'QGH.B' any[] references 'nameMiddle' not in QIF fieldIds
-    [FIX] Add field 'nameMiddle' to the Firearm QIF, or remove 'nameMiddle' from this combo's any[] array
-  [WARN] QIDM 'CA_eSUN_GunQuery' combo 'QGH.B' any[] references 'nameSuffix' not in QIF fieldIds
-    [FIX] Add field 'nameSuffix' to the Firearm QIF, or remove 'nameSuffix' from this combo's any[] array
-  [WARN] QIDM 'CA_eSUN_GunQuery' combo 'QGH.A' any[] references 'nameMiddle' not in QIF fieldIds
-    [FIX] Add field 'nameMiddle' to the Firearm QIF, or remove 'nameMiddle' from this combo's any[] array
-  [WARN] QIDM 'CA_eSUN_GunQuery' combo 'QGH.A' any[] references 'nameSuffix' not in QIF fieldIds
-    [FIX] Add field 'nameSuffix' to the Firearm QIF, or remove 'nameSuffix' from this combo's any[] array
   [PASS] QIDM 'CA_eSUN_GunQuery' -> Firearm : 9 attrs, 3 combos
   [PASS] QIDM 'CA_eSUN_GunQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
   [PASS] QIDM 'CA_eSUN_ArticleSingleQuery' -> Article : 5 attrs, 1 combos
@@ -89,10 +57,6 @@ VALIDATOR RESULTS
 === PHASE 4: AutoSelect & Cross-Reference ===
   [PASS] Article : 1 QIDMs, 1 QIF(s)
   [PASS] Person : DH QIDM uses DH-suffix fieldIds (AP #14)
-  [WARN] Person : keyReference 'L1.O' appears in multiple QIDMs: CA_eSUN_DriverHistoryQuery, CA_eSUN_DriverLicenseQuery -- may cause routing confusion
-    [FIX] In build script: rename keyReference 'L1.O' to be unique per QIDM (e.g. append DL/DH suffix to distinguish)
-  [WARN] Person : keyReference 'L1.N' appears in multiple QIDMs: CA_eSUN_DriverHistoryQuery, CA_eSUN_DriverLicenseQuery -- may cause routing confusion
-    [FIX] In build script: rename keyReference 'L1.N' to be unique per QIDM (e.g. append DL/DH suffix to distinguish)
   [PASS] Person : 2 QIDMs, 1 QIF(s)
   [PASS] Vehicle : 1 QIDMs, 1 QIF(s)
   [PASS] Boat : 1 QIDMs, 1 QIF(s)
@@ -116,27 +80,19 @@ VALIDATOR RESULTS
   [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'QV.P': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'RQ.V': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'QV.V': all set[]/any[] fields resolvable
-  [WARN] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'VP.N': unresolvable any[] fields: nameMiddle, nameSuffix
-    [FIX] Add form fields for: nameMiddle, nameSuffix to the Vehicle QIF, or remove them from combo 'VP.N' any[]
+  [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'VP.N': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'DQ.O': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'L1.O': all set[]/any[] fields resolvable
-  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'DQ.N': unresolvable any[] fields: nameMiddle, nameSuffix
-    [FIX] Add form fields for: nameMiddle, nameSuffix to the Person QIF, or remove them from combo 'DQ.N' any[]
-  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'QW.N': unresolvable any[] fields: nameMiddle, nameSuffix
-    [FIX] Add form fields for: nameMiddle, nameSuffix to the Person QIF, or remove them from combo 'QW.N' any[]
-  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'L1.N': unresolvable any[] fields: nameMiddle, nameSuffix
-    [FIX] Add form fields for: nameMiddle, nameSuffix to the Person QIF, or remove them from combo 'L1.N' any[]
+  [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'DQ.N': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'QW.N': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'L1.N': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQ.O': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'L1.O': all set[]/any[] fields resolvable
-  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQ.N': unresolvable any[] fields: nameMiddleDH, nameSuffixDH
-    [FIX] Add form fields for: nameMiddleDH, nameSuffixDH to the Person QIF, or remove them from combo 'KQ.N' any[]
-  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'L1.N': unresolvable any[] fields: nameMiddleDH, nameSuffixDH
-    [FIX] Add form fields for: nameMiddleDH, nameSuffixDH to the Person QIF, or remove them from combo 'L1.N' any[]
+  [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'L1.ODH': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQ.N': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'L1.NDH': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_eSUN_GunQuery' combo 'QGB': all set[]/any[] fields resolvable
-  [WARN] QIDM 'CA_eSUN_GunQuery' combo 'QGH.B': unresolvable any[] fields: nameMiddle, nameSuffix
-    [FIX] Add form fields for: nameMiddle, nameSuffix to the Firearm QIF, or remove them from combo 'QGH.B' any[]
-  [WARN] QIDM 'CA_eSUN_GunQuery' combo 'QGH.A': unresolvable any[] fields: nameMiddle, nameSuffix
-    [FIX] Add form fields for: nameMiddle, nameSuffix to the Firearm QIF, or remove them from combo 'QGH.A' any[]
+  [PASS] QIDM 'CA_eSUN_GunQuery' combo 'QGH.B': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_eSUN_GunQuery' combo 'QGH.A': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_eSUN_ArticleSingleQuery' combo 'QA': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_eSUN_BoatQuery' combo 'BQ.H': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_eSUN_BoatQuery' combo 'QB.H': all set[]/any[] fields resolvable
@@ -144,8 +100,8 @@ VALIDATOR RESULTS
   [PASS] QIDM 'CA_eSUN_BoatQuery' combo 'QB.R': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 70 PASS / 0 FAIL / 26 WARN
+  RESULTS: 78 PASS / 0 FAIL / 0 WARN
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
 
-  Review WARN items -- they may cause runtime issues.
+  Ready for import.
 

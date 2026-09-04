@@ -11,7 +11,7 @@ baseline, replacing the devdoc+metadata-driven 2.x line built by this repo. See
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| CA_eSUN_v2.2.json | v2.2 | Current | 59P/7F/53W/2LIM. |
+| CA_eSUN_v3.1.json | v3.1 | Current | 78P/0F/0W/0LIM. |
 ## Baseline archive (source/, never edited)
 
 | File | Captured | Notes |
@@ -53,11 +53,17 @@ its log to a filename collision — recoverable with a single Person re-drive.
 
 
 
+
+## v3.1 (2026-09-04)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| CA_eSUN_v3.1.json | v3.1 | Current | 78P/0F/2W/0LIM. |
 ## v2.2 (2026-09-02)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| CA_eSUN_v2.2.json | v2.2 | Current | 59P/7F/53W/2LIM. |
+| CA_eSUN_v2.2.json | v2.2 | Superseded | 59P/7F/53W/2LIM. |
 ## v2.1 (2026-09-02)
 
 | File | Version | Status | Notes |

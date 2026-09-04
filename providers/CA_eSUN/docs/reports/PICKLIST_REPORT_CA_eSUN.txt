@@ -1,7 +1,7 @@
 ======================================================================
-  PICKLIST / DROPDOWN REPORT: CA_eSUN_v1.0
-  Source: CA_eSUN_v1.0.json
-  Generated: 2026-09-02 14:40
+  PICKLIST / DROPDOWN REPORT: CA_eSUN_v3.1
+  Source: CA_eSUN_v3.1.json
+  Generated: 2026-09-04 10:06
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -16,66 +16,110 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
   Entity: Boat
     PurposeCode [CA Purpose Code]
       Config: attributeTypeId=DEX_INQUIRY_PURPOSE_CODE
-    RegistrationState [State] (default=CA)
+    RegistrationState [State (leave blank for California)]
       Config: attributeTypeId=STATE
 
   Entity: Firearm
-    FirearmCaliber [Firearm Caliber]
-      Config: codeTypeCategory=NCIC_FIREARM_CALIBER, codeTypeSource=NJ_NIBRS
-    FirearmMake [Firearm Make]
+    GunCaliber [Caliber]
+      Config: codeTypeCategory=NCIC_FIREARM_CALIBER, codeTypeSource=NCIC
+    GunMake [Make]
       Config: codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NCIC
-    FirearmType [Firearm Type]
+    GunTypeCode [Type]
       Config: codeTypeCategory=NCIC_FIREARM_TYPE, codeTypeSource=NCIC
     PurposeCode [CA Purpose Code]
       Config: attributeTypeId=DEX_INQUIRY_PURPOSE_CODE
+    relatedHitSearchIndicator [Stolen Check]
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Person
     PurposeCode [CA Purpose Code]
       Config: attributeTypeId=DEX_INQUIRY_PURPOSE_CODE
-    RegistrationState [License State] (default=CA)
+    PurposeCodeDH [CA Purpose Code (DH)]
+      Config: attributeTypeId=DEX_INQUIRY_PURPOSE_CODE
+    RegistrationState [State (leave blank for California)]
+      Config: attributeTypeId=STATE
+    RegistrationStateDH [State (DH) (leave blank for California)]
       Config: attributeTypeId=STATE
     SexCode [Sex]
-      Config: attributeTypeId=SEX
+      Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
+    SexCodeDH [Sex (DH)]
+      Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
 
   Entity: Vehicle
     LicensePlateTypeCode [Plate Type]
       Config: codeTypeCategory=NCIC_LICENSE_PLATE_TYPE, codeTypeSource=NCIC
     PurposeCode [CA Purpose Code]
       Config: attributeTypeId=DEX_INQUIRY_PURPOSE_CODE
-    RegistrationState [State] (default=CA)
+    RegistrationState [State (leave blank for California)]
       Config: attributeTypeId=STATE
-    VehicleMakeCode [Vehicle Make Code]
+    VehicleMakeCode [Make]
       Config: attributeTypeId=VEHICLE_MAKE, codeTypeProvider=NCIC
 
 SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
 --------------------------------------------------
 
+  Config Type: QUERYINPUTDATAMAPPING
+    Config: CA_eSUN_VehicleRegistrationQuery
+      State -> State
+        codeTypeProvider=NCIC
+    Config: CA_eSUN_DriverLicenseQuery
+      SexCode -> SexCode
+        codeTypeProvider=NIBRS
+      State -> State
+        codeTypeProvider=NCIC
+    Config: CA_eSUN_DriverHistoryQuery
+      SexCode -> SexCode
+        codeTypeProvider=NIBRS
+      State -> State
+        codeTypeProvider=NCIC
+    Config: CA_eSUN_BoatQuery
+      State -> State
+        codeTypeProvider=NCIC
+
   Config Type: QUERYRESULTDATAMAPPING
     Config: CA_eSUN_Results
       AddressStateCode -> AddressStateCode
-        attributeType=STATE | codeTypeSource=NCIC
+        codeTypeCategory=NJ_NIBRS_STATE, codeTypeSource=NJ_NIBRS
       EyeColorCode -> EyeColorCode
         attributeType=EYE_COLOR | codeTypeSource=NCIC
       HairColorCode -> HairColorCode
         attributeType=HAIR_COLOR | codeTypeSource=NCIC
       RaceCode -> RaceCode
-        attributeType=RACE | codeTypeSource=NCIC
+        codeTypeCategory=NIBRS_RACE, codeTypeSource=NIBRS
       SexCode -> SexCode
-        attributeType=SEX | codeTypeSource=NCIC
+        attributeType=SEX | codeTypeSource=NIBRS
       VehicleColorCode -> VehicleColorCode
         attributeType=ITEM_COLOR | codeTypeSource=NCIC
       VehicleMakeName -> VehicleMakeName
         attributeType=VEHICLE_MAKE | codeTypeSource=NCIC
       VehicleStyleCode -> BodyStyle
-        attributeType=VEHICLE_BODY_STYLE | codeTypeSource=VEHICLE
+        codeTypeCategory=VEHICLE_BODY_STYLE, codeTypeSource=NJ_NIBRS
       VehicleModelName -> VehicleModelName
         attributeType=VEHICLE_MODEL | codeTypeSource=NCIC
 
 SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
 --------------------------------------------------
 
+  QIDM: CA_eSUN_VehicleRegistrationQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
+  QIDM: CA_eSUN_DriverLicenseQuery
+    SexCode -> targetField=SexCode, codeTypeProvider=NIBRS
+
+  QIDM: CA_eSUN_DriverLicenseQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
+  QIDM: CA_eSUN_DriverHistoryQuery
+    SexCode -> targetField=SexCode, codeTypeProvider=NIBRS
+
+  QIDM: CA_eSUN_DriverHistoryQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
+  QIDM: CA_eSUN_BoatQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
 ======================================================================
   SUMMARY
 ======================================================================
-  Form dropdowns: 15
-  QRDM code type attrs: 9
+  Form dropdowns: 19
+  QRDM code type attrs: 15

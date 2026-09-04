@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CA_eSUN_v3.0 - Layout Report</title>
+<title>CA_eSUN_v3.1 - Layout Report</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #333; line-height: 1.5; padding: 20px; }
@@ -68,8 +68,8 @@
 <body>
 <div class="container">
   <div class="header">
-    <h1>CA_eSUN_v3.0</h1>
-    <div class="meta">Source: CA_eSUN_v3.0.json | Generated: 2026-09-04 09:02</div>
+    <h1>CA_eSUN_v3.1</h1>
+    <div class="meta">Source: CA_eSUN_v3.1.json | Generated: 2026-09-04 10:08</div>
   </div>
   <div class="content">
     <div class='summary-grid'>
@@ -89,7 +89,7 @@
       <div class="legend-item"><span class="tag tag-default">default</span></div>
       <div class="legend-item"><span class="tag tag-rule">ruleHandler</span></div>
     </div>
-    <div class='entity-section'><h2>Vehicle <span class='entity-meta'>1 card(s), 12 field(s)</span></h2><h3>Form Layout</h3><div class='card'><div class='card-header'>CARD_VEH</div><div class='card-body'><div class='row-container'><span class='row-cols'>columns: 4, 4, 4</span><div class='field field-dropdown'>
+    <div class='entity-section'><h2>Vehicle <span class='entity-meta'>1 card(s), 14 field(s)</span></h2><h3>Form Layout</h3><div class='card'><div class='card-header'>CARD_VEH</div><div class='card-body'><div class='row-container'><span class='row-cols'>columns: 4, 4, 4</span><div class='field field-dropdown'>
   <div class='field-header'>
     <span class='field-id'>PurposeCode</span>
     <span class='field-type'>Dropdown</span>
@@ -137,7 +137,7 @@
     <span class='field-type'>Text Input</span>
   </div>
   <div class='field-tags'><span class='tag tag-meta'>maxLength=4</span></div>
-</div></div><div class='row-container'><span class='row-cols'>columns: 6, 6</span><div class='field field-text'>
+</div></div><div class='row-container'><span class='row-cols'>columns: 4, 4, 2, 2</span><div class='field field-text'>
   <div class='field-header'>
     <span class='field-id'>NameLast</span>
     <span class='field-type'>Text Input</span>
@@ -149,6 +149,18 @@
     <span class='field-type'>Text Input</span>
   </div>
   <div class='field-tags'><span class='tag tag-meta'>maxLength=30</span></div>
+</div><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>nameMiddle</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=30</span></div>
+</div><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>nameSuffix</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=5</span></div>
 </div></div><div class='row-container'><span class='row-cols'>columns: 6, 6</span><div class='field field-text'>
   <div class='field-header'>
     <span class='field-id'>AddressStreetNumber</span>
@@ -161,7 +173,7 @@
     <span class='field-type'>Text Input</span>
   </div>
   <div class='field-tags'><span class='tag tag-meta'>maxLength=20</span></div>
-</div></div></div></div><div class='qidm'><div class='qidm-header'>QIDM: CA_eSUN_VehicleRegistrationQuery</div><table class='qidm-table'><thead><tr><th>Source Field</th><th>Target Field</th><th>Properties</th></tr></thead><tbody><tr><td class='mono'>PurposeCode</td><td class='mono'>CaRequestPurposeCode</td><td>-</td></tr><tr><td class='mono'>LicensePlateNumber</td><td class='mono'>LicensePlateNumber</td><td>-</td></tr><tr><td class='mono'>LicensePlateTypeCode</td><td class='mono'>LicensePlateTypeCode</td><td>-</td></tr><tr><td class='mono'>LicensePlateYear</td><td class='mono'>LicensePlateYear</td><td>-</td></tr><tr><td class='mono'>VehicleIdentificationNumber</td><td class='mono'>VehicleIdentificationNumber</td><td>-</td></tr><tr><td class='mono'>VehicleMakeCode</td><td class='mono'>VehicleMakeCode</td><td>-</td></tr><tr><td class='mono'>vehicleYear</td><td class='mono'>VehicleYear</td><td>-</td></tr><tr><td class='mono'>NameLast, NameFirst, nameMiddle, nameSuffix</td><td class='mono'>Name</td><td><span class='tag tag-rule'>FormatStringRuleHandler (, ,  ,  )</span></td></tr><tr><td class='mono'>AddressCity</td><td class='mono'>AddressCity</td><td>-</td></tr><tr><td class='mono'>AddressStreetNumber</td><td class='mono'>AddressStreetNumber</td><td>-</td></tr><tr><td class='mono'>RegistrationState</td><td class='mono'>State</td><td><span class='tag tag-prov'>codeTypeProvider=NCIC</span></td></tr></tbody></table><div class='combo-header'>Combinations (priority order):</div><div class='combo-list'><div class='combo'><span class='combo-idx'>#1</span> <strong>RQ.P</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCode</span> <span class='combo-field combo-set'>LicensePlateNumber</span> <span class='combo-field combo-set'>LicensePlateTypeCode</span> <span class='combo-field combo-set'>LicensePlateYear</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>RegistrationState</span></div></div><div class='combo'><span class='combo-idx'>#2</span> <strong>4.P</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCode</span> <span class='combo-field combo-set'>LicensePlateNumber</span> <span class='combo-field combo-set'>LicensePlateTypeCode</span></div><div class='combo-detail'>any (optional): <em>none</em></div></div><div class='combo'><span class='combo-idx'>#3</span> <strong>QV.P</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCode</span> <span class='combo-field combo-set'>LicensePlateNumber</span></div><div class='combo-detail'>any (optional): <em>none</em></div></div><div class='combo'><span class='combo-idx'>#4</span> <strong>RQ.V</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCode</span> <span class='combo-field combo-set'>VehicleIdentificationNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>RegistrationState</span> <span class='combo-field combo-any'>VehicleMakeCode</span> <span class='combo-field combo-any'>vehicleYear</span></div></div><div class='combo'><span class='combo-idx'>#5</span> <strong>QV.V</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCode</span> <span class='combo-field combo-set'>VehicleIdentificationNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>VehicleMakeCode</span> <span class='combo-field combo-any'>vehicleYear</span></div></div><div class='combo'><span class='combo-idx'>#6</span> <strong>VP.N</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCode</span> <span class='combo-field combo-set'>NameLast</span> <span class='combo-field combo-set'>NameFirst</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>AddressCity</span> <span class='combo-field combo-any'>AddressStreetNumber</span> <span class='combo-field combo-any'>nameMiddle</span> <span class='combo-field combo-any'>nameSuffix</span></div></div></div></div></div><div class='entity-section'><h2>Person <span class='entity-meta'>2 card(s), 14 field(s)</span></h2><h3>Form Layout</h3><div class='card'><div class='card-header'>CARD_DL</div><div class='card-body'><div class='row-container'><span class='row-cols'>columns: 4, 4, 4</span><div class='field field-dropdown'>
+</div></div></div></div><div class='qidm'><div class='qidm-header'>QIDM: CA_eSUN_VehicleRegistrationQuery</div><table class='qidm-table'><thead><tr><th>Source Field</th><th>Target Field</th><th>Properties</th></tr></thead><tbody><tr><td class='mono'>PurposeCode</td><td class='mono'>CaRequestPurposeCode</td><td>-</td></tr><tr><td class='mono'>LicensePlateNumber</td><td class='mono'>LicensePlateNumber</td><td>-</td></tr><tr><td class='mono'>LicensePlateTypeCode</td><td class='mono'>LicensePlateTypeCode</td><td>-</td></tr><tr><td class='mono'>LicensePlateYear</td><td class='mono'>LicensePlateYear</td><td>-</td></tr><tr><td class='mono'>VehicleIdentificationNumber</td><td class='mono'>VehicleIdentificationNumber</td><td>-</td></tr><tr><td class='mono'>VehicleMakeCode</td><td class='mono'>VehicleMakeCode</td><td>-</td></tr><tr><td class='mono'>vehicleYear</td><td class='mono'>VehicleYear</td><td>-</td></tr><tr><td class='mono'>NameLast, NameFirst, nameMiddle, nameSuffix</td><td class='mono'>Name</td><td><span class='tag tag-rule'>FormatStringRuleHandler (, ,  ,  )</span></td></tr><tr><td class='mono'>AddressCity</td><td class='mono'>AddressCity</td><td>-</td></tr><tr><td class='mono'>AddressStreetNumber</td><td class='mono'>AddressStreetNumber</td><td>-</td></tr><tr><td class='mono'>RegistrationState</td><td class='mono'>State</td><td><span class='tag tag-prov'>codeTypeProvider=NCIC</span></td></tr></tbody></table><div class='combo-header'>Combinations (priority order):</div><div class='combo-list'><div class='combo'><span class='combo-idx'>#1</span> <strong>RQ.P</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCode</span> <span class='combo-field combo-set'>LicensePlateNumber</span> <span class='combo-field combo-set'>LicensePlateTypeCode</span> <span class='combo-field combo-set'>LicensePlateYear</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>RegistrationState</span></div></div><div class='combo'><span class='combo-idx'>#2</span> <strong>4.P</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCode</span> <span class='combo-field combo-set'>LicensePlateNumber</span> <span class='combo-field combo-set'>LicensePlateTypeCode</span></div><div class='combo-detail'>any (optional): <em>none</em></div></div><div class='combo'><span class='combo-idx'>#3</span> <strong>QV.P</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCode</span> <span class='combo-field combo-set'>LicensePlateNumber</span></div><div class='combo-detail'>any (optional): <em>none</em></div></div><div class='combo'><span class='combo-idx'>#4</span> <strong>RQ.V</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCode</span> <span class='combo-field combo-set'>VehicleIdentificationNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>RegistrationState</span> <span class='combo-field combo-any'>VehicleMakeCode</span> <span class='combo-field combo-any'>vehicleYear</span></div></div><div class='combo'><span class='combo-idx'>#5</span> <strong>QV.V</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCode</span> <span class='combo-field combo-set'>VehicleIdentificationNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>VehicleMakeCode</span> <span class='combo-field combo-any'>vehicleYear</span></div></div><div class='combo'><span class='combo-idx'>#6</span> <strong>VP.N</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCode</span> <span class='combo-field combo-set'>NameLast</span> <span class='combo-field combo-set'>NameFirst</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>AddressCity</span> <span class='combo-field combo-any'>AddressStreetNumber</span> <span class='combo-field combo-any'>nameMiddle</span> <span class='combo-field combo-any'>nameSuffix</span></div></div></div></div></div><div class='entity-section'><h2>Person <span class='entity-meta'>2 card(s), 18 field(s)</span></h2><h3>Form Layout</h3><div class='card'><div class='card-header'>CARD_DL</div><div class='card-body'><div class='row-container'><span class='row-cols'>columns: 4, 4, 4</span><div class='field field-dropdown'>
   <div class='field-header'>
     <span class='field-id'>PurposeCode</span>
     <span class='field-type'>Dropdown</span>
@@ -179,7 +191,7 @@
     <span class='field-type'>Dropdown</span>
   </div>
   <div class='field-tags'><span class='tag tag-attr'>attributeTypeId=STATE</span></div>
-</div></div><div class='row-container'><span class='row-cols'>columns: 6, 6</span><div class='field field-text'>
+</div></div><div class='row-container'><span class='row-cols'>columns: 4, 4, 2, 2</span><div class='field field-text'>
   <div class='field-header'>
     <span class='field-id'>NameLast</span>
     <span class='field-type'>Text Input</span>
@@ -191,6 +203,18 @@
     <span class='field-type'>Text Input</span>
   </div>
   <div class='field-tags'><span class='tag tag-meta'>maxLength=30</span></div>
+</div><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>nameMiddle</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=30</span></div>
+</div><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>nameSuffix</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=5</span></div>
 </div></div><div class='row-container'><span class='row-cols'>columns: 4, 4, 4</span><div class='field field-other'>
   <div class='field-header'>
     <span class='field-id'>BirthDate</span>
@@ -227,7 +251,7 @@
     <span class='field-type'>Dropdown</span>
   </div>
   <div class='field-tags'><span class='tag tag-attr'>attributeTypeId=STATE</span></div>
-</div></div><div class='row-container'><span class='row-cols'>columns: 6, 6</span><div class='field field-text'>
+</div></div><div class='row-container'><span class='row-cols'>columns: 4, 4, 2, 2</span><div class='field field-text'>
   <div class='field-header'>
     <span class='field-id'>NameLastDH</span>
     <span class='field-type'>Text Input</span>
@@ -239,6 +263,18 @@
     <span class='field-type'>Text Input</span>
   </div>
   <div class='field-tags'><span class='tag tag-meta'>maxLength=30</span></div>
+</div><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>nameMiddleDH</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=30</span></div>
+</div><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>nameSuffixDH</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=5</span></div>
 </div></div><div class='row-container'><span class='row-cols'>columns: 6, 6</span><div class='field field-other'>
   <div class='field-header'>
     <span class='field-id'>BirthDateDH</span>
@@ -257,7 +293,7 @@
     <span class='field-type'>Text Input</span>
   </div>
   
-</div></div></div></div><div class='qidm'><div class='qidm-header'>QIDM: CA_eSUN_DriverLicenseQuery</div><table class='qidm-table'><thead><tr><th>Source Field</th><th>Target Field</th><th>Properties</th></tr></thead><tbody><tr><td class='mono'>PurposeCode</td><td class='mono'>CaRequestPurposeCode</td><td>-</td></tr><tr><td class='mono'>OperatorLicenseNumber</td><td class='mono'>OperatorLicenseNumber</td><td>-</td></tr><tr><td class='mono'>NameLast, NameFirst, nameMiddle, nameSuffix</td><td class='mono'>Name</td><td><span class='tag tag-rule'>FormatStringRuleHandler (, ,  ,  )</span></td></tr><tr><td class='mono'>BirthDate</td><td class='mono'>BirthDate</td><td><span class='tag tag-rule'>CommsysParseDateRuleHandler (yyyy-MM-dd, MMddyyyy)</span></td></tr><tr><td class='mono'>Age</td><td class='mono'>Age</td><td>-</td></tr><tr><td class='mono'>SexCode</td><td class='mono'>SexCode</td><td><span class='tag tag-prov'>codeTypeProvider=NIBRS</span></td></tr><tr><td class='mono'>RegistrationState</td><td class='mono'>State</td><td><span class='tag tag-prov'>codeTypeProvider=NCIC</span></td></tr></tbody></table><div class='combo-header'>Combinations (priority order):</div><div class='combo-list'><div class='combo'><span class='combo-idx'>#1</span> <strong>DQ.O</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCode</span> <span class='combo-field combo-set'>OperatorLicenseNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>RegistrationState</span></div></div><div class='combo'><span class='combo-idx'>#2</span> <strong>L1.O</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCode</span> <span class='combo-field combo-set'>OperatorLicenseNumber</span></div><div class='combo-detail'>any (optional): <em>none</em></div></div><div class='combo'><span class='combo-idx'>#3</span> <strong>DQ.N</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCode</span> <span class='combo-field combo-set'>NameLast</span> <span class='combo-field combo-set'>NameFirst</span> <span class='combo-field combo-set'>SexCode</span> <span class='combo-field combo-set'>BirthDate</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>RegistrationState</span> <span class='combo-field combo-any'>nameMiddle</span> <span class='combo-field combo-any'>nameSuffix</span></div></div><div class='combo'><span class='combo-idx'>#4</span> <strong>QW.N</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCode</span> <span class='combo-field combo-set'>NameLast</span> <span class='combo-field combo-set'>NameFirst</span> <span class='combo-field combo-set'>BirthDate</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>Age</span> <span class='combo-field combo-any'>SexCode</span> <span class='combo-field combo-any'>nameMiddle</span> <span class='combo-field combo-any'>nameSuffix</span></div></div><div class='combo'><span class='combo-idx'>#5</span> <strong>L1.N</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCode</span> <span class='combo-field combo-set'>NameLast</span> <span class='combo-field combo-set'>NameFirst</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>Age</span> <span class='combo-field combo-any'>BirthDate</span> <span class='combo-field combo-any'>nameMiddle</span> <span class='combo-field combo-any'>nameSuffix</span></div></div></div></div><div class='qidm'><div class='qidm-header'>QIDM: CA_eSUN_DriverHistoryQuery</div><table class='qidm-table'><thead><tr><th>Source Field</th><th>Target Field</th><th>Properties</th></tr></thead><tbody><tr><td class='mono'>PurposeCodeDH</td><td class='mono'>CaRequestPurposeCode</td><td>-</td></tr><tr><td class='mono'>OperatorLicenseNumberDH</td><td class='mono'>OperatorLicenseNumber</td><td>-</td></tr><tr><td class='mono'>NameLastDH, NameFirstDH, nameMiddleDH, nameSuffixDH</td><td class='mono'>Name</td><td><span class='tag tag-rule'>FormatStringRuleHandler (, ,  ,  )</span></td></tr><tr><td class='mono'>BirthDateDH</td><td class='mono'>BirthDate</td><td><span class='tag tag-rule'>CommsysParseDateRuleHandler (yyyy-MM-dd, MMddyyyy)</span></td></tr><tr><td class='mono'>SexCodeDH</td><td class='mono'>SexCode</td><td><span class='tag tag-prov'>codeTypeProvider=NIBRS</span></td></tr><tr><td class='mono'>AttentionDH</td><td class='mono'>Attention</td><td><span class='tag tag-rule'>CommsysGetLastNameFirstNameInitialRuleHandler</span></td></tr><tr><td class='mono'>RegistrationStateDH</td><td class='mono'>State</td><td><span class='tag tag-prov'>codeTypeProvider=NCIC</span></td></tr></tbody></table><div class='combo-header'>Combinations (priority order):</div><div class='combo-list'><div class='combo'><span class='combo-idx'>#1</span> <strong>KQ.O</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCodeDH</span> <span class='combo-field combo-set'>OperatorLicenseNumberDH</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>AttentionDH</span> <span class='combo-field combo-any'>RegistrationStateDH</span></div></div><div class='combo'><span class='combo-idx'>#2</span> <strong>L1.O</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCodeDH</span> <span class='combo-field combo-set'>OperatorLicenseNumberDH</span></div><div class='combo-detail'>any (optional): <em>none</em></div></div><div class='combo'><span class='combo-idx'>#3</span> <strong>KQ.N</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCodeDH</span> <span class='combo-field combo-set'>NameLastDH</span> <span class='combo-field combo-set'>NameFirstDH</span> <span class='combo-field combo-set'>SexCodeDH</span> <span class='combo-field combo-set'>BirthDateDH</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>AttentionDH</span> <span class='combo-field combo-any'>RegistrationStateDH</span> <span class='combo-field combo-any'>nameMiddleDH</span> <span class='combo-field combo-any'>nameSuffixDH</span></div></div><div class='combo'><span class='combo-idx'>#4</span> <strong>L1.N</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCodeDH</span> <span class='combo-field combo-set'>NameLastDH</span> <span class='combo-field combo-set'>NameFirstDH</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>nameMiddleDH</span> <span class='combo-field combo-any'>nameSuffixDH</span></div></div></div></div></div><div class='entity-section'><h2>Firearm <span class='entity-meta'>1 card(s), 9 field(s)</span></h2><h3>Form Layout</h3><div class='card'><div class='card-header'>CARD_FA</div><div class='card-body'><div class='row-container'><span class='row-cols'>columns: 6, 6</span><div class='field field-dropdown'>
+</div></div></div></div><div class='qidm'><div class='qidm-header'>QIDM: CA_eSUN_DriverLicenseQuery</div><table class='qidm-table'><thead><tr><th>Source Field</th><th>Target Field</th><th>Properties</th></tr></thead><tbody><tr><td class='mono'>PurposeCode</td><td class='mono'>CaRequestPurposeCode</td><td>-</td></tr><tr><td class='mono'>OperatorLicenseNumber</td><td class='mono'>OperatorLicenseNumber</td><td>-</td></tr><tr><td class='mono'>NameLast, NameFirst, nameMiddle, nameSuffix</td><td class='mono'>Name</td><td><span class='tag tag-rule'>FormatStringRuleHandler (, ,  ,  )</span></td></tr><tr><td class='mono'>BirthDate</td><td class='mono'>BirthDate</td><td><span class='tag tag-rule'>CommsysParseDateRuleHandler (yyyy-MM-dd, MMddyyyy)</span></td></tr><tr><td class='mono'>Age</td><td class='mono'>Age</td><td>-</td></tr><tr><td class='mono'>SexCode</td><td class='mono'>SexCode</td><td><span class='tag tag-prov'>codeTypeProvider=NIBRS</span></td></tr><tr><td class='mono'>RegistrationState</td><td class='mono'>State</td><td><span class='tag tag-prov'>codeTypeProvider=NCIC</span></td></tr></tbody></table><div class='combo-header'>Combinations (priority order):</div><div class='combo-list'><div class='combo'><span class='combo-idx'>#1</span> <strong>DQ.O</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCode</span> <span class='combo-field combo-set'>OperatorLicenseNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>RegistrationState</span></div></div><div class='combo'><span class='combo-idx'>#2</span> <strong>L1.O</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCode</span> <span class='combo-field combo-set'>OperatorLicenseNumber</span></div><div class='combo-detail'>any (optional): <em>none</em></div></div><div class='combo'><span class='combo-idx'>#3</span> <strong>DQ.N</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCode</span> <span class='combo-field combo-set'>NameLast</span> <span class='combo-field combo-set'>NameFirst</span> <span class='combo-field combo-set'>SexCode</span> <span class='combo-field combo-set'>BirthDate</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>RegistrationState</span> <span class='combo-field combo-any'>nameMiddle</span> <span class='combo-field combo-any'>nameSuffix</span></div></div><div class='combo'><span class='combo-idx'>#4</span> <strong>QW.N</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCode</span> <span class='combo-field combo-set'>NameLast</span> <span class='combo-field combo-set'>NameFirst</span> <span class='combo-field combo-set'>BirthDate</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>Age</span> <span class='combo-field combo-any'>SexCode</span> <span class='combo-field combo-any'>nameMiddle</span> <span class='combo-field combo-any'>nameSuffix</span></div></div><div class='combo'><span class='combo-idx'>#5</span> <strong>L1.N</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCode</span> <span class='combo-field combo-set'>NameLast</span> <span class='combo-field combo-set'>NameFirst</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>Age</span> <span class='combo-field combo-any'>BirthDate</span> <span class='combo-field combo-any'>nameMiddle</span> <span class='combo-field combo-any'>nameSuffix</span></div></div></div></div><div class='qidm'><div class='qidm-header'>QIDM: CA_eSUN_DriverHistoryQuery</div><table class='qidm-table'><thead><tr><th>Source Field</th><th>Target Field</th><th>Properties</th></tr></thead><tbody><tr><td class='mono'>PurposeCodeDH</td><td class='mono'>CaRequestPurposeCode</td><td>-</td></tr><tr><td class='mono'>OperatorLicenseNumberDH</td><td class='mono'>OperatorLicenseNumber</td><td>-</td></tr><tr><td class='mono'>NameLastDH, NameFirstDH, nameMiddleDH, nameSuffixDH</td><td class='mono'>Name</td><td><span class='tag tag-rule'>FormatStringRuleHandler (, ,  ,  )</span></td></tr><tr><td class='mono'>BirthDateDH</td><td class='mono'>BirthDate</td><td><span class='tag tag-rule'>CommsysParseDateRuleHandler (yyyy-MM-dd, MMddyyyy)</span></td></tr><tr><td class='mono'>SexCodeDH</td><td class='mono'>SexCode</td><td><span class='tag tag-prov'>codeTypeProvider=NIBRS</span></td></tr><tr><td class='mono'>AttentionDH</td><td class='mono'>Attention</td><td><span class='tag tag-rule'>CommsysGetLastNameFirstNameInitialRuleHandler</span></td></tr><tr><td class='mono'>RegistrationStateDH</td><td class='mono'>State</td><td><span class='tag tag-prov'>codeTypeProvider=NCIC</span></td></tr></tbody></table><div class='combo-header'>Combinations (priority order):</div><div class='combo-list'><div class='combo'><span class='combo-idx'>#1</span> <strong>KQ.O</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCodeDH</span> <span class='combo-field combo-set'>OperatorLicenseNumberDH</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>AttentionDH</span> <span class='combo-field combo-any'>RegistrationStateDH</span></div></div><div class='combo'><span class='combo-idx'>#2</span> <strong>L1.ODH</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCodeDH</span> <span class='combo-field combo-set'>OperatorLicenseNumberDH</span></div><div class='combo-detail'>any (optional): <em>none</em></div></div><div class='combo'><span class='combo-idx'>#3</span> <strong>KQ.N</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCodeDH</span> <span class='combo-field combo-set'>NameLastDH</span> <span class='combo-field combo-set'>NameFirstDH</span> <span class='combo-field combo-set'>SexCodeDH</span> <span class='combo-field combo-set'>BirthDateDH</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>AttentionDH</span> <span class='combo-field combo-any'>RegistrationStateDH</span> <span class='combo-field combo-any'>nameMiddleDH</span> <span class='combo-field combo-any'>nameSuffixDH</span></div></div><div class='combo'><span class='combo-idx'>#4</span> <strong>L1.NDH</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>PurposeCodeDH</span> <span class='combo-field combo-set'>NameLastDH</span> <span class='combo-field combo-set'>NameFirstDH</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>nameMiddleDH</span> <span class='combo-field combo-any'>nameSuffixDH</span></div></div></div></div></div><div class='entity-section'><h2>Firearm <span class='entity-meta'>1 card(s), 11 field(s)</span></h2><h3>Form Layout</h3><div class='card'><div class='card-header'>CARD_FA</div><div class='card-body'><div class='row-container'><span class='row-cols'>columns: 6, 6</span><div class='field field-dropdown'>
   <div class='field-header'>
     <span class='field-id'>PurposeCode</span>
     <span class='field-type'>Dropdown</span>
@@ -287,7 +323,7 @@
     <span class='field-type'>Dropdown</span>
   </div>
   <div class='field-tags'><span class='tag tag-code'>codeTypeCategory=NCIC_FIREARM_TYPE</span> <span class='tag tag-code'>codeTypeSource=NCIC</span></div>
-</div></div><div class='row-container'><span class='row-cols'>columns: 6, 6</span><div class='field field-text'>
+</div></div><div class='row-container'><span class='row-cols'>columns: 4, 4, 2, 2</span><div class='field field-text'>
   <div class='field-header'>
     <span class='field-id'>NameLast</span>
     <span class='field-type'>Text Input</span>
@@ -299,6 +335,18 @@
     <span class='field-type'>Text Input</span>
   </div>
   <div class='field-tags'><span class='tag tag-meta'>maxLength=30</span></div>
+</div><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>nameMiddle</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=30</span></div>
+</div><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>nameSuffix</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=5</span></div>
 </div></div><div class='row-container'><span class='row-cols'>columns: 4, 4, 4</span><div class='field field-other'>
   <div class='field-header'>
     <span class='field-id'>BirthDate</span>

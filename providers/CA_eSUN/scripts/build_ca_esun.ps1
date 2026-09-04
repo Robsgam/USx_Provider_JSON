@@ -32,7 +32,25 @@
 #  entirely. The v2.2 sweep proved value-comparison operators DO evaluate here, so
 #  this is a cleanliness choice rather than a correctness fix.
 # =====================================================================
-param([string]$Version = '3.0')
+#  SYNTHETIC keyRef INVENTORY -- LIMITATION #21 / #36.
+#  Metadata gives ONE keyRef several primaryField variants (QV{Plate} and QV{VIN}; DQ{OLN}
+#  and DQ{Name}; BQ{Reg} and BQ{Hull}), but a keyReference must be UNIQUE inside a QIDM, so
+#  each variant is built under a suffixed name. THE SUFFIX IS OURS AND NEVER REACHES THE WIRE
+#  -- a request carries <MessageType><QueryName></MessageType> plus the fields, nothing else.
+#  Per QIDM, the split keyRefs and the metadata keyRef each implements:
+#    VehicleRegistrationQuery : RQ.P RQ.V (RQ) · 4.P (4) · QV.P QV.V (QV) · VP.N (VP)
+#    DriverLicenseQuery       : DQ.O DQ.N (DQ) · L1.O L1.N (L1) · QW.N (QW)
+#    DriverHistoryQuery       : KQ.O KQ.N (KQ) · L1.ODH L1.NDH (L1)
+#      ^ DH-SUFFIXED because metadata L1 sits under BOTH DriverLicenseQuery and
+#        DriverHistoryQuery, and a bare L1.O/L1.N in both QIDMs raised two validator WARNs
+#        ("keyReference appears in multiple QIDMs -- may cause routing ambiguity"). The
+#        suffix is bookkeeping only; both still resolve to metadata L1 on the officer guide.
+#    GunQuery                 : QG.S (QG) · QGH.A QGH.B (QGH)
+#    BoatQuery                : BQ.R BQ.H (BQ) · QB.R QB.H (QB)
+#    ArticleSingleQuery       : QA -- metadata-exact, no split needed
+#  The officer guide resolves these BACK to the metadata keyRef, so a supervisor reading a
+#  state manual sees QV / DQ / BQ and not our bookkeeping.
+param([string]$Version = '3.1')
 $ErrorActionPreference = 'Stop'
 
 $DIR  = Split-Path $PSScriptRoot -Parent
@@ -273,7 +291,7 @@ $dhQuery = [PSCustomObject]@{
                 set = @('PurposeCodeDH','OperatorLicenseNumberDH')
                 any = @(); conditions = @((StateIn 'RegistrationStateDH'))
             }
-            primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'L1.O'; state = 'In'
+            primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'L1.ODH'; state = 'In'
         }
         [PSCustomObject]@{   # KQ{Name+Sex+DOB}
             requirements = [PSCustomObject]@{
@@ -289,7 +307,7 @@ $dhQuery = [PSCustomObject]@{
                 any = @('nameMiddleDH','nameSuffixDH')
                 conditions = (Absent @('OperatorLicenseNumberDH'))
             }
-            primaryFieldReference = 'Name'; keyReference = 'L1.N'; state = 'In/Out'
+            primaryFieldReference = 'Name'; keyReference = 'L1.NDH'; state = 'In/Out'
         }
     )
     combinationsNote   = 'DH-suffix isolation'
@@ -464,7 +482,7 @@ $vehLayout = MakeLayouts @(
             @{ id = 'ROW_VEH_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'PurposeCode_Input';        node = Sel 'PurposeCode' 'CA Purpose Code' @{ attributeTypeId = 'DEX_INQUIRY_PURPOSE_CODE' } 'ROW_VEH_1' }
                 @{ id = 'LicensePlateNumber_Input'; node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
-                @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
+                @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State (leave blank for California)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('6','6'); fields = @(
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC' } 'ROW_VEH_2' }
@@ -472,16 +490,32 @@ $vehLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_VEH_3'; cols = @('4','4','4'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_3' }
-                @{ id = 'VehicleMakeCode_Input'; node = Sel 'VehicleMakeCode' 'Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_3' }
-                @{ id = 'VehicleYear_Input';     node = Inp 'vehicleYear' 'Year' '4' 'ROW_VEH_3' }
+                @{ id = 'VehicleMakeCode_Input'; node = Sel 'VehicleMakeCode' 'Make (optional)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_3' }
+                @{ id = 'VehicleYear_Input';     node = Inp 'vehicleYear' 'Year (optional)' '4' 'ROW_VEH_3' }
             )}
-            @{ id = 'ROW_VEH_4'; cols = @('6','6'); fields = @(
-                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Owner Last Name'  '30' 'ROW_VEH_4' }
-                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'Owner First Name' '30' 'ROW_VEH_4' }
+            # MIDDLE + SUFFIX CONTROLS. The QIDM's Name composite has ALWAYS referenced nameMiddle
+            # and nameSuffix (NameAttr's defaults), and metadata declares Name as
+            # type="Name" maxLength="30" with Components First/Last/Middle/Suffix -- but v3.0 built
+            # no controls for two of the four. That single omission produced 24 findings:
+            # 8 verify_build FAILs ("sourceField not in QIF fieldIds") and all 16 audit_wiring_closure
+            # class-C breaks ("references 'nameMiddle' -- no control on the form"), across Vehicle,
+            # both Person cards and Firearm.
+            # ADDING the controls is the fix, not stripping the sourceField: audit_name_components
+            # records that 6 such controls were DELETED portfolio-wide on 2026-08-02 after
+            # wiring-closure was misread as saying they should not exist -- that gate walks JSON->JSON
+            # so it can say a control is USELESS, never that one is MISSING. The capability is
+            # wire-proven (AZ_AZDPS v3.11 emits "DOE, JOHN A JR" and degrades cleanly).
+            # Row widened 6+6 -> 4+4+2+2 so it still sums to 12 (audit_layout_flow L6); Last/First
+            # keep the width, Middle/Suffix take the remainder.
+            @{ id = 'ROW_VEH_4'; cols = @('4','4','2','2'); fields = @(
+                @{ id = 'NameLast_Input';   node = Inp 'NameLast'   'Owner Last Name'  '30' 'ROW_VEH_4' }
+                @{ id = 'NameFirst_Input';  node = Inp 'NameFirst'  'Owner First Name' '30' 'ROW_VEH_4' }
+                @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name (optional)'      '30' 'ROW_VEH_4' }
+                @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix (optional)'           '5'  'ROW_VEH_4' }
             )}
             @{ id = 'ROW_VEH_5'; cols = @('6','6'); fields = @(
-                @{ id = 'AddressStreetNumber_Input'; node = Inp 'AddressStreetNumber' 'Street Number' '10' 'ROW_VEH_5' }
-                @{ id = 'AddressCity_Input';         node = Inp 'AddressCity' 'City' '20' 'ROW_VEH_5' }
+                @{ id = 'AddressStreetNumber_Input'; node = Inp 'AddressStreetNumber' 'Street Number (optional)' '10' 'ROW_VEH_5' }
+                @{ id = 'AddressCity_Input';         node = Inp 'AddressCity' 'City (optional)' '20' 'ROW_VEH_5' }
             )}
         )
     }
@@ -500,11 +534,13 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_DL_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'PurposeCode_Input';           node = Sel 'PurposeCode' 'CA Purpose Code' @{ attributeTypeId = 'DEX_INQUIRY_PURPOSE_CODE' } 'ROW_DL_1' }
                 @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_DL_1' }
-                @{ id = 'RegistrationState_Input';     node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_DL_1' }
+                @{ id = 'RegistrationState_Input';     node = Sel 'RegistrationState' 'State (leave blank for California)' @{ attributeTypeId = 'STATE' } 'ROW_DL_1' }
             )}
-            @{ id = 'ROW_DL_2'; cols = @('6','6'); fields = @(
-                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_DL_2' }
-                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_DL_2' }
+            @{ id = 'ROW_DL_2'; cols = @('4','4','2','2'); fields = @(
+                @{ id = 'NameLast_Input';   node = Inp 'NameLast'   'Last Name'   '30' 'ROW_DL_2' }
+                @{ id = 'NameFirst_Input';  node = Inp 'NameFirst'  'First Name'  '30' 'ROW_DL_2' }
+                @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name (optional)' '30' 'ROW_DL_2' }
+                @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix (optional)'      '5'  'ROW_DL_2' }
             )}
             @{ id = 'ROW_DL_3'; cols = @('4','4','4'); fields = @(
                 @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_DL_3' }
@@ -520,11 +556,13 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_DH_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'PurposeCodeDH_Input';           node = Sel 'PurposeCodeDH' 'CA Purpose Code (DH)' @{ attributeTypeId = 'DEX_INQUIRY_PURPOSE_CODE' } 'ROW_DH_1' }
                 @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN (DH)' '20' 'ROW_DH_1' }
-                @{ id = 'RegistrationStateDH_Input';     node = Sel 'RegistrationStateDH' 'State (DH)' @{ attributeTypeId = 'STATE' } 'ROW_DH_1' }
+                @{ id = 'RegistrationStateDH_Input';     node = Sel 'RegistrationStateDH' 'State (DH) (leave blank for California)' @{ attributeTypeId = 'STATE' } 'ROW_DH_1' }
             )}
-            @{ id = 'ROW_DH_2'; cols = @('6','6'); fields = @(
-                @{ id = 'NameLastDH_Input';  node = Inp 'NameLastDH'  'Last Name (DH)'  '30' 'ROW_DH_2' }
-                @{ id = 'NameFirstDH_Input'; node = Inp 'NameFirstDH' 'First Name (DH)' '30' 'ROW_DH_2' }
+            @{ id = 'ROW_DH_2'; cols = @('4','4','2','2'); fields = @(
+                @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name (DH)'   '30' 'ROW_DH_2' }
+                @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name (DH)'  '30' 'ROW_DH_2' }
+                @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'Middle Name (DH)' '30' 'ROW_DH_2' }
+                @{ id = 'nameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix (DH)'      '5'  'ROW_DH_2' }
             )}
             @{ id = 'ROW_DH_3'; cols = @('6','6'); fields = @(
                 @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth (DH)' 'ROW_DH_3' }
@@ -554,18 +592,20 @@ $faLayout = MakeLayouts @(
                 @{ id = 'GunSerialNumber_Input'; node = Inp 'GunSerialNumber' 'Serial Number' '20' 'ROW_FA_1' }
             )}
             @{ id = 'ROW_FA_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'GunMake_Input';     node = Sel 'GunMake' 'Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_FA_2' }
-                @{ id = 'GunCaliber_Input';  node = Sel 'GunCaliber' 'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_FA_2' }
-                @{ id = 'GunTypeCode_Input'; node = Sel 'GunTypeCode' 'Type' @{ codeTypeCategory = 'NCIC_FIREARM_TYPE'; codeTypeSource = 'NCIC' } 'ROW_FA_2' }
+                @{ id = 'GunMake_Input';     node = Sel 'GunMake' 'Make (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_FA_2' }
+                @{ id = 'GunCaliber_Input';  node = Sel 'GunCaliber' 'Caliber (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_FA_2' }
+                @{ id = 'GunTypeCode_Input'; node = Sel 'GunTypeCode' 'Type (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_TYPE'; codeTypeSource = 'NCIC' } 'ROW_FA_2' }
             )}
-            @{ id = 'ROW_FA_3'; cols = @('6','6'); fields = @(
-                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_FA_3' }
-                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_FA_3' }
+            @{ id = 'ROW_FA_3'; cols = @('4','4','2','2'); fields = @(
+                @{ id = 'NameLast_Input';   node = Inp 'NameLast'   'Last Name'   '30' 'ROW_FA_3' }
+                @{ id = 'NameFirst_Input';  node = Inp 'NameFirst'  'First Name'  '30' 'ROW_FA_3' }
+                @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name (optional)' '30' 'ROW_FA_3' }
+                @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix (optional)'      '5'  'ROW_FA_3' }
             )}
             @{ id = 'ROW_FA_4'; cols = @('4','4','4'); fields = @(
                 @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_FA_4' }
                 @{ id = 'Age_Input';       node = Inp 'Age' 'Age' '3' 'ROW_FA_4' }
-                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_FA_4' }
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_FA_4' }
             )}
         )
     }
@@ -586,9 +626,9 @@ $artLayout = MakeLayouts @(
                 @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number / OAN' '20' 'ROW_ART_1' }
             )}
             @{ id = 'ROW_ART_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'ArticleTypeCode_Input'; node = Sel 'ArticleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_2' }
-                @{ id = 'ArticleCategory_Input'; node = Inp 'ArticleCategory' 'Article Category' '1' 'ROW_ART_2' }
-                @{ id = 'ArticleBrand_Input';    node = Inp 'ArticleBrand' 'Brand' '6' 'ROW_ART_2' }
+                @{ id = 'ArticleTypeCode_Input'; node = Sel 'ArticleTypeCode' 'Article Type (optional)' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_2' }
+                @{ id = 'ArticleCategory_Input'; node = Inp 'ArticleCategory' 'Article Category (optional)' '1' 'ROW_ART_2' }
+                @{ id = 'ArticleBrand_Input';    node = Inp 'ArticleBrand' 'Brand (optional)' '6' 'ROW_ART_2' }
             )}
         )
     }
@@ -610,7 +650,7 @@ $boaLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_BOA_2'; cols = @('6','6'); fields = @(
                 @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '10' 'ROW_BOA_2' }
-                @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_BOA_2' }
+                @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State (leave blank for California)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_2' }
             )}
         )
     }

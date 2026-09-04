@@ -1,28 +1,20 @@
 ﻿================================================================
   Build Report: CA_eSUN
-  Source: CA_eSUN_v3.0.json
-  Generated: 2026-09-04 09:02
+  Source: CA_eSUN_v3.1.json
+  Generated: 2026-09-04 10:08
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: CA_eSUN_v3.0
+ POST-BUILD VERIFICATION: CA_eSUN_v3.1
 ========================================
 
 --- CHECK 1: Banned Patterns ---
   [PASS] No banned pattern 'LicensePlateNumberIn'
 
 --- CHECK 2: fieldId / sourceField Consistency ---
-  [FAIL] QIDM 'CA_eSUN_VehicleRegistrationQuery' attr 'Name' sourceField='nameMiddle' not in Vehicle QIF fieldIds
-  [FAIL] QIDM 'CA_eSUN_VehicleRegistrationQuery' attr 'Name' sourceField='nameSuffix' not in Vehicle QIF fieldIds
-  [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'Name' sourceField='nameMiddle' not in Person QIF fieldIds
-  [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'Name' sourceField='nameSuffix' not in Person QIF fieldIds
-  [FAIL] QIDM 'CA_eSUN_DriverHistoryQuery' attr 'Name' sourceField='nameMiddleDH' not in Person QIF fieldIds
-  [FAIL] QIDM 'CA_eSUN_DriverHistoryQuery' attr 'Name' sourceField='nameSuffixDH' not in Person QIF fieldIds
-  [FAIL] QIDM 'CA_eSUN_GunQuery' attr 'Name' sourceField='nameMiddle' not in Firearm QIF fieldIds
-  [FAIL] QIDM 'CA_eSUN_GunQuery' attr 'Name' sourceField='nameSuffix' not in Firearm QIF fieldIds
   [PASS] CommSys QIDM fieldId/sourceField/combo consistency checked
 
 --- CHECK 3: RMS QIDM Consistency ---
@@ -46,11 +38,7 @@ POST-BUILD VERIFICATION
   [PASS] Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard
 
 --- CHECK 7: Synthetic keyRef Documentation ---
-  [FAIL] QIDM 'CA_eSUN_VehicleRegistrationQuery' has 6 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'VehicleRegistrationQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
-  [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' has 5 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'DriverLicenseQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
-  [FAIL] QIDM 'CA_eSUN_DriverHistoryQuery' has 4 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'DriverHistoryQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
-  [FAIL] QIDM 'CA_eSUN_GunQuery' has 3 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'GunQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
-  [FAIL] QIDM 'CA_eSUN_BoatQuery' has 4 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'BoatQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
+  [PASS] All 5 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 8: RMS combos subset of CommSys combos ---
   [PASS] RMS combo fields (9) are a subset of CommSys combo fields (39) (RMS-generic allowed)
@@ -68,21 +56,8 @@ POST-BUILD VERIFICATION
   [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
 --- CHECK 13: Form Field Label Hints ---
-  [FAIL] Field 'RegistrationState' label='State' missing State routing hint -- need 'leave blank for' (when State is not defaulted) or 'change for out-of-state' (when State is defaulted). BUILD_RULES Section 11
   [INFO] Field 'AttentionDH' label='Attention (auto)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
-  [WARN] Field 'RegistrationState' (any[]-only) label='State' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'VehicleMakeCode' (any[]-only) label='Make' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'vehicleYear' (any[]-only) label='Year' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'AddressCity' (any[]-only) label='City' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'AddressStreetNumber' (any[]-only) label='Street Number' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'GunCaliber' (any[]-only) label='Caliber' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'GunMake' (any[]-only) label='Make' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'GunTypeCode' (any[]-only) label='Type' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'relatedHitSearchIndicator' (any[]-only) label='Stolen Check' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'ArticleBrand' (any[]-only) label='Brand' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'ArticleCategory' (any[]-only) label='Article Category' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'ArticleTypeCode' (any[]-only) label='Article Type' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [INFO] 13 field(s) need label hint fixes
+  [PASS] All form field labels have required routing hint qualifiers (42 fields scanned) (1 DH field(s) untagged -- advisory only, see Info above)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)
@@ -96,7 +71,7 @@ POST-BUILD VERIFICATION
   [PASS] No duplicate targetField in any REQUEST QIDM (5 in response mappings -- INFO, see CHECK 15 header)
 
 ========================================
- VERIFICATION FAILED: 14 FAIL / 12 WARN / 15 PASS
+ VERIFICATION PASSED: 17 PASS / 0 WARN / 0 FAIL
 ========================================
 
 

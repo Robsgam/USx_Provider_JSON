@@ -155,7 +155,7 @@
                                                                                                                   "displayName":  "Select",
                                                                                                                   "props":  {
                                                                                                                                 "fieldId":  "RegistrationState",
-                                                                                                                                "label":  "State",
+                                                                                                                                "label":  "State (leave blank for California)",
                                                                                                                                 "attributeTypeId":  "STATE"
                                                                                                                             },
                                                                                                                   "isCanvas":  false,
@@ -282,7 +282,7 @@
                                                                                                                 "displayName":  "Select",
                                                                                                                 "props":  {
                                                                                                                               "fieldId":  "VehicleMakeCode",
-                                                                                                                              "label":  "Make",
+                                                                                                                              "label":  "Make (optional)",
                                                                                                                               "attributeTypeId":  "VEHICLE_MAKE",
                                                                                                                               "codeTypeProvider":  "NCIC"
                                                                                                                           },
@@ -303,7 +303,7 @@
                                                                                                             "displayName":  "Input",
                                                                                                             "props":  {
                                                                                                                           "fieldId":  "vehicleYear",
-                                                                                                                          "label":  "Year",
+                                                                                                                          "label":  "Year (optional)",
                                                                                                                           "maxLength":  "4"
                                                                                                                       },
                                                                                                             "isCanvas":  false,
@@ -323,15 +323,19 @@
                                                                                                     "displayName":  "Row",
                                                                                                     "props":  {
                                                                                                                   "templateColumns":  [
-                                                                                                                                          "6",
-                                                                                                                                          "6"
+                                                                                                                                          "4",
+                                                                                                                                          "4",
+                                                                                                                                          "2",
+                                                                                                                                          "2"
                                                                                                                                       ]
                                                                                                               },
                                                                                                     "isCanvas":  true,
                                                                                                     "hidden":  false,
                                                                                                     "nodes":  [
                                                                                                                   "NameLast_Input",
-                                                                                                                  "NameFirst_Input"
+                                                                                                                  "NameFirst_Input",
+                                                                                                                  "nameMiddle_Input",
+                                                                                                                  "nameSuffix_Input"
                                                                                                               ],
                                                                                                     "linkedNodes":  {
 
@@ -378,6 +382,46 @@
                                                                                                                           },
                                                                                                           "parent":  "ROW_VEH_4"
                                                                                                       },
+                                                                                  "nameMiddle_Input":  {
+                                                                                                           "type":  {
+                                                                                                                        "resolvedName":  "FormInput"
+                                                                                                                    },
+                                                                                                           "displayName":  "Input",
+                                                                                                           "props":  {
+                                                                                                                         "fieldId":  "nameMiddle",
+                                                                                                                         "label":  "Middle Name (optional)",
+                                                                                                                         "maxLength":  "30"
+                                                                                                                     },
+                                                                                                           "isCanvas":  false,
+                                                                                                           "hidden":  false,
+                                                                                                           "nodes":  [
+
+                                                                                                                     ],
+                                                                                                           "linkedNodes":  {
+
+                                                                                                                           },
+                                                                                                           "parent":  "ROW_VEH_4"
+                                                                                                       },
+                                                                                  "nameSuffix_Input":  {
+                                                                                                           "type":  {
+                                                                                                                        "resolvedName":  "FormInput"
+                                                                                                                    },
+                                                                                                           "displayName":  "Input",
+                                                                                                           "props":  {
+                                                                                                                         "fieldId":  "nameSuffix",
+                                                                                                                         "label":  "Suffix (optional)",
+                                                                                                                         "maxLength":  "5"
+                                                                                                                     },
+                                                                                                           "isCanvas":  false,
+                                                                                                           "hidden":  false,
+                                                                                                           "nodes":  [
+
+                                                                                                                     ],
+                                                                                                           "linkedNodes":  {
+
+                                                                                                                           },
+                                                                                                           "parent":  "ROW_VEH_4"
+                                                                                                       },
                                                                                   "ROW_VEH_5":  {
                                                                                                     "type":  {
                                                                                                                  "resolvedName":  "Row"
@@ -407,7 +451,7 @@
                                                                                                                     "displayName":  "Input",
                                                                                                                     "props":  {
                                                                                                                                   "fieldId":  "AddressStreetNumber",
-                                                                                                                                  "label":  "Street Number",
+                                                                                                                                  "label":  "Street Number (optional)",
                                                                                                                                   "maxLength":  "10"
                                                                                                                               },
                                                                                                                     "isCanvas":  false,
@@ -427,7 +471,7 @@
                                                                                                             "displayName":  "Input",
                                                                                                             "props":  {
                                                                                                                           "fieldId":  "AddressCity",
-                                                                                                                          "label":  "City",
+                                                                                                                          "label":  "City (optional)",
                                                                                                                           "maxLength":  "20"
                                                                                                                       },
                                                                                                             "isCanvas":  false,
@@ -590,7 +634,7 @@
                                                                                                                        "displayName":  "Select",
                                                                                                                        "props":  {
                                                                                                                                      "fieldId":  "RegistrationState",
-                                                                                                                                     "label":  "State",
+                                                                                                                                     "label":  "State (leave blank for California)",
                                                                                                                                      "attributeTypeId":  "STATE"
                                                                                                                                  },
                                                                                                                        "isCanvas":  false,
@@ -717,7 +761,7 @@
                                                                                                                      "displayName":  "Select",
                                                                                                                      "props":  {
                                                                                                                                    "fieldId":  "VehicleMakeCode",
-                                                                                                                                   "label":  "Make",
+                                                                                                                                   "label":  "Make (optional)",
                                                                                                                                    "attributeTypeId":  "VEHICLE_MAKE",
                                                                                                                                    "codeTypeProvider":  "NCIC"
                                                                                                                                },
@@ -738,7 +782,7 @@
                                                                                                                  "displayName":  "Input",
                                                                                                                  "props":  {
                                                                                                                                "fieldId":  "vehicleYear",
-                                                                                                                               "label":  "Year",
+                                                                                                                               "label":  "Year (optional)",
                                                                                                                                "maxLength":  "4"
                                                                                                                            },
                                                                                                                  "isCanvas":  false,
@@ -758,15 +802,19 @@
                                                                                                          "displayName":  "Row",
                                                                                                          "props":  {
                                                                                                                        "templateColumns":  [
-                                                                                                                                               "6",
-                                                                                                                                               "6"
+                                                                                                                                               "4",
+                                                                                                                                               "4",
+                                                                                                                                               "2",
+                                                                                                                                               "2"
                                                                                                                                            ]
                                                                                                                    },
                                                                                                          "isCanvas":  true,
                                                                                                          "hidden":  false,
                                                                                                          "nodes":  [
                                                                                                                        "NameLast_Input",
-                                                                                                                       "NameFirst_Input"
+                                                                                                                       "NameFirst_Input",
+                                                                                                                       "nameMiddle_Input",
+                                                                                                                       "nameSuffix_Input"
                                                                                                                    ],
                                                                                                          "linkedNodes":  {
 
@@ -813,6 +861,46 @@
                                                                                                                                },
                                                                                                                "parent":  "ROW_VEH_4"
                                                                                                            },
+                                                                                       "nameMiddle_Input":  {
+                                                                                                                "type":  {
+                                                                                                                             "resolvedName":  "FormInput"
+                                                                                                                         },
+                                                                                                                "displayName":  "Input",
+                                                                                                                "props":  {
+                                                                                                                              "fieldId":  "nameMiddle",
+                                                                                                                              "label":  "Middle Name (optional)",
+                                                                                                                              "maxLength":  "30"
+                                                                                                                          },
+                                                                                                                "isCanvas":  false,
+                                                                                                                "hidden":  false,
+                                                                                                                "nodes":  [
+
+                                                                                                                          ],
+                                                                                                                "linkedNodes":  {
+
+                                                                                                                                },
+                                                                                                                "parent":  "ROW_VEH_4"
+                                                                                                            },
+                                                                                       "nameSuffix_Input":  {
+                                                                                                                "type":  {
+                                                                                                                             "resolvedName":  "FormInput"
+                                                                                                                         },
+                                                                                                                "displayName":  "Input",
+                                                                                                                "props":  {
+                                                                                                                              "fieldId":  "nameSuffix",
+                                                                                                                              "label":  "Suffix (optional)",
+                                                                                                                              "maxLength":  "5"
+                                                                                                                          },
+                                                                                                                "isCanvas":  false,
+                                                                                                                "hidden":  false,
+                                                                                                                "nodes":  [
+
+                                                                                                                          ],
+                                                                                                                "linkedNodes":  {
+
+                                                                                                                                },
+                                                                                                                "parent":  "ROW_VEH_4"
+                                                                                                            },
                                                                                        "ROW_VEH_5":  {
                                                                                                          "type":  {
                                                                                                                       "resolvedName":  "Row"
@@ -842,7 +930,7 @@
                                                                                                                          "displayName":  "Input",
                                                                                                                          "props":  {
                                                                                                                                        "fieldId":  "AddressStreetNumber",
-                                                                                                                                       "label":  "Street Number",
+                                                                                                                                       "label":  "Street Number (optional)",
                                                                                                                                        "maxLength":  "10"
                                                                                                                                    },
                                                                                                                          "isCanvas":  false,
@@ -862,7 +950,7 @@
                                                                                                                  "displayName":  "Input",
                                                                                                                  "props":  {
                                                                                                                                "fieldId":  "AddressCity",
-                                                                                                                               "label":  "City",
+                                                                                                                               "label":  "City (optional)",
                                                                                                                                "maxLength":  "20"
                                                                                                                            },
                                                                                                                  "isCanvas":  false,
@@ -1106,7 +1194,7 @@
                                                                                                                           "displayName":  "Select",
                                                                                                                           "props":  {
                                                                                                                                         "fieldId":  "RegistrationState",
-                                                                                                                                        "label":  "State",
+                                                                                                                                        "label":  "State (leave blank for California)",
                                                                                                                                         "attributeTypeId":  "STATE"
                                                                                                                                     },
                                                                                                                           "isCanvas":  false,
@@ -1233,7 +1321,7 @@
                                                                                                                         "displayName":  "Select",
                                                                                                                         "props":  {
                                                                                                                                       "fieldId":  "VehicleMakeCode",
-                                                                                                                                      "label":  "Make",
+                                                                                                                                      "label":  "Make (optional)",
                                                                                                                                       "attributeTypeId":  "VEHICLE_MAKE",
                                                                                                                                       "codeTypeProvider":  "NCIC"
                                                                                                                                   },
@@ -1254,7 +1342,7 @@
                                                                                                                     "displayName":  "Input",
                                                                                                                     "props":  {
                                                                                                                                   "fieldId":  "vehicleYear",
-                                                                                                                                  "label":  "Year",
+                                                                                                                                  "label":  "Year (optional)",
                                                                                                                                   "maxLength":  "4"
                                                                                                                               },
                                                                                                                     "isCanvas":  false,
@@ -1274,15 +1362,19 @@
                                                                                                             "displayName":  "Row",
                                                                                                             "props":  {
                                                                                                                           "templateColumns":  [
-                                                                                                                                                  "6",
-                                                                                                                                                  "6"
+                                                                                                                                                  "4",
+                                                                                                                                                  "4",
+                                                                                                                                                  "2",
+                                                                                                                                                  "2"
                                                                                                                                               ]
                                                                                                                       },
                                                                                                             "isCanvas":  true,
                                                                                                             "hidden":  false,
                                                                                                             "nodes":  [
                                                                                                                           "NameLast_Input",
-                                                                                                                          "NameFirst_Input"
+                                                                                                                          "NameFirst_Input",
+                                                                                                                          "nameMiddle_Input",
+                                                                                                                          "nameSuffix_Input"
                                                                                                                       ],
                                                                                                             "linkedNodes":  {
 
@@ -1329,6 +1421,46 @@
                                                                                                                                   },
                                                                                                                   "parent":  "ROW_VEH_4"
                                                                                                               },
+                                                                                          "nameMiddle_Input":  {
+                                                                                                                   "type":  {
+                                                                                                                                "resolvedName":  "FormInput"
+                                                                                                                            },
+                                                                                                                   "displayName":  "Input",
+                                                                                                                   "props":  {
+                                                                                                                                 "fieldId":  "nameMiddle",
+                                                                                                                                 "label":  "Middle Name (optional)",
+                                                                                                                                 "maxLength":  "30"
+                                                                                                                             },
+                                                                                                                   "isCanvas":  false,
+                                                                                                                   "hidden":  false,
+                                                                                                                   "nodes":  [
+
+                                                                                                                             ],
+                                                                                                                   "linkedNodes":  {
+
+                                                                                                                                   },
+                                                                                                                   "parent":  "ROW_VEH_4"
+                                                                                                               },
+                                                                                          "nameSuffix_Input":  {
+                                                                                                                   "type":  {
+                                                                                                                                "resolvedName":  "FormInput"
+                                                                                                                            },
+                                                                                                                   "displayName":  "Input",
+                                                                                                                   "props":  {
+                                                                                                                                 "fieldId":  "nameSuffix",
+                                                                                                                                 "label":  "Suffix (optional)",
+                                                                                                                                 "maxLength":  "5"
+                                                                                                                             },
+                                                                                                                   "isCanvas":  false,
+                                                                                                                   "hidden":  false,
+                                                                                                                   "nodes":  [
+
+                                                                                                                             ],
+                                                                                                                   "linkedNodes":  {
+
+                                                                                                                                   },
+                                                                                                                   "parent":  "ROW_VEH_4"
+                                                                                                               },
                                                                                           "ROW_VEH_5":  {
                                                                                                             "type":  {
                                                                                                                          "resolvedName":  "Row"
@@ -1358,7 +1490,7 @@
                                                                                                                             "displayName":  "Input",
                                                                                                                             "props":  {
                                                                                                                                           "fieldId":  "AddressStreetNumber",
-                                                                                                                                          "label":  "Street Number",
+                                                                                                                                          "label":  "Street Number (optional)",
                                                                                                                                           "maxLength":  "10"
                                                                                                                                       },
                                                                                                                             "isCanvas":  false,
@@ -1378,7 +1510,7 @@
                                                                                                                     "displayName":  "Input",
                                                                                                                     "props":  {
                                                                                                                                   "fieldId":  "AddressCity",
-                                                                                                                                  "label":  "City",
+                                                                                                                                  "label":  "City (optional)",
                                                                                                                                   "maxLength":  "20"
                                                                                                                               },
                                                                                                                     "isCanvas":  false,
@@ -1586,7 +1718,7 @@
                                                                                                                   "displayName":  "Select",
                                                                                                                   "props":  {
                                                                                                                                 "fieldId":  "RegistrationState",
-                                                                                                                                "label":  "State",
+                                                                                                                                "label":  "State (leave blank for California)",
                                                                                                                                 "attributeTypeId":  "STATE"
                                                                                                                             },
                                                                                                                   "isCanvas":  false,
@@ -1606,15 +1738,19 @@
                                                                                                    "displayName":  "Row",
                                                                                                    "props":  {
                                                                                                                  "templateColumns":  [
-                                                                                                                                         "6",
-                                                                                                                                         "6"
+                                                                                                                                         "4",
+                                                                                                                                         "4",
+                                                                                                                                         "2",
+                                                                                                                                         "2"
                                                                                                                                      ]
                                                                                                              },
                                                                                                    "isCanvas":  true,
                                                                                                    "hidden":  false,
                                                                                                    "nodes":  [
                                                                                                                  "NameLast_Input",
-                                                                                                                 "NameFirst_Input"
+                                                                                                                 "NameFirst_Input",
+                                                                                                                 "nameMiddle_Input",
+                                                                                                                 "nameSuffix_Input"
                                                                                                              ],
                                                                                                    "linkedNodes":  {
 
@@ -1661,6 +1797,46 @@
                                                                                                                           },
                                                                                                           "parent":  "ROW_DL_2"
                                                                                                       },
+                                                                                  "nameMiddle_Input":  {
+                                                                                                           "type":  {
+                                                                                                                        "resolvedName":  "FormInput"
+                                                                                                                    },
+                                                                                                           "displayName":  "Input",
+                                                                                                           "props":  {
+                                                                                                                         "fieldId":  "nameMiddle",
+                                                                                                                         "label":  "Middle Name (optional)",
+                                                                                                                         "maxLength":  "30"
+                                                                                                                     },
+                                                                                                           "isCanvas":  false,
+                                                                                                           "hidden":  false,
+                                                                                                           "nodes":  [
+
+                                                                                                                     ],
+                                                                                                           "linkedNodes":  {
+
+                                                                                                                           },
+                                                                                                           "parent":  "ROW_DL_2"
+                                                                                                       },
+                                                                                  "nameSuffix_Input":  {
+                                                                                                           "type":  {
+                                                                                                                        "resolvedName":  "FormInput"
+                                                                                                                    },
+                                                                                                           "displayName":  "Input",
+                                                                                                           "props":  {
+                                                                                                                         "fieldId":  "nameSuffix",
+                                                                                                                         "label":  "Suffix (optional)",
+                                                                                                                         "maxLength":  "5"
+                                                                                                                     },
+                                                                                                           "isCanvas":  false,
+                                                                                                           "hidden":  false,
+                                                                                                           "nodes":  [
+
+                                                                                                                     ],
+                                                                                                           "linkedNodes":  {
+
+                                                                                                                           },
+                                                                                                           "parent":  "ROW_DL_2"
+                                                                                                       },
                                                                                   "ROW_DL_3":  {
                                                                                                    "type":  {
                                                                                                                 "resolvedName":  "Row"
@@ -1837,7 +2013,7 @@
                                                                                                                     "displayName":  "Select",
                                                                                                                     "props":  {
                                                                                                                                   "fieldId":  "RegistrationStateDH",
-                                                                                                                                  "label":  "State (DH)",
+                                                                                                                                  "label":  "State (DH) (leave blank for California)",
                                                                                                                                   "attributeTypeId":  "STATE"
                                                                                                                               },
                                                                                                                     "isCanvas":  false,
@@ -1857,15 +2033,19 @@
                                                                                                    "displayName":  "Row",
                                                                                                    "props":  {
                                                                                                                  "templateColumns":  [
-                                                                                                                                         "6",
-                                                                                                                                         "6"
+                                                                                                                                         "4",
+                                                                                                                                         "4",
+                                                                                                                                         "2",
+                                                                                                                                         "2"
                                                                                                                                      ]
                                                                                                              },
                                                                                                    "isCanvas":  true,
                                                                                                    "hidden":  false,
                                                                                                    "nodes":  [
                                                                                                                  "NameLastDH_Input",
-                                                                                                                 "NameFirstDH_Input"
+                                                                                                                 "NameFirstDH_Input",
+                                                                                                                 "nameMiddleDH_Input",
+                                                                                                                 "nameSuffixDH_Input"
                                                                                                              ],
                                                                                                    "linkedNodes":  {
 
@@ -1912,6 +2092,46 @@
                                                                                                                             },
                                                                                                             "parent":  "ROW_DH_2"
                                                                                                         },
+                                                                                  "nameMiddleDH_Input":  {
+                                                                                                             "type":  {
+                                                                                                                          "resolvedName":  "FormInput"
+                                                                                                                      },
+                                                                                                             "displayName":  "Input",
+                                                                                                             "props":  {
+                                                                                                                           "fieldId":  "nameMiddleDH",
+                                                                                                                           "label":  "Middle Name (DH)",
+                                                                                                                           "maxLength":  "30"
+                                                                                                                       },
+                                                                                                             "isCanvas":  false,
+                                                                                                             "hidden":  false,
+                                                                                                             "nodes":  [
+
+                                                                                                                       ],
+                                                                                                             "linkedNodes":  {
+
+                                                                                                                             },
+                                                                                                             "parent":  "ROW_DH_2"
+                                                                                                         },
+                                                                                  "nameSuffixDH_Input":  {
+                                                                                                             "type":  {
+                                                                                                                          "resolvedName":  "FormInput"
+                                                                                                                      },
+                                                                                                             "displayName":  "Input",
+                                                                                                             "props":  {
+                                                                                                                           "fieldId":  "nameSuffixDH",
+                                                                                                                           "label":  "Suffix (DH)",
+                                                                                                                           "maxLength":  "5"
+                                                                                                                       },
+                                                                                                             "isCanvas":  false,
+                                                                                                             "hidden":  false,
+                                                                                                             "nodes":  [
+
+                                                                                                                       ],
+                                                                                                             "linkedNodes":  {
+
+                                                                                                                             },
+                                                                                                             "parent":  "ROW_DH_2"
+                                                                                                         },
                                                                                   "ROW_DH_3":  {
                                                                                                    "type":  {
                                                                                                                 "resolvedName":  "Row"
@@ -2162,7 +2382,7 @@
                                                                                                                        "displayName":  "Select",
                                                                                                                        "props":  {
                                                                                                                                      "fieldId":  "RegistrationState",
-                                                                                                                                     "label":  "State",
+                                                                                                                                     "label":  "State (leave blank for California)",
                                                                                                                                      "attributeTypeId":  "STATE"
                                                                                                                                  },
                                                                                                                        "isCanvas":  false,
@@ -2182,15 +2402,19 @@
                                                                                                         "displayName":  "Row",
                                                                                                         "props":  {
                                                                                                                       "templateColumns":  [
-                                                                                                                                              "6",
-                                                                                                                                              "6"
+                                                                                                                                              "4",
+                                                                                                                                              "4",
+                                                                                                                                              "2",
+                                                                                                                                              "2"
                                                                                                                                           ]
                                                                                                                   },
                                                                                                         "isCanvas":  true,
                                                                                                         "hidden":  false,
                                                                                                         "nodes":  [
                                                                                                                       "NameLast_Input",
-                                                                                                                      "NameFirst_Input"
+                                                                                                                      "NameFirst_Input",
+                                                                                                                      "nameMiddle_Input",
+                                                                                                                      "nameSuffix_Input"
                                                                                                                   ],
                                                                                                         "linkedNodes":  {
 
@@ -2237,6 +2461,46 @@
                                                                                                                                },
                                                                                                                "parent":  "ROW_DL_2"
                                                                                                            },
+                                                                                       "nameMiddle_Input":  {
+                                                                                                                "type":  {
+                                                                                                                             "resolvedName":  "FormInput"
+                                                                                                                         },
+                                                                                                                "displayName":  "Input",
+                                                                                                                "props":  {
+                                                                                                                              "fieldId":  "nameMiddle",
+                                                                                                                              "label":  "Middle Name (optional)",
+                                                                                                                              "maxLength":  "30"
+                                                                                                                          },
+                                                                                                                "isCanvas":  false,
+                                                                                                                "hidden":  false,
+                                                                                                                "nodes":  [
+
+                                                                                                                          ],
+                                                                                                                "linkedNodes":  {
+
+                                                                                                                                },
+                                                                                                                "parent":  "ROW_DL_2"
+                                                                                                            },
+                                                                                       "nameSuffix_Input":  {
+                                                                                                                "type":  {
+                                                                                                                             "resolvedName":  "FormInput"
+                                                                                                                         },
+                                                                                                                "displayName":  "Input",
+                                                                                                                "props":  {
+                                                                                                                              "fieldId":  "nameSuffix",
+                                                                                                                              "label":  "Suffix (optional)",
+                                                                                                                              "maxLength":  "5"
+                                                                                                                          },
+                                                                                                                "isCanvas":  false,
+                                                                                                                "hidden":  false,
+                                                                                                                "nodes":  [
+
+                                                                                                                          ],
+                                                                                                                "linkedNodes":  {
+
+                                                                                                                                },
+                                                                                                                "parent":  "ROW_DL_2"
+                                                                                                            },
                                                                                        "ROW_DL_3":  {
                                                                                                         "type":  {
                                                                                                                      "resolvedName":  "Row"
@@ -2413,7 +2677,7 @@
                                                                                                                          "displayName":  "Select",
                                                                                                                          "props":  {
                                                                                                                                        "fieldId":  "RegistrationStateDH",
-                                                                                                                                       "label":  "State (DH)",
+                                                                                                                                       "label":  "State (DH) (leave blank for California)",
                                                                                                                                        "attributeTypeId":  "STATE"
                                                                                                                                    },
                                                                                                                          "isCanvas":  false,
@@ -2433,15 +2697,19 @@
                                                                                                         "displayName":  "Row",
                                                                                                         "props":  {
                                                                                                                       "templateColumns":  [
-                                                                                                                                              "6",
-                                                                                                                                              "6"
+                                                                                                                                              "4",
+                                                                                                                                              "4",
+                                                                                                                                              "2",
+                                                                                                                                              "2"
                                                                                                                                           ]
                                                                                                                   },
                                                                                                         "isCanvas":  true,
                                                                                                         "hidden":  false,
                                                                                                         "nodes":  [
                                                                                                                       "NameLastDH_Input",
-                                                                                                                      "NameFirstDH_Input"
+                                                                                                                      "NameFirstDH_Input",
+                                                                                                                      "nameMiddleDH_Input",
+                                                                                                                      "nameSuffixDH_Input"
                                                                                                                   ],
                                                                                                         "linkedNodes":  {
 
@@ -2488,6 +2756,46 @@
                                                                                                                                  },
                                                                                                                  "parent":  "ROW_DH_2"
                                                                                                              },
+                                                                                       "nameMiddleDH_Input":  {
+                                                                                                                  "type":  {
+                                                                                                                               "resolvedName":  "FormInput"
+                                                                                                                           },
+                                                                                                                  "displayName":  "Input",
+                                                                                                                  "props":  {
+                                                                                                                                "fieldId":  "nameMiddleDH",
+                                                                                                                                "label":  "Middle Name (DH)",
+                                                                                                                                "maxLength":  "30"
+                                                                                                                            },
+                                                                                                                  "isCanvas":  false,
+                                                                                                                  "hidden":  false,
+                                                                                                                  "nodes":  [
+
+                                                                                                                            ],
+                                                                                                                  "linkedNodes":  {
+
+                                                                                                                                  },
+                                                                                                                  "parent":  "ROW_DH_2"
+                                                                                                              },
+                                                                                       "nameSuffixDH_Input":  {
+                                                                                                                  "type":  {
+                                                                                                                               "resolvedName":  "FormInput"
+                                                                                                                           },
+                                                                                                                  "displayName":  "Input",
+                                                                                                                  "props":  {
+                                                                                                                                "fieldId":  "nameSuffixDH",
+                                                                                                                                "label":  "Suffix (DH)",
+                                                                                                                                "maxLength":  "5"
+                                                                                                                            },
+                                                                                                                  "isCanvas":  false,
+                                                                                                                  "hidden":  false,
+                                                                                                                  "nodes":  [
+
+                                                                                                                            ],
+                                                                                                                  "linkedNodes":  {
+
+                                                                                                                                  },
+                                                                                                                  "parent":  "ROW_DH_2"
+                                                                                                              },
                                                                                        "ROW_DH_3":  {
                                                                                                         "type":  {
                                                                                                                      "resolvedName":  "Row"
@@ -2819,7 +3127,7 @@
                                                                                                                           "displayName":  "Select",
                                                                                                                           "props":  {
                                                                                                                                         "fieldId":  "RegistrationState",
-                                                                                                                                        "label":  "State",
+                                                                                                                                        "label":  "State (leave blank for California)",
                                                                                                                                         "attributeTypeId":  "STATE"
                                                                                                                                     },
                                                                                                                           "isCanvas":  false,
@@ -2839,15 +3147,19 @@
                                                                                                            "displayName":  "Row",
                                                                                                            "props":  {
                                                                                                                          "templateColumns":  [
-                                                                                                                                                 "6",
-                                                                                                                                                 "6"
+                                                                                                                                                 "4",
+                                                                                                                                                 "4",
+                                                                                                                                                 "2",
+                                                                                                                                                 "2"
                                                                                                                                              ]
                                                                                                                      },
                                                                                                            "isCanvas":  true,
                                                                                                            "hidden":  false,
                                                                                                            "nodes":  [
                                                                                                                          "NameLast_Input",
-                                                                                                                         "NameFirst_Input"
+                                                                                                                         "NameFirst_Input",
+                                                                                                                         "nameMiddle_Input",
+                                                                                                                         "nameSuffix_Input"
                                                                                                                      ],
                                                                                                            "linkedNodes":  {
 
@@ -2894,6 +3206,46 @@
                                                                                                                                   },
                                                                                                                   "parent":  "ROW_DL_2"
                                                                                                               },
+                                                                                          "nameMiddle_Input":  {
+                                                                                                                   "type":  {
+                                                                                                                                "resolvedName":  "FormInput"
+                                                                                                                            },
+                                                                                                                   "displayName":  "Input",
+                                                                                                                   "props":  {
+                                                                                                                                 "fieldId":  "nameMiddle",
+                                                                                                                                 "label":  "Middle Name (optional)",
+                                                                                                                                 "maxLength":  "30"
+                                                                                                                             },
+                                                                                                                   "isCanvas":  false,
+                                                                                                                   "hidden":  false,
+                                                                                                                   "nodes":  [
+
+                                                                                                                             ],
+                                                                                                                   "linkedNodes":  {
+
+                                                                                                                                   },
+                                                                                                                   "parent":  "ROW_DL_2"
+                                                                                                               },
+                                                                                          "nameSuffix_Input":  {
+                                                                                                                   "type":  {
+                                                                                                                                "resolvedName":  "FormInput"
+                                                                                                                            },
+                                                                                                                   "displayName":  "Input",
+                                                                                                                   "props":  {
+                                                                                                                                 "fieldId":  "nameSuffix",
+                                                                                                                                 "label":  "Suffix (optional)",
+                                                                                                                                 "maxLength":  "5"
+                                                                                                                             },
+                                                                                                                   "isCanvas":  false,
+                                                                                                                   "hidden":  false,
+                                                                                                                   "nodes":  [
+
+                                                                                                                             ],
+                                                                                                                   "linkedNodes":  {
+
+                                                                                                                                   },
+                                                                                                                   "parent":  "ROW_DL_2"
+                                                                                                               },
                                                                                           "ROW_DL_3":  {
                                                                                                            "type":  {
                                                                                                                         "resolvedName":  "Row"
@@ -3070,7 +3422,7 @@
                                                                                                                             "displayName":  "Select",
                                                                                                                             "props":  {
                                                                                                                                           "fieldId":  "RegistrationStateDH",
-                                                                                                                                          "label":  "State (DH)",
+                                                                                                                                          "label":  "State (DH) (leave blank for California)",
                                                                                                                                           "attributeTypeId":  "STATE"
                                                                                                                                       },
                                                                                                                             "isCanvas":  false,
@@ -3090,15 +3442,19 @@
                                                                                                            "displayName":  "Row",
                                                                                                            "props":  {
                                                                                                                          "templateColumns":  [
-                                                                                                                                                 "6",
-                                                                                                                                                 "6"
+                                                                                                                                                 "4",
+                                                                                                                                                 "4",
+                                                                                                                                                 "2",
+                                                                                                                                                 "2"
                                                                                                                                              ]
                                                                                                                      },
                                                                                                            "isCanvas":  true,
                                                                                                            "hidden":  false,
                                                                                                            "nodes":  [
                                                                                                                          "NameLastDH_Input",
-                                                                                                                         "NameFirstDH_Input"
+                                                                                                                         "NameFirstDH_Input",
+                                                                                                                         "nameMiddleDH_Input",
+                                                                                                                         "nameSuffixDH_Input"
                                                                                                                      ],
                                                                                                            "linkedNodes":  {
 
@@ -3145,6 +3501,46 @@
                                                                                                                                     },
                                                                                                                     "parent":  "ROW_DH_2"
                                                                                                                 },
+                                                                                          "nameMiddleDH_Input":  {
+                                                                                                                     "type":  {
+                                                                                                                                  "resolvedName":  "FormInput"
+                                                                                                                              },
+                                                                                                                     "displayName":  "Input",
+                                                                                                                     "props":  {
+                                                                                                                                   "fieldId":  "nameMiddleDH",
+                                                                                                                                   "label":  "Middle Name (DH)",
+                                                                                                                                   "maxLength":  "30"
+                                                                                                                               },
+                                                                                                                     "isCanvas":  false,
+                                                                                                                     "hidden":  false,
+                                                                                                                     "nodes":  [
+
+                                                                                                                               ],
+                                                                                                                     "linkedNodes":  {
+
+                                                                                                                                     },
+                                                                                                                     "parent":  "ROW_DH_2"
+                                                                                                                 },
+                                                                                          "nameSuffixDH_Input":  {
+                                                                                                                     "type":  {
+                                                                                                                                  "resolvedName":  "FormInput"
+                                                                                                                              },
+                                                                                                                     "displayName":  "Input",
+                                                                                                                     "props":  {
+                                                                                                                                   "fieldId":  "nameSuffixDH",
+                                                                                                                                   "label":  "Suffix (DH)",
+                                                                                                                                   "maxLength":  "5"
+                                                                                                                               },
+                                                                                                                     "isCanvas":  false,
+                                                                                                                     "hidden":  false,
+                                                                                                                     "nodes":  [
+
+                                                                                                                               ],
+                                                                                                                     "linkedNodes":  {
+
+                                                                                                                                     },
+                                                                                                                     "parent":  "ROW_DH_2"
+                                                                                                                 },
                                                                                           "ROW_DH_3":  {
                                                                                                            "type":  {
                                                                                                                         "resolvedName":  "Row"
@@ -3463,7 +3859,7 @@
                                                                                                         "displayName":  "Select",
                                                                                                         "props":  {
                                                                                                                       "fieldId":  "GunMake",
-                                                                                                                      "label":  "Make",
+                                                                                                                      "label":  "Make (optional)",
                                                                                                                       "codeTypeCategory":  "NCIC_FIREARM_MAKE",
                                                                                                                       "codeTypeSource":  "NCIC"
                                                                                                                   },
@@ -3484,7 +3880,7 @@
                                                                                                            "displayName":  "Select",
                                                                                                            "props":  {
                                                                                                                          "fieldId":  "GunCaliber",
-                                                                                                                         "label":  "Caliber",
+                                                                                                                         "label":  "Caliber (optional)",
                                                                                                                          "codeTypeCategory":  "NCIC_FIREARM_CALIBER",
                                                                                                                          "codeTypeSource":  "NCIC"
                                                                                                                      },
@@ -3505,7 +3901,7 @@
                                                                                                             "displayName":  "Select",
                                                                                                             "props":  {
                                                                                                                           "fieldId":  "GunTypeCode",
-                                                                                                                          "label":  "Type",
+                                                                                                                          "label":  "Type (optional)",
                                                                                                                           "codeTypeCategory":  "NCIC_FIREARM_TYPE",
                                                                                                                           "codeTypeSource":  "NCIC"
                                                                                                                       },
@@ -3526,15 +3922,19 @@
                                                                                                    "displayName":  "Row",
                                                                                                    "props":  {
                                                                                                                  "templateColumns":  [
-                                                                                                                                         "6",
-                                                                                                                                         "6"
+                                                                                                                                         "4",
+                                                                                                                                         "4",
+                                                                                                                                         "2",
+                                                                                                                                         "2"
                                                                                                                                      ]
                                                                                                              },
                                                                                                    "isCanvas":  true,
                                                                                                    "hidden":  false,
                                                                                                    "nodes":  [
                                                                                                                  "NameLast_Input",
-                                                                                                                 "NameFirst_Input"
+                                                                                                                 "NameFirst_Input",
+                                                                                                                 "nameMiddle_Input",
+                                                                                                                 "nameSuffix_Input"
                                                                                                              ],
                                                                                                    "linkedNodes":  {
 
@@ -3581,6 +3981,46 @@
                                                                                                                           },
                                                                                                           "parent":  "ROW_FA_3"
                                                                                                       },
+                                                                                  "nameMiddle_Input":  {
+                                                                                                           "type":  {
+                                                                                                                        "resolvedName":  "FormInput"
+                                                                                                                    },
+                                                                                                           "displayName":  "Input",
+                                                                                                           "props":  {
+                                                                                                                         "fieldId":  "nameMiddle",
+                                                                                                                         "label":  "Middle Name (optional)",
+                                                                                                                         "maxLength":  "30"
+                                                                                                                     },
+                                                                                                           "isCanvas":  false,
+                                                                                                           "hidden":  false,
+                                                                                                           "nodes":  [
+
+                                                                                                                     ],
+                                                                                                           "linkedNodes":  {
+
+                                                                                                                           },
+                                                                                                           "parent":  "ROW_FA_3"
+                                                                                                       },
+                                                                                  "nameSuffix_Input":  {
+                                                                                                           "type":  {
+                                                                                                                        "resolvedName":  "FormInput"
+                                                                                                                    },
+                                                                                                           "displayName":  "Input",
+                                                                                                           "props":  {
+                                                                                                                         "fieldId":  "nameSuffix",
+                                                                                                                         "label":  "Suffix (optional)",
+                                                                                                                         "maxLength":  "5"
+                                                                                                                     },
+                                                                                                           "isCanvas":  false,
+                                                                                                           "hidden":  false,
+                                                                                                           "nodes":  [
+
+                                                                                                                     ],
+                                                                                                           "linkedNodes":  {
+
+                                                                                                                           },
+                                                                                                           "parent":  "ROW_FA_3"
+                                                                                                       },
                                                                                   "ROW_FA_4":  {
                                                                                                    "type":  {
                                                                                                                 "resolvedName":  "Row"
@@ -3651,7 +4091,7 @@
                                                                                                                           "displayName":  "Select",
                                                                                                                           "props":  {
                                                                                                                                         "fieldId":  "relatedHitSearchIndicator",
-                                                                                                                                        "label":  "Stolen Check",
+                                                                                                                                        "label":  "Stolen Check (optional)",
                                                                                                                                         "codeTypeCategory":  "YES_NO_UNKNOWN",
                                                                                                                                         "codeTypeSource":  "NCIC"
                                                                                                                                     },
@@ -3836,7 +4276,7 @@
                                                                                                              "displayName":  "Select",
                                                                                                              "props":  {
                                                                                                                            "fieldId":  "GunMake",
-                                                                                                                           "label":  "Make",
+                                                                                                                           "label":  "Make (optional)",
                                                                                                                            "codeTypeCategory":  "NCIC_FIREARM_MAKE",
                                                                                                                            "codeTypeSource":  "NCIC"
                                                                                                                        },
@@ -3857,7 +4297,7 @@
                                                                                                                 "displayName":  "Select",
                                                                                                                 "props":  {
                                                                                                                               "fieldId":  "GunCaliber",
-                                                                                                                              "label":  "Caliber",
+                                                                                                                              "label":  "Caliber (optional)",
                                                                                                                               "codeTypeCategory":  "NCIC_FIREARM_CALIBER",
                                                                                                                               "codeTypeSource":  "NCIC"
                                                                                                                           },
@@ -3878,7 +4318,7 @@
                                                                                                                  "displayName":  "Select",
                                                                                                                  "props":  {
                                                                                                                                "fieldId":  "GunTypeCode",
-                                                                                                                               "label":  "Type",
+                                                                                                                               "label":  "Type (optional)",
                                                                                                                                "codeTypeCategory":  "NCIC_FIREARM_TYPE",
                                                                                                                                "codeTypeSource":  "NCIC"
                                                                                                                            },
@@ -3899,15 +4339,19 @@
                                                                                                         "displayName":  "Row",
                                                                                                         "props":  {
                                                                                                                       "templateColumns":  [
-                                                                                                                                              "6",
-                                                                                                                                              "6"
+                                                                                                                                              "4",
+                                                                                                                                              "4",
+                                                                                                                                              "2",
+                                                                                                                                              "2"
                                                                                                                                           ]
                                                                                                                   },
                                                                                                         "isCanvas":  true,
                                                                                                         "hidden":  false,
                                                                                                         "nodes":  [
                                                                                                                       "NameLast_Input",
-                                                                                                                      "NameFirst_Input"
+                                                                                                                      "NameFirst_Input",
+                                                                                                                      "nameMiddle_Input",
+                                                                                                                      "nameSuffix_Input"
                                                                                                                   ],
                                                                                                         "linkedNodes":  {
 
@@ -3954,6 +4398,46 @@
                                                                                                                                },
                                                                                                                "parent":  "ROW_FA_3"
                                                                                                            },
+                                                                                       "nameMiddle_Input":  {
+                                                                                                                "type":  {
+                                                                                                                             "resolvedName":  "FormInput"
+                                                                                                                         },
+                                                                                                                "displayName":  "Input",
+                                                                                                                "props":  {
+                                                                                                                              "fieldId":  "nameMiddle",
+                                                                                                                              "label":  "Middle Name (optional)",
+                                                                                                                              "maxLength":  "30"
+                                                                                                                          },
+                                                                                                                "isCanvas":  false,
+                                                                                                                "hidden":  false,
+                                                                                                                "nodes":  [
+
+                                                                                                                          ],
+                                                                                                                "linkedNodes":  {
+
+                                                                                                                                },
+                                                                                                                "parent":  "ROW_FA_3"
+                                                                                                            },
+                                                                                       "nameSuffix_Input":  {
+                                                                                                                "type":  {
+                                                                                                                             "resolvedName":  "FormInput"
+                                                                                                                         },
+                                                                                                                "displayName":  "Input",
+                                                                                                                "props":  {
+                                                                                                                              "fieldId":  "nameSuffix",
+                                                                                                                              "label":  "Suffix (optional)",
+                                                                                                                              "maxLength":  "5"
+                                                                                                                          },
+                                                                                                                "isCanvas":  false,
+                                                                                                                "hidden":  false,
+                                                                                                                "nodes":  [
+
+                                                                                                                          ],
+                                                                                                                "linkedNodes":  {
+
+                                                                                                                                },
+                                                                                                                "parent":  "ROW_FA_3"
+                                                                                                            },
                                                                                        "ROW_FA_4":  {
                                                                                                         "type":  {
                                                                                                                      "resolvedName":  "Row"
@@ -4024,7 +4508,7 @@
                                                                                                                                "displayName":  "Select",
                                                                                                                                "props":  {
                                                                                                                                              "fieldId":  "relatedHitSearchIndicator",
-                                                                                                                                             "label":  "Stolen Check",
+                                                                                                                                             "label":  "Stolen Check (optional)",
                                                                                                                                              "codeTypeCategory":  "YES_NO_UNKNOWN",
                                                                                                                                              "codeTypeSource":  "NCIC"
                                                                                                                                          },
@@ -4290,7 +4774,7 @@
                                                                                                                 "displayName":  "Select",
                                                                                                                 "props":  {
                                                                                                                               "fieldId":  "GunMake",
-                                                                                                                              "label":  "Make",
+                                                                                                                              "label":  "Make (optional)",
                                                                                                                               "codeTypeCategory":  "NCIC_FIREARM_MAKE",
                                                                                                                               "codeTypeSource":  "NCIC"
                                                                                                                           },
@@ -4311,7 +4795,7 @@
                                                                                                                    "displayName":  "Select",
                                                                                                                    "props":  {
                                                                                                                                  "fieldId":  "GunCaliber",
-                                                                                                                                 "label":  "Caliber",
+                                                                                                                                 "label":  "Caliber (optional)",
                                                                                                                                  "codeTypeCategory":  "NCIC_FIREARM_CALIBER",
                                                                                                                                  "codeTypeSource":  "NCIC"
                                                                                                                              },
@@ -4332,7 +4816,7 @@
                                                                                                                     "displayName":  "Select",
                                                                                                                     "props":  {
                                                                                                                                   "fieldId":  "GunTypeCode",
-                                                                                                                                  "label":  "Type",
+                                                                                                                                  "label":  "Type (optional)",
                                                                                                                                   "codeTypeCategory":  "NCIC_FIREARM_TYPE",
                                                                                                                                   "codeTypeSource":  "NCIC"
                                                                                                                               },
@@ -4353,15 +4837,19 @@
                                                                                                            "displayName":  "Row",
                                                                                                            "props":  {
                                                                                                                          "templateColumns":  [
-                                                                                                                                                 "6",
-                                                                                                                                                 "6"
+                                                                                                                                                 "4",
+                                                                                                                                                 "4",
+                                                                                                                                                 "2",
+                                                                                                                                                 "2"
                                                                                                                                              ]
                                                                                                                      },
                                                                                                            "isCanvas":  true,
                                                                                                            "hidden":  false,
                                                                                                            "nodes":  [
                                                                                                                          "NameLast_Input",
-                                                                                                                         "NameFirst_Input"
+                                                                                                                         "NameFirst_Input",
+                                                                                                                         "nameMiddle_Input",
+                                                                                                                         "nameSuffix_Input"
                                                                                                                      ],
                                                                                                            "linkedNodes":  {
 
@@ -4408,6 +4896,46 @@
                                                                                                                                   },
                                                                                                                   "parent":  "ROW_FA_3"
                                                                                                               },
+                                                                                          "nameMiddle_Input":  {
+                                                                                                                   "type":  {
+                                                                                                                                "resolvedName":  "FormInput"
+                                                                                                                            },
+                                                                                                                   "displayName":  "Input",
+                                                                                                                   "props":  {
+                                                                                                                                 "fieldId":  "nameMiddle",
+                                                                                                                                 "label":  "Middle Name (optional)",
+                                                                                                                                 "maxLength":  "30"
+                                                                                                                             },
+                                                                                                                   "isCanvas":  false,
+                                                                                                                   "hidden":  false,
+                                                                                                                   "nodes":  [
+
+                                                                                                                             ],
+                                                                                                                   "linkedNodes":  {
+
+                                                                                                                                   },
+                                                                                                                   "parent":  "ROW_FA_3"
+                                                                                                               },
+                                                                                          "nameSuffix_Input":  {
+                                                                                                                   "type":  {
+                                                                                                                                "resolvedName":  "FormInput"
+                                                                                                                            },
+                                                                                                                   "displayName":  "Input",
+                                                                                                                   "props":  {
+                                                                                                                                 "fieldId":  "nameSuffix",
+                                                                                                                                 "label":  "Suffix (optional)",
+                                                                                                                                 "maxLength":  "5"
+                                                                                                                             },
+                                                                                                                   "isCanvas":  false,
+                                                                                                                   "hidden":  false,
+                                                                                                                   "nodes":  [
+
+                                                                                                                             ],
+                                                                                                                   "linkedNodes":  {
+
+                                                                                                                                   },
+                                                                                                                   "parent":  "ROW_FA_3"
+                                                                                                               },
                                                                                           "ROW_FA_4":  {
                                                                                                            "type":  {
                                                                                                                         "resolvedName":  "Row"
@@ -4478,7 +5006,7 @@
                                                                                                                                   "displayName":  "Select",
                                                                                                                                   "props":  {
                                                                                                                                                 "fieldId":  "relatedHitSearchIndicator",
-                                                                                                                                                "label":  "Stolen Check",
+                                                                                                                                                "label":  "Stolen Check (optional)",
                                                                                                                                                 "codeTypeCategory":  "YES_NO_UNKNOWN",
                                                                                                                                                 "codeTypeSource":  "NCIC"
                                                                                                                                             },
@@ -4707,7 +5235,7 @@
                                                                                                                 "displayName":  "Select",
                                                                                                                 "props":  {
                                                                                                                               "fieldId":  "ArticleTypeCode",
-                                                                                                                              "label":  "Article Type",
+                                                                                                                              "label":  "Article Type (optional)",
                                                                                                                               "codeTypeCategory":  "NCIC_ARTICLE_TYPE",
                                                                                                                               "codeTypeSource":  "CA_CLETS"
                                                                                                                           },
@@ -4728,7 +5256,7 @@
                                                                                                                 "displayName":  "Input",
                                                                                                                 "props":  {
                                                                                                                               "fieldId":  "ArticleCategory",
-                                                                                                                              "label":  "Article Category",
+                                                                                                                              "label":  "Article Category (optional)",
                                                                                                                               "maxLength":  "1"
                                                                                                                           },
                                                                                                                 "isCanvas":  false,
@@ -4748,7 +5276,7 @@
                                                                                                              "displayName":  "Input",
                                                                                                              "props":  {
                                                                                                                            "fieldId":  "ArticleBrand",
-                                                                                                                           "label":  "Brand",
+                                                                                                                           "label":  "Brand (optional)",
                                                                                                                            "maxLength":  "6"
                                                                                                                        },
                                                                                                              "isCanvas":  false,
@@ -4930,7 +5458,7 @@
                                                                                                                      "displayName":  "Select",
                                                                                                                      "props":  {
                                                                                                                                    "fieldId":  "ArticleTypeCode",
-                                                                                                                                   "label":  "Article Type",
+                                                                                                                                   "label":  "Article Type (optional)",
                                                                                                                                    "codeTypeCategory":  "NCIC_ARTICLE_TYPE",
                                                                                                                                    "codeTypeSource":  "CA_CLETS"
                                                                                                                                },
@@ -4951,7 +5479,7 @@
                                                                                                                      "displayName":  "Input",
                                                                                                                      "props":  {
                                                                                                                                    "fieldId":  "ArticleCategory",
-                                                                                                                                   "label":  "Article Category",
+                                                                                                                                   "label":  "Article Category (optional)",
                                                                                                                                    "maxLength":  "1"
                                                                                                                                },
                                                                                                                      "isCanvas":  false,
@@ -4971,7 +5499,7 @@
                                                                                                                   "displayName":  "Input",
                                                                                                                   "props":  {
                                                                                                                                 "fieldId":  "ArticleBrand",
-                                                                                                                                "label":  "Brand",
+                                                                                                                                "label":  "Brand (optional)",
                                                                                                                                 "maxLength":  "6"
                                                                                                                             },
                                                                                                                   "isCanvas":  false,
@@ -5234,7 +5762,7 @@
                                                                                                                         "displayName":  "Select",
                                                                                                                         "props":  {
                                                                                                                                       "fieldId":  "ArticleTypeCode",
-                                                                                                                                      "label":  "Article Type",
+                                                                                                                                      "label":  "Article Type (optional)",
                                                                                                                                       "codeTypeCategory":  "NCIC_ARTICLE_TYPE",
                                                                                                                                       "codeTypeSource":  "CA_CLETS"
                                                                                                                                   },
@@ -5255,7 +5783,7 @@
                                                                                                                         "displayName":  "Input",
                                                                                                                         "props":  {
                                                                                                                                       "fieldId":  "ArticleCategory",
-                                                                                                                                      "label":  "Article Category",
+                                                                                                                                      "label":  "Article Category (optional)",
                                                                                                                                       "maxLength":  "1"
                                                                                                                                   },
                                                                                                                         "isCanvas":  false,
@@ -5275,7 +5803,7 @@
                                                                                                                      "displayName":  "Input",
                                                                                                                      "props":  {
                                                                                                                                    "fieldId":  "ArticleBrand",
-                                                                                                                                   "label":  "Brand",
+                                                                                                                                   "label":  "Brand (optional)",
                                                                                                                                    "maxLength":  "6"
                                                                                                                                },
                                                                                                                      "isCanvas":  false,
@@ -5521,7 +6049,7 @@
                                                                                                                   "displayName":  "Select",
                                                                                                                   "props":  {
                                                                                                                                 "fieldId":  "RegistrationState",
-                                                                                                                                "label":  "State",
+                                                                                                                                "label":  "State (leave blank for California)",
                                                                                                                                 "attributeTypeId":  "STATE"
                                                                                                                             },
                                                                                                                   "isCanvas":  false,
@@ -5721,7 +6249,7 @@
                                                                                                                        "displayName":  "Select",
                                                                                                                        "props":  {
                                                                                                                                      "fieldId":  "RegistrationState",
-                                                                                                                                     "label":  "State",
+                                                                                                                                     "label":  "State (leave blank for California)",
                                                                                                                                      "attributeTypeId":  "STATE"
                                                                                                                                  },
                                                                                                                        "isCanvas":  false,
@@ -6002,7 +6530,7 @@
                                                                                                                           "displayName":  "Select",
                                                                                                                           "props":  {
                                                                                                                                         "fieldId":  "RegistrationState",
-                                                                                                                                        "label":  "State",
+                                                                                                                                        "label":  "State (leave blank for California)",
                                                                                                                                         "attributeTypeId":  "STATE"
                                                                                                                                     },
                                                                                                                           "isCanvas":  false,
@@ -7778,7 +8306,7 @@
                                                                                                                 ]
                                                                                              },
                                                                             "primaryFieldReference":  "OperatorLicenseNumber",
-                                                                            "keyReference":  "L1.O",
+                                                                            "keyReference":  "L1.ODH",
                                                                             "state":  "In"
                                                                         },
                                                                         {
@@ -7826,7 +8354,7 @@
                                                                                                                 }
                                                                                              },
                                                                             "primaryFieldReference":  "Name",
-                                                                            "keyReference":  "L1.N",
+                                                                            "keyReference":  "L1.NDH",
                                                                             "state":  "In/Out"
                                                                         }
                                                                     ],
@@ -8250,7 +8778,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for CA_eSUN v3.0 -- MAINLINE, built from scratch from the devdoc (query authority) and metadata (field authority). Six devdoc-Basic queries, 23 of 27 metadata variant branches built; 4 are routing-impossible duplicates and are registered. Existence-only State gates and identifier-priority guardrails throughout. Distinct from the v1.x/v2.x RADIOBUTTON line, which is a capture of the hand-built San Diego Sheriff configuration.",
+                        "description":  "Provider configuration for CA_eSUN v3.1 -- MAINLINE, built from scratch from the devdoc (query authority) and metadata (field authority). Six devdoc-Basic queries, 23 of 27 metadata variant branches built; 4 are routing-impossible duplicates and are registered. Existence-only State gates and identifier-priority guardrails throughout. Distinct from the v1.x/v2.x RADIOBUTTON line, which is a capture of the hand-built San Diego Sheriff configuration.",
                         "name":  "CA_eSUN",
                         "type":  "BUNDLE",
                         "provider":  "CA_eSUN"

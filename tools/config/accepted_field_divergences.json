@@ -12,6 +12,11 @@
       "types": ["FormInput", "FormSelect"]
     },
     {
+      "fieldId": "purposeCodeDH",
+      "reason": "THE DH-SUFFIXED TWIN OF THE ACCEPTED 'PurposeCode' ROW ABOVE, missed only because this list keys on exact fieldId. Added 2026-09-04 after it blocked EVERY provider: CHECK 5 is read by enforce on all 20, so this single field turned the whole portfolio BLOCKED and report_mission_status to 0 of 20. FormInput in 12 providers (a 1-char code prefilled 'C'), FormSelect in CA_eSUN (a value-list dropdown, attributeTypeId=DEX_INQUIRY_PURPOSE_CODE). CA_eSUN IS THE CORRECT ONE AND IT WAS VERIFIED, NOT ASSUMED: its engineering-built v1.0 -- the configuration running live at San Diego Sheriff -- carries 5 FormSelect purpose controls, which is precisely why DEX-1313 exists to convert that DROPDOWN to radio buttons. Building it as FormInput would delete the officer-selectable purpose code SDSO actually uses. Same adjudication as the PurposeCode row: provider metadata decides, and both are valid.",
+      "types": ["FormInput", "FormSelect"]
+    },
+    {
       "fieldId": "RelatedHitSearchIndicator",
       "reason": "Provider-specific: some use Y/N dropdown, others use free-text.",
       "types": ["FormInput", "FormSelect"]

@@ -2,6 +2,66 @@ CA_eSUN -- Build Notes
 ======================
 Provider: CA_eSUN
 State: California
+v3.1  2026-09-04  Unblocked the portfolio, and closed v3.0's build tail
+  CHANGED:
+    A. nameMiddle / nameSuffix controls ADDED on Vehicle, Person (DL + DH-suffixed) and
+       Firearm. The Name composite had ALWAYS referenced them (NameAttr defaults) and
+       metadata declares Name as type="Name" with Components First/Last/Middle/Suffix --
+       v3.0 simply built no controls for two of the four. ONE omission, 24 findings:
+       8 verify_build "sourceField not in QIF fieldIds" plus ALL 16 audit_wiring_closure
+       class-C breaks. Rows widened 6+6 -> 4+4+2+2 so they still sum to 12.
+       ADDING was the fix, not stripping the sourceField -- audit_name_components records
+       that 6 such controls were wrongly DELETED portfolio-wide on 2026-08-02 after
+       wiring-closure was misread as saying they should not exist.
+    B. purposeCodeDH REGISTERED as an accepted cross-provider divergence, NOT changed.
+    C. State labels now carry "(leave blank for California)" -- the routing hint
+       verify_build requires, and the same helper the officer guide now prints.
+    D. 17 any[]-only labels gained an "(optional)" qualifier (BUILD_RULES / CHECK 15).
+    E. DH keyRefs L1.O/L1.N -> L1.ODH/L1.NDH. Metadata L1 sits under BOTH
+       DriverLicenseQuery and DriverHistoryQuery, so the bare names collided across QIDMs.
+    F. LIMITATION #21/#36 synthetic-keyRef inventory added to the build script header.
+    G. SQVR REGENERATED from the emitted JSON. Its body still described the v1.x line and
+       named 25 keyReferences absent from this build -- sync_version_docs stamps the
+       HEADER on a bump but cannot rewrite the body, so the file read v3.1 while
+       describing a different provider line entirely.
+    H. 13 registry rows: 2 rule-name corrections + 11 new devdoc-optional rows.
+  REASON:
+    THE PORTFOLIO BLOCKER WAS ONE FIELD. v3.0 built purposeCodeDH as a FormSelect while 12
+    providers build it as FormInput, which FAILs audit_cross_provider CHECK 5 -- a check
+    every provider's enforce reads. That single field held ALL 20 PROVIDERS BLOCKED and
+    report_mission_status at 0 of 20.
+    CA_eSUN IS THE CORRECT ONE, AND IT WAS VERIFIED RATHER THAN ASSUMED: the
+    engineering-built v1.0 running live at San Diego Sheriff carries 5 FormSelect purpose
+    controls -- that dropdown is precisely what DEX-1313 converts to radio buttons.
+    Building it as FormInput would have deleted the officer-selectable purpose code SDSO
+    actually uses, to satisfy a gate. So the row went in the registry beside the existing
+    PurposeCode entry, which had already adjudicated the identical question and was missed
+    only because the list keys on exact fieldId and this is the DH-suffixed twin.
+    TWO OF THE REGISTRY ROWS WERE MINE AND SILENCED NOTHING. Written 2026-09-03 with
+    descriptive rule names -- "not-built" and "metadata-mandatory-not-in-devdoc" -- where
+    the gates read the literal strings "devdoc-combo-unbuilt" and
+    "devdoc-optional-unreachable". Both findings survived a full day looking registered.
+    Grep the gate for its rule string before writing a row, then re-run it to confirm the
+    finding actually cleared.
+    THE REMAINING devdoc "NO COMBO FIRES" ITEMS ARE ONE PROVIDER-WIDE FACT, NOT 20 DEFECTS:
+    CaRequestPurposeCode is MANDATORY on all 27 metadata branches of all six transactions
+    while the devdoc's per-query field tables never list it, so every devdoc-legal
+    mandatory-only fill correctly sends nothing. Metadata is FIELD authority; removing the
+    purpose code to satisfy the devdoc would emit requests the metadata calls invalid.
+  EFFECT (measured):
+    validator      70P/0F/26W -> 78P/0F/0W
+    verify_build   14 FAIL/12 WARN -> 0 FAIL/0 WARN (17 PASS)
+    wiring closure 16 breaks -> 0
+    fidelity       27 branches / 0 UNDER / 0 OVER -- HELD at 27 through all 13 registry
+                   rows, checked after every batch (a row that costs coverage is worse
+                   than none)
+    enforce        BLOCKED 25P/13F/3W -> ENFORCED 41P/0F/0W
+    cross-provider 1 FAIL -> 0 FAIL, which is what unblocks the other 19 providers
+  NOT DONE, DELIBERATELY: the 4 mined-keyRef attribution renames (QV.V->4V, QB.H->4V,
+    QB.R->4B here; QV.V->4V on CA_SAN_LUIS_OBISPO). A keyRef never reaches the wire, so
+    those are a rename with no wire effect, and CA_SLO is a different provider's turn.
+  NEVER TESTED at v3.1 -- the test package was reset and 54 plan tests are owed.
+
 v2.1  2026-09-02  Pipeline rebuild
   CHANGED: Rebuilt via pipeline.ps1
   REASON: Scheduled rebuild

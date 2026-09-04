@@ -1,121 +1,143 @@
 ﻿================================================================
   Build Report: CA_eSUN
-  Source: CA_eSUN_v1.0.json
-  Generated: 2026-09-02 14:40
+  Source: CA_eSUN_v3.1.json
+  Generated: 2026-09-04 10:06
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== CA_eSUN_v1.0.json ===
+=== CA_eSUN_v3.1.json ===
 QIFs: 5
-  Article | entity=Article | qidm= | cards=1 fields=2
-  Vehicle | entity=Vehicle | qidm= | cards=1 fields=11
-  Person | entity=Person | qidm= | cards=1 fields=6
+  Vehicle | entity=Vehicle | qidm= | cards=1 fields=10
+  Person | entity=Person | qidm= | cards=2 fields=12
   Firearm | entity=Firearm | qidm= | cards=1 fields=6
+  Article | entity=Article | qidm= | cards=1 fields=3
   Boat | entity=Boat | qidm= | cards=1 fields=2
-QIDMs: 8
-  CA_eSUN_VehicleRegistrationQuery | attrs=13 combos=6 autoSelect=
-  CA_eSUN_ArticleSingleQuery | attrs=5 combos=1 autoSelect=
-  CA_eSUN_GunQuery | attrs=9 combos=3 autoSelect=
-  CA_eSUN_DriverLicenseQuery | attrs=16 combos=6 autoSelect=True
-  CA_eSUN_LojackQuery | attrs=3 combos=1 autoSelect=
-  CA_eSUN_DriverHistoryQuery | attrs=8 combos=4 autoSelect=False
-  CA_eSUN_AFS | attrs=6 combos=2 autoSelect=False
-  CA_eSUN_BoatQuery | attrs=5 combos=2 autoSelect=
+QIDMs: 6
+  CA_eSUN_VehicleRegistrationQuery | attrs=11 combos=6 autoSelect=True
+  CA_eSUN_DriverLicenseQuery | attrs=7 combos=5 autoSelect=True
+  CA_eSUN_DriverHistoryQuery | attrs=7 combos=4 autoSelect=False
+  CA_eSUN_GunQuery | attrs=9 combos=3 autoSelect=True
+  CA_eSUN_ArticleSingleQuery | attrs=5 combos=1 autoSelect=True
+  CA_eSUN_BoatQuery | attrs=4 combos=4 autoSelect=True
 
 
 LAYOUT DETAIL
 =============
 
 
-=== Article ===
-  name=ENTITY_Article | entity=Article | qidm=
-  [default]
-    CARD "ROOT_CARD"
-      ROW ROW_1 [6]
-        PurposeCode (Dropdown | attributeTypeId=DEX_INQUIRY_PURPOSE_CODE)
-      ROW ROW_2 [6 6]
-        ArticleSerialNumber (Text | maxLen=20)
-      ROW ROW_3 [6 6]
-        ArticleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
-        ArticleBrand (Text)
-
 === Vehicle ===
   name=ENTITY_Vehicle | entity=Vehicle | qidm=
   [default]
-    CARD "ROOT_CARD"
-      ROW ROW_1 [3]
+    CARD "CARD_VEH"
+      ROW ROW_VEH_1 [4 4 4]
         PurposeCode (Dropdown | attributeTypeId=DEX_INQUIRY_PURPOSE_CODE)
-      ROW ROW_2 [6 6]
         LicensePlateNumber (Text | maxLen=10)
-        RegistrationState (Dropdown | attributeTypeId=STATE | default=CA)
-      ROW ROW_3 [6 6]
+        RegistrationState (Dropdown | attributeTypeId=STATE)
+      ROW ROW_VEH_2 [6 6]
         LicensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC)
-        LicensePlateYear (Text | maxLen=4 | default=2026)
-      ROW ROW_4 [6 3 3]
-        VehicleIdentificationNumber (Text | maxLen=17)
-        VehicleYear (Text | maxLen=4 | default=2026)
+        LicensePlateYear (Text | maxLen=4)
+      ROW ROW_VEH_3 [4 4 4]
+        VehicleIdentificationNumber (Text | maxLen=20)
         VehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE | codeTypeProvider=NCIC)
-      ROW ROW_5 [6 6]
-        NameFirst (Text)
-        NameLast (Text)
-      ROW ROW_6 [3 3 6]
-        NameMiddle (Text)
-        NameSuffix (Text)
-        BirthDate (FormDate)
-      ROW ROW_7 [6 6]
-        AddressCity (Text | maxLen=13)
-        AddressStreetNumber (Text | maxLen=3)
-      ROW ROW_8 [3]
-        LojackID (Text | maxLen=5)
+        vehicleYear (Text | maxLen=4)
+      ROW ROW_VEH_4 [4 4 2 2]
+        NameLast (Text | maxLen=30)
+        NameFirst (Text | maxLen=30)
+        nameMiddle (Text | maxLen=30)
+        nameSuffix (Text | maxLen=5)
+      ROW ROW_VEH_5 [6 6]
+        AddressStreetNumber (Text | maxLen=10)
+        AddressCity (Text | maxLen=20)
 
 === Person ===
   name=ENTITY_Person | entity=Person | qidm=
   [default]
-    CARD "ROOT_CARD"
-      ROW ROW_1 [6]
+    CARD "CARD_DL"
+      ROW ROW_DL_1 [4 4 4]
         PurposeCode (Dropdown | attributeTypeId=DEX_INQUIRY_PURPOSE_CODE)
-      ROW ROW_2 [6 6]
-        OperatorLicenseNumber (Text)
-        RegistrationState (Dropdown | attributeTypeId=STATE | default=CA)
-      ROW ROW_3 [6 6]
-        NameFirst (Text)
-        NameLast (Text)
-      ROW ROW_4 [3 3 2 2 2]
-        NameMiddle (Text)
-        NameSuffix (Text)
+        OperatorLicenseNumber (Text | maxLen=20)
+        RegistrationState (Dropdown | attributeTypeId=STATE)
+      ROW ROW_DL_2 [4 4 2 2]
+        NameLast (Text | maxLen=30)
+        NameFirst (Text | maxLen=30)
+        nameMiddle (Text | maxLen=30)
+        nameSuffix (Text | maxLen=5)
+      ROW ROW_DL_3 [4 4 4]
         BirthDate (FormDate)
-        SexCode (Dropdown | attributeTypeId=SEX)
-        Age (Text | maxLen=2)
+        Age (Text | maxLen=3)
+        SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+    CARD "CARD_DH"
+      ROW ROW_DH_1 [4 4 4]
+        PurposeCodeDH (Dropdown | attributeTypeId=DEX_INQUIRY_PURPOSE_CODE)
+        OperatorLicenseNumberDH (Text | maxLen=20)
+        RegistrationStateDH (Dropdown | attributeTypeId=STATE)
+      ROW ROW_DH_2 [4 4 2 2]
+        NameLastDH (Text | maxLen=30)
+        NameFirstDH (Text | maxLen=30)
+        nameMiddleDH (Text | maxLen=30)
+        nameSuffixDH (Text | maxLen=5)
+      ROW ROW_DH_3 [6 6]
+        BirthDateDH (FormDate)
+        SexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+      ROW ROW_DH_HID [12]
+        AttentionDH (Text)
 
 === Firearm ===
   name=ENTITY_Firearm | entity=Firearm | qidm=
   [default]
-    CARD "ROOT_CARD"
-      ROW ROW_1 [6]
+    CARD "CARD_FA"
+      ROW ROW_FA_1 [6 6]
         PurposeCode (Dropdown | attributeTypeId=DEX_INQUIRY_PURPOSE_CODE)
-      ROW ROW_2 [3 3 3 3]
-        SerialNumber (Text | maxLen=20)
-        FirearmCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NJ_NIBRS)
-        FirearmType (Dropdown | codeTypeCategory=NCIC_FIREARM_TYPE | codeTypeSource=NCIC)
-        FirearmMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NCIC)
-      ROW ROW_3 [6 6]
-        NameFirst (Text)
-        NameLast (Text)
-      ROW ROW_4 [3 3 4 2]
-        NameMiddle (Text)
-        NameSuffix (Text)
+        GunSerialNumber (Text | maxLen=20)
+      ROW ROW_FA_2 [4 4 4]
+        GunMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NCIC)
+        GunCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NCIC)
+        GunTypeCode (Dropdown | codeTypeCategory=NCIC_FIREARM_TYPE | codeTypeSource=NCIC)
+      ROW ROW_FA_3 [4 4 2 2]
+        NameLast (Text | maxLen=30)
+        NameFirst (Text | maxLen=30)
+        nameMiddle (Text | maxLen=30)
+        nameSuffix (Text | maxLen=5)
+      ROW ROW_FA_4 [4 4 4]
         BirthDate (FormDate)
-        Age (Text | maxLen=4)
+        Age (Text | maxLen=3)
+        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC)
+
+=== Article ===
+  name=ENTITY_Article | entity=Article | qidm=
+  [default]
+    CARD "CARD_ART"
+      ROW ROW_ART_1 [6 6]
+        PurposeCode (Dropdown | attributeTypeId=DEX_INQUIRY_PURPOSE_CODE)
+        ArticleSerialNumber (Text | maxLen=20)
+      ROW ROW_ART_2 [4 4 4]
+        ArticleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
+        ArticleCategory (Text | maxLen=1)
+        ArticleBrand (Text | maxLen=6)
 
 === Boat ===
-  name=ENTTIY_Boat | entity=Boat | qidm=
+  name=ENTITY_Boat | entity=Boat | qidm=
   [default]
-    CARD "ROOT_CARD"
-      ROW ROW_1 [6]
+    CARD "CARD_BOA"
+      ROW ROW_BOA_1 [6 6]
         PurposeCode (Dropdown | attributeTypeId=DEX_INQUIRY_PURPOSE_CODE)
-      ROW ROW_2 [4 4 4]
         BoatHullIdNumber (Text | maxLen=20)
-        RegistrationNumber (Text | maxLen=8)
-        RegistrationState (Dropdown | attributeTypeId=STATE | default=CA)
+      ROW ROW_BOA_2 [6 6]
+        RegistrationNumber (Text | maxLen=10)
+        RegistrationState (Dropdown | attributeTypeId=STATE)
+
+=== RMS QIDMs ===
+  RMS Person Search query
+    NameFirst -> firstName
+    NameLast -> lastName
+    OperatorLicenseNumber -> dlNumber
+    BirthDate -> dateOfBirth
+    raceCode -> raceAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
+    SexCode -> sexAttrId (useAttrId)
+    RegistrationState -> registrationStateAttrId (useAttrId)
+  RMS Vehicle search query
+    VehicleIdentificationNumber -> vehicle.vinNumber
+    LicensePlateNumber -> vehicle.tag
+    RegistrationState -> vehicle.registrationStateAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
 

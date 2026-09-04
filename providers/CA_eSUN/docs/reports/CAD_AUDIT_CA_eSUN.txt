@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_eSUN
-  Source: CA_eSUN_v3.0.json
-  Generated: 2026-09-04 09:02
+  Source: CA_eSUN_v3.1.json
+  Generated: 2026-09-04 10:08
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: CA_eSUN_v3.0
+ CAD AUDIT: CA_eSUN_v3.1
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -23,8 +23,8 @@ CAD AUDIT
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] nameFirst: in QIF as 'NameFirst' (PascalCase USx fieldIds)
     [PASS] nameLast: in QIF as 'NameLast' (PascalCase USx fieldIds)
-    [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] nameMiddle: in QIF and CAD list
+    [PASS] nameSuffix: in QIF and CAD list
     [INFO] birthDate: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] purposeCode: in QIF as 'PurposeCode' (PascalCase USx fieldIds)
     [PASS] addressCity: in QIF as 'AddressCity' (PascalCase USx fieldIds)
@@ -34,8 +34,8 @@ CAD AUDIT
     [PASS] operatorLicenseNumber: in QIF as 'OperatorLicenseNumber' (PascalCase USx fieldIds)
     [PASS] nameFirst: in QIF as 'NameFirst' (PascalCase USx fieldIds)
     [PASS] nameLast: in QIF as 'NameLast' (PascalCase USx fieldIds)
-    [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] nameMiddle: in QIF and CAD list
+    [PASS] nameSuffix: in QIF and CAD list
     [PASS] birthDate: in QIF as 'BirthDate' (PascalCase USx fieldIds)
     [PASS] sexCode: in QIF as 'SexCode' (PascalCase USx fieldIds)
     [INFO] raceCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -62,6 +62,8 @@ CAD AUDIT
     [INFO] RegistrationStateDH: in QIF, not in CAD list (provider-specific)
     [INFO] NameLastDH: in QIF, not in CAD list (provider-specific)
     [INFO] NameFirstDH: in QIF, not in CAD list (provider-specific)
+    [INFO] nameMiddleDH: in QIF, not in CAD list (provider-specific)
+    [INFO] nameSuffixDH: in QIF, not in CAD list (provider-specific)
     [INFO] BirthDateDH: in QIF, not in CAD list (provider-specific)
     [INFO] SexCodeDH: in QIF, not in CAD list (provider-specific)
     [INFO] AttentionDH: in QIF, not in CAD list (provider-specific)
@@ -74,8 +76,8 @@ CAD AUDIT
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] nameFirst: in QIF as 'NameFirst' (PascalCase USx fieldIds)
     [PASS] nameLast: in QIF as 'NameLast' (PascalCase USx fieldIds)
-    [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] nameMiddle: in QIF and CAD list
+    [PASS] nameSuffix: in QIF and CAD list
     [PASS] birthDate: in QIF as 'BirthDate' (PascalCase USx fieldIds)
     [PASS] purposeCode: in QIF as 'PurposeCode' (PascalCase USx fieldIds)
     [PASS] relatedHitSearchIndicator: in QIF and CAD list
@@ -153,9 +155,9 @@ CAD AUDIT
     [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo QW.N -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo L1.N -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo KQ.O -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo L1.O -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo L1.ODH -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo KQ.N -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo L1.N -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo L1.NDH -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_eSUN_GunQuery' combo QGB -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_eSUN_GunQuery' combo QGH.B -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_eSUN_GunQuery' combo QGH.A -- defaults cover all initialValue any[] fields
@@ -171,6 +173,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 82 PASS / 0 FAIL / 0 WARN / 59 INFO
+Total: 88 PASS / 0 FAIL / 0 WARN / 55 INFO
 
 
