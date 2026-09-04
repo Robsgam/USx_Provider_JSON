@@ -787,3 +787,35 @@ no static options at all (`attributeTypeId: DEX_INQUIRY_PURPOSE_CODE`, platform-
 the select it replaced). Then a name-parsing regex missed `ENTTIY_Boat` — a typo inherited from the
 v1.0 baseline and correctly preserved — and reported all 5 Boat fills as orphans when Boat is 5/5
 clean. Key on `targetEntity`; never parse a config name.
+
+## watch_captures.ps1:83 — a relabel failure imports the batch with the labels relabel exists to replace
+
+**Opened 2026-09-04. Deliberately NOT fixed in the same pass as the `underFilled` fix — see below.**
+
+```powershell
+try { & ...relabel_batch.ps1 -BatchPath $path ... }
+catch { Write-Host "[WATCH] relabel errored (importing as-is): $_" -ForegroundColor DarkYellow }
+```
+
+"Importing as-is" means importing on the **browser's** labels — which the line three above it calls
+"unreliable when tests share identifiers and differ only in optional fields", and which
+`relabel_batch` cares about enough to **DROP** unmatched records by default (*"a stale row can
+re-create a retired log, 2026-07-02"*). So the documented remedy is skipped precisely when it fails,
+and the only trace is one DarkYellow line in a scrolling console.
+
+Worse, `relabel_batch` **rewrites the batch IN PLACE**. A throw partway through the write leaves a
+truncated file, and the import then runs on it.
+
+**A second hole in the same line:** `&` on a script that exits non-zero does NOT throw — it sets
+`$LASTEXITCODE`, which `watch_captures.ps1` never reads (0 occurrences). Today that is latent, not
+live: `relabel_batch` has no `exit 1` and no `throw`, only inline `exit 0` guard clauses. But it
+means the `catch` is load-bearing on its own, and any future failure exit added to `relabel_batch`
+would be silently ignored.
+
+**Fix when taken:** on relabel failure, do NOT import that file — report loudly and leave it for the
+operator. A visible stall beats a silent mislabel. Check `$LASTEXITCODE` as well as catching.
+
+**WHY IT IS DEFERRED, and this is not "re-test cost".** `relabel_batch.ps1` was changed in this same
+pass (the `underFilled` erasure) and it sits in the ingest path Rob is about to drive for the CA_eSUN
+v2.2 radio validation. Two changes to one path in one run means an anomaly cannot be attributed to
+either. Take this immediately after that capture run lands.
