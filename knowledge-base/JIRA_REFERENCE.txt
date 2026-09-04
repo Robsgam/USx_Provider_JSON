@@ -38,6 +38,19 @@ PROVIDER -> TICKET
   NM_NMLETS_OFML        | DEX-989    | 2026-08-27/28 and recorded ONLY in each provider's own
   OR_LEDS               | DEX-992    | DEX_TICKET.md -- so this central mapping still read "not
   TN_TIES               | DEX-994    | recorded" for tickets the repo demonstrably knew. All four
+  CA_CONTRA_COSTA       | DEX-977    | all four added 2026-09-04 by JQL, after a status sweep found these
+  CA_SAN_LUIS_OBISPO    | DEX-981    | were the ONLY providers with no DEX_TICKET.md at all -- so the repo
+  CA_VENTURA_COUNTY     | DEX-982    | did not record where to post even once Jira reopens. All four sit in
+  LA_LEMS               | DEX-985    | the same DEX-97x/98x block as the rest and were named
+                        |            | "[<STATE> - <PROVIDER>] USx Provider Build", the pattern every other
+                        |            | row follows -- they were findable the whole time and nobody looked.
+                        |            | ALL FOUR CARRY ZERO COMMENTS. Two need reading before you act:
+                        |            |   DEX-977 status `Blocked` -- the SECOND provider ticket in that state
+                        |            |     after OCATS/DEX-980; reason unknown here, ASK before importing.
+                        |            |   DEX-985 status `Done` while LA_LEMS is 0/5 tested and installed on NO
+                        |            |     tenant. Lafayette runs a HAND-BUILT engineering JSON (LEDGER B.1),
+                        |            |     so `Done` most likely closed the DEPLOYMENT, not this repo's build
+                        |            |     -- an inference, not a verified fact. Do not read it as complete.
   CA_eSUN               | DEX-1312   | added 2026-09-03. The PARENT build ticket. Its subtask DEX-1313
                         | DEX-1313   | ("USX Search Purpose as Radio buttons", description "For SDSO
                         |            | only.") is where the v1.x/v2.x RADIOBUTTON line is reported --
