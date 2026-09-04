@@ -458,7 +458,20 @@ $officerGuidePath = Join-Path $toolDir "render_officer_guide.ps1"
 $officerHtml = Join-Path $DeliverablesDir "OFFICER_GUIDE_$jsonName.html"
 $officerPdf  = Join-Path $DeliverablesDir "OFFICER_GUIDE_$jsonName.pdf"
 if (Test-Path $officerGuidePath) {
-    & $psExe -NoProfile -ExecutionPolicy Bypass -File $officerGuidePath -Path $resolvedStr -OutFile $officerHtml -PdfFile $officerPdf 2>&1 | Out-Null
+    # SURFACE THE RENDERER'S OWN WARNINGS. `| Out-Null` swallowed everything it printed, including
+    # the stale-PDF guard added 2026-09-03 -- so on a normal build the one signal that says "the PDF
+    # on disk does not match the HTML just produced" went to nowhere, which is how IL shipped a
+    # 24-minute-stale PDF while every board read green. Also swallowed: the MESSAGE KEYS line, which
+    # reports whether the sheet is showing the state's mnemonics or our invented keyRefs.
+    # `Test-Path $officerHtml` below is kept but is NOT the success test -- a pre-existing file
+    # satisfies it, which is the same defect the stale-PDF guard exists for. The renderer's own
+    # lines are the verdict; these are echoed.
+    $guideOut = & $psExe -NoProfile -ExecutionPolicy Bypass -File $officerGuidePath -Path $resolvedStr -OutFile $officerHtml -PdfFile $officerPdf 2>&1
+    foreach ($line in @($guideOut)) {
+        $s = "$line"
+        if ($s -match 'NOT REWRITTEN|STALE')     { Write-Host "  [13/$stepCount] $($s.Trim())" -ForegroundColor Red }
+        elseif ($s -match 'MESSAGE KEYS|\[NOTE\]|\[WARN\]') { Write-Host "  [13/$stepCount] $($s.Trim())" -ForegroundColor Yellow }
+    }
     if (Test-Path $officerHtml) { Write-Host "  [13/$stepCount] Saved: $officerHtml" -ForegroundColor Green }
     else { Write-Host "  [13/$stepCount] Officer guide not produced (advisory)" -ForegroundColor Gray }
 } else {

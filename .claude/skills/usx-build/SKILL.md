@@ -342,6 +342,18 @@ has different message keys."*
 makes it in-state, and an absence is not something a reader notices. The row looked complete and
 silently taught the wrong thing.
 
+**NAME THE HOME STATE — "leave blank" alone never says which state in-state *is*.** Rob 2026-09-04:
+*"any explcit form field helpers incldued on the guide like leave blank for XX in teh state
+context."* The row reads **“State — leave blank for Illinois.”**
+- **Derived from the provider prefix (`<STATE>_<SYSTEM>`), not transcribed from the form.** Only
+  **11 of 119 card titles** carry any hint, so surfacing card titles would help 3 providers and
+  leave 17 saying "leave blank" with no referent. All 20 prefixes are real state codes (14 distinct),
+  and the derivation **agrees with the one authoritative statement that exists** — CA_eSUN's card
+  title says *"leave State blank for California"* and its prefix is CA.
+- **The routing conditions cannot supply it** — checked first; they are existence-only
+  (`EXISTS`/`NOT_EXISTS`) and carry no state value list.
+- An unrecognised prefix falls back to a bare "leave blank" rather than inventing a state name.
+
 **A ROUTING CONDITION IS A REQUIREMENT.** IL's `Z2.P` and `Z5` declare the *same* `set[]` —
 `[LicensePlateNumber]` — because the metadata variants differ only in whether `<Any>` carries State.
 The sheet read `set[]`→Required and `any[]`→Optional and nothing else, so both rows printed

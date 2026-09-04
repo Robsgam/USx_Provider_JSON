@@ -159,6 +159,20 @@ $entitiesBundle = $data.bundles | Where-Object { $_.name -eq 'ENTITIES' } | Sele
 $providerBundle = $data.bundles | Where-Object { $_.name -ne 'ENTITIES' -and $_.name -ne 'RMS' } | Select-Object -First 1
 if (-not $entitiesBundle) { Write-Error "No ENTITIES bundle"; exit 1 }
 
+# Home state from the provider directory name (<STATE>_<SYSTEM>). Only the states the portfolio
+# actually uses are listed: an unknown prefix returns $null and the sheet falls back to a bare
+# "leave blank" rather than inventing a state name. Confirmed 2026-09-04 that all 20 provider
+# prefixes resolve here (AZ CA FL HI IL LA MD NJ NM NY OH OR TN TX = 14 distinct).
+function Get-HomeStateName([string]$provider) {
+    $map = @{
+        AZ='Arizona'; CA='California'; FL='Florida'; HI='Hawaii'; IL='Illinois'; LA='Louisiana'
+        MD='Maryland'; NJ='New Jersey'; NM='New Mexico'; NY='New York'; OH='Ohio'; OR='Oregon'
+        TN='Tennessee'; TX='Texas'
+    }
+    if ($provider -match '^([A-Z]{2})_') { $k = $Matches[1]; if ($map.ContainsKey($k)) { return $map[$k] } }
+    return $null
+}
+
 function Esc($s) {
     if ($null -eq $s) { return '' }
     return ([string]$s) -replace '&','&amp;' -replace '<','&lt;' -replace '>','&gt;' -replace '"','&quot;'
@@ -527,7 +541,22 @@ foreach ($ent in $order) {
                 if ("$f" -match '(?i)^(registration)?state') { $stateFld = "$f"; break }
             }
             $stateName = if ($stateFld) { FieldName $stateFld ([string]$q.targetEntity) } else { 'State' }
-            $blankNote = "<div class='blank'>$(Esc $stateName) &mdash; leave blank</div>"
+            # NAME THE HOME STATE. Rob 2026-09-04: "any explcit form field helpers incldued on the
+            # guide like leave blank for XX in teh state context."
+            # "State - leave blank" tells an officer WHAT to do and never WHICH state in-state means.
+            # The form already says it on three CA_eSUN cards -- "VEHICLE -- plate, VIN or registered
+            # owner (leave State blank for California)" -- but the guide renders the QUERY LABEL as
+            # its caption, never the card title, so that help was on the form and not on the sheet.
+            # DERIVED, NOT TRANSCRIBED: only 11 of 119 card titles carry any hint, so surfacing titles
+            # would help 3 providers and leave 17 saying "leave blank" with no referent. Every provider
+            # directory is <STATE>_<SYSTEM>, so the two-letter prefix is the home state -- mechanical,
+            # covers all 20, and it AGREES with the one authoritative statement we have (CA_eSUN's card
+            # title says California; its prefix is CA). Verified all 20 prefixes are real state codes.
+            # The routing conditions were checked first and cannot supply this: they are existence-only
+            # (EXISTS / NOT_EXISTS) and carry no state value list.
+            $homeState = Get-HomeStateName $providerName
+            $blankSuffix = if ($homeState) { " for $homeState" } else { '' }
+            $blankNote = "<div class='blank'>$(Esc $stateName) &mdash; leave blank$(Esc $blankSuffix)</div>"
 
             $variants = @()
             if ($condRequired | Where-Object { "$_" -match '(?i)^(registration)?state' }) {
