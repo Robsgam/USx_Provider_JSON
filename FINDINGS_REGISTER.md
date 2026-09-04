@@ -819,3 +819,47 @@ operator. A visible stall beats a silent mislabel. Check `$LASTEXITCODE` as well
 pass (the `underFilled` erasure) and it sits in the ingest path Rob is about to drive for the CA_eSUN
 v2.2 radio validation. Two changes to one path in one run means an anomaly cannot be attributed to
 either. Take this immediately after that capture run lands.
+
+## `doctor.ps1 -Strict` is UNPROVEN for the FAIL direction, and doctor's runtime is what prevents proving it
+
+**Opened 2026-09-04. Step 7 is committed; its LAW 2 proof is NOT done. Do not cite a doctor PASS as
+evidence until this closes.**
+
+`-Strict` collects blocking lines and exits 1 on any of them:
+
+```powershell
+if ($l -match '^\s*\[FAIL\]')          { $blocking += ... }
+if ($l -match '^\s*\[WARN\].*failed:') { $blocking += ... }   # a crashed sub-gate is UNCHECKED
+if ($l -match '\[NO-VERDICT\]')        { $blocking += ... }
+if ($Strict -and $blocking.Count -gt 0) { exit 1 }
+exit 0
+```
+
+Measured run (`-SkipPoison -Strict`): **24 of 25 sections completed, 167 lines, ZERO lines matching
+any of the three patterns.** So the run exercised only the exit-0 path. **A gate observed passing on
+clean input has not been shown able to fail** — that is exactly the standard this repo applies to
+everything else, and it applies here.
+
+**THE BLOCKER IS RUNTIME.** Three attempts: two background tasks killed, one foreground run that
+**timed out at 10m 0s**. It reached the LAST section and hung there — `report_mission_status.ps1`,
+which CLAUDE.md documents as running `audit_devdoc_combinations` and `audit_combo_reachability`
+**LIVE, per provider**, because those two blocking enforce phases leave no artifact. Two heavy gates
+x 20 providers, at the end of an already-long dashboard.
+
+**Not caused by Step 6.** The three gates I wired in (`audit_order_risk`, `audit_log_inflation`,
+`audit_log_metadata_attribution`) all completed, at output lines 144-159, well before the hang.
+
+**Why this matters beyond one unproven switch:** a health dashboard that costs >10 minutes is one
+nobody runs — the same reasoning already recorded for `audit_layout_flow` (*"a gate nobody runs is
+indistinguishable from one that does not exist"*) and for LAW 2b. And it is self-reinforcing: the
+runtime is precisely what makes the LAW 2 injection test too expensive to perform.
+
+**To close it, in order:** (1) make `report_mission_status` reuse a recorded stage-2/3 artifact
+instead of re-running both gates live per provider, or give doctor a `-SkipMission`; (2) then inject
+a blocking line the cheap way already proven on enforce PHASE 2h — temporarily rename a sub-gate so
+doctor emits `[WARN] <tool> failed:` — and confirm exit 1, then exit 0 on restore.
+
+**Genuinely good news in the same run, and it is not the same claim:** across those 24 sections there
+were 0 FAIL, 0 crashed sub-gates and 0 NO-VERDICT. `audit_artifact_provenance` reports **F 0 / S 7 /
+U 0 / O 0** over 153 scripts and 320 reports — the 7 STALE reports are a real, separate residue worth
+clearing, and are correctly non-blocking under the "promote to strict only at zero residue" rule.
