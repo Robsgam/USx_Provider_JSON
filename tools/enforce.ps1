@@ -290,7 +290,7 @@ foreach ($pd in $providers) {
     }
     if (-not ($man -and $man.sourceSha256 -eq $liveSha -and $man.toolFingerprint -eq $curFp)) {
         Out "  $provName -- build manifest stale/missing (JSON or report-tool changed); regenerating reports..."
-        & powershell -ExecutionPolicy Bypass -File "$toolDir\build_report.ps1" -Path $activeJson.FullName 2>&1 | Out-Null
+        & powershell -NoProfile -ExecutionPolicy Bypass -File "$toolDir\build_report.ps1" -Path $activeJson.FullName 2>&1 | Out-Null
         $man = $null
         if (Test-Path $manifestFile) {
             try { $man = Get-Content $manifestFile -Raw | ConvertFrom-Json } catch { $man = $null }
@@ -504,7 +504,7 @@ foreach ($pd in $providers) {
     # FAIL blocks only when enforcing that specific provider (-Provider); on a bare portfolio-wide
     # run it downgrades to WARN so out-of-scope legacy stubs (e.g. TX_TLETS_CCH) don't block the
     # whole portfolio. Run live -- audit_structure reads the folder tree, not a cached report.
-    $structOut = & powershell -ExecutionPolicy Bypass -File "$toolDir\audit_structure.ps1" -Path $pd.FullName 2>&1 | Out-String
+    $structOut = & powershell -NoProfile -ExecutionPolicy Bypass -File "$toolDir\audit_structure.ps1" -Path $pd.FullName 2>&1 | Out-String
     $sFail = ([regex]::Matches($structOut, '\[FAIL\]')).Count
     $sWarn = ([regex]::Matches($structOut, '\[WARN\]')).Count
     if ($sFail -gt 0) {
@@ -531,7 +531,7 @@ foreach ($pd in $providers) {
 SectionHeader "PHASE 2d: Simulator Parity"
 $parityTool = Join-Path $toolDir "audit_simulator_parity.ps1"
 if (Test-Path $parityTool) {
-    $parityOut = & powershell -ExecutionPolicy Bypass -File $parityTool 2>&1 | Out-String
+    $parityOut = & powershell -NoProfile -ExecutionPolicy Bypass -File $parityTool 2>&1 | Out-String
     $pm = [regex]::Match($parityOut, 'RESULTS:\s*(\d+)\s*PASS\s*/\s*(\d+)\s*FAIL')
     $parityFail = if ($pm.Success) { [int]$pm.Groups[2].Value } else { 1 }
     if ($parityFail -gt 0) {
@@ -612,7 +612,7 @@ if ($Reproducible -or $Provider) {
             }
             if (-not $rjson) { Info "$provName -- no <PROVIDER>.json (legacy); reproducibility skipped"; continue }
             if (-not (Test-Path (Join-Path $pd.FullName 'scripts'))) { Info "$provName -- no scripts/; reproducibility skipped"; continue }
-            $rout = & powershell -ExecutionPolicy Bypass -File $reproTool -Path $rjson.FullName 2>&1 | Out-String
+            $rout = & powershell -NoProfile -ExecutionPolicy Bypass -File $reproTool -Path $rjson.FullName 2>&1 | Out-String
             $rm = [regex]::Match($rout, 'RESULTS:\s*(\d+)\s*PASS\s*/\s*(\d+)\s*FAIL\s*/\s*(\d+)\s*WARN')
             $rfail = if ($rm.Success) { [int]$rm.Groups[2].Value } else { 1 }
             $rwarn = if ($rm.Success) { [int]$rm.Groups[3].Value } else { 0 }
@@ -635,7 +635,7 @@ $vsTool = Join-Path $toolDir "audit_variant_sync.ps1"
 if (-not (Test-Path $vsTool)) {
     Info "audit_variant_sync.ps1 not found -- lockstep check skipped"
 } else {
-    $vsOut = & powershell -ExecutionPolicy Bypass -File $vsTool 2>&1 | Out-String
+    $vsOut = & powershell -NoProfile -ExecutionPolicy Bypass -File $vsTool 2>&1 | Out-String
     if ($LASTEXITCODE -ne 0) {
         Fail "Base<->variant lockstep: a variant's BASE-SYNC marker is behind its base (run audit_variant_sync.ps1)"
         $vsOut -split "`n" | Where-Object { $_ -match 'FAIL|behind|drift|re-sync|BASE-SYNC' } | Select-Object -First 6 | ForEach-Object { Out "       $($_.Trim())" }
@@ -664,7 +664,7 @@ if (-not (Test-Path $reachTool)) {
         $provName = $pd.Name
         $reachJson = Get-ProviderRootJson -ProvDir $pd.FullName -Provider $provName
         if (-not $reachJson) { Info "$provName -- no root JSON, reachability skipped"; continue }
-        $reachOut = & powershell -ExecutionPolicy Bypass -File $reachTool -Path $reachJson 2>&1 | Out-String
+        $reachOut = & powershell -NoProfile -ExecutionPolicy Bypass -File $reachTool -Path $reachJson 2>&1 | Out-String
         $rm = [regex]::Match($reachOut, '\[FAIL\]\s*(\d+)\s*dead combination')
         if ($rm.Success) {
             Fail "$provName -- $($rm.Groups[1].Value) DEAD combo(s): unreachable under first-match ordering (run audit_combo_reachability.ps1)"
@@ -703,7 +703,7 @@ if (-not (Test-Path $pfsTool)) {
         $pfsJson = Get-ProviderRootJson -ProvDir $pd.FullName -Provider $provName
         if (-not $pfsJson) { continue }
         $pfsSeen++
-        $pfsOut = & powershell -ExecutionPolicy Bypass -File $pfsTool -Path $pfsJson 2>&1 | Out-String
+        $pfsOut = & powershell -NoProfile -ExecutionPolicy Bypass -File $pfsTool -Path $pfsJson 2>&1 | Out-String
         # Anchor on the verdict line, never a substring of the explanatory header.
         $pm = [regex]::Match($pfsOut, '(?m)^\s+RESULTS:\s*(\d+) PASS / (\d+) FAIL\s+\((\d+) pair')
         if (-not $pm.Success) {
@@ -736,7 +736,7 @@ if (-not (Test-Path $attrTool)) {
         $provName = $pd.Name
         $attrJson = Get-ProviderRootJson -ProvDir $pd.FullName -Provider $provName
         if (-not $attrJson) { continue }
-        $attrOut = & powershell -ExecutionPolicy Bypass -File $attrTool -Path $attrJson 2>&1 | Out-String
+        $attrOut = & powershell -NoProfile -ExecutionPolicy Bypass -File $attrTool -Path $attrJson 2>&1 | Out-String
         $am = [regex]::Match($attrOut, '\[FAIL\]\s*(\d+)\s*misattributed')
         if ($am.Success) {
             Fail "$provName -- $($am.Groups[1].Value) log(s) filed under a combo that did NOT fire (run audit_log_combo_attribution.ps1)"
@@ -771,7 +771,7 @@ if (-not (Test-Path $sqvrTool)) {
         $provName = $pd.Name
         $sqJson = Get-ProviderRootJson -ProvDir $pd.FullName -Provider $provName
         if (-not $sqJson) { continue }
-        $sqOut = & powershell -ExecutionPolicy Bypass -File $sqvrTool -Path $sqJson 2>&1 | Out-String
+        $sqOut = & powershell -NoProfile -ExecutionPolicy Bypass -File $sqvrTool -Path $sqJson 2>&1 | Out-String
         $sm = [regex]::Match($sqOut, '\[FAIL\]\s*(\d+)\s*stale SQVR')
         if ($sm.Success) {
             Fail "$provName -- $($sm.Groups[1].Value) stale SQVR assertion(s) (run audit_sqvr_integrity.ps1)"
@@ -805,7 +805,7 @@ if (-not (Test-Path $fbTool)) {
         $provName = $pd.Name
         $fbJson = Get-ProviderRootJson -ProvDir $pd.FullName -Provider $provName
         if (-not $fbJson) { continue }
-        $fbOut = & powershell -ExecutionPolicy Bypass -File $fbTool -Path $fbJson 2>&1 | Out-String
+        $fbOut = & powershell -NoProfile -ExecutionPolicy Bypass -File $fbTool -Path $fbJson 2>&1 | Out-String
         if ($fbOut -match '\[PASS\]\s*(v[\d.]+) reviewed') {
             Pass "$provName -- rendered form reviewed at $($Matches[1])"
         } else {
@@ -831,7 +831,7 @@ $ssTool = Join-Path $toolDir "audit_session_state.ps1"
 if (-not (Test-Path $ssTool)) {
     Info "audit_session_state.ps1 not found -- session-state check skipped"
 } else {
-    $ssOut = & powershell -ExecutionPolicy Bypass -File $ssTool 2>&1 | Out-String
+    $ssOut = & powershell -NoProfile -ExecutionPolicy Bypass -File $ssTool 2>&1 | Out-String
     $sm = [regex]::Match($ssOut, '\[FAIL\]\s*(\d+)\s*stale claim')
     if ($sm.Success -or $ssOut -match '\[FAIL\] SESSION_STATE\.md is MISSING') {
         Fail "SESSION_STATE.md is stale or missing -- the next session will pick up wrong (run audit_session_state.ps1)"
@@ -877,7 +877,7 @@ if (-not (Test-Path $qtTool)) {
         $provName = $pd.Name
         $qtJson = Get-ProviderRootJson -ProvDir $pd.FullName -Provider $provName
         if (-not $qtJson) { continue }
-        $qtOut = & powershell -ExecutionPolicy Bypass -File $qtTool -Provider $provName 2>&1 | Out-String
+        $qtOut = & powershell -NoProfile -ExecutionPolicy Bypass -File $qtTool -Provider $provName 2>&1 | Out-String
         $qtM = [regex]::Match($qtOut, 'TOTALS:\s*(\d+) built\s*/\s*(\d+) PREFILL-DEAD.*?/\s*(\d+) SHADOW\s*/\s*(\d+) MISSING')
         if (-not $qtM.Success) {
             Info "$provName -- query trace produced no parseable totals (metadata shape unrecognized?)"
@@ -929,7 +929,7 @@ if (-not (Test-Path $dcTool)) {
         $provName = $pd.Name
         $dcJson = Get-ProviderRootJson -ProvDir $pd.FullName -Provider $provName
         if (-not $dcJson) { continue }
-        $dcOut = & powershell -ExecutionPolicy Bypass -File $dcTool -Path $dcJson 2>&1 | Out-String
+        $dcOut = & powershell -NoProfile -ExecutionPolicy Bypass -File $dcTool -Path $dcJson 2>&1 | Out-String
         $dcM = [regex]::Match($dcOut, 'RESULT:\s*(\d+) FAIL\s*/\s*(\d+) NOTE')
         if (-not $dcM.Success) {
             Info "$provName -- devdoc combination check produced no parseable totals"
@@ -985,7 +985,7 @@ if ($true) {
     } else {
         foreach ($pdw in $providers) {
             $provName = $pdw.Name
-            $wcOut = & powershell -ExecutionPolicy Bypass -File $wcTool -Provider $provName -Quiet 2>&1 | Out-String
+            $wcOut = & powershell -NoProfile -ExecutionPolicy Bypass -File $wcTool -Provider $provName -Quiet 2>&1 | Out-String
             # Parse BOTH summary lines. The gate grew from five classes to nine (F variant gap,
             # G dup fieldId, H dup targetField, I deselect orphan) and a regex pinned to the A-E
             # line would have let all four regress in silence -- the exact "gate that cannot fail"
@@ -1089,7 +1089,7 @@ if (-not (Test-Path $doTool)) {
         $provName = $pd.Name
         $doJson = Get-ProviderRootJson -ProvDir $pd.FullName -Provider $provName
         if (-not $doJson) { continue }
-        $doOut = & powershell -ExecutionPolicy Bypass -File $doTool -Path $doJson 2>&1 | Out-String
+        $doOut = & powershell -NoProfile -ExecutionPolicy Bypass -File $doTool -Path $doJson 2>&1 | Out-String
         $doM = [regex]::Match($doOut, 'RESULT:\s*(\d+) FAIL\s*/\s*(\d+) NOTE')
         if (-not $doM.Success) { Info "$provName -- devdoc-optional check produced no parseable totals"; continue }
         $doF = [int]$doM.Groups[1].Value; $doN = [int]$doM.Groups[2].Value
@@ -1119,7 +1119,7 @@ $bcTool = Join-Path $toolDir "audit_branch_currency.ps1"
 if (-not (Test-Path $bcTool)) {
     Info "audit_branch_currency.ps1 not found -- branch-currency check skipped"
 } else {
-    $bcOut = & powershell -ExecutionPolicy Bypass -File $bcTool 2>&1 | Out-String
+    $bcOut = & powershell -NoProfile -ExecutionPolicy Bypass -File $bcTool 2>&1 | Out-String
     $bcWarns = @($bcOut -split "`n" | Where-Object { $_ -match '^\s*\[WARN\]' })
     if ($bcWarns.Count -gt 0) {
         foreach ($w in $bcWarns) { Info ($w -replace '^\s*\[WARN\]\s*','branch drift: ') }
@@ -1146,7 +1146,7 @@ if (-not (Test-Path $lcTool)) {
     Info "audit_lifecycle.ps1 not found -- lifecycle tail (Jira + import record) NOT checked"
 } else {
     foreach ($pd in $providers) {
-        $lcOut = & powershell -ExecutionPolicy Bypass -File $lcTool -Provider $pd.Name 2>&1 | Out-String
+        $lcOut = & powershell -NoProfile -ExecutionPolicy Bypass -File $lcTool -Provider $pd.Name 2>&1 | Out-String
         $lcGaps = @($lcOut -split "`n" | Where-Object { $_ -match '\[GAP \]' })
         if ($lcGaps.Count -gt 0) {
             Info "$($pd.Name) -- $($lcGaps.Count) lifecycle-tail gap(s), advisory: tools\audit_lifecycle.ps1 -Provider $($pd.Name)"
@@ -1176,7 +1176,7 @@ if (-not (Test-Path $rfTool)) {
     Info "audit_requirement_fidelity.ps1 not found -- requirement fidelity NOT checked"
 } else {
     foreach ($pd in $providers) {
-        $rfOut  = & powershell -ExecutionPolicy Bypass -File $rfTool -Provider $pd.Name 2>&1 | Out-String
+        $rfOut  = & powershell -NoProfile -ExecutionPolicy Bypass -File $rfTool -Provider $pd.Name 2>&1 | Out-String
         $rfW    = @($rfOut -split "`n" | Where-Object { $_ -match '\[WARN\]' })
         $rfNote = if ($rfOut -match '(\d+) registered divergence') { $Matches[1] } else { '0' }
         if ($rfW.Count -gt 0) {
@@ -1209,7 +1209,7 @@ if (-not (Test-Path $lfTool)) {
     Info "audit_layout_flow.ps1 not found -- layout flow NOT checked"
 } else {
     foreach ($pd in $providers) {
-        $lfOut = & powershell -ExecutionPolicy Bypass -File $lfTool -Provider $pd.Name 2>&1 | Out-String
+        $lfOut = & powershell -NoProfile -ExecutionPolicy Bypass -File $lfTool -Provider $pd.Name 2>&1 | Out-String
         $lfLines = $lfOut -split "`n"
         $lfF   = @($lfLines | Where-Object { $_ -match '^\s*\[L\d+\s' })
         # Match per LINE, not against the whole blob: `'compared:\s*(.+)$'` over a multi-line string
@@ -1255,7 +1255,7 @@ if (-not (Test-Path $ncTool)) {
     Info "audit_name_components.ps1 not found -- name components NOT checked"
 } else {
     foreach ($pd in $providers) {
-        $ncOut   = & powershell -ExecutionPolicy Bypass -File $ncTool -Provider $pd.Name 2>&1 | Out-String
+        $ncOut   = & powershell -NoProfile -ExecutionPolicy Bypass -File $ncTool -Provider $pd.Name 2>&1 | Out-String
         $ncLines = $ncOut -split "`n"
         # Anchor on the tool's own tally line, not a guessed sentence, and match per LINE -- the
         # PHASE 2w bug above was exactly this ($ without (?m) cannot match mid-blob).
@@ -1566,12 +1566,12 @@ Out "  Launching audits in parallel..."
 
 $crossJob = Start-Job -ScriptBlock {
     param($t, $p)
-    & powershell -ExecutionPolicy Bypass -File "$t\audit_cross_provider.ps1" -Path $p 2>&1 | Out-String
+    & powershell -NoProfile -ExecutionPolicy Bypass -File "$t\audit_cross_provider.ps1" -Path $p 2>&1 | Out-String
 } -ArgumentList $toolDir, $provDir
 
 $repoJob = Start-Job -ScriptBlock {
     param($t)
-    & powershell -ExecutionPolicy Bypass -File "$t\audit_repo.ps1" 2>&1 | Out-String
+    & powershell -NoProfile -ExecutionPolicy Bypass -File "$t\audit_repo.ps1" 2>&1 | Out-String
 } -ArgumentList $toolDir
 
 $crossJob, $repoJob | Wait-Job -Timeout 300 | Out-Null
@@ -1668,7 +1668,7 @@ if (-not $SkipGit) {
 SectionHeader "PHASE 6: Iterate-Phase Gate + Claims"
 
 # 6a: Hypothesis quarantine -- every live-proven KB/simulator claim must cite an existing log.
-$claimsOut = & powershell -ExecutionPolicy Bypass -File "$toolDir\verify_claims.ps1" 2>&1 | Out-String
+$claimsOut = & powershell -NoProfile -ExecutionPolicy Bypass -File "$toolDir\verify_claims.ps1" 2>&1 | Out-String
 $claimsExit = $LASTEXITCODE
 if ($claimsExit -eq 0) {
     Pass "Hypothesis quarantine: all live-proven claims cite committed test logs"
@@ -1743,12 +1743,12 @@ foreach ($pd in $providers) {
     # means fix the mechanism rather than the instance.
     # A FALSE FAIL on a tenant-verified provider is worse than a missing check: it invites someone
     # to "repair" 89 logs that were already correct.
-    $logAuditOut = & powershell -ExecutionPolicy Bypass -File "$toolDir\audit_log_content.ps1" -Provider $pd.Name -Quiet 2>&1 | Out-String
+    $logAuditOut = & powershell -NoProfile -ExecutionPolicy Bypass -File "$toolDir\audit_log_content.ps1" -Provider $pd.Name -Quiet 2>&1 | Out-String
     $logExit = $LASTEXITCODE
     $hasVerdict = ($logAuditOut -match 'RESULT:\s*\d+ failing') -or ($logAuditOut -match '\[audit-log\]')
     if (-not $hasVerdict) {
         # Retry once: the failure mode is transient child-process startup under parallel load.
-        $logAuditOut = & powershell -ExecutionPolicy Bypass -File "$toolDir\audit_log_content.ps1" -Provider $pd.Name -Quiet 2>&1 | Out-String
+        $logAuditOut = & powershell -NoProfile -ExecutionPolicy Bypass -File "$toolDir\audit_log_content.ps1" -Provider $pd.Name -Quiet 2>&1 | Out-String
         $logExit = $LASTEXITCODE
         $hasVerdict = ($logAuditOut -match 'RESULT:\s*\d+ failing') -or ($logAuditOut -match '\[audit-log\]')
     }
@@ -1771,7 +1771,7 @@ if (-not $logContentFailed) { Pass "Log-content integrity: in-scope logs match t
 # in-scope provider ($providers = single provider when -Provider given, else all).
 $logMetaFailed = $false
 foreach ($pd in $providers) {
-    $metaAuditOut = & powershell -ExecutionPolicy Bypass -File "$toolDir\audit_log_metadata.ps1" -Provider $pd.Name -Quiet 2>&1 | Out-String
+    $metaAuditOut = & powershell -NoProfile -ExecutionPolicy Bypass -File "$toolDir\audit_log_metadata.ps1" -Provider $pd.Name -Quiet 2>&1 | Out-String
     if ($LASTEXITCODE -ne 0) {
         $logMetaFailed = $true
         Fail "Log-metadata integrity ($($pd.Name)): saved logs do not match the metadata"
@@ -1789,7 +1789,7 @@ $pickNotes = @()
 foreach ($pd in $providers) {
     $jsonPick = Get-ProviderRootJson -ProvDir $pd.FullName -Provider $pd.Name
     if (-not $jsonPick) { continue }
-    $n = & powershell -ExecutionPolicy Bypass -File "$toolDir\audit_picklist_scope.ps1" -Path $jsonPick 2>&1 | Where-Object { $_ -match '^\[NOTE\]' }
+    $n = & powershell -NoProfile -ExecutionPolicy Bypass -File "$toolDir\audit_picklist_scope.ps1" -Path $jsonPick 2>&1 | Where-Object { $_ -match '^\[NOTE\]' }
     if ($n) { $pickNotes += $n }
 }
 if ($pickNotes.Count -gt 0) {
