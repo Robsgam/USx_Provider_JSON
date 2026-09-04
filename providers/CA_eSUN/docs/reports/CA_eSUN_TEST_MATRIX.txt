@@ -1,58 +1,56 @@
-CA_eSUN v2.2 -- TEST MATRIX
+CA_eSUN v3.0 -- TEST MATRIX
 ==================================================
-Generated: 2026-09-03
+Generated: 2026-09-04
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
 
 FORM FIELDS
 ----------------------------------------
-Vehicle (1 card, 16 fields):
-  ROOT_CARD (Vehicle):
-    ROW 1: PurposeCode [Sel DEX_INQUIRY_PURPOSE_CODE]
-    ROW 2: LicensePlateNumber [Inp 10], RegistrationState [Sel STATE]
-    ROW 3: LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC], LicensePlateYear [Inp 2026, 4]
-    ROW 4: VehicleIdentificationNumber [Inp 17], VehicleYear [Inp 2026, 4], VehicleMakeCode [Sel VEHICLE_MAKE]
-    ROW 5: NameFirst [Inp], NameLast [Inp]
-    ROW 6: NameMiddle [Inp], NameSuffix [Inp], BirthDate [FormDate]
-    ROW 7: AddressCity [Inp 13], AddressStreetNumber [Inp 3]
-    ROW 8: LojackID [Inp 5]
+Vehicle (1 card, 12 fields):
+  CARD_VEH (VEHICLE -- plate, VIN or registered owner (leave State blank for California)):
+    ROW 1: PurposeCode [Sel DEX_INQUIRY_PURPOSE_CODE], LicensePlateNumber [Inp 10], RegistrationState [Sel STATE]
+    ROW 2: LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC], LicensePlateYear [Inp 4]
+    ROW 3: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
+    ROW 4: NameLast [Inp 30], NameFirst [Inp 30]
+    ROW 5: AddressStreetNumber [Inp 10], AddressCity [Inp 20]
 
-Person (1 card, 10 fields):
-  ROOT_CARD (Person):
-    ROW 1: PurposeCode [Sel DEX_INQUIRY_PURPOSE_CODE]
-    ROW 2: OperatorLicenseNumber [Inp], RegistrationState [Sel STATE]
-    ROW 3: NameFirst [Inp], NameLast [Inp]
-    ROW 4: NameMiddle [Inp], NameSuffix [Inp], BirthDate [FormDate], SexCode [Sel SEX], Age [Inp 2]
+Person (2 cards, 16 fields):
+  CARD_DL (DRIVER LICENSE -- OLN, or name with a qualifier (leave State blank for California)):
+    ROW 1: PurposeCode [Sel DEX_INQUIRY_PURPOSE_CODE], OperatorLicenseNumber [Inp 20], RegistrationState [Sel STATE]
+    ROW 2: NameLast [Inp 30], NameFirst [Inp 30]
+    ROW 3: BirthDate [FormDate], Age [Inp 3], SexCode [Sel SEX]
+  CARD_DH (DRIVER HISTORY -- separate query; fill these fields to run it):
+    ROW 1: PurposeCodeDH [Sel DEX_INQUIRY_PURPOSE_CODE], OperatorLicenseNumberDH [Inp 20], RegistrationStateDH [Sel STATE]
+    ROW 2: NameLastDH [Inp 30], NameFirstDH [Inp 30]
+    ROW 3: BirthDateDH [FormDate], SexCodeDH [Sel SEX]
+    ROW 4: AttentionDH [Inp]
 
-Firearm (1 card, 11 fields):
-  ROOT_CARD (Firearm):
-    ROW 1: PurposeCode [Sel DEX_INQUIRY_PURPOSE_CODE]
-    ROW 2: SerialNumber [Inp 20], FirearmCaliber [Sel NCIC_FIREARM_CALIBER/NJ_NIBRS], FirearmType [Sel NCIC_FIREARM_TYPE/NCIC], FirearmMake [Sel NCIC_FIREARM_MAKE/NCIC]
-    ROW 3: NameFirst [Inp], NameLast [Inp]
-    ROW 4: NameMiddle [Inp], NameSuffix [Inp], BirthDate [FormDate], Age [Inp 4]
+Firearm (1 card, 10 fields):
+  CARD_FA (FIREARM -- serial number, or name with date of birth or age):
+    ROW 1: PurposeCode [Sel DEX_INQUIRY_PURPOSE_CODE], GunSerialNumber [Inp 20]
+    ROW 2: GunMake [Sel NCIC_FIREARM_MAKE/NCIC], GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], GunTypeCode [Sel NCIC_FIREARM_TYPE/NCIC]
+    ROW 3: NameLast [Inp 30], NameFirst [Inp 30]
+    ROW 4: BirthDate [FormDate], Age [Inp 3], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
 
-Article (1 card, 4 fields):
-  ROOT_CARD (Article):
-    PurposeCode [Sel DEX_INQUIRY_PURPOSE_CODE]
-    ArticleSerialNumber [Inp 20]
-    ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS], ArticleBrand [Inp]
+Article (1 card, 5 fields):
+  CARD_ART (ARTICLE -- serial number):
+    ROW 1: PurposeCode [Sel DEX_INQUIRY_PURPOSE_CODE], ArticleSerialNumber [Inp 20]
+    ROW 2: ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS], ArticleCategory [Inp 1], ArticleBrand [Inp 6]
 
 Boat (1 card, 4 fields):
-  ROOT_CARD (Boat):
-    PurposeCode [Sel DEX_INQUIRY_PURPOSE_CODE]
-    BoatHullIdNumber [Inp 20], RegistrationNumber [Inp 8], RegistrationState [Sel STATE]
+  CARD_BOA (BOAT -- hull ID or registration number (leave State blank for California)):
+    ROW 1: PurposeCode [Sel DEX_INQUIRY_PURPOSE_CODE], BoatHullIdNumber [Inp 20]
+    ROW 2: RegistrationNumber [Inp 10], RegistrationState [Sel STATE]
 
-QIDM SUMMARY (8 QIDMs, 25 combos)
+QIDM SUMMARY (6 QIDMs, 23 combos)
 ----------------------------------------
-  VehicleRegistrationQuery: 6 combos (RQ x1, QV x1, VPName x1, NameAd x1, 4Licen x1, Identi x1)
-  ArticleSingleQuery: 1 combos (Articl x1)
-  GunQuery: 3 combos (Purpos x3)
-  DriverLicenseQuery: 6 combos (DQ x1, KQ x1, VPAgeI x1, L1Name x1, L1Oper x1, VPBirt x1), autoSelect=true, deselects: [DH]
-  CAILojackQuery: 1 combos (Lojack x1) -- co-fires with VehReg
-  DriverHistoryQuery: 4 combos (KQ x3, L1Name x1), deselects: [DL]
-  AFS: 2 combos (Purpos x2)
-  BoatQuery: 2 combos (Purpos x2)
+  VehicleRegistrationQuery: 6 combos (RQ x2, QV x2, VP.N x1, 4.P x1), autoSelect=true
+  DriverLicenseQuery: 5 combos (DQ x2, QW x1, L1.N x1, L1.O x1), autoSelect=true, deselects: [DH]
+  DriverHistoryQuery: 4 combos (KQ x2, L1.N x1, L1.O x1), deselects: [DL]
+  GunQuery: 3 combos (QG x3), autoSelect=true
+  ArticleSingleQuery: 1 combos (QA x1), autoSelect=true
+  BoatQuery: 4 combos (BQ x2, QB x2), autoSelect=true
 
 ================================================================================
 TEST MATRIX
@@ -63,140 +61,150 @@ Arrangement: ENTITY-GROUPED -- each entity is tested start-to-finish
 (render/negative are manual one-time checks at initial provider build, not in this matrix)
 
 
-ENTITY 1: VEHICLE (15 tests -- 1 card, 7 combos -- CAILojack co-fires with VehReg)
+ENTITY 1: PERSON (22 tests -- 2 cards, 9 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
- 1  Vehicle     QV+Plate           PurposeCode=C, LicensePlateNumber=TES... [    ]
-              Expected: VehicleRegistrationQuery fires (QVLicensePlateNumberIn)
- 2  Vehicle     NameAd+Name        PurposeCode=C, NameFirst=JOHN, NameLa... [    ]
-              Expected: VehicleRegistrationQuery fires (NameAddressIn)
- 3  Vehicle     NameAd+Name        + AddressCity, AddressStreetNumber [    ]
+ 1  Person      DQ+.N              PurposeCode=C, NameLast=DOE, NameFirs... [    ]
+              Expected: DriverLicenseQuery fires (DQ.N)
+ 2  Person      DQ+.N              + RegistrationState, nameMiddle, nameSuffix [    ]
               Expected: any[] fields present in XML output.
- 4  Vehicle     RQ+LicensePlateTypeYearOut+State  PurposeCode=C, LicensePlateNumber=TES... [    ]
-              Expected: VehicleRegistrationQuery fires (RQLicensePlateTypeYearOut)
- 5  Vehicle     4Licen+4LicensePlateTypeIn  PurposeCode=C, LicensePlateNumber=TES... [    ]
-              Expected: VehicleRegistrationQuery fires (4LicensePlateTypeIn)
- 6  Vehicle     VPName+VPNameBirthDateIn  PurposeCode=C, NameFirst=JOHN, NameLa... [    ]
-              Expected: VehicleRegistrationQuery fires (VPNameBirthDateIn)
- 7  Vehicle     Identi+IdentificationNumberInOut  PurposeCode=C, VehicleIdentificationN... [    ]
-              Expected: VehicleRegistrationQuery fires (IdentificationNumberInOut)
- 8  Vehicle     Identi+IdentificationNumberInOut  + VehicleMakeCode, VehicleYear  [    ]
+ 3  Person      DQ+.O              PurposeCode=C, OperatorLicenseNumber=... [    ]
+              Expected: DriverLicenseQuery fires (DQ.O)
+ 4  Person      DQ+.O              + RegistrationState             [    ]
               Expected: any[] fields present in XML output.
- 9  Vehicle     Lojack+LojackID    PurposeCode=C, LojackID=TEST     [    ]
-              Expected: CAILojackQuery co-fires (Lojack)
-10  Vehicle     Guardrail: RQLicensePlateTypeYearOut>IdentificationNumberInOut  LicensePlateNumber=TEST123, PurposeCo... [    ]
-              Expected: VehicleRegistrationQuery fires (RQLicensePlateTypeYearOut). PurposeCode+VIN absent from XML.
-11  Vehicle     Guardrail: RQLicensePlateTypeYearOut>VPNameBirthDateIn  LicensePlateNumber=TEST123, PurposeCo... [    ]
-              Expected: VehicleRegistrationQuery fires (RQLicensePlateTypeYearOut). PurposeCode+FirstName+LastName+DOB absent from XML.
-12  Vehicle     Guardrail: IdentificationNumberInOut>VPNameBirthDateIn  VehicleIdentificationNumber=1HGCM8263... [    ]
-              Expected: VehicleRegistrationQuery fires (IdentificationNumberInOut). PurposeCode+FirstName+LastName+DOB absent from XML.
-13  Vehicle     Guardrail: RQLicensePlateTypeYearOut>NameAddressIn  LicensePlateNumber=TEST123, PurposeCo... [    ]
-              Expected: VehicleRegistrationQuery fires (RQLicensePlateTypeYearOut). PurposeCode+FirstName+LastName absent from XML.
-14  Vehicle     Guardrail: IdentificationNumberInOut>NameAddressIn  VehicleIdentificationNumber=1HGCM8263... [    ]
-              Expected: VehicleRegistrationQuery fires (IdentificationNumberInOut). PurposeCode+FirstName+LastName absent from XML.
-15  Vehicle     Priority routing: verify more-specific combo wins.  [    ]
-              Fill fields that match multiple combos, verify correct one fires.
-
-ENTITY 2: BOAT (5 tests -- 1 card, 2 combos)
-------------------------------------------------------------------------
-#   Entity      Action / Combo                                      Result
---  ----------  --------------------------------------------------  ------
-16  Boat        Purpos+PurposeCodeBoatHullIdNumber  PurposeCode=C, BoatHullIdNumber=FL123... [    ]
-              Expected: BoatQuery fires (PurposeCodeBoatHullIdNumber)
-17  Boat        Purpos+PurposeCodeBoatHullIdNumber  + RegistrationState             [    ]
+ 5  Person      QW+.N              PurposeCode=C, NameLast=DOE, NameFirs... [    ]
+              Expected: DriverLicenseQuery fires (QW.N)
+ 6  Person      QW+.N              + Age, nameMiddle, nameSuffix   [    ]
               Expected: any[] fields present in XML output.
-18  Boat        Purpos+PurposeCodeRegistrationNumber  PurposeCode=C, RegistrationNumber=FL1... [    ]
-              Expected: BoatQuery fires (PurposeCodeRegistrationNumber)
-19  Boat        Purpos+PurposeCodeRegistrationNumber  + RegistrationState             [    ]
+ 7  Person      L1.N+L1.N          PurposeCode=C, NameLast=DOE, NameFirs... [    ]
+              Expected: DriverLicenseQuery fires (L1.N)
+ 8  Person      L1.N+L1.N          + Age, nameMiddle, nameSuffix   [    ]
               Expected: any[] fields present in XML output.
-20  Boat        Guardrail: PurposeCodeBoatHullIdNumber>PurposeCodeRegistrationNumber  BoatHullIdNumber=FL1234AB56H7, Purpos... [    ]
-              Expected: BoatQuery fires (PurposeCodeBoatHullIdNumber). PurposeCode+Reg absent from XML.
-
-ENTITY 3: PERSON (21 tests -- 1 card, 12 combos)
-------------------------------------------------------------------------
-#   Entity      Action / Combo                                      Result
---  ----------  --------------------------------------------------  ------
-21  Person      Purpos+PurposeCodeNameLastAge  PurposeCode=C, NameFirst=JOHN, NameLa... [    ]
-              Expected: AFS fires (PurposeCodeNameLastAge)
-22  Person      Purpos+PurposeCodeNameLastBirthDate  PurposeCode=C, NameFirst=JOHN, NameLa... [    ]
-              Expected: AFS fires (PurposeCodeNameLastBirthDate)
-23  Person      KQ+OLN+State       PurposeCode=C, OperatorLicenseNumber=... [    ]
-              Expected: DriverLicenseQuery fires (KQOperatorLicenseNumberOut)
-24  Person      DQ+Name+State      PurposeCode=C, NameFirst=JOHN, NameLa... [    ]
-              Expected: DriverLicenseQuery fires (DQNameBirthSexCodeOut)
-25  Person      VPAgeI+VPAgeIn     PurposeCode=C, NameFirst=JOHN, NameLa... [    ]
-              Expected: DriverLicenseQuery fires (VPAgeIn)
-26  Person      L1Name+L1NameIn    PurposeCode=C, NameFirst=JOHN, NameLa... [    ]
-              Expected: DriverLicenseQuery fires (L1NameIn)
-27  Person      L1Oper+L1OperatorLicenseNumberIn  PurposeCode=C, OperatorLicenseNumber=... [    ]
-              Expected: DriverLicenseQuery fires (L1OperatorLicenseNumberIn)
-28  Person      VPBirt+VPBirthDateIn  PurposeCode=C, NameFirst=JOHN, NameLa... [    ]
-              Expected: DriverLicenseQuery fires (VPBirthDateIn)
-29  Person      KQ+OLN             PurposeCode=C, OperatorLicenseNumber=... [    ]
-              Expected: DriverHistoryQuery fires (KQOperatorLicenseNumberIn)
-30  Person      KQ+OLN+State       PurposeCode=C, OperatorLicenseNumber=... [    ]
-              Expected: DriverHistoryQuery fires (KQOperatorLicenseNumberOut)
-31  Person      KQ+OLN+State       + Attention                     [    ]
+ 9  Person      L1.O+L1.O          PurposeCode=C, OperatorLicenseNumber=... [    ]
+              Expected: DriverLicenseQuery fires (L1.O)
+10  Person      KQ+.N              PurposeCodeDH=C, NameLastDH=DOE, Name... [    ]
+              Expected: DriverHistoryQuery fires (KQ.N)
+11  Person      KQ+.N              + AttentionDH, RegistrationStateDH, nameMiddleDH, nameSuffixDH [    ]
               Expected: any[] fields present in XML output.
-32  Person      KQ+Name+State      PurposeCode=C, NameFirst=JOHN, NameLa... [    ]
-              Expected: DriverHistoryQuery fires (KQName)
-33  Person      KQ+Name+State      + Attention                     [    ]
+12  Person      KQ+.O              PurposeCodeDH=C, OperatorLicenseNumbe... [    ]
+              Expected: DriverHistoryQuery fires (KQ.O)
+13  Person      KQ+.O              + AttentionDH, RegistrationStateDH [    ]
               Expected: any[] fields present in XML output.
-34  Person      L1Name+L1Name      PurposeCode=C, NameFirst=JOHN, NameLa... [    ]
-              Expected: DriverHistoryQuery fires (L1Name)
-35  Person      Guardrail: KQOperatorLicenseNumberOut>DQNameBirthSexCodeOut  OperatorLicenseNumber=D999888777, Pur... [    ]
-              Expected: DriverLicenseQuery fires (KQOperatorLicenseNumberOut). PurposeCode+FirstName+LastName+DOB+SexCode+RegistrationState absent from XML.
-36  Person      Guardrail: KQOperatorLicenseNumberOut>VPBirthDateIn  OperatorLicenseNumber=D999888777, Pur... [    ]
-              Expected: DriverLicenseQuery fires (KQOperatorLicenseNumberOut). PurposeCode+FirstName+LastName+DOB absent from XML.
-37  Person      Guardrail: KQOperatorLicenseNumberOut>VPAgeIn  OperatorLicenseNumber=D999888777, Pur... [    ]
-              Expected: DriverLicenseQuery fires (KQOperatorLicenseNumberOut). PurposeCode+FirstName+LastName+Age absent from XML.
-38  Person      Guardrail: KQOperatorLicenseNumberOut>L1NameIn  OperatorLicenseNumber=D999888777, Pur... [    ]
-              Expected: DriverLicenseQuery fires (KQOperatorLicenseNumberOut). PurposeCode+FirstName+LastName absent from XML.
-39  Person      Guardrail: KQOperatorLicenseNumberOut>KQName  OperatorLicenseNumber=D999888777, Pur... [    ]
-              Expected: DriverLicenseQuery fires (KQOperatorLicenseNumberOut). PurposeCode+FirstName+LastName+SexCode+DOB+RegistrationState absent from XML.
-40  Person      Guardrail: KQOperatorLicenseNumberOut>L1Name  OperatorLicenseNumber=D999888777, Pur... [    ]
-              Expected: DriverLicenseQuery fires (KQOperatorLicenseNumberOut). PurposeCode+FirstName+LastName absent from XML.
-41  Person      Deselect: DL deselects DH.            [    ]
+14  Person      L1.N+L1.N          PurposeCodeDH=C, NameLastDH=DOE, Name... [    ]
+              Expected: DriverHistoryQuery fires (L1.N)
+15  Person      L1.N+L1.N          + nameMiddleDH, nameSuffixDH    [    ]
+              Expected: any[] fields present in XML output.
+16  Person      L1.O+L1.O          PurposeCodeDH=C, OperatorLicenseNumbe... [    ]
+              Expected: DriverHistoryQuery fires (L1.O)
+17  Person      Guardrail: DQ.O>DQ.N  OperatorLicenseNumber=D999888777, Pur... [    ]
+              Expected: DriverLicenseQuery fires (DQ.O). PurposeCode+LastName+FirstName+SexCode+DOB absent from XML.
+18  Person      Guardrail: DQ.O>QW.N  OperatorLicenseNumber=D999888777, Pur... [    ]
+              Expected: DriverLicenseQuery fires (DQ.O). PurposeCode+LastName+FirstName+DOB absent from XML.
+19  Person      Guardrail: DQ.O>L1.N  OperatorLicenseNumber=D999888777, Pur... [    ]
+              Expected: DriverLicenseQuery fires (DQ.O). PurposeCode+LastName+FirstName absent from XML.
+20  Person      Guardrail: KQ.O>KQ.N  OperatorLicenseNumberDH=D999888777, P... [    ]
+              Expected: DriverHistoryQuery fires (KQ.O). PurposeCodeDH+LastName+FirstName+SexCodeDH+DOB absent from XML.
+21  Person      Guardrail: KQ.O>L1.N  OperatorLicenseNumberDH=D999888777, P... [    ]
+              Expected: DriverHistoryQuery fires (KQ.O). PurposeCodeDH+LastName+FirstName absent from XML.
+22  Person      Deselect: DL deselects DH.            [    ]
               Fill both query fields. Check deselect behavior.
 
-ENTITY 4: FIREARM (6 tests -- 1 card, 3 combos)
+ENTITY 2: VEHICLE (14 tests -- 1 card, 6 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-42  Firearm     Purpos+PurposeCodeFirearmSerialNumber  PurposeCode=C, SerialNumber=GUN12345 [    ]
-              Expected: GunQuery fires (PurposeCodeFirearmSerialNumber)
-43  Firearm     Purpos+PurposeCodeFirearmSerialNumber  + FirearmCaliber, FirearmMake, FirearmType [    ]
+23  Vehicle     RQ+.V              PurposeCode=C, VehicleIdentificationN... [    ]
+              Expected: VehicleRegistrationQuery fires (RQ.V)
+24  Vehicle     RQ+.V              + RegistrationState, VehicleMakeCode, vehicleYear [    ]
               Expected: any[] fields present in XML output.
-44  Firearm     Purpos+PurposeCodeNameLastAge  PurposeCode=C, NameFirst=JOHN, NameLa... [    ]
-              Expected: GunQuery fires (PurposeCodeNameLastAge)
-45  Firearm     Purpos+PurposeCodeNameLastBirthDate  PurposeCode=C, NameFirst=JOHN, NameLa... [    ]
-              Expected: GunQuery fires (PurposeCodeNameLastBirthDate)
-46  Firearm     Guardrail: PurposeCodeFirearmSerialNumber>PurposeCodeNameLastBirthDate  SerialNumber=GUN12345, PurposeCode=C,... [    ]
-              Expected: GunQuery fires (PurposeCodeFirearmSerialNumber). PurposeCode+FirstName+LastName+DOB absent from XML.
-47  Firearm     Guardrail: PurposeCodeFirearmSerialNumber>PurposeCodeNameLastAge  SerialNumber=GUN12345, PurposeCode=C,... [    ]
-              Expected: GunQuery fires (PurposeCodeFirearmSerialNumber). PurposeCode+FirstName+LastName+Age absent from XML.
+25  Vehicle     RQ+.P              PurposeCode=C, LicensePlateNumber=TES... [    ]
+              Expected: VehicleRegistrationQuery fires (RQ.P)
+26  Vehicle     RQ+.P              + RegistrationState             [    ]
+              Expected: any[] fields present in XML output.
+27  Vehicle     QV+.V              PurposeCode=C, VehicleIdentificationN... [    ]
+              Expected: VehicleRegistrationQuery fires (QV.V)
+28  Vehicle     QV+.V              + VehicleMakeCode, vehicleYear  [    ]
+              Expected: any[] fields present in XML output.
+29  Vehicle     QV+.P              PurposeCode=C, LicensePlateNumber=TES... [    ]
+              Expected: VehicleRegistrationQuery fires (QV.P)
+30  Vehicle     VP.N+VP.N          PurposeCode=C, NameLast=DOE, NameFirs... [    ]
+              Expected: VehicleRegistrationQuery fires (VP.N)
+31  Vehicle     VP.N+VP.N          + AddressCity, AddressStreetNumber, nameMiddle, nameSuffix [    ]
+              Expected: any[] fields present in XML output.
+32  Vehicle     4.P+4.P            PurposeCode=C, LicensePlateNumber=TES... [    ]
+              Expected: VehicleRegistrationQuery fires (4.P)
+33  Vehicle     Guardrail: RQ.P>RQ.V  LicensePlateNumber=TEST123, PurposeCo... [    ]
+              Expected: VehicleRegistrationQuery fires (RQ.P). PurposeCode+VIN absent from XML.
+34  Vehicle     Guardrail: RQ.P>QV.V  LicensePlateNumber=TEST123, PurposeCo... [    ]
+              Expected: VehicleRegistrationQuery fires (RQ.P). PurposeCode+VIN absent from XML.
+35  Vehicle     Guardrail: RQ.P>VP.N  LicensePlateNumber=TEST123, PurposeCo... [    ]
+              Expected: VehicleRegistrationQuery fires (RQ.P). PurposeCode+LastName+FirstName absent from XML.
+36  Vehicle     Guardrail: RQ.V>VP.N  VehicleIdentificationNumber=1HGCM8263... [    ]
+              Expected: VehicleRegistrationQuery fires (RQ.V). PurposeCode+LastName+FirstName absent from XML.
+
+ENTITY 3: BOAT (8 tests -- 1 card, 4 combos)
+------------------------------------------------------------------------
+#   Entity      Action / Combo                                      Result
+--  ----------  --------------------------------------------------  ------
+37  Boat        BQ+.R              PurposeCode=C, RegistrationNumber=FL1... [    ]
+              Expected: BoatQuery fires (BQ.R)
+38  Boat        BQ+.R              + RegistrationState             [    ]
+              Expected: any[] fields present in XML output.
+39  Boat        BQ+.H              PurposeCode=C, BoatHullIdNumber=FL123... [    ]
+              Expected: BoatQuery fires (BQ.H)
+40  Boat        BQ+.H              + RegistrationState             [    ]
+              Expected: any[] fields present in XML output.
+41  Boat        QB+.R              PurposeCode=C, RegistrationNumber=FL1... [    ]
+              Expected: BoatQuery fires (QB.R)
+42  Boat        QB+.H              PurposeCode=C, BoatHullIdNumber=FL123... [    ]
+              Expected: BoatQuery fires (QB.H)
+43  Boat        Guardrail: BQ.H>BQ.R  BoatHullIdNumber=FL1234AB56H7, Purpos... [    ]
+              Expected: BoatQuery fires (BQ.H). PurposeCode+Reg absent from XML.
+44  Boat        Guardrail: BQ.H>QB.R  BoatHullIdNumber=FL1234AB56H7, Purpos... [    ]
+              Expected: BoatQuery fires (BQ.H). PurposeCode+Reg absent from XML.
+
+ENTITY 4: FIREARM (9 tests -- 1 card, 3 combos)
+------------------------------------------------------------------------
+#   Entity      Action / Combo                                      Result
+--  ----------  --------------------------------------------------  ------
+45  Firearm     QG+B               PurposeCode=C, GunSerialNumber=GUN12345 [    ]
+              Expected: GunQuery fires (QGB)
+46  Firearm     QG+B               + GunCaliber, GunMake, GunTypeCode, relatedHitSearchIndicator [    ]
+              Expected: any[] fields present in XML output.
+47  Firearm     QG+H.A             PurposeCode=C, NameLast=DOE, NameFirs... [    ]
+              Expected: GunQuery fires (QGH.A)
+48  Firearm     QG+H.A             + nameMiddle, nameSuffix        [    ]
+              Expected: any[] fields present in XML output.
+49  Firearm     QG+H.B             PurposeCode=C, NameLast=DOE, NameFirs... [    ]
+              Expected: GunQuery fires (QGH.B)
+50  Firearm     QG+H.B             + nameMiddle, nameSuffix        [    ]
+              Expected: any[] fields present in XML output.
+51  Firearm     Guardrail: QGB>QGH.B  GunSerialNumber=GUN12345, PurposeCode... [    ]
+              Expected: GunQuery fires (QGB). PurposeCode+LastName+FirstName+DOB absent from XML.
+52  Firearm     Guardrail: QGB>QGH.A  GunSerialNumber=GUN12345, PurposeCode... [    ]
+              Expected: GunQuery fires (QGB). PurposeCode+LastName+FirstName+Age absent from XML.
+53  Firearm     Guardrail: QGH.B>QGH.A  BirthDate=01/15/1990, PurposeCode=C, ... [    ]
+              Expected: GunQuery fires (QGH.B). PurposeCode+LastName+FirstName+Age absent from XML.
 
 ENTITY 5: ARTICLE (2 tests -- 1 card, 1 combo)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-48  Article     Articl+Serial      PurposeCode=C, ArticleSerialNumber=AR... [    ]
-              Expected: ArticleSingleQuery fires (ArticleSerialNumber)
-49  Article     Articl+Serial      + ArticleTypeCodeRemainder, ArticleTypeCodeRemainder, ArticleBrand [    ]
+54  Article     QA+PurposeCode     PurposeCode=C, ArticleSerialNumber=AR... [    ]
+              Expected: ArticleSingleQuery fires (QA)
+55  Article     QA+PurposeCode     + ArticleBrand, ArticleCategory, ArticleTypeCode [    ]
               Expected: any[] fields present in XML output.
 
 ================================================================================
-TOTAL: 49 tests
+TOTAL: 55 tests
 
-COMBO COVERAGE (25/25):
-  VehicleRegistrationQuery: 6/6 -- T1(QV+Plate), T2(NameAd+Name), T4(RQ+LicensePlateTypeYearOut), T5(4Licen+4LicensePlateTypeIn), T6(VPName+VPNameBirthDateIn), T7(Identi+IdentificationNumberInOut)
-  ArticleSingleQuery: 1/1 -- T48(Serial)
-  GunQuery: 3/3 -- T42(PurposeCodeFirearmSerialNumber), T44(PurposeCodeNameLastAge), T45(PurposeCodeNameLastBirthDate)
-  DriverLicenseQuery: 6/6 -- T23(KQ+OLN), T24(DQ+Name), T25(VPAgeI+VPAgeIn), T26(L1Name+L1NameIn), T27(L1Oper+L1OperatorLicenseNumberIn), T28(VPBirt+VPBirthDateIn)
-  CAILojackQuery: 1/1 -- T9(Lojack+LojackID co-fire)
-  DriverHistoryQuery: 4/4 -- T29(KQ+OLN), T30(KQ+OLN), T32(KQ+Name), T34(L1Name+L1Name)
-  AFS: 2/2 -- T21(PurposeCodeNameLastAge), T22(PurposeCodeNameLastBirthDate)
-  BoatQuery: 2/2 -- T16(PurposeCodeBoatHullIdNumber), T18(PurposeCodeRegistrationNumber)
+COMBO COVERAGE (23/23):
+  VehicleRegistrationQuery: 6/6 -- T23(RQ+.V), T25(RQ+.P), T27(QV+.V), T29(QV+.P), T30(VP.N+VP.N), T32(4.P+4.P)
+  DriverLicenseQuery: 5/5 -- T1(DQ+.N), T3(DQ+.O), T5(QW+.N), T7(L1.N+L1.N), T9(L1.O+L1.O)
+  DriverHistoryQuery: 4/4 -- T10(KQ+.N), T12(KQ+.O), T14(L1.N+L1.N), T16(L1.O+L1.O)
+  GunQuery: 3/3 -- T45(B), T47(H.A), T49(H.B)
+  ArticleSingleQuery: 1/1 -- T54(PurposeCode)
+  BoatQuery: 4/4 -- T37(BQ+.R), T39(BQ+.H), T41(QB+.R), T42(QB+.H)
 
-IMPORT FILE: CA_eSUN_v2.2.json
+IMPORT FILE: CA_eSUN_v3.0.json

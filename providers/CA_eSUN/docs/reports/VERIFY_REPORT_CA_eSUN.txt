@@ -1,72 +1,62 @@
 ﻿================================================================
   Build Report: CA_eSUN
-  Source: CA_eSUN_v2.2.json
-  Generated: 2026-09-03 11:58
+  Source: CA_eSUN_v3.0.json
+  Generated: 2026-09-04 09:02
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: CA_eSUN_v2.2
+ POST-BUILD VERIFICATION: CA_eSUN_v3.0
 ========================================
 
 --- CHECK 1: Banned Patterns ---
-  [FAIL] Banned pattern 'LicensePlateNumberIn' found 1 time(s)
+  [PASS] No banned pattern 'LicensePlateNumberIn'
 
 --- CHECK 2: fieldId / sourceField Consistency ---
-  [FAIL] QIDM 'CA_eSUN_ArticleSingleQuery' attr 'ArticleTypeCode' sourceField='ArticleTypeCodeRemainder' not in Article QIF fieldIds
-  [FAIL] QIDM 'CA_eSUN_GunQuery' primaryFieldReference='FirearmSerialNumber' not in attribute names [Age, BirthDate, CaRequestPurposeCode, GunCaliber, GunMake, GunSerialNumber, GunTypeCode, Name]
-  [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'AddressCity' sourceField='AddressCity' not in Person QIF fieldIds
-  [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'AddressStreetNumber' sourceField='AddressStreetNumber' not in Person QIF fieldIds
-  [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'LicensePlateNumber' sourceField='LicensePlateNumber' not in Person QIF fieldIds
-  [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'LicensePlateTypeCode' sourceField='LicensePlateTypeCode' not in Person QIF fieldIds
-  [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'LicensePlateYear' sourceField='LicensePlateYear' not in Person QIF fieldIds
-  [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'VehicleIdentificationNumber' sourceField='VehicleIdentificationNumber' not in Person QIF fieldIds
-  [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'VehicleMakeCode' sourceField='VehicleMakeCode' not in Person QIF fieldIds
-  [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'VehicleYear' sourceField='VehicleYear' not in Person QIF fieldIds
-  [FAIL] QIDM 'CA_eSUN_LojackQuery' primaryFieldReference='LojackID' not in attribute names [CaRequestPurposeCode, LojackIdentifier]
+  [FAIL] QIDM 'CA_eSUN_VehicleRegistrationQuery' attr 'Name' sourceField='nameMiddle' not in Vehicle QIF fieldIds
+  [FAIL] QIDM 'CA_eSUN_VehicleRegistrationQuery' attr 'Name' sourceField='nameSuffix' not in Vehicle QIF fieldIds
+  [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'Name' sourceField='nameMiddle' not in Person QIF fieldIds
+  [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'Name' sourceField='nameSuffix' not in Person QIF fieldIds
+  [FAIL] QIDM 'CA_eSUN_DriverHistoryQuery' attr 'Name' sourceField='nameMiddleDH' not in Person QIF fieldIds
+  [FAIL] QIDM 'CA_eSUN_DriverHistoryQuery' attr 'Name' sourceField='nameSuffixDH' not in Person QIF fieldIds
+  [FAIL] QIDM 'CA_eSUN_GunQuery' attr 'Name' sourceField='nameMiddle' not in Firearm QIF fieldIds
+  [FAIL] QIDM 'CA_eSUN_GunQuery' attr 'Name' sourceField='nameSuffix' not in Firearm QIF fieldIds
   [PASS] CommSys QIDM fieldId/sourceField/combo consistency checked
 
 --- CHECK 3: RMS QIDM Consistency ---
+  [PASS] RMS QIDM name/sourceField/combo consistency checked
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
+  [INFO] Shared fieldIds (CommSys+RMS): 8
+  [INFO] CommSys-only: 31 [PurposeCode, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, nameMiddle, nameSuffix, AddressCity, AddressStreetNumber, Age, PurposeCodeDH, OperatorLicenseNumberDH, NameLastDH, NameFirstDH, nameMiddleDH, nameSuffixDH, BirthDateDH, SexCodeDH, AttentionDH, RegistrationStateDH, GunSerialNumber, GunCaliber, GunMake, GunTypeCode, relatedHitSearchIndicator, ArticleSerialNumber, ArticleBrand, ArticleCategory, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber]
+  [INFO] RMS-only (expected for RMS-specific fields): 1
+  [INFO] RMS-only sourceFields (RMS defaults, no form match): 1 [raceCode]
+  [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: Reference Pattern Check ---
-  [FAIL] QIDM 'CA_eSUN_VehicleRegistrationQuery' missing queryLabel
-  [FAIL] QIDM 'CA_eSUN_ArticleSingleQuery' missing queryLabel
-  [FAIL] QIDM 'CA_eSUN_ArticleSingleQuery' has a combination with no state
-  [FAIL] QIDM 'CA_eSUN_GunQuery' missing queryLabel
-  [FAIL] QIDM 'CA_eSUN_GunQuery' has a combination with no state
-  [FAIL] QIDM 'CA_eSUN_GunQuery' has a combination with no state
-  [FAIL] QIDM 'CA_eSUN_GunQuery' has a combination with no state
-  [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' queryLabel='DL' not in standard set [Vehicle Registration, Vehicle Stolen, Driver License, Driver History, DL Name Search, Driver Photo, Firearm, Article, Boat, Wanted Person, Missing Person, Supervised Release, RMS, CCH Criminal History (QH), CCH Name Inquiry (IQ), CCH Wanted/III (QWI), CCH Record Request (QR), CCH Record Request (ZR), CCH SID Query (FQ), CCH Admin Query (AQ), CCH Admin Response (AR)]
-  [FAIL] QIDM 'CA_eSUN_LojackQuery' missing queryLabel
-  [FAIL] QIDM 'CA_eSUN_LojackQuery' has a combination with no state
-  [FAIL] QIDM 'CA_eSUN_AFS' missing queryLabel
-  [FAIL] QIDM 'CA_eSUN_AFS' has a combination with no state
-  [FAIL] QIDM 'CA_eSUN_AFS' has a combination with no state
-  [FAIL] QIDM 'CA_eSUN_BoatQuery' missing queryLabel
   [PASS] Reference patterns checked (queryLabel, ImageIndicator size, keyReference, state)
+  [PASS] All 2 RMS QIDMs have autoSelect=true
 
 --- CHECK 6: Visible-First Mandate ---
+  [INFO] Hidden field 'AttentionDH' (FormInput) -- documented exception, allowed
   [PASS] VehicleMakeCode field 'VehicleMakeCode' is FormSelect (VEHICLE_MAKE dropdown)
   [INFO] QIDM 'CA_eSUN_DriverHistoryQuery' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler (non-empty sourceField -- importable)
   [PASS] Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard
 
 --- CHECK 7: Synthetic keyRef Documentation ---
   [FAIL] QIDM 'CA_eSUN_VehicleRegistrationQuery' has 6 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'VehicleRegistrationQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
-  [INFO] QIDM 'CA_eSUN_GunQuery': keyRef 'PurposeCodeFirearmSerialNumber' not found in build script -- skipping
-  [INFO] QIDM 'CA_eSUN_DriverLicenseQuery': keyRef 'KQOperatorLicenseNumberOut' not found in build script -- skipping
-  [INFO] QIDM 'CA_eSUN_DriverHistoryQuery': keyRef 'KQOperatorLicenseNumberOut' not found in build script -- skipping
-  [FAIL] QIDM 'CA_eSUN_AFS' has 2 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'AFS') -- add synthetic keyRef doc (BUILD_RULES Section 15)
-  [INFO] QIDM 'CA_eSUN_BoatQuery': keyRef 'PurposeCodeBoatHullIdNumber' not found in build script -- skipping
+  [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' has 5 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'DriverLicenseQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
+  [FAIL] QIDM 'CA_eSUN_DriverHistoryQuery' has 4 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'DriverHistoryQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
+  [FAIL] QIDM 'CA_eSUN_GunQuery' has 3 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'GunQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
+  [FAIL] QIDM 'CA_eSUN_BoatQuery' has 4 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'BoatQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
 
 --- CHECK 8: RMS combos subset of CommSys combos ---
-  [INFO] No RMS+CommSys bundle pair -- skipping RMS subset check
+  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (39) (RMS-generic allowed)
 
 --- CHECK 9: Value-Comparison Conditions (poisoned-array) ---
-  [WARN] Value-comparison conditions present (poisoned-array; inert on CommSys form path) -- redesign at rebuild: CA_eSUN_VehicleRegistrationQuery/RQLicensePlateTypeYearOut: NOT_IN; CA_eSUN_VehicleRegistrationQuery/4LicensePlateTypeIn: IN; CA_eSUN_VehicleRegistrationQuery/QVLicensePlateNumberIn: IN; CA_eSUN_VehicleRegistrationQuery/VPNameBirthDateIn: IN; CA_eSUN_VehicleRegistrationQuery/NameAddressIn: IN; CA_eSUN_DriverLicenseQuery/KQOperatorLicenseNumberOut: NOT_EQUALS; CA_eSUN_DriverLicenseQuery/L1OperatorLicenseNumberIn: IN; CA_eSUN_DriverLicenseQuery/DQNameBirthSexCodeOut: NOT_EQUALS; CA_eSUN_DriverLicenseQuery/VPBirthDateIn: IN; CA_eSUN_DriverLicenseQuery/VPAgeIn: IN; CA_eSUN_DriverLicenseQuery/L1NameIn: IN; CA_eSUN_DriverHistoryQuery/KQOperatorLicenseNumberOut: NOT_EQUALS; CA_eSUN_DriverHistoryQuery/KQOperatorLicenseNumberIn: IN; CA_eSUN_DriverHistoryQuery/KQName: NOT_EQUALS; CA_eSUN_DriverHistoryQuery/L1Name: IN; CA_eSUN_AFS/PurposeCodeNameLastAge: IN
+  [PASS] No value-comparison routing conditions (existence-only or none)
 
 --- CHECK 10: Identifier-Priority Guardrail ---
   [PASS] Identifier-priority guardrail satisfied on 4 identifier pair(s)
@@ -79,16 +69,20 @@ POST-BUILD VERIFICATION
 
 --- CHECK 13: Form Field Label Hints ---
   [FAIL] Field 'RegistrationState' label='State' missing State routing hint -- need 'leave blank for' (when State is not defaulted) or 'change for out-of-state' (when State is defaulted). BUILD_RULES Section 11
-  [WARN] Field 'VehicleMakeCode' (any[]-only) label='Vehicle Make Code' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'VehicleYear' (any[]-only) label='Vehicle Year' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'AddressCity' (any[]-only) label='Address City' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'AddressStreetNumber' (any[]-only) label='Address Street Number' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [INFO] Field 'AttentionDH' label='Attention (auto)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [WARN] Field 'RegistrationState' (any[]-only) label='State' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'VehicleMakeCode' (any[]-only) label='Make' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'vehicleYear' (any[]-only) label='Year' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'AddressCity' (any[]-only) label='City' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'AddressStreetNumber' (any[]-only) label='Street Number' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'GunCaliber' (any[]-only) label='Caliber' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'GunMake' (any[]-only) label='Make' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'GunTypeCode' (any[]-only) label='Type' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'relatedHitSearchIndicator' (any[]-only) label='Stolen Check' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'ArticleBrand' (any[]-only) label='Brand' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'ArticleCategory' (any[]-only) label='Article Category' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
   [WARN] Field 'ArticleTypeCode' (any[]-only) label='Article Type' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'ArticleBrand' (any[]-only) label='Article Brand' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'FirearmCaliber' (any[]-only) label='Firearm Caliber' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'FirearmMake' (any[]-only) label='Firearm Make' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'FirearmType' (any[]-only) label='Firearm Type' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [INFO] 10 field(s) need label hint fixes
+  [INFO] 13 field(s) need label hint fixes
 
 --- CHECK 14: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)
@@ -97,10 +91,12 @@ POST-BUILD VERIFICATION
   [INFO] duplicate targetField 'EyeColorCode' in 'CA_eSUN_Results' -- attrs 'EyeColor' and 'EyeColorCode' both write it; which one lands is undefined (response mapping -- INFO per scope ruling)
   [INFO] duplicate targetField 'HairColorCode' in 'CA_eSUN_Results' -- attrs 'HairColor' and 'HairColorCode' both write it; which one lands is undefined (response mapping -- INFO per scope ruling)
   [INFO] duplicate targetField 'LicensePlateStateCode' in 'CA_eSUN_Results' -- attrs 'ImpliedLicensePlateStateCode' and 'LicensePlateStateCode' both write it; which one lands is undefined (response mapping -- INFO per scope ruling)
-  [PASS] No duplicate targetField in any REQUEST QIDM (3 in response mappings -- INFO, see CHECK 15 header)
+  [INFO] duplicate targetField 'Cautions' in 'RMS_Results' -- attrs 'Cautions' and 'Cautions' both write it; which one lands is undefined (response mapping -- INFO per scope ruling)
+  [INFO] duplicate targetField 'BodyStyle' in 'RMS_Results' -- attrs 'BodyStyle' and 'BodyStyle' both write it; which one lands is undefined (response mapping -- INFO per scope ruling)
+  [PASS] No duplicate targetField in any REQUEST QIDM (5 in response mappings -- INFO, see CHECK 15 header)
 
 ========================================
- VERIFICATION FAILED: 29 FAIL / 10 WARN / 9 PASS
+ VERIFICATION FAILED: 14 FAIL / 12 WARN / 15 PASS
 ========================================
 
 

@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_eSUN
-  Source: CA_eSUN_v2.2.json
-  Generated: 2026-09-03 11:58
+  Source: CA_eSUN_v3.0.json
+  Generated: 2026-09-04 09:02
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -13,202 +13,139 @@ VALIDATOR RESULTS
   [PASS] JSON parses successfully
 
 === PHASE 1: Bundle Structure ===
-  [PASS] bundles array present (2 bundles)
+  [PASS] bundles array present (3 bundles)
   [PASS] Bundle 'ENTITIES': 5 configurations
-  [PASS] Bundle 'CA_eSUN': 11 configurations
-  [WARN] No RMS bundle (optional but expected)
-    [FIX] Add a third bundle named 'RMS' with provider='RMS' -- use Build-RmsBundle from tools/_build_rms_bundle.ps1
-  [WARN] Only 2 bundles -- expected 3 (ENTITIES + Provider + RMS)
-    [FIX] Add the missing bundle(s) -- every provider JSON requires exactly 3: ENTITIES (QIFs), Provider (AUTH+QMF+QRDM+QIDMs), RMS (from _build_rms_bundle.ps1)
+  [PASS] Bundle 'CA_eSUN': 9 configurations
+  [PASS] Bundle 'RMS': 6 configurations
   [PASS] ENTITIES bundle is first
   [PASS] ENTITIES bundle provider='MARK43'
   [PASS] ENTITIES order is nested object with 'default' key
-  [WARN] ENTITIES order missing 'CAD_DISPATCH' key -- CAD dispatch view will use default order
-    [FIX] Add 'CAD_DISPATCH' key to ENTITIES order object with entity array (typically Vehicle first: ['Vehicle','Person','Firearm','Article','Boat'])
-  [WARN] ENTITIES order missing 'FIRST_RESPONDER' key -- first responder view will use default order
-    [FIX] Add 'FIRST_RESPONDER' key to ENTITIES order object with entity array (typically same as CAD_DISPATCH)
 
 === PHASE 2: Entity QIFs ===
   [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
-  [WARN] QIF 'ENTITY_Article' layout 'CAD_DISPATCH' node 'ROW_2': templateColumns has 2 entries but Row has 1 children -- misaligned columns
-    [FIX] In build script: adjust templateColumns to match child count (1) or add/remove child fields to match column count (2)
-  [WARN] QIF 'ENTITY_Article' layout 'CAD_DISPATCH': node 'ROW_0' parent='ROOT_CARD' but parent does not list it as child
-    [FIX] In build script: add 'ROW_0' to the nodes[] array of parent 'ROOT_CARD' in 'CAD_DISPATCH' layout
-  [WARN] QIF 'ENTITY_Article' layout 'FIRST_RESPONDER' node 'ROW_2': templateColumns has 2 entries but Row has 1 children -- misaligned columns
-    [FIX] In build script: adjust templateColumns to match child count (1) or add/remove child fields to match column count (2)
-  [WARN] QIF 'ENTITY_Article' layout 'default' node 'ROW_2': templateColumns has 2 entries but Row has 1 children -- misaligned columns
-    [FIX] In build script: adjust templateColumns to match child count (1) or add/remove child fields to match column count (2)
-  [PASS] QIF 'ENTITY_Article' -> Article : 7 fieldIds
   [PASS] QIF 'ENTITY_Vehicle' PlateType no initialValue (combo defaults expected)
-  [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 19 fieldIds
-  [WARN] QIF 'ENTITY_Person' layout 'CAD_DISPATCH': node 'Age_Input' parent='ROW_4' but parent does not list it as child
-    [FIX] In build script: add 'Age_Input' to the nodes[] array of parent 'ROW_4' in 'CAD_DISPATCH' layout
-  [WARN] QIF 'ENTITY_Person' SexCode field missing codeTypeProvider='NIBRS' -- dropdown shows wrong values
-    [FIX] In build script: add codeTypeProvider='NIBRS' to the SexCode FormSelect field
-  [PASS] QIF 'ENTITY_Person' -> Person : 13 fieldIds
-  [WARN] QIF 'ENTITY_Firearm' layout 'FIRST_RESPONDER': node 'ROW_3' parent='ROOT_CARD' but parent does not list it as child
-    [FIX] In build script: add 'ROW_3' to the nodes[] array of parent 'ROOT_CARD' in 'FIRST_RESPONDER' layout
-  [WARN] QIF 'ENTITY_Firearm' layout 'FIRST_RESPONDER': node 'ROW_4' parent='ROOT_CARD' but parent does not list it as child
-    [FIX] In build script: add 'ROW_4' to the nodes[] array of parent 'ROOT_CARD' in 'FIRST_RESPONDER' layout
-  [PASS] QIF 'ENTITY_Firearm' -> Firearm : 14 fieldIds
-  [PASS] QIF 'ENTTIY_Boat' -> Boat : 7 fieldIds
+  [PASS] QIF 'ENTITY_Vehicle' 'LicensePlateYear' no initialValue (OOS-only plate field; PlateType also blank)
+  [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 15 fieldIds
+  [PASS] QIF 'ENTITY_Person' -> Person : 19 fieldIds
+  [PASS] QIF 'ENTITY_Firearm' -> Firearm : 13 fieldIds
+  [PASS] QIF 'ENTITY_Article' -> Article : 8 fieldIds
+  [PASS] QIF 'ENTITY_Boat' -> Boat : 7 fieldIds
 
 === PHASE 3: QIDM Validation ===
-  [WARN] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'RQLicensePlateTypeYearOut' has POISONED-ARRAY condition(s) [RegistrationState NOT_IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
-    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
-  [WARN] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo '4LicensePlateTypeIn' has POISONED-ARRAY condition(s) [RegistrationState IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
-    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
-  [WARN] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'QVLicensePlateNumberIn' has POISONED-ARRAY condition(s) [RegistrationState IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
-    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
-  [WARN] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'VPNameBirthDateIn' has POISONED-ARRAY condition(s) [RegistrationState IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
-    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
-  [WARN] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'NameAddressIn' has POISONED-ARRAY condition(s) [RegistrationState IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
-    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
-  [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' -> Vehicle : 12 attrs, 6 combos
-  [WARN] QIDM 'CA_eSUN_VehicleRegistrationQuery' missing queryLabel property
-    [FIX] In build script: add queryLabel property to QIDM 'CA_eSUN_VehicleRegistrationQuery' -- see QIDM_REFERENCE.txt for standard labels per query type
-  [FAIL] QIDM 'CA_eSUN_VehicleRegistrationQuery' attr 'State' sourceField='RegistrationState' has attributeTypeId=STATE on form but NO codeTypeProvider on QIDM attr -- sends numeric ID (AP #1)
-  [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
-  [WARN] QIDM 'CA_eSUN_ArticleSingleQuery' combo 'ArticleSerialNumber' any[] references 'ArticleTypeCodeRemainder' not in QIF fieldIds
-    [FIX] Add field 'ArticleTypeCodeRemainder' to the Article QIF, or remove 'ArticleTypeCodeRemainder' from this combo's any[] array
-  [WARN] QIDM 'CA_eSUN_ArticleSingleQuery' combo 'ArticleSerialNumber' missing state property -- CommSys combos need state='In', 'Out', or 'In/Out'
-    [FIX] In build script: add state='In/Out' to combo 'ArticleSerialNumber' (or 'In'/'Out' if provider has separate in-state/OOS routing)
-  [PASS] QIDM 'CA_eSUN_ArticleSingleQuery' -> Article : 5 attrs, 1 combos
-  [WARN] QIDM 'CA_eSUN_ArticleSingleQuery' missing queryLabel property
-    [FIX] In build script: add queryLabel property to QIDM 'CA_eSUN_ArticleSingleQuery' -- see QIDM_REFERENCE.txt for standard labels per query type
-  [WARN] QIDM 'CA_eSUN_GunQuery' combo 'PurposeCodeFirearmSerialNumber' missing state property -- CommSys combos need state='In', 'Out', or 'In/Out'
-    [FIX] In build script: add state='In/Out' to combo 'PurposeCodeFirearmSerialNumber' (or 'In'/'Out' if provider has separate in-state/OOS routing)
-  [WARN] QIDM 'CA_eSUN_GunQuery' combo 'PurposeCodeNameLastBirthDate' missing state property -- CommSys combos need state='In', 'Out', or 'In/Out'
-    [FIX] In build script: add state='In/Out' to combo 'PurposeCodeNameLastBirthDate' (or 'In'/'Out' if provider has separate in-state/OOS routing)
-  [WARN] QIDM 'CA_eSUN_GunQuery' combo 'PurposeCodeNameLastAge' missing state property -- CommSys combos need state='In', 'Out', or 'In/Out'
-    [FIX] In build script: add state='In/Out' to combo 'PurposeCodeNameLastAge' (or 'In'/'Out' if provider has separate in-state/OOS routing)
-  [WARN] QIDM 'CA_eSUN_GunQuery' combo 'PurposeCodeFirearmSerialNumber' primaryFieldReference='FirearmSerialNumber' not in attribute names
-    [FIX] In build script: change primaryFieldReference to a valid attribute name from this QIDM (available: Age, BirthDate, CaRequestPurposeCode, GunCaliber, GunMake, GunSerialNumber, GunTypeCode, Name)
-  [PASS] QIDM 'CA_eSUN_GunQuery' -> Firearm : 8 attrs, 3 combos
-  [WARN] QIDM 'CA_eSUN_GunQuery' missing queryLabel property
-    [FIX] In build script: add queryLabel property to QIDM 'CA_eSUN_GunQuery' -- see QIDM_REFERENCE.txt for standard labels per query type
-  [PASS] QIDM 'CA_eSUN_GunQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
-  [LIMITATION] QIDM 'CA_eSUN_DriverLicenseQuery' has 8 QIDM-only attr(s) with no QIF field and no combo reference (will be empty unless handler-filled):
-         AddressCity (sourceField='AddressCity')
-         AddressStreetNumber (sourceField='AddressStreetNumber')
-         LicensePlateNumber (sourceField='LicensePlateNumber')
-         LicensePlateTypeCode (sourceField='LicensePlateTypeCode')
-         LicensePlateYear (sourceField='LicensePlateYear')
-         VehicleIdentificationNumber (sourceField='VehicleIdentificationNumber')
-         VehicleMakeCode (sourceField='VehicleMakeCode')
-         VehicleYear (sourceField='VehicleYear')
-  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'KQOperatorLicenseNumberOut' has POISONED-ARRAY condition(s) [RegistrationState NOT_EQUALS] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
-    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
-  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'L1OperatorLicenseNumberIn' has POISONED-ARRAY condition(s) [RegistrationState IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
-    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
-  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'DQNameBirthSexCodeOut' has POISONED-ARRAY condition(s) [RegistrationState NOT_EQUALS] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
-    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
-  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'VPBirthDateIn' has POISONED-ARRAY condition(s) [RegistrationState IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
-    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
-  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'VPAgeIn' has POISONED-ARRAY condition(s) [RegistrationState IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
-    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
-  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'L1NameIn' has POISONED-ARRAY condition(s) [RegistrationState IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
-    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
-  [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' -> Person : 15 attrs, 6 combos
-  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' queryLabel='DL' -- standard is 'Driver License' (AP #25)
-    [FIX] In build script: change queryLabel from 'DL' to 'Driver License'
-  [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'State' sourceField='RegistrationState' has attributeTypeId=STATE on form but NO codeTypeProvider on QIDM attr -- sends numeric ID (AP #1)
-  [FAIL] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'SexCode' maps attributeTypeId=SEX to SexCode WITHOUT codeTypeProvider -- sends numeric ID (AP #2)
+  [WARN] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'VP.N' any[] references 'nameMiddle' not in QIF fieldIds
+    [FIX] Add field 'nameMiddle' to the Vehicle QIF, or remove 'nameMiddle' from this combo's any[] array
+  [WARN] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'VP.N' any[] references 'nameSuffix' not in QIF fieldIds
+    [FIX] Add field 'nameSuffix' to the Vehicle QIF, or remove 'nameSuffix' from this combo's any[] array
+  [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' -> Vehicle : 11 attrs, 6 combos
+  [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'DQ.N' any[] references 'nameMiddle' not in QIF fieldIds
+    [FIX] Add field 'nameMiddle' to the Person QIF, or remove 'nameMiddle' from this combo's any[] array
+  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'DQ.N' any[] references 'nameSuffix' not in QIF fieldIds
+    [FIX] Add field 'nameSuffix' to the Person QIF, or remove 'nameSuffix' from this combo's any[] array
+  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'QW.N' any[] references 'nameMiddle' not in QIF fieldIds
+    [FIX] Add field 'nameMiddle' to the Person QIF, or remove 'nameMiddle' from this combo's any[] array
+  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'QW.N' any[] references 'nameSuffix' not in QIF fieldIds
+    [FIX] Add field 'nameSuffix' to the Person QIF, or remove 'nameSuffix' from this combo's any[] array
+  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'L1.N' any[] references 'nameMiddle' not in QIF fieldIds
+    [FIX] Add field 'nameMiddle' to the Person QIF, or remove 'nameMiddle' from this combo's any[] array
+  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'L1.N' any[] references 'nameSuffix' not in QIF fieldIds
+    [FIX] Add field 'nameSuffix' to the Person QIF, or remove 'nameSuffix' from this combo's any[] array
+  [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' -> Person : 7 attrs, 5 combos
+  [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
-    [INFO] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'State' uses IgnoreUserValueRuleHandler(args=CA) -- filters/strips matching values from the outbound wire; NOT a substitute for hardcoding (AP #4 still applies to that misuse)
-  [WARN] QIDM 'CA_eSUN_LojackQuery' combo 'LojackID' missing state property -- CommSys combos need state='In', 'Out', or 'In/Out'
-    [FIX] In build script: add state='In/Out' to combo 'LojackID' (or 'In'/'Out' if provider has separate in-state/OOS routing)
-  [WARN] QIDM 'CA_eSUN_LojackQuery' combo 'LojackID' primaryFieldReference='LojackID' not in attribute names
-    [FIX] In build script: change primaryFieldReference to a valid attribute name from this QIDM (available: CaRequestPurposeCode, LojackIdentifier)
-  [PASS] QIDM 'CA_eSUN_LojackQuery' -> Vehicle : 2 attrs, 1 combos
-  [WARN] QIDM 'CA_eSUN_LojackQuery' missing queryLabel property
-    [FIX] In build script: add queryLabel property to QIDM 'CA_eSUN_LojackQuery' -- see QIDM_REFERENCE.txt for standard labels per query type
-  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQOperatorLicenseNumberOut' any[] references 'Attention' not in QIF fieldIds
-    [FIX] Add field 'Attention' to the Person QIF, or remove 'Attention' from this combo's any[] array
-  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQName' any[] references 'Attention' not in QIF fieldIds
-    [FIX] Add field 'Attention' to the Person QIF, or remove 'Attention' from this combo's any[] array
-  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQOperatorLicenseNumberOut' has POISONED-ARRAY condition(s) [RegistrationState NOT_EQUALS] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
-    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
-  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQOperatorLicenseNumberIn' has POISONED-ARRAY condition(s) [RegistrationState IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
-    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
-  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQName' has POISONED-ARRAY condition(s) [RegistrationState NOT_EQUALS] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
-    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
-  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'L1Name' has POISONED-ARRAY condition(s) [RegistrationState IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
-    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
+  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQ.N' any[] references 'nameMiddleDH' not in QIF fieldIds
+    [FIX] Add field 'nameMiddleDH' to the Person QIF, or remove 'nameMiddleDH' from this combo's any[] array
+  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQ.N' any[] references 'nameSuffixDH' not in QIF fieldIds
+    [FIX] Add field 'nameSuffixDH' to the Person QIF, or remove 'nameSuffixDH' from this combo's any[] array
+  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'L1.N' any[] references 'nameMiddleDH' not in QIF fieldIds
+    [FIX] Add field 'nameMiddleDH' to the Person QIF, or remove 'nameMiddleDH' from this combo's any[] array
+  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'L1.N' any[] references 'nameSuffixDH' not in QIF fieldIds
+    [FIX] Add field 'nameSuffixDH' to the Person QIF, or remove 'nameSuffixDH' from this combo's any[] array
   [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' -> Person : 7 attrs, 4 combos
-  [FAIL] QIDM 'CA_eSUN_DriverHistoryQuery' attr 'State' sourceField='RegistrationState' has attributeTypeId=STATE on form but NO codeTypeProvider on QIDM attr -- sends numeric ID (AP #1)
-  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' SexCode attr 'SexCode' size=2 -- expected 1
-    [FIX] In build script: change SexCode attr size from 2 to 1
-  [FAIL] QIDM 'CA_eSUN_DriverHistoryQuery' attr 'SexCode' maps attributeTypeId=SEX to SexCode WITHOUT codeTypeProvider -- sends numeric ID (AP #2)
+  [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
-    [INFO] QIDM 'CA_eSUN_DriverHistoryQuery' attr 'State' uses IgnoreUserValueRuleHandler(args=CA) -- filters/strips matching values from the outbound wire; NOT a substitute for hardcoding (AP #4 still applies to that misuse)
-  [WARN] QIDM 'CA_eSUN_AFS' combo 'PurposeCodeNameLastBirthDate' missing state property -- CommSys combos need state='In', 'Out', or 'In/Out'
-    [FIX] In build script: add state='In/Out' to combo 'PurposeCodeNameLastBirthDate' (or 'In'/'Out' if provider has separate in-state/OOS routing)
-  [WARN] QIDM 'CA_eSUN_AFS' combo 'PurposeCodeNameLastAge' missing state property -- CommSys combos need state='In', 'Out', or 'In/Out'
-    [FIX] In build script: add state='In/Out' to combo 'PurposeCodeNameLastAge' (or 'In'/'Out' if provider has separate in-state/OOS routing)
-  [WARN] QIDM 'CA_eSUN_AFS' combo 'PurposeCodeNameLastAge' has POISONED-ARRAY condition(s) [RegistrationState IN] -- value-comparison operators are INERT; the entire conditions array is disabled and the combo fires UNCONDITIONED (union-pool/over-send risk).
-    [FIX] In build script: remove value-comparison conditions; merge now-identical combos or route via EXISTS/NOT_EXISTS only. See QIDM_REFERENCE Sec 2a (poisoned-array).
-  [PASS] QIDM 'CA_eSUN_AFS' -> Person : 5 attrs, 2 combos
-  [WARN] QIDM 'CA_eSUN_AFS' missing queryLabel property
-    [FIX] In build script: add queryLabel property to QIDM 'CA_eSUN_AFS' -- see QIDM_REFERENCE.txt for standard labels per query type
-  [FAIL] QIDM 'CA_eSUN_AFS' attr 'State' sourceField='RegistrationState' has attributeTypeId=STATE on form but NO codeTypeProvider on QIDM attr -- sends numeric ID (AP #1)
-  [PASS] QIDM 'CA_eSUN_AFS' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
-  [PASS] QIDM 'CA_eSUN_BoatQuery' -> Boat : 4 attrs, 2 combos
-  [WARN] QIDM 'CA_eSUN_BoatQuery' missing queryLabel property
-    [FIX] In build script: add queryLabel property to QIDM 'CA_eSUN_BoatQuery' -- see QIDM_REFERENCE.txt for standard labels per query type
-  [FAIL] QIDM 'CA_eSUN_BoatQuery' attr 'State' sourceField='RegistrationState' has attributeTypeId=STATE on form but NO codeTypeProvider on QIDM attr -- sends numeric ID (AP #1)
-    [INFO] QIDM 'CA_eSUN_BoatQuery' attr 'State' uses IgnoreUserValueRuleHandler(args=CA) -- filters/strips matching values from the outbound wire; NOT a substitute for hardcoding (AP #4 still applies to that misuse)
+  [WARN] QIDM 'CA_eSUN_GunQuery' combo 'QGH.B' any[] references 'nameMiddle' not in QIF fieldIds
+    [FIX] Add field 'nameMiddle' to the Firearm QIF, or remove 'nameMiddle' from this combo's any[] array
+  [WARN] QIDM 'CA_eSUN_GunQuery' combo 'QGH.B' any[] references 'nameSuffix' not in QIF fieldIds
+    [FIX] Add field 'nameSuffix' to the Firearm QIF, or remove 'nameSuffix' from this combo's any[] array
+  [WARN] QIDM 'CA_eSUN_GunQuery' combo 'QGH.A' any[] references 'nameMiddle' not in QIF fieldIds
+    [FIX] Add field 'nameMiddle' to the Firearm QIF, or remove 'nameMiddle' from this combo's any[] array
+  [WARN] QIDM 'CA_eSUN_GunQuery' combo 'QGH.A' any[] references 'nameSuffix' not in QIF fieldIds
+    [FIX] Add field 'nameSuffix' to the Firearm QIF, or remove 'nameSuffix' from this combo's any[] array
+  [PASS] QIDM 'CA_eSUN_GunQuery' -> Firearm : 9 attrs, 3 combos
+  [PASS] QIDM 'CA_eSUN_GunQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
+  [PASS] QIDM 'CA_eSUN_ArticleSingleQuery' -> Article : 5 attrs, 1 combos
+  [PASS] QIDM 'CA_eSUN_BoatQuery' -> Boat : 4 attrs, 4 combos
+  [PASS] QIDM 'CA_eSUN_BoatQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] RMS Person QIDM 'RMS Person Search query' has registrationState attr
+  [PASS] RMS Vehicle QIDM 'RMS Vehicle search query' has RegistrationState in combo any[]
+  [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' has In/Out combos but State is any[]-only -- a State prefill routes nothing (LIMITATION #30 N/A)
+  [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' has In/Out combos but State is any[]-only -- a State prefill routes nothing (LIMITATION #30 N/A)
+  [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' has In/Out combos but State is any[]-only -- a State prefill routes nothing (LIMITATION #30 N/A)
+  [PASS] QIDM 'CA_eSUN_BoatQuery' has In/Out combos but State is any[]-only -- a State prefill routes nothing (LIMITATION #30 N/A)
 
 === PHASE 4: AutoSelect & Cross-Reference ===
   [PASS] Article : 1 QIDMs, 1 QIF(s)
-  [LIMITATION] Person : DL + DH QIDMs on single form without DH-suffix fieldIds -- known platform constraint (AP #14 / LIMITATION #25)
-  [WARN] Person : keyReference 'KQOperatorLicenseNumberOut' appears in multiple QIDMs: CA_eSUN_DriverHistoryQuery, CA_eSUN_DriverLicenseQuery -- may cause routing confusion
-    [FIX] In build script: rename keyReference 'KQOperatorLicenseNumberOut' to be unique per QIDM (e.g. append DL/DH suffix to distinguish)
-  [PASS] Person : 3 QIDMs, 1 QIF(s)
-  [PASS] Vehicle : 2 QIDMs, 1 QIF(s)
+  [PASS] Person : DH QIDM uses DH-suffix fieldIds (AP #14)
+  [WARN] Person : keyReference 'L1.O' appears in multiple QIDMs: CA_eSUN_DriverHistoryQuery, CA_eSUN_DriverLicenseQuery -- may cause routing confusion
+    [FIX] In build script: rename keyReference 'L1.O' to be unique per QIDM (e.g. append DL/DH suffix to distinguish)
+  [WARN] Person : keyReference 'L1.N' appears in multiple QIDMs: CA_eSUN_DriverHistoryQuery, CA_eSUN_DriverLicenseQuery -- may cause routing confusion
+    [FIX] In build script: rename keyReference 'L1.N' to be unique per QIDM (e.g. append DL/DH suffix to distinguish)
+  [PASS] Person : 2 QIDMs, 1 QIF(s)
+  [PASS] Vehicle : 1 QIDMs, 1 QIF(s)
   [PASS] Boat : 1 QIDMs, 1 QIF(s)
   [PASS] Firearm : 1 QIDMs, 1 QIF(s)
 
 === PHASE 5: Auth / QMF / Results ===
   [PASS] AUTHENTICATION present
-  [WARN] AUTH 'CA_eSUN' combination missing keyReference
-    [FIX] In build script: add keyReference='AUTH' (or unique string) to AUTH combination
   [PASS] QUERYMESSAGEFORMAT present
   [PASS] QUERYRESULTDATAMAPPING present
+  [PASS] RMS AUTHENTICATION present
+  [PASS] RMS QUERYMESSAGEFORMAT present
+  [PASS] RMS QUERYRESULTDATAMAPPING present
+  [PASS] RMS QUERYRESULTSLAYOUT present
+  [PASS] RMS bundle has 2 QIDM(s)
+  [PASS] RMS QIDM 'RMS Person Search query' autoSelect=true
+  [PASS] RMS QIDM 'RMS Vehicle search query' autoSelect=true
 
 === PHASE 6: Query Simulation ===
-  [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'RQLicensePlateTypeYearOut': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo '4LicensePlateTypeIn': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'QVLicensePlateNumberIn': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'IdentificationNumberInOut': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'VPNameBirthDateIn': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'NameAddressIn': all set[]/any[] fields resolvable
-  [WARN] QIDM 'CA_eSUN_ArticleSingleQuery' combo 'ArticleSerialNumber': unresolvable any[] fields: ArticleTypeCodeRemainder
-    [FIX] Add form fields for: ArticleTypeCodeRemainder to the Article QIF, or remove them from combo 'ArticleSerialNumber' any[]
-  [PASS] QIDM 'CA_eSUN_GunQuery' combo 'PurposeCodeFirearmSerialNumber': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_eSUN_GunQuery' combo 'PurposeCodeNameLastBirthDate': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_eSUN_GunQuery' combo 'PurposeCodeNameLastAge': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'KQOperatorLicenseNumberOut': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'L1OperatorLicenseNumberIn': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'DQNameBirthSexCodeOut': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'VPBirthDateIn': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'VPAgeIn': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'L1NameIn': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_eSUN_LojackQuery' combo 'LojackID': all set[]/any[] fields resolvable
-  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQOperatorLicenseNumberOut': unresolvable any[] fields: Attention
-    [FIX] Add form fields for: Attention to the Person QIF, or remove them from combo 'KQOperatorLicenseNumberOut' any[]
-  [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQOperatorLicenseNumberIn': all set[]/any[] fields resolvable
-  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQName': unresolvable any[] fields: Attention
-    [FIX] Add form fields for: Attention to the Person QIF, or remove them from combo 'KQName' any[]
-  [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'L1Name': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_eSUN_AFS' combo 'PurposeCodeNameLastBirthDate': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_eSUN_AFS' combo 'PurposeCodeNameLastAge': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_eSUN_BoatQuery' combo 'PurposeCodeBoatHullIdNumber': all set[]/any[] fields resolvable
-  [PASS] QIDM 'CA_eSUN_BoatQuery' combo 'PurposeCodeRegistrationNumber': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'RQ.P': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo '4.P': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'QV.P': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'RQ.V': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'QV.V': all set[]/any[] fields resolvable
+  [WARN] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'VP.N': unresolvable any[] fields: nameMiddle, nameSuffix
+    [FIX] Add form fields for: nameMiddle, nameSuffix to the Vehicle QIF, or remove them from combo 'VP.N' any[]
+  [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'DQ.O': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'L1.O': all set[]/any[] fields resolvable
+  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'DQ.N': unresolvable any[] fields: nameMiddle, nameSuffix
+    [FIX] Add form fields for: nameMiddle, nameSuffix to the Person QIF, or remove them from combo 'DQ.N' any[]
+  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'QW.N': unresolvable any[] fields: nameMiddle, nameSuffix
+    [FIX] Add form fields for: nameMiddle, nameSuffix to the Person QIF, or remove them from combo 'QW.N' any[]
+  [WARN] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'L1.N': unresolvable any[] fields: nameMiddle, nameSuffix
+    [FIX] Add form fields for: nameMiddle, nameSuffix to the Person QIF, or remove them from combo 'L1.N' any[]
+  [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQ.O': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'L1.O': all set[]/any[] fields resolvable
+  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'KQ.N': unresolvable any[] fields: nameMiddleDH, nameSuffixDH
+    [FIX] Add form fields for: nameMiddleDH, nameSuffixDH to the Person QIF, or remove them from combo 'KQ.N' any[]
+  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'L1.N': unresolvable any[] fields: nameMiddleDH, nameSuffixDH
+    [FIX] Add form fields for: nameMiddleDH, nameSuffixDH to the Person QIF, or remove them from combo 'L1.N' any[]
+  [PASS] QIDM 'CA_eSUN_GunQuery' combo 'QGB': all set[]/any[] fields resolvable
+  [WARN] QIDM 'CA_eSUN_GunQuery' combo 'QGH.B': unresolvable any[] fields: nameMiddle, nameSuffix
+    [FIX] Add form fields for: nameMiddle, nameSuffix to the Firearm QIF, or remove them from combo 'QGH.B' any[]
+  [WARN] QIDM 'CA_eSUN_GunQuery' combo 'QGH.A': unresolvable any[] fields: nameMiddle, nameSuffix
+    [FIX] Add form fields for: nameMiddle, nameSuffix to the Firearm QIF, or remove them from combo 'QGH.A' any[]
+  [PASS] QIDM 'CA_eSUN_ArticleSingleQuery' combo 'QA': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_eSUN_BoatQuery' combo 'BQ.H': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_eSUN_BoatQuery' combo 'QB.H': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_eSUN_BoatQuery' combo 'BQ.R': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_eSUN_BoatQuery' combo 'QB.R': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 59 PASS / 7 FAIL / 53 WARN / 2 LIMITATION
+  RESULTS: 70 PASS / 0 FAIL / 26 WARN
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
 
-  FIX all FAIL items before importing.
+  Review WARN items -- they may cause runtime issues.
 

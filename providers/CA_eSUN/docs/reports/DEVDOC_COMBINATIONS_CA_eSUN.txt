@@ -2,9 +2,11 @@
 ================================================================
   DEVDOC COMBINATION COVERAGE (devdoc -> built)
 ================================================================
-  [PASS] CA_eSUN -- every devdoc combination is built or accepted (25 devdoc combination(s) compared)
+  [FAIL] CA_eSUN -- VehicleRegistrationQuery #3 is devdoc-listed but UNBUILT: mandatory field(s) BirthDate wired nowhere in that query
+           devdoc text: (In) Name, BirthDate
+           -> build it, or record it: accept_divergence.ps1 -Provider CA_eSUN (rule devdoc-combo-unbuilt, field BirthDate)
 
 ----------------------------------------------------------------
-  RESULT: 0 FAIL / 0 NOTE
+  RESULT: 1 FAIL / 0 NOTE
 ----------------------------------------------------------------
 
