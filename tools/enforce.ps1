@@ -657,8 +657,9 @@ if (-not (Test-Path $vsTool)) {
 # ══════════════════════════════════════════════════════════════════════════════
 SectionHeader "PHASE 2h: Combo Reachability"
 $reachTool = Join-Path $toolDir "audit_combo_reachability.ps1"
+$reachSeen = 0
 if (-not (Test-Path $reachTool)) {
-    Info "audit_combo_reachability.ps1 not found -- dead-combo check skipped"
+    Fail "audit_combo_reachability.ps1 NOT FOUND -- PHASE 2h is BLOCKING and cannot be skipped into a pass"
 } else {
     foreach ($pd in $providers) {
         $provName = $pd.Name
@@ -671,10 +672,36 @@ if (-not (Test-Path $reachTool)) {
             $reachOut -split "`n" | Where-Object { $_ -match 'DEAD COMBO|never fires' } |
                 Select-Object -First 8 | ForEach-Object { Out "       $($_.Trim())" }
         } else {
-            $noteCount = ([regex]::Matches($reachOut, '\[NOTE\] DEAD COMBO')).Count
-            $sfx = if ($noteCount -gt 0) { " ($noteCount accepted dead-combo divergence(s))" } else { "" }
-            Pass "$provName -- all combos reachable$sfx"
+            # ── NO-VERDICT / ZERO-DENOMINATOR GUARD, added 2026-09-04 ──────────────────────────
+            # This phase is BLOCKING and used to fall straight through to Pass on ANYTHING that was
+            # not a matching FAIL line -- so a crashed tool, a missing JSON, a reworded message, or
+            # a run that compared ZERO combinations all reported "all combos reachable". The tool
+            # has always printed its own denominator (audit_combo_reachability.ps1:214,
+            # "[PASS] N combination(s) checked"); enforce simply never read it.
+            # Both halves are required. Anchoring on the PASS line alone would swap a
+            # crash-passes bug for a zero-comparison-passes bug, since the tool will happily print
+            # "[PASS] 0 combination(s) checked" for a provider whose combos it could not resolve.
+            # PHASE 2v (:709) already does exactly this; 2h is the higher-value phase that did not.
+            $okm = [regex]::Match($reachOut, '(?m)\[(?:PASS|FAIL)\][^\r\n]*?(\d+)\s+combination\(s\)\s+checked')
+            if (-not $okm.Success) {
+                Fail "$provName -- reachability gate produced NO VERDICT (no '[PASS|FAIL] N combination(s) checked' line). A tool that did not run has not passed."
+                ($reachOut -split "`n" | Where-Object { $_.Trim() } | Select-Object -First 4) |
+                    ForEach-Object { Out "       $($_.Trim())" }
+            }
+            elseif ([int]$okm.Groups[1].Value -eq 0) {
+                Fail "$provName -- reachability gate checked ZERO combinations: this phase is not evidence"
+            }
+            else {
+                $noteCount = ([regex]::Matches($reachOut, '\[NOTE\] DEAD COMBO')).Count
+                $sfx = if ($noteCount -gt 0) { " ($noteCount accepted dead-combo divergence(s))" } else { "" }
+                Pass "$provName -- all $($okm.Groups[1].Value) combination(s) reachable$sfx"
+                $reachSeen++
+            }
         }
+    }
+    # Zero providers examined is not a pass -- the 2v/2u pattern, applied here.
+    if ($reachSeen -eq 0) {
+        Fail "PHASE 2h examined ZERO providers -- this phase is not evidence"
     }
 }
 
