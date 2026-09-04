@@ -366,6 +366,47 @@ if ($undocumented.Count -gt 0) {
 } else {
     Pass "All $($allTools.Count) tools documented in README.txt"
 }
+
+# ── ORPHAN COVERAGE: is every gate actually RUN by something? ─────────────────────────────────
+# ADDED 2026-09-04. Documentation coverage (above) and EXECUTION coverage are different questions,
+# and this repo has repeatedly satisfied the first while failing the second: audit_change_scope is
+# MANDATED by ENGINEERING_STANDARD 4.5 and no orchestrator ran it; audit_log_metadata_attribution
+# was written 2026-09-02 to close a "deaf feedback loop" and was itself never executed. A gate
+# nobody runs is indistinguishable from a gate that does not exist -- CLAUDE.md says so in three
+# places -- yet nothing measured it, so the orphan list had to be computed BY HAND during an audit.
+# That is the definition of a check worth mechanising.
+#
+# Not-being-wired is often the RIGHT answer (see tools/config/manual_only_gates.json), so this is
+# not "everything must be in an orchestrator". It is "every gate is either RUN, or DECLARED manual
+# WITH A REASON" -- silence is the only unacceptable state.
+$toolsDir = Join-Path $repoRoot 'tools'
+$orchestrators = @('enforce.ps1','doctor.ps1','pipeline.ps1','build_report.ps1','build_phase1.ps1','test_phase2.ps1','post_test.ps1','preflight_check.ps1')
+$orchText = ''
+foreach ($o in $orchestrators) {
+    $op = Join-Path $toolsDir $o
+    if (Test-Path $op) { $orchText += (Get-Content $op -Raw) + "`n" }
+}
+$manualPath = Join-Path $toolsDir 'config\manual_only_gates.json'
+$declaredManual = @(); $badDecl = @()
+if (Test-Path $manualPath) {
+    $mj = Get-Content $manualPath -Raw | ConvertFrom-Json
+    foreach ($e in @($mj.gates) + @($mj.harnesses)) {
+        if (-not $e.reason -or -not "$($e.reason)".Trim()) { $badDecl += "$($e.gate) (no reason given)" }
+        $declaredManual += "$($e.gate)"
+    }
+}
+$gateFiles = @(Get-ChildItem $toolsDir -Filter 'audit_*.ps1' -File | ForEach-Object { $_.Name })
+$orphanGates = @($gateFiles | Where-Object { $orchText -notmatch [regex]::Escape($_) -and $declaredManual -notcontains $_ })
+
+if ($gateFiles.Count -eq 0) {
+    Fail "orphan coverage: found ZERO audit_*.ps1 gates -- this check compared nothing"
+} elseif ($badDecl.Count -gt 0) {
+    Fail "manual_only_gates.json entries without a reason: $($badDecl -join ', ')"
+} elseif ($orphanGates.Count -gt 0) {
+    Fail "ORPHANED gate(s) -- no orchestrator runs them and they are not declared manual: $($orphanGates -join ', ')"
+} else {
+    Pass "orphan coverage: $($gateFiles.Count) gate(s) -- $($gateFiles.Count - $declaredManual.Count) invoked by an orchestrator, $($declaredManual.Count) declared manual with a reason"
+}
 }
 
 # ══════════════════════════════════════════════════════════════════════════════

@@ -650,3 +650,52 @@ Also: my `enforce -Provider FL_FCIC | grep ... ; echo $?` printed `0` because `$
 exit status, not enforce's. The `BLOCKED: 45 PASS / 1 FAIL` line is the evidence; the exit code I
 printed was meaningless. Third time this session a pipeline exit status has misled me — `grep | head`
 did it twice earlier. **Read the tool's own verdict line, never the pipeline's status.**
+
+---
+
+## 2026-09-04 — CA_CLETS_OCATS: 6 logs attribute to a DIFFERENT metadata variant than their filed combo
+
+**Found by wiring an orphan gate, which is the whole point of wiring it.**
+`audit_log_metadata_attribution.ps1` was written 2026-09-02 to break the "deaf feedback loop" Rob
+named — it computes attribution from the **wire + the raw metadata XML only**, using the JSON purely
+as a dictionary, so a wrong combo array is caught rather than confirmed. It was then run **once, by
+hand, on the day it was written**, and no orchestrator ever ran it again. Wired into `doctor` today
+(advisory); its first automated run produced this.
+
+| | |
+|---|---|
+| Scope | 14 providers with current-version logs / **851 logs attributed** |
+| Result | AGREE 767 · **DISAGREE 6** · AMBIGUOUS 76 · UNATTRIBUTABLE 0 · NO-LABEL 0 · STRIP-EXCLUDED 2 |
+| All 6 on | **CA_CLETS_OCATS**, Vehicle, `VehicleRegistrationQuery` |
+
+```
+CA_CLETS_OCATS_v2.12_RQ.P.txt                        filed as 'RQ.P'
+CA_CLETS_OCATS_v2.12_RQ.P_af_LicensePlateTypeCode.txt filed as 'RQ.P'
+CA_CLETS_OCATS_v2.12_RQ.V.txt                        filed as 'RQ.V'
+CA_CLETS_OCATS_v2.12_RQ.V_af_VehicleMakeCode.txt     filed as 'RQ.V'
+CA_CLETS_OCATS_v2.12_RQ.V_af_vehicleYear.txt         filed as 'RQ.V'
+CA_CLETS_OCATS_v2.12_RQ.V_any.txt                    filed as 'RQ.V'
+```
+
+**Why this provider and why now.** The tool's recorded baseline (CLAUDE.md, 2026-09-02) was
+*13 providers / 791 logs / AGREE 716 / **DISAGREE 0***. It is now 14 providers / 851 logs — the
+difference is **OCATS's 60 logs, captured 2026-09-01 and never checked by this gate**. So these six
+are not a regression; they are evidence that was never examined.
+
+**REAL? — NOT YET ADJUDICATED. Do not "fix" it and do not dismiss it.** Two readings are open and
+the difference matters:
+- the combo array mis-attributes those wires (a build defect), **or**
+- the built `RQ.P`/`RQ.V` sets are a legitimate tightening of a looser metadata alternative, which
+  is `audit_requirement_fidelity`'s question and reports AMBIGUOUS, not DISAGREE, elsewhere.
+
+**Two facts that make this provider the wrong one to guess about:**
+1. **OCATS is 2 captures from ALL-PASS** (60 logs / 62-test plan). A wrong call here either blesses
+   bad evidence or costs a full re-sweep.
+2. **Its `SUPPORTED_QUERIES` extract is `PROVISIONAL`**, so `audit_supported_queries` CHECK 0/2 do
+   **not gate it** — this is the one provider of the five PROVISIONAL that has already shipped
+   committed evidence. Step 9 of the current pass verifies that extract **first**, and it should be
+   done **before** adjudicating these six: if the devdoc scope is wrong, the combo array may be too.
+
+**Next action:** `usx-adjudicate` on one log (`RQ.P`), reading the raw
+`<Transaction name="VehicleRegistrationQuery">` `<Requirements>` for the `RQ` variants. Fix / register
+/ dismiss — one decision, then apply it to the other five if and only if they share the cause.

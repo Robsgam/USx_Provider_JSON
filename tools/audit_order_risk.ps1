@@ -70,3 +70,27 @@ Write-Host ('=' * 92) -ForegroundColor Cyan
 Write-Host ("  {0,-22} {1,-6} {2,-16} {3}" -f 'PROVIDER','VER','PAIRS EXAMINED','ONLY-DEVDOC-DECIDES')
 foreach ($s in $sum) { Write-Host ("  {0,-22} {1,-6} {2,-16} {3}" -f $s.P,$s.V,$s.Pairs,$s.Risk) -ForegroundColor $(if($s.Risk){'Yellow'}else{'Green'}) }
 Write-Host ''
+
+# ── EXIT CODE, added 2026-09-04 ────────────────────────────────────────────────────────────────
+# This tool had NO exit statement at all, so it always returned 0 -- and it was about to be wired
+# into an orchestrator that keys on exit codes, which would have added a gate that cannot fail.
+# Fix the exit BEFORE wiring, never after: a "wired" gate that always returns 0 is indistinguishable
+# on the board from a working one, and the meta-gate that checks wiring would have read green.
+#
+# ADVISORY BY DESIGN, so residual risk is reported and does NOT block: this tool exists to give the
+# HONEST number behind audit_devdoc_order's "mapped N of M" line -- pairs where neither specificity
+# nor a condition decides, and only devdoc listing order does. That is a real risk to KNOW, not a
+# defect to fix; forcing it to zero would mean inventing conditions the metadata does not support.
+# Exit 1 is therefore reserved for "this run proved nothing".
+if (-not $sum -or $sum.Count -eq 0) {
+    Write-Host "  [NO-VERDICT] examined ZERO providers -- this run compared nothing. That is not a pass." -ForegroundColor Red
+    exit 1
+}
+$totalPairs = ($sum | Measure-Object -Property Pairs -Sum).Sum
+$totalRisk  = ($sum | Measure-Object -Property Risk  -Sum).Sum
+Write-Host ("  TOTALS: {0} provider(s) / {1} ordered pair(s) examined / {2} where ONLY devdoc order decides" -f $sum.Count, $totalPairs, $totalRisk) -ForegroundColor Cyan
+if ($totalPairs -eq 0) {
+    Write-Host "  [NO-VERDICT] zero ordered pairs examined across all providers -- nothing was compared." -ForegroundColor Red
+    exit 1
+}
+exit 0

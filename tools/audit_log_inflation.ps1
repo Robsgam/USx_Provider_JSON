@@ -261,3 +261,15 @@ if (-not $withLogs.Count) {
     Write-Host "  [NO-VERDICT] not one provider had logs -- this run compared NOTHING. That is not a pass." -ForegroundColor Red
 }
 Write-Host ''
+
+# ── EXIT CODE, added 2026-09-04 ────────────────────────────────────────────────────────────────
+# Same defect as audit_order_risk: no exit statement anywhere, so it always returned 0 -- including
+# on the [NO-VERDICT] path it already prints when not one provider had logs. It printed the right
+# words and returned the wrong code, which is the worst combination: a reader sees the warning, an
+# orchestrator does not.
+# BLOCKING on real findings is correct here (unlike order_risk): every attack this tool runs -- A
+# clone, B fingerprint drift, C orphan wire field, D degenerate guardrail, E singleton -- is
+# COVERAGE INFLATION, i.e. evidence that overstates what was proven. That is never acceptable.
+if (-not $withLogs -or $withLogs.Count -eq 0) { exit 1 }   # already announced [NO-VERDICT] above
+if ($findings.Count -gt 0) { exit 1 }
+exit 0

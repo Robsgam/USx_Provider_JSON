@@ -1,0 +1,31 @@
+{
+  "_description": "Gates that are DELIBERATELY not invoked by any orchestrator. Read by audit_repo.ps1 CATEGORY 6's orphan-coverage check. A gate absent from an orchestrator AND absent from this list is an ORPHAN and FAILs -- 'nobody ran it' must never be the silent default. Every entry needs a reason a reader can check; an entry with no reason is itself a FAIL.",
+  "_added": "2026-09-04",
+  "gates": [
+    {
+      "gate": "audit_change_scope.ps1",
+      "reason": "It is -Provider-scoped and buckets `git status` by provider directory, but NO orchestrator knows which provider is 'in scope' for the current edit -- that is a fact about the human's intent, not about the repo. Worse, it exits 0 on an empty tree with 'This is NOT scope clean. Nothing was compared', so wiring it into a scheduled run would pass vacuously and fail only when someone is mid-work. ENGINEERING_STANDARD 4.5 correctly describes it as a PRE-COMMIT tool for a person to run; that is where it stays.",
+      "who_runs_it": "human, before committing provider work"
+    },
+    {
+      "gate": "audit_defect_classes.ps1",
+      "reason": "ITS OWN HEADER FORBIDS WIRING IT: 'C1 IS VERIFIED. C2 / C3 / C4 ARE STILL EXPERIMENTAL -- DO NOT QUOTE THEIR OUTPUT' and 'Nothing here is wired into a gate yet.' It also always exits 0. Wiring it would either surface output the tool says must not be quoted, or add a gate that cannot fail. Wire C1 alone, and only once C1 has a mutation in audit_gate_efficacy proving it can fail.",
+      "who_runs_it": "human, exploratory"
+    },
+    {
+      "gate": "audit_xml_consistency.ps1",
+      "reason": "It diffs the working tree's wire XML against a git BASELINE REF and exits 1 on any change. During ordinary work -- rebuilds, mutation testing, regenerated reports -- 'changed' is the normal state, so as a scheduled gate it is a noise generator that would train people to ignore it (LAW 2b). It is the right tool to run DELIBERATELY when asking 'did this refactor change any wire?', with a baseline chosen for that question.",
+      "who_runs_it": "human, with an explicit -BaselineRef"
+    }
+  ],
+  "harnesses": [
+    {
+      "gate": "audit_gate_efficacy.ps1",
+      "reason": "A mutation HARNESS, not a gate. It proves other gates can fail. Run by build_phase1 steps 6/6b."
+    },
+    {
+      "gate": "audit_repo.ps1",
+      "reason": "The gate that hosts this very check -- it cannot require itself."
+    }
+  ]
+}
