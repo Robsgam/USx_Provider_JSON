@@ -53,13 +53,25 @@ foreach ($b in $j.bundles) {
         if ($null -eq $n.props.PSObject.Properties['direction']) {
           Add-Member -InputObject $n.props -MemberType NoteProperty -Name direction -Value 'row'
         } else { $n.props.direction = 'row' }
-        # initialValue 'C' -- Rob's call ("and we need a default of c please"). Safe here because
-        # PurposeCode sits in the set[] of ALL 25 combinations, so it cannot shadow one combo over
-        # another; it cancels out of every comparison (same reasoning CLAUDE.md records for
-        # CA_CLETS's purposeCode='C').
-        if ($null -eq $n.props.PSObject.Properties['initialValue']) {
-          Add-Member -InputObject $n.props -MemberType NoteProperty -Name initialValue -Value 'C'
-        } else { $n.props.initialValue = 'C' }
+          # -- NO initialValue. REVERSED 2026-09-04 by Rob: "we need to remove the default for
+          # purpose code". This previously set 'C' on his earlier call ("and we need a default of
+          # c please"); that instruction is superseded and the control now ships UNSET, which also
+          # matches v1.0 -- all 15 PurposeCode controls there carry no initialValue.
+          #
+          # IT WAS NEVER A ROUTING RISK EITHER WAY. PurposeCode sits in the set[] of ALL 25
+          # combinations, so a prefill cancels out of every comparison and cannot shadow one combo
+          # over another (the reasoning CLAUDE.md records for CA_CLETS's purposeCode='C'). This is
+          # a decision about whether the officer STATES a purpose, not a correctness fix.
+          #
+          # IT ALSO UNBLOCKS THE DRIVER, WHICH IS THE OTHER HALF OF THE ASK. usx_lib's radio helper
+          # SHORT-CIRCUITS when the wanted option is ALREADY SELECTED, and every plan test fills
+          # PurposeCode='C' -- so with initialValue='C' the driver took that short-circuit on every
+          # test and NEVER exercised the selection path. The radio interaction was untested BY
+          # CONSTRUCTION, which is why it kept appearing to work and then failing. With no prefill
+          # the driver must genuinely select, which is what the isChecked fix has to survive.
+          if ($n.props.PSObject.Properties['initialValue']) {
+            $n.props.PSObject.Properties.Remove('initialValue')
+          }
         $converted++
         # Two long labels cannot lay out horizontally in a 3- or 6-column row -- they stack at the
         # left, which is exactly what Rob saw first time. Widen ONLY the row holding this control,
