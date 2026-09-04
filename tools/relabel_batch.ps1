@@ -117,7 +117,16 @@ for ($i = 0; $i -lt $records.Count; $i++) {
     $r | Add-Member -NotePropertyName guardrailLoser -NotePropertyValue $t.guardrailLoser -Force
     $r | Add-Member -NotePropertyName strippedField -NotePropertyValue $t.strippedField -Force
     $r | Add-Member -NotePropertyName strippedValue -NotePropertyValue $t.strippedValue -Force
-    $r | Add-Member -NotePropertyName underFilled -NotePropertyValue $false -Force
+    # underFilled is an OBSERVATION FROM THE BROWSER, not a plan fact -- unlike every other property
+    # set in this block, which is resolved FROM the matched plan test $t and so must be forced.
+    # driver.js:211 records `underFilled: !filled` when a form field failed to fill; capture.js:398
+    # carries it through; import_captured_tests.ps1:239/265 stamps "UNDER-FILLED" into the log NOTES
+    # and warns. This line used to force $false unconditionally, and watch_captures.ps1:83 relabels
+    # 100% of automated imports -- so the signal was destroyed before its only consumer ran, and
+    # those two lines were dead code on every automated capture ever taken. Default when ABSENT only.
+    if (-not $r.PSObject.Properties['underFilled']) {
+        $r | Add-Member -NotePropertyName underFilled -NotePropertyValue $false -Force
+    }
     $r | Add-Member -NotePropertyName contentMatched -NotePropertyValue $true -Force
 }
 $unassigned = @(0..($records.Count - 1) | Where-Object { -not $assigned.ContainsKey($_) })
