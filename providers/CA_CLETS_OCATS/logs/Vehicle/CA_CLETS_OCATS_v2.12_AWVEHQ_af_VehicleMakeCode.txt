@@ -1,7 +1,7 @@
 ﻿================================================================
 TEST LOG: CA_CLETS_OCATS Vehicle VehicleRegistrationQuery
-Combo: RQ.P (RQ.P (auto))
-Date: 2026-09-04 15:00:31
+Combo: AWVEHQ_af_VehicleMakeCode (AWVEHQ_af_VehicleMakeCode (auto))
+Date: 2026-09-04 15:00:38
 Result: PASS
 JSON Version: 2.12
 Entity Fingerprint: 26be2eaa38f18e7ed360b10481f223554fe020db045061a1e88658f167f0d93c
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"LicensePlateNumber":"TEST123","LicensePlateYear":"2026","RegistrationState":"Georgia","caRequestPurposeCode":"C"}
+{"LicensePlateNumber":"TEST123","LicensePlateYear":"2026","VehicleMakeCode":"FORD","caRequestPurposeCode":"C","userId":"Q7"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01M1PTT5K14FXA1MJC5N8YHT36">
+    <api:Transaction id="01M1PTSVYNKTXKA17RV76H8KXA">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -37,10 +37,10 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleRegistrationQuery</MessageType>
-            <Id>01M1PTT5K14FXA1MJC5N8YHT36</Id>
-            <LicensePlateYear>2026</LicensePlateYear>
-            <State>GA</State>
-            <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+            <Id>01M1PTSVYNKTXKA17RV76H8KXA</Id>
+            <VehicleMakeCode>CNST_FORD</VehicleMakeCode>
+            <Authorization>BASIC AJK4BHVOAWSYYNY1NGZXCMZ1NNA0ADR1OWW6EC1ZZXNZAW9ULXRVA2VU</Authorization>
+            <UserId>Q7</UserId>
             <LicensePlateNumber>TEST123</LicensePlateNumber>
             <CaRequestPurposeCode>C</CaRequestPurposeCode>
           </Request>
@@ -60,9 +60,6 @@ Request:
 {
     "elasticQuery":  {
                          "vehicle":  {
-                                         "registrationStateAttrIds":  [
-                                                                          72322276022
-                                                                      ],
                                          "tag":  "TEST123"
                                      }
                      },
@@ -81,15 +78,15 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   DeviceId                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01M1PTT5K14FXA1MJC5N8YHT36
-  LicensePlateYear               2026
-  State                          GA
-  LicensePlateTypeCode           PC
+  Id                             01M1PTSVYNKTXKA17RV76H8KXA
+  VehicleMakeCode                CNST_FORD
+  Authorization                  BASIC AJK4BHVOAWSYYNY1NGZXCMZ1NNA0ADR1OWW6EC1ZZXNZAW9ULXRVA2VU
+  UserId                         Q7
   LicensePlateNumber             TEST123
   CaRequestPurposeCode           C
 
 NOTES
 -----
-Automated capture (txId 01M1PTT5K14FXA1MJC5N8YHT36). kind=combo; anyField=; expectedKeyRef=RQ.P; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01M1PTSVYNKTXKA17RV76H8KXA). kind=any-field; anyField=VehicleMakeCode; expectedKeyRef=AWVEHQ; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS
