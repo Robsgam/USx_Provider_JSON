@@ -49,9 +49,8 @@ OWN REGISTRY ROWS USED RULE NAMES THE GATES DO NOT READ (`not-built` -> `devdoc-
 `metadata-mandatory-not-in-devdoc` -> `devdoc-optional-unreachable`) so they silenced nothing.
 validator 70P/0F/26W -> **78P/0F/2W**; branches held at 27.
 
-**CA_CLETS_OCATS IS ALL-PASS 62/62 at v2.12** (`11686418`). This block claimed PARTIAL until
-2026-09-08: `audit_session_state` checks versions/dates/length, NEVER test state, so take test rows
-from `portfolio_status.ps1`, never prose. Stage 5 remains: DEX-980 `Blocked`, line awaiting Rob.
+**CA_CLETS_OCATS IS ALL-PASS 62/62 at v2.12** (`11686418`). `audit_session_state` never checks test
+state -- take test rows from `portfolio_status.ps1`, never prose. Stage 5: DEX-980 `Blocked`.
 **MD_METERS IS LIFECYCLE-COMPLETE at v2.4** -- `POSTED: v2.4 comment 808820` on DEX-987.
 **CA_eSUN DEX-1313** -- `POSTED: v2.2 comment 811409` covers the RADIOBUTTON line ONLY; the v3.x
 mainline still owes its own release line. eSUN is the first provider with a SUBTASK, so name which
@@ -65,18 +64,17 @@ form, so the capture precedes CHOOSING TEST VALUES; that is why CA_VENTURA canno
 
 ## OFFICER GUIDES -- 20/20 CURRENT, 473 rows, 0 stale (2026-09-04)
 
-Convention + rules: `usx-build` Step 4c. Rows enumerate devdoc-style; in/out-of-state are SEPARATE
-rows sharing a metadata message key; in-state rows name the home state. `audit_guide_completeness`:
-**381 combos / 92 split / 0 DROPPED**, predicted == actual on all 20. Step 13 runs on EVERY build.
+Convention + rules: `usx-build` Step 4c. In/out-of-state are SEPARATE rows sharing a message key;
+in-state rows name the home state. `_probes/audit_guide_completeness.ps1` (NOT in `tools/`):
+**381 combos / 92 split / 0 DROPPED** on all 20. Step 13 runs on EVERY build.
 
 ## ROB'S CALLS, NOT MINE
 
 - **CA_CONTRA_COSTA JAWS/SuperQuery** -- 4 UNDER / 3 OVER, verbatim in its BUILD_NOTES. Hold the
   SWEEP, not the import.
 - **LA_LEMS BoatQuery `QB{reg}` vs `BQ{reg}`** -- in LA's registry, not taken.
-- **MINED-KEYREF ATTRIBUTION, 4 EXPOSED** (`_probes/sweep_mined_keyref_shadow.ps1`): CA_eSUN Vehicle
-  QV.V->4V and Boat QB.H->4V / QB.R->4B, CA_SAN_LUIS_OBISPO QV.V->4V. A keyRef never reaches the
-  wire, so this is ATTRIBUTION (a rename), not a wire change. Both providers never-tested.
+- **MINED-KEYREF ATTRIBUTION, 4 EXPOSED** (`_probes/sweep_mined_keyref_shadow.ps1`): CA_eSUN QV.V->4V,
+  QB.H->4V, QB.R->4B; CA_SAN_LUIS_OBISPO QV.V->4V. A rename, not a wire change. Both never-tested.
 - **eSUN 228KB tenant export** in pushed history at `8273a87f` -- removal needs a force-push.
 
 ## OPEN FINDINGS -- detail lives in `FINDINGS_REGISTER.md`, do NOT restate it here
@@ -91,6 +89,9 @@ rows sharing a metadata message key; in-state rows name the home state. `audit_g
   TEST_VALUE_OVERRIDES -- choose the value AFTER its picklist capture.
 - **LIMITATION #41** (HOME state routes a local plate to NLETS) -- paused pending CommSys. 5 providers owe the picklist capture.
 - **NCIC hit blocks CONFIG-PRESENT, NOT RENDERING-VERIFIED** on HI and TN.
+- **RESWEEP 2026-09-08 (20/20 ENFORCED 0F/0W): a mandatory QUALIFIER demotes `set[]`->`any[]` with NO
+  gate reacting** -- NY `DALH`/BirthDateDH + TX_CCH `BQBoatHullIdNumber`/State, two paths. Recipe and
+  the 6 new NEVER-COMPARED combos (3 tenant-verified) are in `FINDINGS_REGISTER.md`. NOT fixed.
 
 ## DO NOT RE-RAISE
 
