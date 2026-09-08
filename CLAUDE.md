@@ -40,7 +40,7 @@ tools/                     -- Shared scripts (validator, renderers, simulators)
 | CA_eSUN | providers/CA_eSUN/ | v3.1 | 78P/0F/0W | NEVER 0/5 | 6 QIDMs, CaRequestPurposeCode (visible Inp, officer-selectable), VP owner search, gun-by-name (QGH), Attention auto-handler, DL+DH DH-suffix+queriesToDeselect (visible DH cards), OOS EXISTS/NOT_EXISTS gates, identifier-priority guardrails | [changelog](providers/CA_eSUN/docs/tracking/CHANGELOG_CA_eSUN.md) |
 | CA_SAN_LUIS_OBISPO | providers/CA_SAN_LUIS_OBISPO/ | v2.8 | 67P/0F/0W | NEVER 0/5 | Regional interface (not direct CLETS), DL+DH DH-suffix+queriesToDeselect, short keyRefs, no State initialValue (LIMITATION #30 in/out split), no ImageIndicator | [changelog](providers/CA_SAN_LUIS_OBISPO/docs/tracking/CHANGELOG_CA_SAN_LUIS_OBISPO.md) |
 | IL_LEADS_OFML | providers/IL_LEADS_OFML/ | v2.8 | 61P/0F/0W | ALL-PASS 5/5 (43 logs) | 5 basic queries (no DH), Z2/Z5 keyRefs, CDCName in AUTH, OOS EXISTS/NOT_EXISTS gates, identifier-priority guardrails | [changelog](providers/IL_LEADS_OFML/docs/tracking/CHANGELOG_IL_LEADS_OFML.md) |
-| MD_METERS | providers/MD_METERS/ | v2.4 | 71P/0F/0W | ALL-PASS 5/5 (47 logs) | 6 basic queries, DH-suffix+queriesToDeselect, ZVEH/ZLRG/ZWAR/ZLDR/ZDRV/ZBOA keyRefs, OOS EXISTS/NOT_EXISTS gates, identifier-priority guardrails, State no-default; **DL State-as-discriminator (v2.4)** -- `RegistrationState NOT_EXISTS` on ZWAR.N ONLY, and the `raceCode NOT_EXISTS` gates on ZLDR.N/ZLDR.O are GONE. Metadata scopes `RaceCode` to both ZWAR variants and NEITHER ZLDR variant, and `ZWAR{Name}` defines no State field at all -- so at v2.3 a Name+Sex+DOB+Race+**State** fill matched ZWAR.N and the State was silently discarded, while `OLN+Race` matched NOTHING. ⚠️ **Do NOT "complete the symmetry" by adding `RegistrationState EXISTS` to ZLDR.N** -- simulated and rejected: it kills the plain in-state name search (`Name+Sex+DOB` -> nothing fires), the TN_TIES `KQ.N` defect verbatim. `ZLDR{Name}` carries State in `<Any>` (an optional, not a state FORK). All 8 DL fills verified routing on the emitted v2.4. Also v2.4: ZGUN `primaryFieldReference` aligned `GunSerialNumber` -> `GunMake` (label only, no wire change) which cleared a live `audit_metadata` CHECK 5 FAIL that a registry row with an inert rule name had failed to suppress; **the last portfolio `ImageIndicator='N'` carrier** (N=6/Y=3) | [changelog](providers/MD_METERS/docs/tracking/CHANGELOG_MD_METERS.md) |
+| MD_METERS | providers/MD_METERS/ | v2.4 | 71P/0F/0W | ALL-PASS 5/5 (47 logs) | 6 basic queries, DH-suffix+queriesToDeselect, ZVEH/ZLRG/ZWAR/ZLDR/ZDRV/ZBOA keyRefs, OOS EXISTS/NOT_EXISTS gates, identifier-priority guardrails, State no-default; **DL State-as-discriminator (v2.4)** -- `RegistrationState NOT_EXISTS` on ZWAR.N ONLY, and the `raceCode NOT_EXISTS` gates on ZLDR.N/ZLDR.O are GONE. Metadata scopes `RaceCode` to both ZWAR variants and NEITHER ZLDR variant, and `ZWAR{Name}` defines no State field at all -- so at v2.3 a Name+Sex+DOB+Race+**State** fill matched ZWAR.N and the State was silently discarded, while `OLN+Race` matched NOTHING. ⚠️ **Do NOT "complete the symmetry" by adding `RegistrationState EXISTS` to ZLDR.N** -- simulated and rejected: it kills the plain in-state name search (`Name+Sex+DOB` -> nothing fires), the TN_TIES `KQ.N` defect verbatim. `ZLDR{Name}` carries State in `<Any>` (an optional, not a state FORK). All 8 DL fills verified routing on the emitted v2.4. Also v2.4: ZGUN `primaryFieldReference` aligned `GunSerialNumber` -> `GunMake` (label only, no wire change) which cleared a live `audit_metadata` CHECK 5 FAIL that a registry row with an inert rule name had failed to suppress; **`ImageIndicator` is `'Y'` on all 3 carrying entities (Boat/Person/Vehicle)** — this cell called MD "the last portfolio `ImageIndicator='N'` carrier (N=6/Y=3)" until 2026-09-08, and a node-level census of all 20 JSONs measured **Y=40 / N=0 portfolio-wide**; the flag closed at MD **v2.1** per `REVERSE_PROPAGATION_LOG.md` | [changelog](providers/MD_METERS/docs/tracking/CHANGELOG_MD_METERS.md) |
 | OH_LEADS | providers/OH_LEADS/ | v2.11 | 78P/0F/0W | ALL-PASS 5/5 (65 logs) | 6 basic queries, 7 VehReg combos (9 metadata, 2 NCIC shadows dropped) + owner SSN/Name cross-entity, DH-suffix+queriesToDeselect, Attention eSUN feeder, existence-only routing gates, identifier-priority guardrails (Plate>VIN>SSN>Name, OLN>Name, Hull>Reg), State no-default; NCIC Image defaults `'Y'` on all 3 carrying entities (v2.5, Rob's rule -- safe here because ImageIndicator is in NO `set[]` and no condition, unlike AZ/LA); **ImageQuery (devdoc-Basic) REMOVED v2.6 BY DIRECTIVE** -- user-approved skip, registered `ImageQuery \| (devdoc #1) \| OperatorLicenseNumber \| devdoc-combo-unbuilt`, so 6 QIDMs not 7. Photos still ride IN-BAND via `ImageIndicator` on DQ.O; the standalone "Driver Photo" transaction is gone. It was BUILT at v2.4 to satisfy `audit_supported_queries` CHECK 0 and the directive SUPERSEDES that -- a documented skip satisfies CHECK 0 equally, so do NOT re-add it to green a gate. CHECK 2's `supported 'Driver Photo \| OperatorLicenseNumber' has NO combo` WARN is EXPECTED and deliberately not silenced (deleting the row would falsify the devdoc ground truth CHECK 0 compares against); enforce does not escalate it | [changelog](providers/OH_LEADS/docs/tracking/CHANGELOG_OH_LEADS.md) |
 | NM_NMLETS_OFML | providers/NM_NMLETS_OFML/ | v2.7 | 65P/0F/0W | ALL-PASS 5/5 (36 logs) | 6 basic queries, DH-suffix+queriesToDeselect, GunModel field, existence-only routing gates (Vehicle/Boat NCIC-vs-Nlets by State), identifier-priority guardrails, DH PurposeCode+RaceCode optional any[] | [changelog](providers/NM_NMLETS_OFML/docs/tracking/CHANGELOG_NM_NMLETS_OFML.md) |
 | OR_LEDS | providers/OR_LEDS/ | v2.6 | 55P/0F/0W | ALL-PASS 5/5 (27 logs) | 5 basic queries (no DH), invented keyRefs (RQ/DQ/QG/QA/BQ splits), OOS EXISTS/NOT_EXISTS gates, identifier-priority guardrails, MC multi-card | [changelog](providers/OR_LEDS/docs/tracking/CHANGELOG_OR_LEDS.md) |
@@ -219,20 +219,34 @@ and `DQP` to `[OperatorLicenseNumber]` (= `DQ`), killing **both plain searches**
 Rob's rule carries its own caveat (*"if it does not effect routing"*) and on AZ it does, so the blank
 is load-bearing: it is what keeps the photo path OPT-IN.
 
-**GENUINELY STILL OWED — 2, RE-MEASURED 2026-08-18. THIS LINE SAID "7" AND WAS STALE.** It listed 6
-providers carrying real `'N'` values — MD_METERS (2), NJ_NJCJIS (4), NY_NYSPIN_EJUSTICE (3), OH_LEADS
-(2), TX_TLETS (3), TX_TLETS_CCH (3) — and a sweep of every emitted JSON's `ImageIndicator` controls
-found **only MD_METERS still at `'N'` (N=6 / Y=3, i.e. 2 entities)**. NJ, NY, TX and TX_TLETS_CCH all
-read **Y=15** and were flipped at some earlier rebuild without this line moving with them; OH_LEADS
-closed at **v2.5**. Corroborated from a second direction: `audit_reverse_propagation` reports
-`[FLAG:ncic-image-default-y-everywhere] pending in 1: MD_METERS`. So the remainder is **MD_METERS**
-(a wire change: version bump + the combo `defaults[]` twin, since CAD ignores form `initialValue` —
-but it is NEVER-TESTED, so it archives no package) plus **LA_LEMS**, which needs a **ruling** rather
-than a flip (1 `set[]` + 2 conditions, already `'Y'` on its only control). ⚠️ **The measuring probe
-under-reports and must not be read as a control census:** it matches an `initialValue` within 900
-chars of the `fieldId`, so a control deliberately left BLANK is invisible — which is why AZ_AZDPS
-reads as having none when its blank is the load-bearing opt-in (see the AZ ruling above). Use it to
-find `'N'` carriers, never to conclude a provider has no control.
+**NOTHING IS OWED — CLOSED, MEASURED 2026-09-08. THIS LINE SAID "2" AND HAS NOW GONE STALE TWICE.**
+It previously said "7", was corrected to "2" on 2026-08-18, and was stale again by three MD_METERS
+versions. A **NODE-level census of every `ImageIndicator` control in all 20 emitted JSONs** reads:
+
+> **Y = 40 · N = 0 · blank = 0 · no-`initialValue`-property = 2 · providers with NO control = 6 of 20**
+> `STILL CARRYING 'N': NONE.`
+
+MD_METERS — named here as "the last carrier" and as a wire change still owed — reads
+**Boat=Y Person=Y Vehicle=Y** at v2.4. The 2 without an `initialValue` property are AZ_AZDPS's
+Person control (**the load-bearing blank**, see the AZ ruling above — it is in 2 `set[]`s, so a
+prefill kills `DQPN`/`DQP`) and TX_TLETS_CCH's `imageIndicatorCCH`.
+
+**Corroborated from the authority for flag state, not from the same probe:** no provider carries a
+LIVE `[FLAG:ncic-image-default-y-everywhere]` (all 16 mentions are retired comment records), and
+`REVERSE_PROPAGATION_LOG.md` records *"RESOLVED at MD_METERS v2.1 — and MD_METERS WAS THE LAST
+CARRIER, so this portfolio flag is now fully closed."* **LA_LEMS needs no ruling either:** it builds
+ONE control, on Person, already `'Y'` — the same already-conformant class as NM/OR/TN.
+
+⚠️ **A STALE *OWED* CLAIM MANUFACTURES WORK, which is the exact mirror of a stale DO-NOT-RE-RAISE
+suppressing it** (the failure SESSION_STATE records for `[FLAG:plan-dedupe-vacuous-tests]`). This
+line survived two corrections and presented finished work as outstanding on a tenant-verified
+provider for three weeks. Found 2026-09-08 by a random fuzz mutation prefilling MD's Vehicle
+control, which forced a measurement of what the value actually was.
+
+⚠️ **The OLD measuring probe under-reported and must never be used as a control census:** it matched
+an `initialValue` within 900 chars of the `fieldId`, so a deliberately BLANK control was invisible —
+which is why AZ_AZDPS read as having none. **Read NODES** (`props.fieldId` + `props.initialValue`,
+with `hidden` at node level), and report a blank as `(blank)` rather than as absent.
 
 ---
 
