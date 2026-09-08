@@ -429,7 +429,7 @@ Three layout variants per QIF: `default`, `CAD_DISPATCH`, `FIRST_RESPONDER`.
 
 ---
 
-## Tools (102 scripts + 18 shared modules in `tools/`, + `tools/_probes/` (3 graduated ad-hoc probes) + `tools/config/` (5 JSON reference tables) + 3 archived tools in `tools/_archive/`)
+## Tools (102 scripts + 18 shared modules in `tools/`, + `tools/_probes/` (8 graduated ad-hoc probes) + `tools/config/` (6 JSON reference tables) + 3 archived tools in `tools/_archive/`)
 
 All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (consumed by verify_build.ps1).
 

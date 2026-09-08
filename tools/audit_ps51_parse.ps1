@@ -59,7 +59,25 @@ if (-not $is51) {
     exit 1
 }
 
-$scripts = @(Get-ChildItem $toolDir -Filter '*.ps1' -File | Sort-Object Name)
+# ── SCOPE: tools/ PLUS tools/_probes/, and DELIBERATELY NOT tools/_archive/ ───────────────────
+# Widened 2026-09-08 during the portfolio resweep. This scanned tools/*.ps1 NON-RECURSIVELY --
+# 120 of the 131 .ps1 files under tools/ -- so the 8 live scripts in tools/_probes/ were outside
+# the one gate whose entire purpose is "every tool script must parse on the engine that runs it".
+# One of them, _probes/audit_guide_completeness.ps1, produces a PORTFOLIO VERDICT that
+# SESSION_STATE.md quotes by name ("381 combos / 92 split / 0 DROPPED, predicted == actual on all
+# 20"), so a 5.1 parse failure there would have silently invalidated a cited claim -- and 5.1
+# parse failures surface as swallowed ParserError text, not as a FAIL line.
+# This is the same too-narrow-glob defect that let two FROZEN non-PowerShell files sit in the repo
+# ROOT for weeks (audit_artifact_provenance's motivating find): the gate looked exactly where the
+# problem was not.
+# _archive/ is excluded ON PURPOSE -- archived tools are not run, so requiring them to parse would
+# manufacture work with no consequence (LAW 2b).
+# Measured before widening: _probes 8 scanned / 0 PARSE-FAIL, so this lands at ZERO residue,
+# which is this repo's condition for promoting a check rather than reddening the board with it.
+$scanDirs = @($toolDir)
+$probesDir = Join-Path $toolDir '_probes'
+if (Test-Path $probesDir) { $scanDirs += $probesDir }
+$scripts = @($scanDirs | ForEach-Object { Get-ChildItem $_ -Filter '*.ps1' -File } | Sort-Object FullName)
 $bad = 0
 foreach ($s in $scripts) {
     $errs = $null
