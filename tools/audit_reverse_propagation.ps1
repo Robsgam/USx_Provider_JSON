@@ -61,8 +61,21 @@ foreach ($pd in $provDirs) {
     foreach ($ln in @(Get-Content $pending)) {
         $t = $ln.TrimStart()
         if (-not $t.StartsWith('#')) { continue }
-        if ($ln -notmatch '\[FLAG:([^\]]+)\]') { continue }
-        $fid  = $Matches[1].Trim()
+        # EVERY [FLAG:] TOKEN ON THE LINE, NOT JUST THE FIRST (fixed 2026-09-08).
+        # This used to take $Matches[1] -- the FIRST token -- decide deliberate-vs-glued from the
+        # line's PREFIX, and `continue`. So a flag glued onto a line that ALREADY OPENED with a
+        # deliberate '# [FLAG:x] ...' record was invisible: the prefix test passed on token 1 and
+        # token 2 was never looked at. That is the MOST LIKELY real shape, not a corner case --
+        # the appender glues onto the file's LAST line, and in these files the last line is
+        # usually a previous flag record, because flags accumulate at the end. CA_CLETS_OCATS'
+        # own last line is exactly that shape.
+        # Found by LAW 2 injection during the 2026-09-08 portfolio resweep: gluing onto an
+        # ordinary comment line was CAUGHT, gluing onto a flag-record line was MISSED. The
+        # original check had been proven to fail only on the first shape.
+        # A deliberate record is ONE flag per line, so every token after the first is glued
+        # by construction.
+        $ms = [regex]::Matches($ln, '\[FLAG:([^\]]+)\]')
+        if (-not $ms.Count) { continue }
         # Two glue shapes, both caught:
         #   prose-before   '#  ...supplies.[FLAG:x]'  -> body does not start with the token
         #   bare-hash glue '#[FLAG:x]'                -> glued onto a lone '#' (the header's last
@@ -72,8 +85,16 @@ foreach ($pd in $provDirs) {
         # first version of this check.
         $body = $t.TrimStart('#').TrimStart()
         $spacedRecord = $t -match '^#\s+\[FLAG:'
-        if ($body.StartsWith('[FLAG:') -and $spacedRecord) { continue }   # deliberate record
-        $inertFlags += [pscustomobject]@{ Provider = $prov; FixId = $fid; Line = $ln.Trim() }
+        $firstIsRecord = ($body.StartsWith('[FLAG:') -and $spacedRecord)
+        for ($k = 0; $k -lt $ms.Count; $k++) {
+            if ($k -eq 0 -and $firstIsRecord) { continue }   # the deliberate record itself
+            $inertFlags += [pscustomobject]@{
+                Provider = $prov
+                FixId    = $ms[$k].Groups[1].Value.Trim()
+                Line     = $ln.Trim()
+                Shape    = if ($k -gt 0) { 'glued onto a line that already carries a flag record' } else { 'glued mid-line / bare-hash' }
+            }
+        }
     }
     $lines = Get-Content $pending | Where-Object { $_.Trim() -and -not $_.TrimStart().StartsWith('#') }
     foreach ($ln in $lines) {
@@ -170,7 +191,11 @@ Out ""
 if ($inertFlags.Count -gt 0) {
     foreach ($f in $inertFlags) {
         Warn "INERT FLAG -- $($f.Provider) carries [FLAG:$($f.FixId)] on a COMMENT line: enforce cannot see it"
-        Info "    fix: move it to its own line, or retire it properly --"
+        # NAME THE SHAPE. The old message said only "on a COMMENT line", and the advice that
+        # followed ("move it to its own line") misdirects when the line already IS its own line
+        # and is one space short of the canonical '# [FLAG:x]' record form -- which is what
+        # CA_CLETS_OCATS actually had, for work that was genuinely DONE at v2.12.
+        Info "    shape: $($f.Shape)"
         Info "    tools\flag_pending_fix.ps1 -Retire -FixId $($f.FixId) -Providers $($f.Provider) -Description '<what was done>'"
     }
 } else {

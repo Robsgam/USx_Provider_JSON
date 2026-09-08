@@ -26,6 +26,40 @@ $providers = Join-Path $repo "providers"
 $lines = @()
 function Emit($s) { Write-Host $s; $script:lines += $s }
 
+# ── Emit-GateSummary -- run a child gate and show its VERDICT, not a prefix of its chatter ─────
+# Added 2026-09-08 after a full-portfolio resweep found the four sections below were truncating a
+# variable-length list with `Select-Object -First 6`. The list they were filtering is ONE LINE PER
+# PROVIDER, so with 14 providers holding logs the cap was exhausted on per-provider chatter and
+# the run NEVER REACHED the gate's own summary or its [PASS]/[FAIL] line, which are printed last.
+# audit_log_metadata_attribution can exit 1 with N DISAGREE and doctor's section would have looked
+# byte-identical to a clean one. That is the verdict-by-substring trap in usx-build: 'AGREE' also
+# matches "53 agree / 0 disagree", so the filter matched the wrong lines and the cap hid the right
+# ones. Anchor on the verdict, never on a substring that per-provider output also contains.
+#
+# Two silences are also closed here, both the "a step that did not run is not a pass" class that
+# enforce PHASE 2h had (commit a52e2472):
+#   * a NON-ZERO EXIT is reported. try/catch only sees a thrown exception, never `exit 1`.
+#   * a filter that matched NOTHING is reported, instead of rendering an empty section.
+function Emit-GateSummary {
+    param(
+        [Parameter(Mandatory)][string]$Script,
+        [string[]]$ScriptArgs = @(),
+        [Parameter(Mandatory)][string]$Pattern,
+        [string]$Label
+    )
+    $name = if ($Label) { $Label } else { $Script }
+    try {
+        $out = & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $tool $Script) @ScriptArgs *>&1 | Out-String
+        $code = $LASTEXITCODE
+        $hits = @($out -split "`n" | Where-Object { $_ -match $Pattern })
+        if ($hits.Count) { $hits | ForEach-Object { Emit ("  " + $_.TrimEnd()) } }
+        else { Emit "  [WARN] $name produced NO summary/verdict line -- nothing was reported, which is NOT a pass" }
+        if ($code -ne 0) { Emit "  [WARN] $name exited $code -- read its full output; this section is a summary, not the gate" }
+    } catch {
+        Emit "  [WARN] $name failed: $($_.Exception.Message)"
+    }
+}
+
 Emit ""
 Emit "================================================================"
 Emit "  REPO DOCTOR -- health snapshot"
@@ -231,35 +265,27 @@ try {
 # ══════════════════════════════════════════════════════════════════════════════════════════════
 Emit ""
 Emit "--- RESIDUAL ORDERING RISK (pairs only devdoc order decides; audit_order_risk.ps1) ---"
-try {
-    $orsk = & powershell -NoProfile -ExecutionPolicy Bypass -File "$tool\audit_order_risk.ps1" *>&1 | Out-String
-    ($orsk -split "`n" | Where-Object { $_ -match 'TOTALS:|NO-VERDICT' } | Select-Object -First 6) |
-        ForEach-Object { Emit ("  " + $_.TrimEnd()) }
-} catch { Emit "  [WARN] audit_order_risk.ps1 failed: $($_.Exception.Message)" }
+Emit-GateSummary -Script 'audit_order_risk.ps1' -Label 'audit_order_risk' `
+    -Pattern '^\s*(TOTALS:|SKIPPED)|\[NO-VERDICT\]|\[FAIL\]'
 
 Emit ""
 Emit "--- COVERAGE INFLATION (are N logs really N distinct tests; audit_log_inflation.ps1) ---"
-try {
-    $infl = & powershell -NoProfile -ExecutionPolicy Bypass -File "$tool\audit_log_inflation.ps1" *>&1 | Out-String
-    ($infl -split "`n" | Where-Object { $_ -match 'EXAMINED:|LOGS COMPARED:|NO-VERDICT|SKIPPED:' } | Select-Object -First 6) |
-        ForEach-Object { Emit ("  " + $_.TrimEnd()) }
-} catch { Emit "  [WARN] audit_log_inflation.ps1 failed: $($_.Exception.Message)" }
+Emit-GateSummary -Script 'audit_log_inflation.ps1' -Label 'audit_log_inflation' `
+    -Pattern '^\s*(EXAMINED:|LOGS COMPARED:|SKIPPED:)|\[NO-VERDICT\]|\[FAIL\]|\[PASS\]'
 
 Emit ""
 Emit "--- WIRE-vs-METADATA ATTRIBUTION (which combo does the WIRE say this is; audit_log_metadata_attribution.ps1) ---"
-try {
-    $atr = & powershell -NoProfile -ExecutionPolicy Bypass -File "$tool\audit_log_metadata_attribution.ps1" -All *>&1 | Out-String
-    ($atr -split "`n" | Where-Object { $_ -match 'AGREE|DISAGREE|NO-LABEL|examined|NO-VERDICT' } | Select-Object -First 6) |
-        ForEach-Object { Emit ("  " + $_.TrimEnd()) }
-} catch { Emit "  [WARN] audit_log_metadata_attribution.ps1 failed: $($_.Exception.Message)" }
+# Anchored on the SUMMARY block and the verdict. Deliberately NOT 'AGREE', which also matches every
+# per-provider "N agree / N disagree" line -- that is what exhausted the old 6-line cap.
+Emit-GateSummary -Script 'audit_log_metadata_attribution.ps1' -ScriptArgs @('-All') -Label 'audit_log_metadata_attribution' `
+    -Pattern '^\s*(EXAMINED:|SKIPPED :|AGREE \d)|\[NO-VERDICT\]|\[FAIL\]|\[PASS\]|\[DISAGREE'
 
 Emit ""
 Emit "--- TOOL PORTABILITY (every shared gate must reach a verdict on every provider; audit_tool_portability.ps1) ---"
-try {
-    $tp = & powershell -NoProfile -ExecutionPolicy Bypass -File "$tool\audit_tool_portability.ps1" *>&1 | Out-String
-    ($tp -split "`n" | Where-Object { $_ -match 'RESULT:|NO-VERDICT' } | Select-Object -First 10) |
-        ForEach-Object { Emit ("  " + $_.TrimEnd()) }
-} catch { Emit "  [WARN] audit_tool_portability.ps1 failed: $($_.Exception.Message)" }
+# Was capped at 10 while the tool prints one RESULT line per shared gate (12 of them) -- same
+# scales-with-input truncation, two gates short.
+Emit-GateSummary -Script 'audit_tool_portability.ps1' -Label 'audit_tool_portability' `
+    -Pattern '^\s*(RESULT:|TOTALS:|SKIPPED)|\[NO-VERDICT\]|\[FAIL\]'
 
 Emit ""
 Emit "--- ARTIFACT PROVENANCE (is this evidence, or something shaped like it; audit_artifact_provenance.ps1) ---"

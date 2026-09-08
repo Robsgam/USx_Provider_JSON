@@ -20,18 +20,53 @@
   Only then does nothing but the devdoc's listing order decide the winner. That is the number that
   belongs next to a confidence %, and it is much smaller than the mapped/unmapped delta.
 #>
-param([string[]]$Providers = @('TX_TLETS','NY_NYSPIN_EJUSTICE','NJ_NJCJIS','FL_FCIC','HI_HCJDC_OFML','CA_CLETS'))
+# ── SCOPE IS DERIVED, NOT LISTED (fixed 2026-09-08) ───────────────────────────────────────────
+# This param used to default to a HARDCODED SIX -- TX_TLETS, NY_NYSPIN_EJUSTICE, NJ_NJCJIS,
+# FL_FCIC, HI_HCJDC_OFML, CA_CLETS -- the providers that existed when the tool was written on
+# 2026-07-31. `doctor.ps1` invokes it with NO arguments, so from the day it was wired in
+# (2026-09-04) it silently examined 6 of 20 providers and printed a clean-looking TOTALS line.
+# The other 14 had NEVER been examined for residual ordering risk by anything.
+#
+# That is ENGINEERING_STANDARD 4.8 verbatim -- "never hardcode a provider name in a shared tool;
+# a stale exemption list is a silent hole" -- and it is the same defect audit_log_inflation had
+# (a hardcoded six, which hid 5 real findings on AZ_AZDPS and IL_LEADS_OFML once widened).
+# The absolute $repo was hardcoded for the same reason and is now derived from $PSScriptRoot.
+#
+# A provider whose JSON cannot be resolved is now NAMED as SKIPPED. It used to `continue`
+# silently, which is indistinguishable from a provider that was examined and found clean.
+param([string[]]$Providers, [switch]$Quiet)
 
-$repo = 'C:\Users\RobSgambellone\.local\bin\USx_Provider_JSON'
-Set-Location $repo
-. "$repo\tools\_resolve_provider_json.ps1"
-. "$repo\tools\_sim_helpers.ps1"
+$repo = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+. "$PSScriptRoot\_resolve_provider_json.ps1"
+. "$PSScriptRoot\_sim_helpers.ps1"
 
-$sum = @()
+$providersD = Join-Path $repo 'providers'
+
+# ── SURVIVE `powershell -File`, WHICH CANNOT PASS AN ARRAY (measured 2026-09-08) ──────────────
+# Both list forms lose data SILENTLY through -File, which is how enforce/pipeline/doctor invoke
+# every tool:
+#     -Providers @('A','B')  ->  the script receives ONE element, 'A'.  'B' is DISCARDED.
+#     -Providers A,B         ->  the script receives ONE string, "A,B". It matches nothing.
+# Only an in-session `& script -Providers @(...)` binds two elements. CLAUDE.md records the same
+# footgun on audit_log_inflation ("-Providers 'A','B' silently matches nothing"); the guidance
+# there is "pass one per invocation or use the default", which is advice, not a mechanism.
+# Splitting a single comma-bearing element is a mechanism: it makes the -File form CORRECT instead
+# of quietly wrong. It cannot misfire, because a provider directory name never contains a comma.
+if ($Providers -and @($Providers).Count -eq 1 -and "$($Providers[0])" -match ',') {
+    $Providers = @("$($Providers[0])".Split(',') | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+}
+
+if (-not $Providers -or $Providers.Count -eq 0) {
+    $Providers = @(Get-ChildItem $providersD -Directory |
+        Where-Object { Test-Path (Join-Path $_.FullName 'source') } |
+        ForEach-Object { $_.Name } | Sort-Object)
+}
+
+$sum = @(); $skipped = @()
 foreach ($p in $Providers) {
-    $d = Join-Path $repo "providers\$p"
+    $d = Join-Path $providersD $p
     $jp = Get-ProviderRootJson -ProvDir $d -Provider $p
-    if (-not $jp) { continue }
+    if (-not $jp) { $skipped += $p; continue }
     $ver = [regex]::Match([IO.Path]::GetFileNameWithoutExtension($jp), '_v([\d.]+)$').Groups[1].Value
     $json = Get-Content $jp -Raw | ConvertFrom-Json
 
@@ -82,6 +117,14 @@ Write-Host ''
 # nor a condition decides, and only devdoc listing order does. That is a real risk to KNOW, not a
 # defect to fix; forcing it to zero would mean inventing conditions the metadata does not support.
 # Exit 1 is therefore reserved for "this run proved nothing".
+# NAME the omitted providers BEFORE the no-verdict exit. Ordered this way deliberately: the
+# full-portfolio run skips nothing, so this branch only ever runs on a scope that failed to
+# resolve -- which is exactly the run that needs to say WHICH name it could not resolve.
+# Found by testing the fix with a bogus -Providers value rather than re-running the sweep that
+# exposed the original hardcoded-list bug.
+if ($skipped.Count) {
+    Write-Host ("  SKIPPED (no active JSON resolved, NOT examined): {0}" -f ($skipped -join ', ')) -ForegroundColor DarkYellow
+}
 if (-not $sum -or $sum.Count -eq 0) {
     Write-Host "  [NO-VERDICT] examined ZERO providers -- this run compared nothing. That is not a pass." -ForegroundColor Red
     exit 1
