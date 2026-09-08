@@ -965,3 +965,88 @@ this session and three on 2026-08-13.
   authority: metadata declares the composite `Name`, never its components, so promoting `NameMiddle`
   to mandatory violates nothing. Only the form-shape gates or a human review would catch it.
 
+
+---
+
+## 2026-09-08 (later) — TWO FIXES ATTEMPTED AND REJECTED, plus the deep-fuzz result. `REAL? THE GAP IS. THE FIXES WERE NOT.`
+
+Closing the resweep. The qualifier-demotion gap is **catalogued and UNFIXED on purpose** — every
+mechanism tried either broke the regression fixture or would have *faked* the fix. Both attempts are
+recorded here with their numbers so neither is retried blind.
+
+### REJECTED FIX 1 — narrow `$formOnly` to per-variant. `DO NOT RETRY AS-IS.`
+
+`audit_requirement_fidelity`'s `$formOnly` whitelist excuses a field from OVER-PERMITTED everywhere.
+Its stated premise is *"platform/form-supplied, NOT PART OF ANY PROVIDER COMBINATION'S FIELD LIST"* —
+false for `registrationstate` and `imageindicator`, which providers DO model. Two attempts:
+
+| scope | branches | OVER | fixture | verdict |
+|---|---|---|---|---|
+| baseline | 426 | 4 | 118 / 0 / 0 | — |
+| **transaction** | 426 | **40** | **0 → 10 OVER** | REJECTED |
+| **keyRef family** | 426 | **12** | **1 OVER on CA_CLETS** | REJECTED |
+
+**Transaction scope fails because one transaction holds SEPARATE keyRef families for the in-state and
+out-of-state paths** — `BoatQuery` carries `QB` (NCIC, State appears in NO variant) *and* `BQ` (Nlets,
+State MANDATORY in every variant). Unioning them declares State "modelled" for the QB combos, so every
+provider's ordinary form-only usage lights up. 36 findings across 10 providers is a bad change, not 36
+defects. KeyRef scope is tighter (8 findings) and still broke the fixture.
+
+**THE DECISIVE FACT, and the reason not to keep tuning:** the class has **no instance in any shipped
+JSON.** The documented FL FBQ/`ImageIndicator` case is ALREADY FIXED (v7.23 removed it from all 4 FBQ
+combos), and the `RegistrationState` case was an **injected fuzz mutation**, never shipped. So the
+change would add 8 findings to real builds to catch a defect that exists nowhere. Reverted; baseline
+re-confirmed at **20/20 measured, 426 / 4 / 4 / 0, fixture 118 / 0 / 0**.
+**If retried:** find a SHIPPED instance first, and expect keyRef-family scope to be the floor, not
+transaction.
+
+### REJECTED FIX 2 — promote `NEVER-COMPARED` from `[NOTE]` to blocking. `REJECTED FOR A SUBTLE REASON.`
+
+Tempting, and it lands at zero residue (NEVER-COMPARED is 0 across all 20 after the TX fix), which is
+normally this repo's condition for promoting a check. **Rejected anyway: the fuzz panel counts
+`[WARN]` lines as a gate REACTING.** Promoting it would flip
+`ny-demote-mandatory-qualifier` from SURVIVED to **CAUGHT** — caught by a *disclosure* line, not by
+detecting the demotion. The blind spot would read FIXED while only the reporting improved, which is
+the exact false-green class this whole resweep existed to find. NEVER-COMPARED therefore stays a
+`[NOTE]`, and the mutation stays honestly SURVIVED.
+
+### WHAT THE GAP NEEDS BEFORE ANOTHER ATTEMPT
+
+Two preconditions, both absent today:
+1. **A second genuine case.** The TX_TLETS_CCH reproduction I published was FALSE — metadata
+   `BQ{BoatHullIdNumber}` = `Set[BoatHullIdNumber] Any[State]`, so State is OPTIONAL there and
+   demoting it ALIGNS the build with metadata; `0 UNDER` was correct. Read the variant's own
+   `<Requirements>` before calling any demotion under-required.
+2. **A design where UNDER-REQUIRED itself fires**, not one that improves disclosure around it.
+
+### DEEP FUZZ — `over-permit` + `select-to-input`, the two kinds with ZERO survivors in the sweep
+
+Enabled by the new `-Kinds` flag; these were worth EXHAUSTING rather than sampling.
+
+| provider | sites | run | caught | survived |
+|---|---|---|---|---|
+| NJ_NJCJIS | 25 | **25 — EXHAUSTIVE** | 25 | 0 |
+| HI_HCJDC_OFML | 46 | 8 | 8 | 0 |
+| IL_LEADS_OFML | 37 | 8 | 8 | 0 |
+| NY_NYSPIN_EJUSTICE | 68 | 8 | 8 | 0 |
+| TX_TLETS | 90 | 8 | 7 | 1 |
+| FL_FCIC | 229 | 8 | 7 | 1 |
+| **total** | | **57** | **55** | **2** |
+
+Both survivors adjudicated, neither a blind spot:
+- **TX `over-permit @ DriverLicenseQuery[0] messageKey`** — whitelisted, and MESSAGE KEYS ARE NEVER
+  SENT (commit `90d64a4e`, which killed a 20-provider false alarm). A field that never reaches the
+  wire cannot be over-permitted. The exemption is now EXERCISED rather than asserted.
+- **FL `over-permit @ BoatQuery[8] RegistrationState`** — genuinely undefined in `QB{CoastGuardDocumentNumber}`
+  (State appears in NO `QB` variant), excused by `$formOnly`. This is REJECTED FIX 1's motivating
+  case, and it exists only as an injected mutation.
+
+### SCORE-KEEPING, because it bears on how to read anything above
+
+Five claims I published today were retracted after checking: two "blind gates" that were broken
+tests, an NJ Boat guardrail test I proposed that would have FAILED on a correct build, TX needing
+Rob's ruling when it was a stale row, and the TX_CCH reproduction. **Every one came from inferring
+from a structure that looked familiar instead of reading the provider's own authority first.** The
+gates were right materially more often than my reading of them. Treat a same-looking structure on a
+different provider as a question, never as a precedent.
+
