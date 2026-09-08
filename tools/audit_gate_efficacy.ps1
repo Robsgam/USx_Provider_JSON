@@ -235,22 +235,33 @@ $PROV_MUTS = @{
              $cm.requirements.set=@('RegistrationState'); $cm.requirements.any=@('RegistrationNumber') } }
 
     @{ Id='ny-drop-oos-guardrail'
-       Desc='remove RegistrationStateDH EXISTS from DALLOUT so the out-of-state DH path is no longer discriminated from DALL'
-       Gate='verify_build.ps1'; Args={ @('-Path',$workJson) }
-       # STALE SINCE RegistrationStateDH WAS PROMOTED INTO DALLOUT's set[]. Once the field is
-       # MANDATORY in set[], the EXISTS condition is redundant by construction and removing it
-       # cannot un-discriminate DALLOUT from DALL (set[OperatorLicenseNumberDH] only). Measured
-       # 2026-09-08: DALLOUT = set[OperatorLicenseNumberDH, purposeCodeDH, RegistrationStateDH].
-       # This is one of the 63 redundant `X EXISTS on a field already in set[]` conditions found
+       Desc='DALLOUT loses BOTH RegistrationStateDH from set[] AND its EXISTS condition, so the out-of-state DH path is no longer discriminated from DALL -- and because purposeCodeDH is PREFILLED, DALLOUT collapses to an always-satisfiable [OLN] ahead of DALL and steals every in-state OLN fill'
+       Gate='audit_combo_reachability.ps1'; Args={ @('-Path',$workJson) }
+       # RE-AIMED 2026-09-08. It previously removed ONLY the `RegistrationStateDH EXISTS` condition
+       # and was assigned to verify_build -- and it had been reporting SURVIVED for weeks, which I
+       # twice published as a gate blind spot. It was neither: RegistrationStateDH is ALSO MANDATORY
+       # in DALLOUT's set[], so the condition was redundant BY CONSTRUCTION and its removal changed
+       # nothing. (One of 63 such redundant `X EXISTS on a field already in set[]` conditions found
        # portfolio-wide that day -- a house convention documenting the in/out fork, harmless in
-       # itself, but it silently invalidated this mutation.
-       # TO RE-AIM: drop the field from set[] AS WELL as the condition. Note the owning gate would
-       # then likely change too -- an unsatisfiable-vs-undiscriminated combo is reachability's
-       # question, not verify_build's -- so re-aiming means re-deciding Gate, not just Mut.
+       # itself, and it silently invalidated this test.)
+       #
+       # THE RE-AIM KEEPS THE ORIGINAL INTENT -- "the OOS path is no longer discriminated from DALL"
+       # -- instead of just making it fire somewhere. Dropping State from set[] AND the condition
+       # leaves DALLOUT = set[OperatorLicenseNumberDH, purposeCodeDH], UNGATED. purposeCodeDH is
+       # PREFILLED (its own registry row: prefilled-mandatory-autopopulated), and reachability
+       # counts a form initialValue as always-present, so DALLOUT's effective set collapses to
+       # [OperatorLicenseNumberDH] -- identical to DALL, which is ordered AFTER it. DALLOUT then
+       # takes every in-state OLN fill and sends an out-of-state DH query with NO destination state.
+       # GATE CHANGED verify_build -> audit_combo_reachability: an always-satisfiable combo ordered
+       # ahead of its sibling is a REACHABILITY question, not a structural-verification one.
+       # Note audit_prefill_shadow deliberately does NOT own this: its rule spares a pair whose
+       # subset relation already holds on the RAW set[]s (DALL [OLN] is a subset of DALLOUT's raw
+       # set either way), which is exactly the hand-off it documents to reachability.
        Valid={ param($j) $c=Get-Cfg $j '*_DriverHistoryQuery'; $cm=Get-Combo $c 'DALLOUT'
-               @($cm.requirements.set) -notcontains 'RegistrationStateDH' }
-       ValidWhy='RegistrationStateDH is MANDATORY in DALLOUT set[], so the EXISTS condition is redundant and removing it cannot un-discriminate DALLOUT from DALL. Re-aim: drop it from set[] too, and re-decide the owning Gate.'
+               (@($cm.requirements.set) -contains 'RegistrationStateDH') -and (@($cm.requirements.set) -contains 'purposeCodeDH') }
+       ValidWhy='DALLOUT no longer carries BOTH RegistrationStateDH and purposeCodeDH in set[], so this mutation can no longer collapse it onto DALL. Re-derive the DH combos before re-aiming again.'
        Mut={ param($j) $c=Get-Cfg $j '*_DriverHistoryQuery'; $cm=Get-Combo $c 'DALLOUT'
+             $cm.requirements.set=@(@($cm.requirements.set) | Where-Object { $_ -ne 'RegistrationStateDH' })
              $cm.requirements.conditions=@($cm.requirements.conditions | Where-Object { "$($_.field)" -notmatch 'RegistrationStateDH' }) } }
 
     # ── THE ONE REAL GATE GAP FOUND BY THE 2026-09-08 PORTFOLIO RESWEEP ──────────────────────────
@@ -275,10 +286,18 @@ $PROV_MUTS = @{
     # UNSATISFIED-CLAIM guard, which only fires when the combo loses its IDENTIFIER -- DALH still
     # has Name, so it does not trip.
     #
-    # PARTIAL DISCLOSURE EXISTS as of the same day: the NEVER-COMPARED counter added to
-    # audit_requirement_fidelity moves 0 -> 1 and names DALH. That is DISCLOSURE, not DETECTION --
-    # it says the combo stopped being compared, never that a mandatory field was demoted, and it
-    # rides on a [NOTE] that adds no WARN. Hence this row stays until UNDER-REQUIRED itself reports.
+    # ✅ CLOSED THE SAME DAY, and BE PRECISE ABOUT HOW. audit_requirement_fidelity now treats a
+    # NEVER-COMPARED built combination as a [FAIL] + exit 1 (promoted from [NOTE] once the residue
+    # reached 0 portfolio-wide), so this mutation is CAUGHT: 0 -> 1 findings.
+    # IT IS CAUGHT BY THE NEVER-COMPARED FAIL, **NOT** BY AN UNDER-REQUIRED FINDING. The gate still
+    # cannot say WHICH mandatory field went missing; what it can now say is "I never compared this
+    # combination, so read nothing into my silence about it". That is a weaker claim than detection
+    # and it is the honest one -- do not read this KILLED as evidence that component-level
+    # UNDER-REQUIRED detection improved. It did not.
+    # Why that is nonetheless the right fix: UNDER-REQUIRED was never broken -- it fires whenever the
+    # combo is PAIRED (CA_CONTRA_COSTA reports 4 UNDER today). The defect hid entirely in the SKIP,
+    # so closing the skip closes the escape without re-scoring the pairing, which is the change that
+    # produced a 36-finding blast radius and was reverted.
     #
     # ⚠️ A SECOND REPRODUCTION I CLAIMED WAS FALSE, recorded so it is not re-added as evidence:
     # TX_TLETS_CCH BQBoatHullIdNumber / RegistrationState looked identical, but metadata

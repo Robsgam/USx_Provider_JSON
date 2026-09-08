@@ -948,6 +948,35 @@ Out-Line '  a mandatory field that the form PREFILLS becomes an always-true disc
 Out-Line '  silently kills every sibling combination ordered after it (BUILD_RULES 24).'
 Out-Line ('-' * 80)
 
+# ── A NEVER-COMPARED COMBINATION IS A FAILURE, not a footnote (promoted 2026-09-08) ─────────────
+# This shipped earlier today as a [NOTE] on the reasoning that 6 existed and a WARN would flip six
+# providers' boards. Those 6 are now 0 -- five were the alternative->built pairing (fixed by the
+# SIBLING FALLBACK) and TX's two were a stale registry row from a REVERSED decision -- so promoting
+# it lands at ZERO residue, which is this repo's stated condition for making a check blocking.
+#
+# WHY IT IS THE RIGHT FIX FOR THE QUALIFIER-DEMOTION ESCAPE, and why re-scoring the pairing is NOT:
+# UNDER-REQUIRED detection is not broken. It fires correctly whenever the combo is PAIRED --
+# CA_CONTRA_COSTA reports 4 UNDER right now. The escape was entirely "demote a mandatory qualifier,
+# the combo stops matching its alternative, a sibling outscores it, and the LOSER IS SKIPPED".
+# Proven on NY: demoting BirthDateDH from DALH (metadata DALL{Name} mandates BirthDate in BOTH
+# alternatives) left 16 branches / 0 UNDER, byte-identical to control. The defect hid in the SKIP,
+# not in the comparison -- so closing the skip closes the escape, without touching the scorer or
+# risking the 36-finding blast radius that the $formOnly narrowing produced and got reverted for.
+#
+# ⚠️ BE PRECISE ABOUT WHAT THIS PROVES. It does NOT mean component-level UNDER-REQUIRED detection
+# improved. The gate now REFUSES TO CERTIFY a combination it never compared, which is a different
+# and weaker claim than "it detected the demotion" -- and it is the honest one. A gate that cannot
+# say which mandatory field went missing can still legitimately say "I did not check this one".
+# ny-demote-mandatory-qualifier is CAUGHT by THIS line, not by an UNDER-REQUIRED finding; its
+# catalogue entry says so, so nobody reads the kill as component-level detection.
+if ($totNever -gt 0) {
+    Out-Line "  [FAIL] $totNever BUILT combination(s) were NEVER COMPARED -- their requirement fidelity is UNVERIFIED, so this run" 'Red'
+    Out-Line '         cannot be read as evidence for them. Either a metadata alternative should pair to each (check -Explain),' 'Red'
+    Out-Line '         or a registry row is suppressing one that IS built -- see the OVER-SUPPRESSION note above.' 'Red'
+    if ($OutFile) { $lines | Out-File -FilePath $OutFile -Encoding utf8 }
+    exit 1
+}
+
 if ($OutFile) {
     $lines | Out-File -FilePath $OutFile -Encoding utf8
     Write-Host "  -> $OutFile" -ForegroundColor DarkGray
