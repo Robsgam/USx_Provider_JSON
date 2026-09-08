@@ -863,3 +863,105 @@ doctor emits `[WARN] <tool> failed:` — and confirm exit 1, then exit 0 on rest
 were 0 FAIL, 0 crashed sub-gates and 0 NO-VERDICT. `audit_artifact_provenance` reports **F 0 / S 7 /
 U 0 / O 0** over 153 scripts and 320 reports — the 7 STALE reports are a real, separate residue worth
 clearing, and are correctly non-blocking under the "promote to strict only at zero residue" rule.
+
+---
+
+## 2026-09-08 — PORTFOLIO RESWEEP: `audit_requirement_fidelity` can be evaded on a mandatory QUALIFIER, and 6 built combinations are never compared
+
+Rob asked for a full top-to-bottom resweep, individually and collectively, to be certain there are
+no bugs in the JSONs or the supporting tools. **Result on the JSONs: 20 of 20 `ENFORCED` at
+0 FAIL / 0 WARN; 220 catalogued mutations with 2 survivors (both pre-existing — NJ, NY); 22 random
+fuzz survivors, 18 adjudicated CORRECT-SURVIVAL.** Every finding below is in the TOOLING.
+
+### FINDING 1 — 6 BUILT combinations are NEVER COMPARED. `REAL? YES.` Residue, not a wire defect.
+
+| Provider | never-compared combo | tenant state |
+|---|---|---|
+| CA_CLETS | `DriverLicenseQuery / IR.QVC.OS` | **tenant-verified** |
+| CA_CONTRA_COSTA | `DriverLicenseQuery / IR.QVC.OS` | never-tested |
+| CA_VENTURA_COUNTY | `DriverLicenseQuery / IR.QVC.OS` | never-tested |
+| OR_LEDS | `VehicleRegistrationQuery / RQ.P` | **tenant-verified** |
+| TX_TLETS | `VehicleInsuranceRegistrationQuery / QVLicensePlateNumber` | **tenant-verified** |
+| TX_TLETS_CCH | `VehicleInsuranceRegistrationQuery / QVLicensePlateNumber` | parked |
+
+A metadata alternative can be claimed by TWO built combos while a third is claimed by none. The
+branch COUNT does not move — it counts ALTERNATIVES paired to something — so `[PASS] N matched
+branch(es)` was printed over combinations compared against **nothing**. Their fidelity is
+**UNVERIFIED**, a different claim from "clean", and the output was making the stronger one.
+
+**The detection already existed and was unreachable:** it sat inside `if ($Explain)`, and `enforce`
+does not pass `-Explain`. FIXED 2026-09-08 — computed every run, counted on the `TOTALS` line,
+surfaced in `enforce` PHASE 2s. Reported `[NOTE]`, adding no WARN, because a WARN would flip six
+providers `ENFORCED` to `PASSED WITH WARNINGS` (a board change dressed as a fix). **Promote to
+blocking once these 6 are triaged** — the staging PHASE 2w and buildnotes-fidelity used.
+
+**TX_TLETS_CCH's cause is already self-reported by the gate**, which prints
+`[NOTE] REGISTRY OVER-SUPPRESSION RISK` naming row
+`VehicleInsuranceRegistrationQuery | QVLicensePlateNumber | metadata-shadow-autofired-SUPERSEDED-v4.22`
+as an unbuilt-class row naming a combo that IS BUILT, suppressing its whole comparison. Fix =
+repoint that keyRef at the unbuilt devdoc item and re-check BRANCHES-COMPARED.
+
+### FINDING 2 — a mandatory QUALIFIER can be demoted to `any[]` with NO gate reacting. `REAL? YES. NOT FIXED.`
+
+**Reproduced twice, on two providers, by two different internal paths:**
+
+1. `NY_NYSPIN_EJUSTICE` DH `DALH` — metadata `DALL{Name}` mandates `BirthDate` in BOTH alternatives
+   (`alt1 = BirthDate, Name, SexCode`). Demote `BirthDateDH` set[] to any[]:
+   **16 branches / 0 UNDER — identical to control.** `SexCodeDH` also NOT caught. `NameLastDH` IS
+   caught, but only by the separate surname-composite guard.
+   Mechanism: the demotion breaks the pairing, `DALHOUT` absorbs two alternatives, `DALH` gets zero,
+   and an unpaired built combo is SKIPPED. Finding 1's counter now makes this visible (0 to 1
+   NEVER-COMPARED) — that is disclosure, NOT detection.
+2. `TX_TLETS_CCH` Boat `BQBoatHullIdNumber` set[`BoatHullIdNumber`, `RegistrationState`]. Demote
+   `RegistrationState`: **36 branches / 0 UNDER / 0 OVER; note count 11 in BOTH runs — nothing
+   moved.** Here the combo stays PAIRED. The escape is the shared-combo excuse
+   (`if ($shN -gt 1 -and (Test-Has $bAnyC $w) -and (Test-Has $shAny $w)) { $pNote++; continue }`),
+   which absorbs it without incrementing anything visible.
+
+**This is the QUALIFIER-level extension of an escape the file ALREADY DOCUMENTS at line 753** ("the
+pairing is a SCORE-BASED BEST FIT that is legally many-to-one ... a SIBLING combo that still has that
+identifier simply outscores it and takes the branch"). The `UNSATISFIED CLAIM` guard added 2026-08-03
+covers losing the **identifier** — `DALH` still has `Name`, `BQBoatHullIdNumber` still has the hull
+number, so it does not fire. **Severity: UNDER-REQUIRED, #1 in the usx-build order — the query can
+fire without the field and the request is INVALID.** Found by unaimed fuzz, not by looking.
+
+**NOT FIXED, deliberately, and NOT yet added to `audit_gate_efficacy`'s catalogue.** A stable-pairing
+or qualifier-level claim check is a design change to a gate running on all 20 providers, and the
+regression fixture must be measured before and after (branches must not fall). Adding the mutation
+first would make 2 more providers report SURVIVED — honest, but it should land WITH the fix.
+**Recipe is above and takes ~2 minutes** using the `audit_gate_efficacy` replica scheme: work dir +
+JSON under its ORIGINAL leaf name + `source/` copied. Rename the leaf and the resolver finds no
+provider, the gate compares nothing, and its vacuous-run guard fires — that cost one wrong conclusion
+this session and three on 2026-08-13.
+
+### FIXED IN THE SAME PASS — 4 tooling defects, each re-proven by a DIFFERENT test than found it
+
+- **`audit_order_risk` examined 6 of 20 providers** (hardcoded list from 2026-07-31; `doctor` calls it
+  with no args). Now derived: **6/220/31 to 20/665/84** — 53 at-risk pairs nothing had ever measured
+  (TX_TLETS_CCH 23, CA_CLETS_OCATS 14, CA_CONTRA_COSTA 7, CA_VENTURA 6). Also found: `powershell
+  -File` DISCARDS array args silently, so a single comma-bearing element is now split.
+- **`doctor` never displayed 4 gates' verdicts** — `Select-Object -First 6` on a filter matching
+  per-provider chatter exhausted the cap before the summary, so an attribution run exiting 1 with N
+  DISAGREE rendered identically to a clean one. Now anchored on the verdict; non-zero exits reported.
+- **inert-flag check was blind to the likeliest glue shape** — only the FIRST `[FLAG:]` per line, so a
+  flag glued onto a line already carrying a record was invisible, and the appender glues onto the
+  LAST line, which is usually a prior flag record.
+- **`audit_ps51_parse` scanned 120 of 131 tool scripts** — the 8 live `_probes/` sat outside it,
+  including one whose portfolio verdict SESSION_STATE quotes. Now 128; `_archive/` still excluded.
+
+### NOT findings — checked rather than assumed, recorded so they are not re-raised
+
+- **63 redundant `EXISTS` conditions across 15 of 20 providers** (gating on a field the same `set[]`
+  already requires) = house CONVENTION documenting the in/out-of-state fork, zero wire impact. The
+  dangerous twin — `NOT_EXISTS` on a `set[]` field, making a combo NEVER fire — is **0 portfolio-wide**.
+- **NJ `SHADOW x4`** = metadata `RAND`/`FULL` are byte-identical, indistinguishable BY DECLARATION;
+  resolved as `RANDFULL`/`RANDFULLN` with a registered `built-as` row. No build change can clear it.
+- **CA_VENTURA `SHADOW x12` + 3 MISSING** = the `IV.4x` family differs only by `MessageKeyModifier`,
+  which is transaction addressing and not an officer control, so no fill can discriminate them.
+  Registered in Ventura's OWN registry with raw-XML evidence.
+- **`audit_buildnotes_fidelity` "0 comparisons"** is CORRECT — it only diffs when an entry is generic.
+- **prefill-dead: 0 on all 20.** The class that once killed 35 combos across 6 providers is clean.
+- **Component-level requirement changes are invisible to every gate**, and are not fixable from
+  authority: metadata declares the composite `Name`, never its components, so promoting `NameMiddle`
+  to mandatory violates nothing. Only the form-shape gates or a human review would catch it.
+

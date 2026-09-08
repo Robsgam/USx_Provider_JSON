@@ -1206,11 +1206,18 @@ if (-not (Test-Path $rfTool)) {
         $rfOut  = & powershell -NoProfile -ExecutionPolicy Bypass -File $rfTool -Provider $pd.Name 2>&1 | Out-String
         $rfW    = @($rfOut -split "`n" | Where-Object { $_ -match '\[WARN\]' })
         $rfNote = if ($rfOut -match '(\d+) registered divergence') { $Matches[1] } else { '0' }
+        # NEVER-COMPARED must reach THIS line, because this is the line people read. The tool now
+        # counts BUILT combinations that no metadata alternative paired to -- their fidelity is
+        # UNVERIFIED, not clean -- and saying "clean (0 under-required / 0 over-permitted)" over the
+        # top of one is the same overstatement the tool was just fixed to stop making. Reported, not
+        # escalated: these are [NOTE]s, so they add no WARN and change no verdict (6 exist today).
+        $rfNever = if ($rfOut -match '(\d+) NEVER-COMPARED') { [int]$Matches[1] } else { 0 }
+        $rfNvTxt = if ($rfNever -gt 0) { "; $rfNever NEVER-COMPARED (fidelity UNVERIFIED for those)" } else { '' }
         if ($rfW.Count -gt 0) {
-            Info "$($pd.Name) -- $($rfW.Count) requirement-fidelity finding(s), advisory: tools\audit_requirement_fidelity.ps1 -Provider $($pd.Name)"
+            Info "$($pd.Name) -- $($rfW.Count) requirement-fidelity finding(s), advisory: tools\audit_requirement_fidelity.ps1 -Provider $($pd.Name)$rfNvTxt"
             $rfW | Select-Object -First 4 | ForEach-Object { Out "       $($_.Trim())" }
         } else {
-            Pass "$($pd.Name) -- requirement fidelity clean (0 under-required / 0 over-permitted; $rfNote registered)"
+            Pass "$($pd.Name) -- requirement fidelity clean (0 under-required / 0 over-permitted; $rfNote registered)$rfNvTxt"
         }
     }
 }

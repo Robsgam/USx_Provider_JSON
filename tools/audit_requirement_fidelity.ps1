@@ -296,6 +296,7 @@ if ($Path) {
 }
 
 $totUnder = 0; $totClaim = 0; $totOver = 0; $totMatched = 0; $totUnmatched = 0
+$totNever = 0            # never-compared BUILT combinations (see the NEVER-COMPARED block below)
 
 foreach ($d in $dirs) {
     $jp = if ($Path) { $Path } else { Get-ProviderRootJson -ProvDir $d.FullName -Provider $d.Name }
@@ -506,6 +507,7 @@ foreach ($d in $dirs) {
     }
 
     $pUnder = 0; $pOver = 0; $pMatched = 0; $pNote = 0
+    $script:neverCompared = @()
 
     # ── ONE-TO-ONE ASSIGNMENT, per query ──────────────────────────────────────────────
     # The first draft matched each metadata alternative INDEPENDENTLY, so several alternatives
@@ -636,18 +638,45 @@ foreach ($d in $dirs) {
                 Out-Line ("        SHARED POOL (excuses over-permit) set+any = [{0}]" -f ((@($shared[$skx].Set) + @($shared[$skx].Any) | Sort-Object -Unique) -join ',')) 'DarkYellow'
             }
         }
-        # built combos nothing paired to
-        $pairedKeys = @{}
-        foreach ($mm in $meta) { $bb = $assign["$($mm.Idx)"]; if ($bb) { $pairedKeys["$($mm.Query)|$($bb.KeyRef)"] = $true } }
-        foreach ($qn in $built.Keys) {
-            foreach ($bc in @($built[$qn])) {
-                if (-not $pairedKeys.ContainsKey("$qn|$($bc.KeyRef)")) {
-                    Out-Line ("     [NEVER COMPARED] built {0,-26} {1}  -- no metadata alternative paired to it" -f $qn, $bc.KeyRef) 'DarkYellow'
-                }
-            }
-        }
         Out-Line "  -------------------------------------------------------------------------------" 'DarkCyan'
     }
+
+    # ── NEVER-COMPARED BUILT COMBINATIONS -- counted on EVERY run, not just -Explain ───────────
+    # This block used to live INSIDE `if ($Explain)`, so on a normal run it was never computed and
+    # `enforce` -- which does not pass -Explain -- could never see it. A whole built combination can
+    # therefore drop out of the comparison while the gate prints "[PASS] N matched branch(es)", and
+    # the branch COUNT cannot reveal it: the count is of metadata ALTERNATIVES paired to something,
+    # so an alternative that gets claimed twice while a built combo is claimed zero times leaves the
+    # total unchanged. Measured 2026-09-08 across all 20 providers: 6 built combinations are never
+    # compared in the SHIPPED builds --
+    #     IR.QVC.OS            on CA_CLETS, CA_CONTRA_COSTA, CA_VENTURA_COUNTY
+    #     RQ.P                 on OR_LEDS
+    #     QVLicensePlateNumber on TX_TLETS, TX_TLETS_CCH
+    # -- three of them on TENANT-VERIFIED providers. Their requirement fidelity is UNVERIFIED, which
+    # is a different statement from "verified clean" and the output has been making the stronger one.
+    #
+    # Found by an unaimed fuzz survivor: demoting a metadata-mandatory field out of a built set[] can
+    # make that combo stop matching its alternative, the pairing reshuffles, and the UNDER-REQUIRED
+    # finding vanishes with the branch count intact. The mutation escapes by destroying the very
+    # comparison that would have judged it.
+    #
+    # REPORTED AS [NOTE], NOT WARN OR FAIL, DELIBERATELY. There are 6 today; a WARN here would flip
+    # six providers' enforce verdicts from ENFORCED to PASSED WITH WARNINGS, which is a board change
+    # dressed up as a fix. Promote it to a blocking class once the residue is triaged or registered
+    # -- the same staging enforce PHASE 2w and audit_buildnotes_fidelity used.
+    $pairedKeys = @{}
+    foreach ($mm in $meta) { $bb = $assign["$($mm.Idx)"]; if ($bb) { $pairedKeys["$($mm.Query)|$($bb.KeyRef)"] = $true } }
+    foreach ($qn in $built.Keys) {
+        foreach ($bc in @($built[$qn])) {
+            if (-not $pairedKeys.ContainsKey("$qn|$($bc.KeyRef)")) {
+                $script:neverCompared += [pscustomobject]@{ Query = $qn; KeyRef = $bc.KeyRef }
+            }
+        }
+    }
+    foreach ($nc in $script:neverCompared) {
+        Out-Line ("  [NOTE] NEVER COMPARED: built {0} / '{1}' -- no metadata alternative paired to it, so its requirement fidelity is UNVERIFIED (not 'clean')" -f $nc.Query, $nc.KeyRef) 'DarkYellow'
+    }
+    $totNever += @($script:neverCompared).Count
 
     foreach ($m in $meta) {
         if (-not $built.ContainsKey($m.Query)) { continue }   # query not built: 2p/2e own that
@@ -809,7 +838,14 @@ foreach ($d in $dirs) {
 
 Out-Line ''
 Out-Line ('-' * 80)
-Out-Line "  TOTALS: $totMatched branch(es) compared / $totUnder UNDER-REQUIRED / $totOver OVER-PERMITTED / $totClaim UNSATISFIED-CLAIM"
+Out-Line "  TOTALS: $totMatched branch(es) compared / $totUnder UNDER-REQUIRED / $totOver OVER-PERMITTED / $totClaim UNSATISFIED-CLAIM / $totNever NEVER-COMPARED"
+# NEVER-COMPARED belongs on the TOTALS line, beside branches-compared, because the two together are
+# the honest denominator: "36 branches compared" says nothing about a BUILT combination that no
+# alternative paired to, and that combination is exactly where a requirement error hides longest.
+if ($totNever -gt 0) {
+    Out-Line "  NEVER-COMPARED = a BUILT combination no metadata alternative paired to. Its fidelity is UNVERIFIED." 'DarkYellow'
+    Out-Line "  Triage each, then promote this to a blocking class -- it is a [NOTE] only while a residue exists." 'DarkYellow'
+}
 # VACUOUS PASS IS A FAILURE (ENGINEERING_STANDARD 4.3 -- distinguish 'found nothing' from 'never
 # looked'). This tool printed its denominator honestly and then reported [PASS] anyway on ZERO
 # branches, so a run that compared nothing was indistinguishable from a clean one. Reachable by
