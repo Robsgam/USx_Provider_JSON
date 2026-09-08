@@ -40,6 +40,17 @@ param(
     [Parameter(Mandatory)][string]$Provider,
     [int]$Mutations = 15,
     [int]$Seed = 0,
+    # ── -Kinds: AIM the fuzz at one or more mutation classes ──────────────────────────────────
+    # Added 2026-09-08. Without it the harness could only be pointed at a COUNT, and the portfolio
+    # resweep measured what that costs: build_phase1 runs 8 mutations against ~281 enumerated sites
+    # per provider (AZ_AZDPS: 2.8%), across NINE kinds. So the gap was not merely THIN sampling but
+    # UNEVEN sampling -- a given provider's run likely never exercised several kinds at all, and
+    # nothing said which. Proving "kind K is always caught" therefore required an expensive random
+    # sweep that still could not guarantee K was ever picked.
+    # Accepts a comma-separated string as well as an array, because `powershell -File` DISCARDS
+    # array arguments silently (measured: -Kinds @('a','b') binds only 'a'; -Kinds a,b binds the
+    # single string "a,b") and every orchestrator invokes tools that way.
+    [string[]]$Kinds,
     [string]$Scratch,
     [string]$OutFile
 )
@@ -263,6 +274,51 @@ function Apply-Mutation($j, $s) {
             $n.type.resolvedName = 'FormInput'
         }
         default { throw "unknown mutation kind '$($s.Kind)'" }
+    }
+}
+
+# ── PER-KIND CENSUS: printed on EVERY run, filtered or not ──────────────────────────────────────
+# This is the denominator the harness never showed. "8 of 281 sites" hides the fact that the 281 are
+# spread across NINE kinds unevenly, so a clean 8-mutation run could easily have exercised four of
+# them and said nothing about the rest. A reader can now see at a glance which classes this provider
+# even HAS -- a kind with 0 sites can never be proven on it, and that is a fact about the provider,
+# not a pass.
+$KNOWN_KINDS = @('any-to-set','drop-any','drop-conditions','drop-set','over-permit',
+                 'prefill-field','select-to-input','set-to-any','swap-order')
+Emit ''
+Emit '  sites by KIND (the sampling denominator, per class):'
+$census = @{}
+foreach ($g in @($sites | Group-Object Kind | Sort-Object Name)) { $census[$g.Name] = $g.Count }
+foreach ($k in $KNOWN_KINDS) {
+    $n = if ($census.ContainsKey($k)) { $census[$k] } else { 0 }
+    Emit ("    {0,-17} {1,5}{2}" -f $k, $n, $(if ($n -eq 0) { '   <- NO sites: this class cannot be proven on this provider' } else { '' }))
+}
+foreach ($k in @($census.Keys | Where-Object { $KNOWN_KINDS -notcontains $_ })) {
+    Emit ("    {0,-17} {1,5}   <- KIND NOT IN `$KNOWN_KINDS -- update the list" -f $k, $census[$k]) 'Yellow'
+}
+
+# ── -Kinds FILTER ───────────────────────────────────────────────────────────────────────────────
+# An unrecognised kind name FAILS LOUDLY instead of matching nothing. `audit_tool_portability -Only`
+# taught this the hard way: it filters PROVIDERS, not gates, so aiming it at a gate reported
+# "0 cells exercised" twice and zero cells is not a pass. A filter that silently selects nothing is
+# the most expensive kind of green.
+if ($Kinds) {
+    $want = @($Kinds | ForEach-Object { "$_".Split(',') } | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+    $bad = @($want | Where-Object { $KNOWN_KINDS -notcontains $_ })
+    if ($bad.Count) {
+        Emit ''
+        Emit ("  [ERROR] unknown mutation kind(s): {0}" -f ($bad -join ', ')) 'Red'
+        Emit ("          known kinds: {0}" -f ($KNOWN_KINDS -join ', ')) 'Red'
+        if ($OutFile) { $lines | Set-Content -Path $OutFile -Encoding ASCII }
+        exit 1
+    }
+    $sites = @($sites | Where-Object { $want -contains $_.Kind })
+    Emit ''
+    Emit ("  -Kinds filter: {0} -> {1} site(s) remain" -f ($want -join ', '), $sites.Count)
+    if (-not $sites.Count) {
+        Emit ("  [ERROR] the requested kind(s) have NO sites on $Provider -- nothing was tested, which is NOT a pass") 'Red'
+        if ($OutFile) { $lines | Set-Content -Path $OutFile -Encoding ASCII }
+        exit 1
     }
 }
 
