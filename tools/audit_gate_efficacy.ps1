@@ -237,8 +237,65 @@ $PROV_MUTS = @{
     @{ Id='ny-drop-oos-guardrail'
        Desc='remove RegistrationStateDH EXISTS from DALLOUT so the out-of-state DH path is no longer discriminated from DALL'
        Gate='verify_build.ps1'; Args={ @('-Path',$workJson) }
+       # STALE SINCE RegistrationStateDH WAS PROMOTED INTO DALLOUT's set[]. Once the field is
+       # MANDATORY in set[], the EXISTS condition is redundant by construction and removing it
+       # cannot un-discriminate DALLOUT from DALL (set[OperatorLicenseNumberDH] only). Measured
+       # 2026-09-08: DALLOUT = set[OperatorLicenseNumberDH, purposeCodeDH, RegistrationStateDH].
+       # This is one of the 63 redundant `X EXISTS on a field already in set[]` conditions found
+       # portfolio-wide that day -- a house convention documenting the in/out fork, harmless in
+       # itself, but it silently invalidated this mutation.
+       # TO RE-AIM: drop the field from set[] AS WELL as the condition. Note the owning gate would
+       # then likely change too -- an unsatisfiable-vs-undiscriminated combo is reachability's
+       # question, not verify_build's -- so re-aiming means re-deciding Gate, not just Mut.
+       Valid={ param($j) $c=Get-Cfg $j '*_DriverHistoryQuery'; $cm=Get-Combo $c 'DALLOUT'
+               @($cm.requirements.set) -notcontains 'RegistrationStateDH' }
+       ValidWhy='RegistrationStateDH is MANDATORY in DALLOUT set[], so the EXISTS condition is redundant and removing it cannot un-discriminate DALLOUT from DALL. Re-aim: drop it from set[] too, and re-decide the owning Gate.'
        Mut={ param($j) $c=Get-Cfg $j '*_DriverHistoryQuery'; $cm=Get-Combo $c 'DALLOUT'
              $cm.requirements.conditions=@($cm.requirements.conditions | Where-Object { "$($_.field)" -notmatch 'RegistrationStateDH' }) } }
+
+    # ── THE ONE REAL GATE GAP FOUND BY THE 2026-09-08 PORTFOLIO RESWEEP ──────────────────────────
+    # Promoted per usx-tooling: "Promote a TRIAGED-REAL survivor into audit_gate_efficacy $MUTS,
+    # then fix the gate." Order matters -- catalogued first so the gap cannot be lost, fixed second.
+    # EXPECT THIS TO REPORT SURVIVED until the gate is fixed. That is the point: an honest SURVIVED
+    # on a real gap is worth more than a hidden one, and ENGINEERING_STANDARD 5 will correctly hold
+    # NY short of "finished" while it stands.
+    #
+    # THE DEFECT: metadata DALL{Name} mandates BirthDate in BOTH alternatives
+    #   alt1 = BirthDate, Name, SexCode        alt2 = BirthDate, Name, PurposeCode, Requestor, SexCode, State
+    # Built DALH = set[BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH] -- an EXACT match to alt1.
+    # Demoting BirthDateDH to any[] means DALH can FIRE WITHOUT IT and the request is one the
+    # metadata calls invalid: UNDER-REQUIRED, severity #1 in the usx-build order.
+    #
+    # WHY NO GATE REACTS: the alternative->built assignment is a SCORE-BASED BEST FIT. Once DALH no
+    # longer matches alt1, DALHOUT outscores it and absorbs TWO alternatives while DALH is claimed
+    # by none -- and an unpaired built combo is SKIPPED. Branches-compared stays at 16 because every
+    # ALTERNATIVE still found a server, so the denominator cannot reveal it either. The mutation
+    # escapes by destroying the comparison that would have judged it.
+    # This is the QUALIFIER-level twin of the escape the file already documents at its
+    # UNSATISFIED-CLAIM guard, which only fires when the combo loses its IDENTIFIER -- DALH still
+    # has Name, so it does not trip.
+    #
+    # PARTIAL DISCLOSURE EXISTS as of the same day: the NEVER-COMPARED counter added to
+    # audit_requirement_fidelity moves 0 -> 1 and names DALH. That is DISCLOSURE, not DETECTION --
+    # it says the combo stopped being compared, never that a mandatory field was demoted, and it
+    # rides on a [NOTE] that adds no WARN. Hence this row stays until UNDER-REQUIRED itself reports.
+    #
+    # ⚠️ A SECOND REPRODUCTION I CLAIMED WAS FALSE, recorded so it is not re-added as evidence:
+    # TX_TLETS_CCH BQBoatHullIdNumber / RegistrationState looked identical, but metadata
+    # BQ{BoatHullIdNumber} = Set[BoatHullIdNumber] Any[State] -- State is OPTIONAL there, so
+    # demoting it ALIGNS the build with metadata and 0 UNDER was the CORRECT answer. Always read the
+    # variant's own <Requirements> before calling a demotion under-required.
+    @{ Id='ny-demote-mandatory-qualifier'
+       Desc='BirthDateDH demoted from DALH set[] to any[] though metadata DALL{Name} mandates BirthDate in BOTH alternatives -- DALH can then fire without it and the request is invalid'
+       Gate='audit_requirement_fidelity.ps1'; Args={ @('-Path',$workJson) }
+       # Cannot go stale silently: if BirthDateDH ever leaves DALH's set[], or the metadata stops
+       # mandating BirthDate, this reports INVALID instead of masquerading as a survivor.
+       Valid={ param($j) $c=Get-Cfg $j '*_DriverHistoryQuery'; $cm=Get-Combo $c 'DALH'
+               @($cm.requirements.set) -contains 'BirthDateDH' }
+       ValidWhy='BirthDateDH is no longer in DALH set[], so this mutation cannot create an UNDER-REQUIRED demotion. Re-derive against the current DH combos before re-aiming.'
+       Mut={ param($j) $c=Get-Cfg $j '*_DriverHistoryQuery'; $cm=Get-Combo $c 'DALH'
+             $cm.requirements.set=@(@($cm.requirements.set) | Where-Object { $_ -ne 'BirthDateDH' })
+             $cm.requirements.any=@(@($cm.requirements.any) + 'BirthDateDH') } }
 
     @{ Id='ny-dup-targetfield'
        Desc='two attributes writing one outbound targetField in a REQUEST QIDM (FIELD_REFERENCE Sec 4)'
@@ -531,6 +588,31 @@ $MUTS = @(
   @{ Id='nj-guardrail-wire-leak'; OnlyProvider='NJ_NJCJIS'
      Desc='RegistrationNumber removed from QBN any[], making the reg number a genuine OUT-OF-POOL identifier on the hull-wins guardrail wire. Guards the 2026-07-31 widening of the guardrail-wire exemption: that check used to compare only against the winner BASE combo test fills, which are minimum-required-only, so a devdoc-sanctioned OPTIONAL identifier on the winner (devdoc BoatQuery #1 lists RegistrationNumber as opt on the hull query) read as a leak. The exemption now uses the winner combo set[] u any[] POOL -- and this mutation proves that widening did not make the check unfailable: an identifier NOT in the pool still FAILs. Without it the widening would be indistinguishable from deleting the check.'
      Gate='audit_log_content.ps1'; Args={ @('-Path',$workJson) }
+     # MIS-AIMED, and NOT fixable by adding the missing test. audit_log_content's guardrail-wire
+     # check reads ONLY plan tests with kind='guardrail'. NJ's plan has exactly TWO -- Vehicle and
+     # Person -- and NO Boat guardrail test, so mutating Boat QBN's any[] is evaluated by nothing.
+     # ⚠️ DO NOT "FIX" THIS BY GENERATING A BOAT GUARDRAIL TEST. NJ deliberately rides
+     # RegistrationNumber along on the hull query, because NJ's devdoc lists it as an optional on
+     # the hull combination -- HI's does not, which is why HI HAS QB_guardrail_vs_BQ and sends hull
+     # ONLY. HI's own BUILD_NOTES record the contrast verbatim: "Same-looking guardrail, two right
+     # answers, each decided by the provider's OWN authority." The guardrail-wire check demands
+     # winner-only XML, so a Boat guardrail test on NJ would FAIL on a CORRECT build and would
+     # archive a tenant-verified 39-log package to do it. That wrong fix was proposed and withdrawn
+     # on 2026-09-08 -- the precondition below exists so it is not proposed a third time.
+     # TO RE-AIM: point this at Vehicle or Person, where a kind='guardrail' plan test exists.
+     # READ THE PLAN FROM THE REAL PROVIDER DIR ($srcDir), NOT THE REPLICA. The replica copies only
+     # source/scripts/docs -- never logs -- and audit_log_content itself says "-Path overrides ONLY
+     # the provider JSON ...; logs and the test plan still come from the provider directory". Looking
+     # in the replica would return $false because the FILE IS ABSENT, i.e. the right verdict for the
+     # wrong reason, and would keep reading INVALID even after a Boat guardrail test was added.
+     Valid={ param($j)
+             $pl = Join-Path $srcDir 'logs'
+             $pf = @(Get-ChildItem $pl -Filter 'NJ_NJCJIS_TEST_PLAN_v*.json' -File -ErrorAction SilentlyContinue |
+                     Sort-Object Name -Descending | Select-Object -First 1)
+             if (-not $pf.Count) { throw 'no NJ TEST_PLAN found -- cannot establish the precondition' }
+             $p = Get-Content $pf[0].FullName -Raw | ConvertFrom-Json
+             @($p.tests | Where-Object { "$($_.kind)" -eq 'guardrail' -and "$($_.entity)" -eq 'Boat' }).Count -gt 0 }
+     ValidWhy="NJ's plan has NO kind='guardrail' test on Boat (only Vehicle + Person), so audit_log_content's guardrail-wire check never evaluates a Boat pool change. Re-aim at Vehicle or Person -- do NOT add a Boat guardrail test: NJ's devdoc permits RegistrationNumber to ride along on the hull query, so winner-only XML would FAIL on a correct build."
      Mut={ param($j) $c=Get-Cfg $j '*_BoatQuery'; $cm=Get-Combo $c 'QBN'
            $cm.requirements.any=@(@($cm.requirements.any) | Where-Object { $_ -ne 'RegistrationNumber' }) } }
 
@@ -728,6 +810,42 @@ foreach ($m in $MUTS) {
     # adjudicated findings (audit_devdoc_optionals reports 3 NO-FIRE fills on TX by design).
     # Requiring a spotless baseline would make those gates untestable, so detection is measured
     # as an INCREASE over baseline, not as "any finding at all".
+
+    # ── PRECONDITION: can this mutation still CREATE its defect? ────────────────────────────────
+    # ENGINEERING_STANDARD 4.2: "a mutation must CREATE the defect, not resemble it. Verify the
+    # mutant on disk before believing any SURVIVED verdict." Until 2026-09-08 nothing enforced that,
+    # and the cost was measured: the portfolio's ONLY TWO surviving catalogued mutations were BOTH
+    # broken tests, and both were reported for weeks as gate blind spots --
+    #
+    #   ny-drop-oos-guardrail  removes `RegistrationStateDH EXISTS` from DALLOUT to un-discriminate
+    #                          it from DALL. But RegistrationStateDH is ALREADY MANDATORY in
+    #                          DALLOUT's set[], so the condition is redundant and its removal
+    #                          changes nothing. The named defect cannot occur.
+    #   nj-guardrail-wire-leak takes RegistrationNumber out of Boat QBN's any[] to make it an
+    #                          out-of-pool identifier on a guardrail wire. But audit_log_content's
+    #                          guardrail check only reads plan tests with kind='guardrail', and NJ
+    #                          has exactly two -- Vehicle and Person. There is no Boat guardrail
+    #                          test, so nothing evaluates the change.
+    #
+    # In BOTH cases SURVIVED was the CORRECT answer and the gate was fine. That is worse than a
+    # missed defect: a stale mutation is indistinguishable from a blind gate, so it sends you to
+    # widen a gate that already works (usx-tooling: "a false SURVIVED is worse than a missed one").
+    # ENGINEERING_STANDARD 5 already requires 0 INVALID as well as 0 SURVIVED -- this is what makes
+    # the INVALID reachable instead of silently mislabelling it a survivor.
+    #
+    # A mutation MAY declare Valid={ param($j) ... } returning $true when its defect is still
+    # creatable, plus ValidWhy for the message. Absent = assumed valid, so every existing row keeps
+    # its current behaviour and this adds no verdict churn.
+    if ($m.Valid) {
+        $vj = $pristine | ConvertFrom-Json
+        $ok = $false
+        try { $ok = [bool](& $m.Valid $vj) } catch { $ok = $false }
+        if (-not $ok) {
+            $why = if ($m.ValidWhy) { $m.ValidWhy } else { 'precondition not met -- this mutation can no longer create its defect' }
+            Emit ("  {0,-26} {1,-34} [INVALID] STALE MUTATION: {2}" -f $m.Id, $m.Gate, $why) 'Yellow'
+            $invalid++; continue
+        }
+    }
 
     # MUTANT: the gate must now fail
     try { Set-Mutant $m.Mut } catch {
