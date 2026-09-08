@@ -5,7 +5,7 @@
 > every number from `portfolio_status.ps1` / `enforce.ps1`, never from memory.
 
 <!-- BEGIN GENERATED: tools\sync_session_state.ps1 -- do not hand-edit below this line -->
-**Last updated:** 2026-09-04 (generated) | **Branch:** `main`
+**Last updated:** 2026-09-08 (generated) | **Branch:** `main`
 
 ## Tenant-test state -- GENERATED, do not hand-edit
 
@@ -16,7 +16,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 |---|---|---|
 | AZ_AZDPS | v3.12 | ALL-PASS (53 logs) |
 | CA_CLETS | v2.27 | ALL-PASS (99 logs) |
-| CA_CLETS_OCATS | v2.12 | PARTIAL -- 2 plan test(s) owed (60 captured) |
+| CA_CLETS_OCATS | v2.12 | ALL-PASS (62 logs) |
 | CA_eSUN | v3.1 | NEVER-TESTED -- 74 test(s) owed |
 | FL_FCIC | v7.24 | ALL-PASS (104 logs) |
 | HI_HCJDC_OFML | v4.20 | ALL-PASS (48 logs) |
@@ -49,14 +49,13 @@ OWN REGISTRY ROWS USED RULE NAMES THE GATES DO NOT READ (`not-built` -> `devdoc-
 `metadata-mandatory-not-in-devdoc` -> `devdoc-optional-unreachable`) so they silenced nothing.
 validator 70P/0F/26W -> **78P/0F/2W**; branches held at 27.
 
-**CA_CLETS_OCATS IS PARTIAL, NOT ALL-PASS** -- 60 logs vs a 62-test plan, **2 owed**. This file
-claimed "ALL-PASS 5/5 (65 logs)" for three days; CLAUDE.md's table was right and this was the stale
-one. Stage 5 also remains: DEX-980 is `Blocked`, release line drafted, awaiting Rob.
+**CA_CLETS_OCATS IS ALL-PASS 62/62 at v2.12** (`11686418`). This block claimed PARTIAL until
+2026-09-08: `audit_session_state` checks versions/dates/length, NEVER test state, so take test rows
+from `portfolio_status.ps1`, never prose. Stage 5 remains: DEX-980 `Blocked`, line awaiting Rob.
 **MD_METERS IS LIFECYCLE-COMPLETE at v2.4** -- `POSTED: v2.4 comment 808820` on DEX-987.
 **CA_eSUN DEX-1313** -- `POSTED: v2.2 comment 811409` covers the RADIOBUTTON line ONLY; the v3.x
 mainline still owes its own release line. eSUN is the first provider with a SUBTASK, so name which
 ticket (DEX-1312 parent / DEX-1313 subtask).
-? **JIRA REMAINS HELD** -- approval is ONE PROVIDER AT A TIME and never carries.
 
 **The queue** (`report_import_owed.ps1`) -- CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO,
 CA_VENTURA_COUNTY, LA_LEMS, all blocked at stage 4 (test). **SDSO LIVE runs eSUN v1.0 against a repo

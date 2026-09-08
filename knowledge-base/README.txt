@@ -24,7 +24,7 @@ SOURCE AUTHORITY RULES:
   Document any MetaData vs. DevDoc discrepancies in provider docs.
 
 ================================================================================
-FILES IN THIS FOLDER (16 files incl. this README, organized by question)
+FILES IN THIS FOLDER (17 files incl. this README, organized by question)
   Count corrected 2026-08-11: it read "14" while the folder held 15, so it was already
   stale before JIRA_COMMENT_TEMPLATE.txt was added. Recount when you add a file.
 ================================================================================
@@ -116,6 +116,17 @@ FILES IN THIS FOLDER (16 files incl. this README, organized by question)
                            UNION of their requirements. Confirmed twice (OH_LEADS BMVIMS
                            DL pair; AZ_AZDPS's two ACVR variants, where 4 real
                            over-permits read as 0 both before AND after the fix).
+
+  TOOL_REFERENCE.txt       "Why does this tool exist, and what does its PASS actually prove?"
+                           The WHY behind each shared tool -- relocated VERBATIM from the
+                           CLAUDE.md Tools table on 2026-09-08, when CLAUDE.md hit 156,874
+                           chars against a 150,000-char load limit and that one section was
+                           53% of the file, so the TAIL of CLAUDE.md (the new-provider Quick
+                           Start, whose Step 0 is the naming gate) was at risk of never
+                           reaching context. CLAUDE.md keeps one line per tool -- purpose,
+                           key flags, and a pointer here. Read this before changing a gate,
+                           when judging whether a PASS is evidence, or when a finding looks
+                           novel: the incident that produced each rule is recorded here.
 
   PRODUCTION_TRIAGE.txt    "A live/production query is misbehaving -- where do I start?"
 
