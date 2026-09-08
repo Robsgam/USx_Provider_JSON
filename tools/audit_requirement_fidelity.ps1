@@ -321,6 +321,19 @@ foreach ($d in $dirs) {
     $dvf = @(Get-ChildItem (Join-Path $d.FullName 'docs') -Recurse -Filter '*ACCEPTED_DIVERGENCES*' -File -ErrorAction SilentlyContinue) | Select-Object -First 1
     if ($dvf) {
         foreach ($ln in (Get-Content $dvf.FullName)) {
+            # SKIP COMMENTED ROWS. Added 2026-09-08. This loop parsed ANY line with 4+ pipe-separated
+            # fields, including '#'-prefixed ones -- so a RETIRED row went on suppressing exactly what
+            # it was retired from suppressing, portfolio-wide. Found while retiring TX_TLETS'
+            # `QVLicensePlateNumber | LicensePlateNumber | metadata-shadow-autofired-SUPERSEDED-v4.22`
+            # row (whose own text says "SUPERSEDED ... QV{Plate} IS NOW BUILT"): commenting it out
+            # changed NOTHING, and the gate's own over-suppression NOTE then quoted the row back with
+            # the '# ' still attached, which is what gave it away.
+            # Commenting out is the DOCUMENTED retire mechanism for these files -- every provider's
+            # PENDING_UPDATES and registry uses it, and the never-delete-a-row rule depends on it --
+            # so a reader had every reason to believe a retirement took effect. It did not.
+            # This is the mirror of the INERT FLAG defect: there, a marker failed to signal; here, a
+            # retired marker kept silencing. Both are "the file says one thing, the gate reads another".
+            if ($ln.TrimStart().StartsWith('#')) { continue }
             $p = $ln -split '\|'
             if ($p.Count -lt 4) { continue }
             $q = $p[0].Trim(); $k = $p[1].Trim(); $fd = $p[2].Trim(); $rule = $p[3].Trim()
@@ -591,6 +604,74 @@ foreach ($d in $dirs) {
             if ($best -ne $null) { $assign["$($m.Idx)"] = $best }
         }
     }
+
+    # ── SIBLING FALLBACK: a BUILT combo no alternative selected is still compared ─────────────
+    # The assignment above runs alternative -> built: for each metadata alternative, score every
+    # built combo and keep the best. Many alternatives may select the SAME built combo (that is the
+    # SHARED-COMBO UNION below). The inverse was unhandled -- SEVERAL BUILT COMBOS SERVING ONE
+    # ALTERNATIVE -- so any built combo that no alternative happened to pick was compared against
+    # NOTHING while the run still printed "[PASS] N matched branch(es)".
+    #
+    # That is not a rare shape, it is the normal way a routing cascade is built. CA_CLETS' DL has
+    # THREE combos with the identical set[purposeCode, OperatorLicenseNumber], separated only by
+    # conditions -- IR.QVC.O (CII present), IR.QVC.OS (SSN, no CII), ID.L1 (neither) -- against ONE
+    # metadata alternative IR.QVC{OperatorLicenseNumber}. Two of the three necessarily lose the
+    # scoring, and IR.QVC.OS was never compared on a TENANT-VERIFIED provider.
+    # Measured 2026-09-08: 6 such combos across 6 providers, 3 of them tenant-verified.
+    #
+    # THE RULE, stated so it is auditable in one sentence: a built combo with no alternative of its
+    # own is compared against the alternative claimed by the SIBLING THAT SHARES ITS CANONICAL set[].
+    # Deliberately NOT a re-scoring -- re-implementing the scorer is how LAW 4 gets broken, and an
+    # identical set[] is the strongest possible evidence that two combos implement the same
+    # alternative (routing separates them by CONDITIONS, which metadata does not model at all).
+    # A combo with no such sibling is left alone and still reports NEVER-COMPARED: we genuinely
+    # cannot say which alternative it implements, and guessing would invent a comparison.
+    #
+    # PLACED BEFORE THE SHARED-COMBO UNION ON PURPOSE. The synthesised pairs must be visible to
+    # $shared, or they would miss the union excuse their own sibling gets and report that sibling's
+    # legitimately-shared optionals as OVER-PERMITTED -- a false finding manufactured by the fix.
+    # Implemented by cloning the host alternative and giving it a fresh Idx, so the existing
+    # comparison loop does the work unchanged and no comparison logic is duplicated.
+    $pairedNow = @{}
+    foreach ($mm in $meta) { $bb = $assign["$($mm.Idx)"]; if ($bb) { $pairedNow["$($mm.Query)|$($bb.KeyRef)"] = $true } }
+    $nextIdx = 1 + [int](@(@($meta | ForEach-Object { [int]$_.Idx }) + @(-1) | Measure-Object -Maximum).Maximum)
+    $extraMeta = @()
+    foreach ($q in @($built.Keys)) {
+        foreach ($bc in @($built[$q])) {
+            if ($pairedNow.ContainsKey("$q|$($bc.KeyRef)")) { continue }
+            $mine = (@($bc.Set | ForEach-Object { Canon $_ } | Sort-Object) -join '|')
+            if (-not $mine) { continue }
+            # CANDIDATES = alternatives whose assigned built combo has the identical canonical set[].
+            # THE KEYREF STEM BREAKS THE TIE, and it is not cosmetic: taking the FIRST candidate
+            # paired CA_CLETS' IR.QVC.OS to the ID.L1 alternative -- whose <Any> is EMPTY -- and
+            # reported its SocialSecurityNumber and Age optionals as OVER-PERMITTED. Two FALSE
+            # findings on a regression-fixture provider that must read 0/0, manufactured by this very
+            # block. CA_CLETS has THREE alternatives accepting set[purposeCode, OLN] (ID.L1{OLN},
+            # IR.QVC{OLN}, and the built cascade), so "identical set[]" alone is ambiguous by
+            # construction. Preferring an exact keyRef match, then a stem match, reuses the same
+            # precedence the scorer above already applies (exact +10, prefix +8) rather than
+            # inventing a second rule.
+            $cands = @()
+            foreach ($mm in $meta) {
+                if ($mm.Query -ne $q) { continue }
+                $bb = $assign["$($mm.Idx)"]
+                if (-not $bb) { continue }
+                if ((@($bb.Set | ForEach-Object { Canon $_ } | Sort-Object) -join '|') -eq $mine) { $cands += $mm }
+            }
+            if (-not $cands.Count) { continue }
+            $hostAlt = @($cands | Where-Object { $bc.KeyRef -eq $_.KeyRef })                | Select-Object -First 1
+            if (-not $hostAlt) { $hostAlt = @($cands | Where-Object { $bc.KeyRef -like "$($_.KeyRef)*" }) | Select-Object -First 1 }
+            if (-not $hostAlt) { $hostAlt = $cands[0] }
+            $bb = $assign["$($hostAlt.Idx)"]
+            $extraMeta += [pscustomobject]@{ Query = $hostAlt.Query; KeyRef = $hostAlt.KeyRef
+                                             Alt = $hostAlt.Alt; AltTotal = $hostAlt.AltTotal
+                                             Set = $hostAlt.Set;  Any = $hostAlt.Any
+                                             Idx = $nextIdx; SiblingOf = $bb.KeyRef }
+            $assign["$nextIdx"] = $bc
+            $nextIdx++
+        }
+    }
+    if ($extraMeta.Count) { $meta = @($meta) + @($extraMeta) }
 
     # ── SHARED-COMBO UNION: one built combo may legitimately serve SEVERAL Choice alternatives ──
     # Exposed by CA_CLETS 2026-07-31 and invisible on TX/NY/NJ/FL, none of which has this shape.
