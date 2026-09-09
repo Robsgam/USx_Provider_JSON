@@ -69,6 +69,22 @@
     return { name, url: location.href, path: location.pathname, title: document.title || null };
   }
 
+  // ── DO NOT MEASURE OUR OWN UI. This produced a FALSE POSITIVE on the first real run. ──────
+  // The v0.5.8 panel gained a "SET UP: Device simulation is OFF and this device has NO device ID
+  // configured..." instruction line. NOTICE_RE matches /device (registration|simulation)/, so the
+  // notice detector matched MY OWN TEXT and the record read noticeEverSeen:true at 1ms with the
+  // "notice" being the panel's own help string. The probe was reporting its own output as evidence
+  // -- the same "matched its own injected string" trap that already bit a grep earlier the same
+  // day, this time shipped into the product where it would have gone into a Jira reply.
+  // Every DOM sweep below is filtered through this.
+  const PANEL_IDS = ['usx-panel', 'usx-launcher'];
+  function inPanel(el) {
+    if (!el || !el.closest) return false;
+    for (const id of PANEL_IDS) { if (el.closest('#' + id)) return true; }
+    return false;
+  }
+  const notOurs = (list) => [...list].filter((e) => !inPanel(e));
+
   function snap(el) {
     if (!el) return null;
     return {
@@ -116,7 +132,7 @@
     return null;
   }
   function queriesLabel() {
-    const cands = [...document.querySelectorAll('label,span,div,h1,h2,h3,h4,p,button,legend')]
+    const cands = notOurs(document.querySelectorAll('label,span,div,h1,h2,h3,h4,p,button,legend'))
       .filter((el) => {
         const t = (el.textContent || '').trim();
         if (!t || t.length > 40) return false;              // the LABEL, not a container that happens to contain it
@@ -131,7 +147,7 @@
     const scopes = [el, el.parentElement, el.parentElement && el.parentElement.parentElement].filter(Boolean);
     const seen = new Set(); const out = [];
     for (const s of scopes) {
-      for (const c of s.querySelectorAll('svg, img, i, [class*="icon"], [class*="Icon"], [aria-label], [title], [data-icon]')) {
+      for (const c of notOurs(s.querySelectorAll('svg, img, i, [class*="icon"], [class*="Icon"], [aria-label], [title], [data-icon]'))) {
         if (seen.has(c)) continue; seen.add(c);
         const bag = [c.getAttribute('class') || '', c.getAttribute('aria-label') || '',
                      c.getAttribute('title') || '', c.getAttribute('data-icon') || ''].join(' ');
@@ -172,10 +188,15 @@
   // NOTE ON "READ-ONLY": this DISPATCHES HOVER EVENTS, so authwatch is no longer strictly passive.
   // It still never fills a field and never clicks Send, which is what the ARM switch protects
   // against -- but the claim is now "cannot submit", not "touches nothing".
-  const TIP_SEL = '[role="tooltip"], .chakra-tooltip, [id^="tooltip"], [id*="tooltip"], [data-popper-placement], [class*="tooltip"], [class*="Tooltip"], [class*="popover"]';
+  // ARK / ZAG SELECTORS ADDED after the live run returned hoverMessagesFound:0 twice.
+  // The icon's own markup gave it away: `data-state="closed"` is Ark UI (Zag.js), not a Chakra
+  // v1 tooltip -- and Ark keeps its content element MOUNTED BUT HIDDEN, addressed by
+  // data-scope/data-part rather than role="tooltip". So the text may be readable WITHOUT hovering
+  // at all, and the previous selector set could never see it either way.
+  const TIP_SEL = '[role="tooltip"], .chakra-tooltip, [id^="tooltip"], [id*="tooltip"], [data-popper-placement], [class*="tooltip"], [class*="Tooltip"], [class*="popover"], [data-scope="tooltip"], [data-scope="popover"], [data-part="content"], [data-part="positioner"]';
   function tipSet() {
     const m = new Map();
-    for (const e of document.querySelectorAll(TIP_SEL)) {
+    for (const e of notOurs(document.querySelectorAll(TIP_SEL))) {
       const t = (e.textContent || '').trim().replace(/\s+/g, ' ');
       if (t) m.set(e, t);
     }
@@ -184,12 +205,30 @@
   function fire(el, types) {
     for (const ty of types) {
       try {
-        const E = (ty.indexOf('pointer') === 0) ? PointerEvent : MouseEvent;
-        el.dispatchEvent(new E(ty, { bubbles: true, cancelable: true, view: window }));
+        const isPtr = ty.indexOf('pointer') === 0;
+        const E = isPtr ? PointerEvent : MouseEvent;
+        // pointerType MUST be set. Zag ignores a pointerenter whose pointerType is not a real
+        // input kind (and treats touch differently), and a default-constructed PointerEvent has
+        // pointerType ''. That is the likeliest reason two live runs opened nothing.
+        const init = { bubbles: true, cancelable: true, view: window, isPrimary: true };
+        if (isPtr) { init.pointerType = 'mouse'; init.pointerId = 1; }
+        el.dispatchEvent(new E(ty, init));
       } catch (e) {
         try { el.dispatchEvent(new MouseEvent(ty, { bubbles: true, cancelable: true })); } catch (e2) {}
       }
     }
+  }
+  // Read the whole document for tooltip-ish text that is present but HIDDEN. On an Ark component
+  // the content is mounted with data-state="closed", so this can answer the message question with
+  // no interaction at all -- which is strictly better than depending on a synthetic hover.
+  function hiddenTipText() {
+    const out = [];
+    for (const e of notOurs(document.querySelectorAll(TIP_SEL))) {
+      const t = (e.textContent || '').trim().replace(/\s+/g, ' ');
+      if (!t) continue;
+      out.push(Object.assign(snap(e), { dataState: e.getAttribute('data-state'), dataScope: e.getAttribute('data-scope'), dataPart: e.getAttribute('data-part') }));
+    }
+    return out;
   }
   async function hoverCapture() {
     const lbl = queriesLabel();
@@ -198,19 +237,27 @@
     const scopes = [lbl, lbl && lbl.parentElement, lbl && lbl.parentElement && lbl.parentElement.parentElement].filter(Boolean);
     const seen = new Set(); const els = [];
     for (const s of scopes) {
-      for (const c of s.querySelectorAll('svg, img, i, [class*="icon"], [class*="Icon"], [aria-label], [title], [data-icon]')) {
+      for (const c of notOurs(s.querySelectorAll('svg, img, i, [class*="icon"], [class*="Icon"], [aria-label], [title], [data-icon]'))) {
         if (seen.has(c)) continue; seen.add(c); els.push(c);
       }
     }
     const out = [];
     for (const c of els) {
       const before = tipSet();
+      const stateBefore = [c, c.parentElement].filter(Boolean).map((h) => h.getAttribute && h.getAttribute('data-state')).filter(Boolean);
       // Hover the icon AND its wrapper: a Chakra Tooltip attaches to the TRIGGER element, which is
       // commonly the icon's parent rather than the svg itself.
       for (const h of [c, c.parentElement].filter(Boolean)) {
         fire(h, ['pointerover', 'pointerenter', 'mouseover', 'mouseenter', 'mousemove']);
       }
+      // FOCUS TOO: an accessible tooltip opens on keyboard focus as well as hover, and focus is
+      // often the path that works when synthetic pointer events are ignored.
+      try { if (c.focus) c.focus(); if (c.parentElement && c.parentElement.focus) c.parentElement.focus(); } catch (e) {}
       await sleep(450);
+      // data-state is a DEFINITIVE read on whether our hover registered at all, rather than
+      // inferring it from whether text appeared. If it stays "closed", the events were ignored
+      // and a null result says nothing about the message.
+      const stateAfter = [c, c.parentElement].filter(Boolean).map((h) => h.getAttribute && h.getAttribute('data-state')).filter(Boolean);
       const after = tipSet();
       const gained = [];
       after.forEach((txt, el) => { if (!before.has(el)) gained.push(txt); });
@@ -225,12 +272,20 @@
       }
       for (const h of [c, c.parentElement].filter(Boolean)) fire(h, ['mouseout', 'mouseleave', 'pointerleave']);
       await sleep(120);
-      if (gained.length || desc.length) {
-        out.push(Object.assign(snap(c), {
-          tooltipText: gained.concat(desc.filter((d) => gained.indexOf(d) < 0)),
-          via: gained.length ? 'portal-diff' : 'aria-describedby'
-        }));
-      }
+      const texts = gained.concat(desc.filter((d) => gained.indexOf(d) < 0));
+      // ALWAYS record the attempt, even when empty. A silent skip is what made two live runs
+      // report hoverMessagesFound:0 with no way to tell "no message exists" from "our hover was
+      // ignored" -- print the denominator, ENGINEERING_STANDARD 4.3.
+      out.push(Object.assign(snap(c), {
+        tooltipText: texts,
+        via: texts.length ? (gained.length ? 'portal-diff' : 'aria-describedby') : null,
+        dataStateBefore: stateBefore, dataStateAfter: stateAfter,
+        hoverRegistered: stateAfter.indexOf('open') >= 0,
+        note: texts.length ? null
+          : (stateAfter.indexOf('open') >= 0
+              ? 'tooltip OPENED but no text was found by these selectors -- widen TIP_SEL'
+              : 'data-state never became "open": the synthetic hover was IGNORED, so this proves NOTHING about the message. Hover it by hand and read it, or capture from the hidden content.')
+      }));
     }
     return out;
   }
@@ -247,9 +302,9 @@
     return els.filter((e) => !els.some((o) => o !== e && o.contains(e)));
   }
   function notices() {
-    const containers = outermostOnly(document.querySelectorAll(ALERT_SEL)).map(snap).filter((s) => s && s.text);
+    const containers = outermostOnly(notOurs(document.querySelectorAll(ALERT_SEL))).map(snap).filter((s) => s && s.text);
     const phrase = outermostOnly(
-      [...document.querySelectorAll('div,span,p,li,td,h1,h2,h3,h4')].filter((el) => {
+      notOurs(document.querySelectorAll('div,span,p,li,td,h1,h2,h3,h4')).filter((el) => {
         const t = (el.textContent || '').trim();
         return t && t.length < 400 && NOTICE_RE.test(t);
       })
@@ -263,7 +318,7 @@
   // "no icon but correctly blocked" and "icon but still sendable" are
   // different bugs and must not collapse into one verdict.
   function sendState() {
-    const btns = [...document.querySelectorAll('button')].filter((b) => /^send/i.test((b.textContent || '').trim()));
+    const btns = notOurs(document.querySelectorAll("button")).filter((b) => /^send/i.test((b.textContent || '').trim()));
     if (!btns.length) return { present: false, enabled: null, disabled: null, count: 0 };
     const anyEnabled = btns.some((b) => !b.disabled);
     return {
@@ -273,7 +328,7 @@
     };
   }
   function queryCheckboxes() {
-    const cbs = [...document.querySelectorAll('input[type="checkbox"]')];
+    const cbs = notOurs(document.querySelectorAll("input[type=\"checkbox\"]"));
     return { total: cbs.length, checked: cbs.filter((c) => c.checked).length, disabled: cbs.filter((c) => c.disabled).length };
   }
 
@@ -286,7 +341,7 @@
   // A verdict that cannot tell "no warning" from "nothing to warn about" is the
   // vacuous measurement this repo keeps finding in its own gates.
   function entryPoint(lbl, snd, cbs) {
-    const heading = [...document.querySelectorAll('h1,h2,h3,h4,[role="heading"]')]
+    const heading = notOurs(document.querySelectorAll('h1,h2,h3,h4,[role="heading"]'))
       .find((el) => /universal search/i.test((el.textContent || '').trim().slice(0, 80))) || null;
     const found = !!(lbl || snd.present || cbs.total || heading);
     return { found, viaQueriesLabel: !!lbl, viaSendButton: snd.present, viaCheckboxes: cbs.total > 0, viaHeading: snap(heading) };
@@ -450,6 +505,8 @@
       // it lives in a hover-only tooltip portal.
       hoverMessagesFound: hover.filter((h) => h && h.tooltipText && h.tooltipText.length).length,
       hoverMessages: hover.reduce((a, h) => a.concat((h && h.tooltipText) || []), []),
+      hoverRegistered: hover.some((h) => h && h.hoverRegistered),
+      hoverAttempts: hover.length,
       // The exact shape RND-71625 reports on RMS: nothing at all.
       // GUARDED on the entry point existing. SQA-217 says First Responder shows NO
       // USX icon at all for a user without a State ID -- on that surface "no warning"
@@ -467,7 +524,12 @@
       triggerMeans: o.trigger ? TRIGGERS[o.trigger].setup : null,
       triggerTicket: o.trigger ? TRIGGERS[o.trigger].ticket : null,
       simulationSettingsReadable: false,   // stated, not implied: this page cannot see dex.*simulation* settings
-      surface: sfc, verdict, firstSeen, samples, finalSnapshot: last
+      surface: sfc, verdict, firstSeen, samples, finalSnapshot: last,
+      hoverCapture: hover,
+      // Every tooltip-ish element on the page WITH its data-state, hover or not. On an Ark
+      // component the content is mounted while closed, so this can carry the message even when
+      // no synthetic hover ever opens anything.
+      tooltipElements: hiddenTipText()
     };
 
     console.log(TAG, CSS, verdict);
