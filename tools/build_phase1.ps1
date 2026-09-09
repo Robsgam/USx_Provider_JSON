@@ -293,8 +293,32 @@ foreach ($pn in $targets) {
     $m7 = [regex]::Match($o7, 'KILLED (\d+) / (\d+)\s+SURVIVED (\d+)')
     if ($m7.Success) {
         $sv = [int]$m7.Groups[3].Value
-        Out-Line ("  [6] gate efficacy              {0}/{1} killed, {2} survived" -f $m7.Groups[1].Value,$m7.Groups[2].Value,$sv) $(if ($sv) { 'Yellow' } else { 'Green' })
-        if ($sv) { $short += "GATE EFFICACY: $sv mutation(s) SURVIVED -- those gates' PASS proves nothing for that defect class" }
+        # STALE AND N/A WERE INVISIBLE HERE UNTIL 2026-09-09. This step extracted only SURVIVED, so
+        # ENGINEERING_STANDARD 5's "0 INVALID as well as 0 SURVIVED" could never be enforced by the
+        # orchestrator that owns PHASE 1 -- a mutation could rot, read [INVALID] STALE in the
+        # standalone tool, and PHASE 1 would print a clean "n/n killed" line. A bar no orchestrator
+        # reads is not a bar. Parsed separately from SURVIVED because they need OPPOSITE actions:
+        # a survivor means FIX THE GATE, a stale mutation means FIX THE MUTATION.
+        # ANCHORED TO THE TOTALS LINE, not matched loosely across the whole output. A bare
+        # 'N/A (\d+)' takes the FIRST match anywhere, so any [N/A] row whose reason text happened
+        # to contain "N/A " followed by a number would hijack the count -- a parser that reads a
+        # narrative line as a total. Both counts are pulled from the one line that states them.
+        $inv = 0; $nac = 0
+        $mt = [regex]::Match($o7, 'KILLED \d+ / \d+\s+SURVIVED \d+\s+INVALID\(stale\) (\d+)\s+N/A (\d+)')
+        if ($mt.Success) { $inv = [int]$mt.Groups[1].Value; $nac = [int]$mt.Groups[2].Value }
+        $ran = [int]$m7.Groups[2].Value
+        Out-Line ("  [6] gate efficacy              {0}/{1} killed, {2} survived, {3} stale, {4} n/a" -f `
+                  $m7.Groups[1].Value,$ran,$sv,$inv,$nac) $(if ($sv -or $inv) { 'Yellow' } else { 'Green' })
+        if ($sv)  { $short += "GATE EFFICACY: $sv mutation(s) SURVIVED -- those gates' PASS proves nothing for that defect class" }
+        if ($inv) { $short += "GATE EFFICACY: $inv mutation(s) are STALE (no longer create their defect) -- fix the MUTATION; a stale mutation is indistinguishable from a blind gate" }
+        # THE DENOMINATOR, because a flattering score on a thin catalogue is the real risk here.
+        # Measured 2026-09-09: the 47 catalogued mutations are concentrated on 9 providers
+        # (IL 12, TX 10, NJ 6, FL 5, AZ/CA_SLO/HI/NY/OR 1 each) plus 9 global ones -- so ELEVEN
+        # providers run ONLY the globals and reach "0 survived / 0 stale" cheaply, because very
+        # little was ever aimed at them. That is not the same as their gates being proven.
+        if ($ran -le 9) {
+            $short += "GATE EFFICACY COVERAGE: only $ran mutation(s) ran for $pn (vs 18-20 on TX/IL/NY) -- almost all of them GLOBAL, so a clean score here is thin evidence rather than proof that this provider's gates can fail"
+        }
     } else { $short += "GATE EFFICACY: no mutation map for $pn -- its green gates are UNPROVEN" }
 
     # ── 6b. RANDOM mutation fuzz: the catalogue above only tests defects someone thought of ──

@@ -87,6 +87,44 @@ Base↔variant lockstep drift check. For each provider declaring `# BASE-SYNC: <
 
 **NJ_NJCJIS closed this way: `KILLED 12/12, SURVIVED 0, INVALID(stale) 0, N/A 2`** -- both of its long-standing INVALIDs were N/A, not stale. (1) `vehiclemake-as-input` -- NJ and HI build no `VehicleMakeCode` control at all. (2) `nj-guardrail-wire-leak` -- **UNHOSTABLE PORTFOLIO-WIDE, MEASURED not assumed.** A `-Path` mutation can only change the winner's POOL; the losing ids, the winner ids and the wire all come from the plan and the committed logs, which `-Path` does not touch. So a pool removal can only FAIL when a losing identifier is ON THE WIRE and exempted ONLY by the pool -- and a 20-provider sweep of every guardrail plan test found **ZERO** such cases (NJ Vehicle `RANDFULL` sends no VIN; NJ Person `FULLN` sends no Name). The earlier instruction "re-aim at Vehicle or Person" is therefore **impossible**, and adding a Boat guardrail test to NJ is still wrong (its devdoc permits `RegistrationNumber` on the hull query, so winner-only XML would FAIL on a correct build). ⚠️ **The pool exemption itself STAYS:** it guards against a FALSE FAIL when a provider legitimately rides an optional identifier along -- inert is not dead. What is no longer true is that any mutation proves that guard works.
 
+**FULL 20-PROVIDER BASELINE, 2026-09-09 -- and the headline number is not the interesting one.**
+`KILLED n/n · SURVIVED 0 · INVALID(stale) 0` on **all 20**, with N/A on 4 (HI 1, LA_LEMS 1, NJ 2,
+OR 1). So the `0 SURVIVED / 0 INVALID` bar is met portfolio-wide. ⚠️ **BUT THE MUTATION COUNT IS
+WILDLY UNEVEN, AND A CLEAN SCORE ON A THIN CATALOGUE IS NOT PROOF:** of 47 catalogued mutations,
+**IL_LEADS_OFML has 12, TX_TLETS 10, NJ_NJCJIS 6, FL_FCIC 5, and AZ / CA_SAN_LUIS_OBISPO / HI /
+NY / OR one each** — plus 9 GLOBAL. Measured mutations-run per provider: IL 20, TX 18, NY 16, FL 13,
+NJ 12 … and **fifteen providers run 7-9**, essentially the globals alone. Those fifteen reach
+"0 survived / 0 stale" cheaply because almost nothing was ever aimed at them. `build_phase1` step 6
+now emits a COVERAGE shortcoming when ≤9 mutations ran, so the thinness is stated rather than
+hidden behind a flattering ratio. **The next real work on this gate is aiming mutations at the
+fifteen, not celebrating the 20/20.**
+
+**TWO DEFECTS FOUND BY RUNNING THE SWEEP, both in the reporting path rather than in any gate:**
+
+1. **`build_phase1` step 6 WAS BLIND TO STALE MUTATIONS.** It parsed only
+   `KILLED (\d+) / (\d+)\s+SURVIVED (\d+)` and never read INVALID, so ENGINEERING_STANDARD 5's
+   "0 INVALID as well as 0 SURVIVED" could not be enforced by the orchestrator that OWNS PHASE 1 --
+   a mutation could rot, read `[INVALID] STALE` standalone, and PHASE 1 would print a clean "n/n
+   killed" line. **A bar no orchestrator reads is not a bar.** Now parsed and reported separately
+   from SURVIVED, because the two demand OPPOSITE actions: a survivor means FIX THE GATE, a stale
+   mutation means FIX THE MUTATION. ⚠️ Both counts are **anchored to the totals line** -- a bare
+   `N/A (\d+)` takes the FIRST match anywhere and an `[N/A]` reason line containing a number
+   hijacks it (proven with a decoy: loose read `na=99` off a narrative line, anchored read `na=2`).
+
+2. **THE HARNESS COULD ABORT MID-SWEEP AND THEN MIS-DESCRIBE ITSELF.** During the 20-provider run
+   TX_TLETS died after 4 of its 18 mutations with `NativeCommandError` at `Run-Gate`, and it was
+   **not reproducible** -- TX ran 18/18 clean immediately before and after. Cause: the script sets
+   `$ErrorActionPreference='Stop'`, and **under PS 5.1 a native command that writes ANYTHING to
+   stderr raises a terminating error**, so one transient line from a child gate kills the run. The
+   damage is what it LOOKS like: no totals line, so `build_phase1` falls to its else branch and
+   reports *"no mutation map for TX_TLETS -- its green gates are UNPROVEN"* on a provider with 18
+   working mutations. Fixed by scoping `Continue` around the child invocation -- stderr from a child
+   is DATA here, not an exception. **PROVEN ON 5.1, and the engine matters:** the same control under
+   **pwsh 7 did NOT abort at all** (`completed, 77 chars`), so a proof run there would have been
+   vacuous; on `powershell` 5.1 the before-case reports `ABORTED -- RemoteException` and the
+   after-case completes while still seeing the child's `[FAIL]`. Same defect class as the Edge-stderr
+   fix in `audit_extension_syntax` the same day.
+
 **The regression check that matters is that N/A DISCRIMINATES rather than blanket-excusing:** CA_CLETS reports `N/A 0` because it HAS a `VehicleMakeCode` field, so the mutation runs and KILLS; HI and NJ report `N/A 1` because they genuinely build none. LAW 2 for the split itself was proven with a temporary injected control (`Valid={$false}`, no `NaIf`) -- it forced **exit 1**, confirming a stale mutation still blocks and that N/A did not swallow the stale path
 
 ==============================================================================

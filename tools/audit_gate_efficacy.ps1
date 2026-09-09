@@ -97,7 +97,23 @@ $pristine = Get-Content $workJson -Raw
 function Run-Gate([string]$tool, [string[]]$argsList) {
     $t = Join-Path $toolDir $tool
     if (-not (Test-Path $t)) { return @{ Fail = $null; Detail = "tool missing: $tool" } }
-    $out = & powershell -ExecutionPolicy Bypass -File $t @argsList 2>&1 | Out-String
+    # A CHILD GATE WRITING TO stderr MUST NOT ABORT THE WHOLE SWEEP. Caught 2026-09-09: during a
+    # 20-provider run, TX_TLETS died after 4 of its 18 mutations with
+    #     NativeCommandError at audit_gate_efficacy.ps1:100
+    # and it was NOT reproducible -- TX ran 18/18 clean immediately before and immediately after.
+    # Cause: this script sets $ErrorActionPreference='Stop', and under Stop a NATIVE command that
+    # writes anything to stderr raises a TERMINATING error, so one transient line from a child gate
+    # kills a run that was otherwise fine. The damage is not the crash, it is what the crash LOOKS
+    # like: no totals line is emitted, so `build_phase1` step 6 falls to its else branch and reports
+    # "no mutation map for TX_TLETS -- its green gates are UNPROVEN" on a provider with 18 working
+    # mutations. A harness that intermittently aborts and then mis-describes itself is worse than
+    # one that fails loudly. Same defect class as the Edge-stderr fix in audit_extension_syntax
+    # earlier the same day: stderr from a child is DATA here, not an exception.
+    $prevEap = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try   { $out = & powershell -ExecutionPolicy Bypass -File $t @argsList 2>&1 | Out-String }
+    catch { $out = "HARNESS: child gate threw -- $($_.Exception.Message)" }
+    finally { $ErrorActionPreference = $prevEap }
     # DETECTION = a [FAIL] *or* a [WARN] line. Counting WARN matters: several checks are
     # deliberately warn-level (verify_build CHECK 9 "flags survivors for review"), and a
     # harness that only looked for [FAIL] would libel them as blind. Learned the hard way
