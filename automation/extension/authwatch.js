@@ -88,6 +88,33 @@
   // subtree (icons are commonly siblings, not children) looking for svg/img or
   // anything whose class/aria/title smells like a warning.
   const WARNISH = /warn|alert|caution|danger|error|exclam|triangle|attention/i;
+
+  // COLOUR IS A PRIMARY SIGNAL, NOT DECORATION -- and it took a live run to learn that.
+  // On IL_LEADS 2026-09-09 the icon beside "Queries:" came back class="chakra-icon arc-1oy47jo",
+  // aria-label=null, title=null, data-icon=null -- a HASHED emotion class carrying no semantic
+  // token at all -- with computed colour rgb(149,111,13). That is hue 43 / saturation 0.84, i.e.
+  // amber. So the probable warning icon was PRESENT and the name-based test above returned false.
+  // A heuristic that can only see semantic class names cannot see a Chakra icon, so the colour is
+  // promoted to evidence. Still reported rather than trusted blindly: a themed icon can inherit
+  // its colour, which is why `warnish` records WHICH signal fired.
+  function colourFamily(css) {
+    const m = /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/.exec(css || '');
+    if (!m) return null;
+    const r = +m[1] / 255, g = +m[2] / 255, b = +m[3] / 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min;
+    if (d < 0.08) return null;                       // grey/near-grey: no hue to speak of
+    const l = (max + min) / 2;
+    const s = d / (1 - Math.abs(2 * l - 1));
+    if (s < 0.3) return null;                        // washed out; not a deliberate status colour
+    let h;
+    if (max === r) h = 60 * (((g - b) / d) % 6);
+    else if (max === g) h = 60 * (((b - r) / d) + 2);
+    else h = 60 * (((r - g) / d) + 4);
+    if (h < 0) h += 360;
+    if (h >= 20 && h <= 70) return 'amber';          // the ticket's "yellow"
+    if (h < 12 || h > 348) return 'red';             // danger, worth flagging too
+    return null;
+  }
   function queriesLabel() {
     const cands = [...document.querySelectorAll('label,span,div,h1,h2,h3,h4,p,button,legend')]
       .filter((el) => {
@@ -108,12 +135,21 @@
         if (seen.has(c)) continue; seen.add(c);
         const bag = [c.getAttribute('class') || '', c.getAttribute('aria-label') || '',
                      c.getAttribute('title') || '', c.getAttribute('data-icon') || ''].join(' ');
-        const isWarn = WARNISH.test(bag);
-        // colour is a real signal here -- the ticket calls it a YELLOW icon -- but it is
-        // reported, never used as the sole test: a themed icon may inherit its colour.
-        let colour = null;
-        try { const cs = getComputedStyle(c); colour = cs && (cs.color || cs.fill) || null; } catch (e) { /* detached */ }
-        out.push(Object.assign(snap(c), { warnish: isWarn, colour }));
+        const byName = WARNISH.test(bag);
+        let colour = null, fill = null;
+        try { const cs = getComputedStyle(c); if (cs) { colour = cs.color || null; fill = cs.fill || null; } } catch (e) { /* detached */ }
+        const fam = colourFamily(colour) || colourFamily(fill);
+        // Record WHICH signal fired. A bare true/false would have hidden that the live IL icon
+        // was found by colour ALONE -- and that is the fact that made the probe useful.
+        const isWarn = byName || fam === 'amber' || fam === 'red';
+        // The class is a hashed Chakra name, so it identifies nothing. Carry the markup: an
+        // engineer can tell a warning TRIANGLE from an info circle by the path, and we cannot.
+        let markup = null;
+        try { markup = (c.outerHTML || '').replace(/\s+/g, ' ').slice(0, 300); } catch (e) {}
+        out.push(Object.assign(snap(c), {
+          warnish: isWarn, warnishBy: isWarn ? (byName ? (fam ? 'name+colour' : 'name') : 'colour') : null,
+          colour, fill, colourFamily: fam, markup
+        }));
       }
     }
     return out;
@@ -203,8 +239,28 @@
     };
   }
 
-  window.__usxAuthProbe = function () {
-    const out = Object.assign({ surface: surface() }, probeOnce());
+  // A SNAPSHOT WITH NO TRIGGER LABEL IS UNATTRIBUTABLE, and that cost a round trip on the very
+  // first live run: the record showed Send disabled AND both query checkboxes disabled, which
+  // either means "the interface is correctly blocked" or "this is an ordinary empty form" -- and
+  // NOTHING in the record said which tenant state it was taken in. One missing string, two
+  // opposite conclusions. So the probe now carries the label the watch already did.
+  window.__usxAuthProbe = function (opts) {
+    const o = opts || {};
+    if (o.trigger && !TRIGGERS[o.trigger]) {
+      console.log(TAG, 'color:#c00;font-weight:bold', `unknown trigger "${o.trigger}". Known: ${Object.keys(TRIGGERS).join(', ')}`);
+      throw new Error('__usxAuthProbe: unknown trigger');
+    }
+    if (!o.trigger) {
+      console.log(TAG, 'color:#c00;font-weight:bold',
+        'NO TRIGGER GIVEN -- this snapshot cannot be interpreted. "Send disabled" reads as BLOCKED ' +
+        'under tc10-sim-off and as an ORDINARY EMPTY FORM under control-normal. Pass one of: ' +
+        Object.keys(TRIGGERS).join(', '));
+    }
+    const out = Object.assign({
+      surface: surface(), trigger: o.trigger || null,
+      triggerMeans: o.trigger ? TRIGGERS[o.trigger] : null,
+      interpretable: !!o.trigger
+    }, probeOnce());
     console.log(TAG, CSS, out);
     return out;
   };

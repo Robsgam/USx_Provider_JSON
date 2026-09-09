@@ -467,13 +467,19 @@
       awProbe = el('button', BTN + ';' + BLU, 'Probe now (no download)');
       awProbe.onclick = () => {
         if (!window.__usxAuthProbe) { awStatus.style.color = '#f77'; awStatus.textContent = '✖ authwatch.js not loaded — reload the extension.'; return; }
-        const s = window.__usxAuthProbe();
+        // Pass the selected trigger: an unlabelled snapshot cannot be interpreted at all, because
+        // "Send disabled" means BLOCKED under tc10-sim-off and ORDINARY EMPTY FORM under control.
+        const s = window.__usxAuthProbe({ trigger: awTrig.value });
+        const warnIcon = (s.icons || []).filter((i) => i.warnish);
+        const byColour = warnIcon.filter((i) => i.warnishBy === 'colour').length;
         awStatus.style.color = s.warnIconPresent ? '#7c7' : '#fa0';
-        awStatus.textContent = 'snapshot ' + s.surface.name + ': icon ' + (s.warnIconPresent ? 'YES' : 'no') +
+        awStatus.textContent = 'snapshot ' + s.surface.name + ' [' + awTrig.value + ']: icon ' +
+          (s.warnIconPresent ? 'YES' + (byColour ? ' (by COLOUR only — no aria/title/semantic class)' : '') : 'no') +
           ' · notice ' + (s.noticePresent ? 'YES' : 'no') +
           ' · Send ' + (s.send.present ? (s.send.disabled ? 'disabled' : 'enabled') : 'absent') +
+          ' · checkboxes ' + s.checkboxes.disabled + '/' + s.checkboxes.total + ' disabled' +
           ' · USx here ' + (s.entryPoint.found ? 'yes' : 'NO') +
-          ' — instantaneous, so a "no" here proves nothing; use the watch.';
+          ' — instantaneous, and Send/checkbox state is only meaningful NEXT TO A CONTROL RUN.';
       };
       awWrap.appendChild(awProbe);
       awWrap.appendChild(awStatus);

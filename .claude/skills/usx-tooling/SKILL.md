@@ -194,6 +194,12 @@ Before adding a registry path or exemption:
 - **Is the tool right to refuse you?** `demoted-to-any` grants *"it rides in `any[]`"*; when the
   field is absent from `any[]` too, the tool still reports — a surviving mutation taught it that
   guard. Read the guard before trying a third spelling.
+- **A ROW ONLY SUPPRESSES IF ITS RULE NAME IS THE STRING THE GATE ACTUALLY GREPS.** Two CA_eSUN rows
+  were written with sensible *descriptive* names and silenced nothing for a full day, while reading
+  exactly like a completed adjudication. **Grep the gate for its literal rule string before writing
+  the row, then re-run the gate and confirm the finding CLEARED** — a registry edit you did not
+  verify is indistinguishable from one that worked. (Moved here from `SESSION_STATE.md`, which is
+  for current state; this is permanent.)
 
 ## Step 7 — Finish the job in the same action
 
@@ -264,6 +270,15 @@ Three self-inflicted "findings" in one day on AZ_AZDPS, each of which I started 
 | "a stale v3.0 TEST_PLAN is sitting in `logs/`" | `-Recurse` pulled it out of `logs/_archive_pre_v3.1/`. `reset_test_package` had done its job; I reported archived history as live clutter. |
 
 Before reporting: print what the probe compared, and scope the glob. **A listing is not a finding.**
+
+**VALIDATE EVERY PROBE AGAINST A KNOWN ANSWER, and include NEGATIVE controls.** A finding appearing
+identically across ~19 providers is one global cause, not 19 defects. Same week: a sweep reported 2
+false ORPHANs against tenant-verified HI because it required `primaryField` equality and HI's variant
+declares none. The converse bites too — a detector can be too NARROW and report a clean miss: on
+2026-09-09 the `authwatch` warning-icon test read only class/aria/title, so a live Chakra icon with a
+*hashed* class and no accessible name came back `warnish:false` while its computed colour was
+`rgb(149,111,13)` (amber). The fix was verified by asserting the real live value flags **and** that
+grey and green do **not**. A detector with no negative control is a detector whose "no" means nothing.
 Pairs with the existing rule that a finding repeated across many providers is almost always your probe
 — this is the single-provider version of the same error.
 

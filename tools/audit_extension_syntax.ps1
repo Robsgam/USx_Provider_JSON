@@ -91,11 +91,19 @@ document.title='DONE';
   # characters -- verified here on a trivial one-line page, so it is not a size or timing issue.
   # The same command run from bash captures fine, which is exactly the kind of shell-boundary
   # difference that makes a gate "pass" in one harness and produce nothing in another.
+  # REDIRECT STDERR TOO, or this gate cannot be composed. Edge always writes noise to stderr
+  # (sync errors, task_manager warnings). Left un-redirected it reaches the caller's console, and
+  # doctor.ps1 captures with `*>&1` under $ErrorActionPreference='Stop' -- which turns that noise
+  # into a TERMINATING error, so doctor reported "[WARN] audit_extension_syntax.ps1 failed: <chrome
+  # noise>" while the gate exited 0 standalone. A gate that only passes when run by hand is the
+  # orphan problem in a new shape: wired into an orchestrator, and broken exactly there.
+  $stderr = Join-Path $work 'err.txt'
   $stdout = Join-Path $work 'dom.txt'
   $bargs = @('--headless=new', '--disable-gpu', '--no-sandbox', '--virtual-time-budget=8000',
              ('--user-data-dir=' + (Join-Path $work 'ud')), '--dump-dom',
              ('file:///' + $html.Replace([char]92, [char]47)))
-  Start-Process -FilePath $browser -ArgumentList $bargs -Wait -NoNewWindow -RedirectStandardOutput $stdout | Out-Null
+  Start-Process -FilePath $browser -ArgumentList $bargs -Wait -NoNewWindow `
+                -RedirectStandardOutput $stdout -RedirectStandardError $stderr | Out-Null
   if (-not (Test-Path $stdout)) { Emit "[FAIL] parser wrote no output file -- gate did not run."; exit 1 }
   $domText = [System.IO.File]::ReadAllText($stdout)
   if ($domText -notmatch 'RESULTS_BEGIN') { Emit "[FAIL] parser produced no results block -- gate did not run."; exit 1 }
