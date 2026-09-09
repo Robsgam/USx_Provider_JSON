@@ -1934,6 +1934,55 @@ AUTHORITATIVE SOURCE FILES (read-only)
     blocking six tenant-verified providers over it would be disproportionate.
     Cleaned per provider at its own rebuild (one provider at a time).
 
+  tools/audit_extension_syntax.ps1
+    EXTENSION JS SYNTAX GATE -- the twin of audit_ps51_parse.ps1 for the browser
+    scripts in automation/extension/. Composed into doctor.ps1; blocks nothing,
+    because these files ship no provider JSON.
+
+    WHY IT EXISTS. Nothing in this repo parsed JavaScript until 2026-09-09. On
+    2026-09-04 the usx_lib.js build tag -- a single-quoted console.log string
+    that had grown into a paragraph of prose -- acquired the text
+    initialValue='C'. That apostrophe closed the literal, and the file died at
+    parse time with "missing ) after argument list". THE DRIVER AND CAPTURE
+    TOOLS WERE COMPLETELY DEAD FOR FIVE DAYS and it was discovered only when
+    the operator opened a tenant console.
+
+    A PARSE ERROR IS TOTAL, which is the part that surprises people:
+    window.__usxLib is assigned on the line ABOVE the broken one and still
+    never existed. So capture.js and driver.js both logged "usx_lib not
+    loaded", and ui.js fell back to its red "NOT a test tenant" banner because
+    isProviderTestTenant() lives in the dead file. Two alarming symptoms, ONE
+    cause -- and the banner resolves itself when the syntax is fixed.
+
+    IT USES new Function(), WHICH PARSES WITHOUT EXECUTING. Loading the file in
+    a page instead would conflate a SYNTAX error with a RUNTIME throw (several
+    of these files legitimately throw outside the extension context, having no
+    chrome.runtime), and a file:// page is an OPAQUE ORIGIN so Chrome sanitizes
+    the reason to the useless "Script error." -- which is exactly how the real
+    breakage above was explained away as an environment artifact for an hour
+    before the tenant console gave the true message. A clean verdict here means
+    "this is valid JavaScript" and nothing more.
+
+    TWO IMPLEMENTATION TRAPS, both cost a cycle:
+      - Start-Process -RedirectStandardOutput is MANDATORY. Edge DETACHES when
+        spawned from powershell.exe, so `$dom = & $browser --dump-dom ...`
+        returns ZERO characters -- verified on a trivial one-line page, so it is
+        not a size or timing effect. The same command from bash captures fine,
+        the classic shell-boundary difference that makes a gate look fine in one
+        harness and produce nothing in another.
+      - Do NOT read the exit code through a pipe. `powershell -File ... | grep`
+        then `$?` reports GREP's status; it read 0 on a run that correctly
+        exited 1.
+
+    LAW 2 IS PROVEN ON EVERY RUN, not once: a deliberately unterminated string
+    is parsed alongside the real files, and if that control does not fail the
+    gate declares itself inert and exits 1. Also proven against the actual
+    2026-09-04 file -> [FAIL] usx_lib.js -- missing ) after argument list.
+
+    STANDING RULE: keep the build tag SHORT and apostrophe-free. Per-change
+    prose belongs in comments and commit bodies, where a quote terminates
+    nothing.
+
   tools/audit_ps51_parse.ps1
     PS 5.1 PARSE GATE. Every tools/*.ps1 must parse on the engine that RUNS it.
     pipeline.ps1/enforce.ps1 invoke tools as `powershell -File` = Windows

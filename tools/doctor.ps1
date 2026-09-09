@@ -188,6 +188,24 @@ try {
     Emit "  [WARN] audit_ps51_parse.ps1 failed: $($_.Exception.Message)"
 }
 
+Emit ""
+Emit "--- EXTENSION JS SYNTAX GATE (browser scripts must parse; audit_extension_syntax.ps1) ---"
+# The PowerShell twin above existed for months while NOTHING parsed the JavaScript, and on
+# 2026-09-04 a one-character break in usx_lib.js's build-tag string (an apostrophe inside a
+# single-quoted literal) killed the driver and capture tools OUTRIGHT for five days. A parse
+# error is total: the file's globals never exist, so every dependent script logs "not loaded".
+# It surfaced only when the operator opened a tenant console. Wired here, not into enforce:
+# these scripts ship no provider JSON, so it blocks nothing -- but a gate nothing runs is not
+# a gate, and this is the health check that runs every time.
+try {
+    $jx = & powershell -NoProfile -ExecutionPolicy Bypass -File "$tool\audit_extension_syntax.ps1" *>&1 | Out-String
+    ($jx.TrimEnd() -split "`n") |
+        Where-Object { $_ -notmatch '^=+$' -and $_ -notmatch 'EXTENSION JS SYNTAX GATE ===' -and $_ -notmatch 'ERROR:components' } |
+        ForEach-Object { Emit $_ }
+} catch {
+    Emit "  [WARN] audit_extension_syntax.ps1 failed: $($_.Exception.Message)"
+}
+
 # --- 6. Repo-scope advisories that nothing else ran ------------------------------
 # These three were ORPHANS: real gates, kept current, referenced by no orchestrator -- so their
 # findings only ever surfaced when someone ran them by hand. They are advisory or repo-scope

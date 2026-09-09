@@ -470,5 +470,19 @@
   window.__usxLib = { sleep, q, fillText, selectReactSelect, findRadioGroup, selectRadioGroup, fillField, clickSend, extractConnectCicXml, triggerDownload, providerFromHost, isProviderTestTenant, providerOverrideKey };
   // Build tag: bump on every extension change so console pastes identify the loaded build
   // (version skew burned attempt 4: a stale build still had the parked Run ALL button).
-  console.log('%c[USx]', 'color:#0a0;font-weight:bold', 'usx_lib loaded. BUILD 2026-09-04a (RADIO CONFIRM FIXED: the post-click confirm now uses isChecked() instead of target.checked -- on a div-based group .checked is undefined, so a SUCCESSFUL selection reported "radio did not become checked" AND the control was clicked twice. That path was unreachable until CA_eSUN v1.1/v2.2 dropped PurposeCode initialValue='C', because the plan fills C and the already-selected short-circuit returned first on every test. PREVIOUSLY: when the options cannot be identified -- opaque platform-id values AND both reporting the field label -- the existing selection is KEPT and reported UNVERIFIED instead of failing the test, and the group markup is dumped so it can be fixed properly. Earlier: option values are platform attribute IDs not codes, and the per-option label walk no longer climbs to the GROUP label -- both options previously read the field label so nothing could match; also honours aria-checked, and short-circuits when the wanted option is already selected. -- __usxLib.findRadioGroup(id) / selectRadioGroup(id,code) to probe; manifest 0.5.3 -- matches BOTH /admin/usx-log and legacy /admin/dex-log; panel ON/OFF per tenant + launcher dot unchanged)');
+  // Build tag: bump on every extension change so console pastes identify the loaded build
+  // (version skew burned attempt 4: a stale build still had the parked Run ALL button).
+  //
+  // KEEP THIS STRING SHORT AND QUOTE-FREE. On 2026-09-04 the tag was a paragraph of prose that
+  // happened to contain  initialValue='C'  -- inside a SINGLE-QUOTED literal. That apostrophe
+  // closed the string, the next token was a bare identifier, and the file died at parse time with
+  //     usx_lib.js:473 Uncaught SyntaxError: missing ) after argument list
+  // A parse error is total: window.__usxLib is assigned on the line ABOVE this one and STILL never
+  // existed, so capture.js and driver.js both logged "usx_lib not loaded" and ui.js fell back to
+  // the red "NOT a test tenant" banner because isProviderTestTenant() lives in the dead file.
+  // The driver and capture tools were fully broken from 2026-09-04 to 2026-09-09.
+  // Prose belongs in comments like this one, where an apostrophe cannot terminate anything.
+  // The per-change narrative lives in the commit body and README.md, not in a runtime string.
+  console.log('%c[USx]', 'color:#0a0;font-weight:bold',
+    'usx_lib loaded. BUILD 2026-09-09a -- manifest 0.5.5. See README.md + git log for what changed.');
 })();

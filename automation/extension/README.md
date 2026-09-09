@@ -270,15 +270,37 @@ deliberate `function broken( {` control run **first** (→ `PARSE-FAIL`), then `
 `manifest.json` re-parsed, and load order asserted (`usx_lib` → … → `authwatch` → `ui`).
 **Reload the unpacked extension** after pulling this — `manifest.json` changed.
 
-⚠️ **The scope of that claim, stated precisely — an earlier version of this section overstated it.**
-The harness loads a file and asks whether its global appeared, which is **stricter than a parse
-check**: it fails on a syntax error *and* on a runtime throw during the IIFE. Under `file://`,
-`usx_lib.js`, `capture.js` and `driver.js` do **not** export — Chrome sanitizes the reason to
-`Script error.` because a `file://` page is an opaque origin, so no detail is recoverable this way.
-Those three are **unmodified** here and demonstrably work in a real tenant, so that is an artifact
-of the harness's environment, not a defect. What it means practically: **this harness validates a
-file that is written to degrade standalone (which `authwatch.js` deliberately is) and cannot verify
-one that requires the extension context.** Do not read a `PARSE-FAIL` on those three as a finding,
-and do not "fix" them to satisfy it. To check them properly, serve the directory over HTTP so the
-origin is not opaque and the real error text survives.
+🔴 **READ THIS BEFORE YOU EXPLAIN AWAY A `PARSE-FAIL`. It happened, and it cost five days.**
+
+On 2026-09-09 this harness reported that `usx_lib.js`, `capture.js` and `driver.js` did not export
+their globals. I wrote a paragraph here explaining that away as a `file://` opaque-origin artifact —
+because Chrome sanitizes the reason to `Script error.`, the explanation was *plausible*, and those
+files were "unmodified and known to work". **It was wrong. The file was genuinely broken**, and the
+tenant console said so in one line the moment Rob loaded it:
+
+```
+usx_lib.js:473 Uncaught SyntaxError: missing ) after argument list
+capture.js:13 [USx-CAP] usx_lib not loaded
+driver.js:20  [USx-DRV] usx_lib not loaded
+```
+
+The cause: the build tag on line 473 was a paragraph of prose inside a **single-quoted** string, and
+on 2026-09-04 it grew to contain `initialValue='C'`. That apostrophe closed the literal. **The
+driver and capture tools were completely dead from 2026-09-04 to 2026-09-09** — and the harness had
+been saying so.
+
+Three things this repo already knew and I violated anyway:
+
+- **A parse error is TOTAL.** `window.__usxLib` is assigned on the line *above* the bad one and
+  still never existed. "It only broke a console message" is not a possible outcome.
+- **The red "⚠ NOT a test tenant" banner was a SYMPTOM, not a second bug.** `isProviderTestTenant()`
+  lives in the dead file, so `ui.js` fell back to its most cautious label. Two alarming signals, one
+  cause — and it resolves itself the moment the parse error is fixed.
+- **Don't rationalize an anomaly.** The verdict was correct and I substituted a story for it. If this
+  harness says a file does not export, treat it as broken until you have the real error text — load
+  the unpacked extension and read the `chrome-extension://` console, which is **not** sanitized.
+
+Standing rule that follows: **keep the build tag short and free of apostrophes.** Per-change prose
+belongs in comments and commit bodies, where a quote cannot terminate anything.
+`tools\audit_extension_syntax.ps1` now gates this.
 
