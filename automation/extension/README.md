@@ -14,6 +14,7 @@ react-select picked by code; the request XML lives in the dex-log entry's textar
 - `usx_lib.js` — proven primitives: `fillField` (text + react-select), `clickSend`, `extractConnectCicXml`, `triggerDownload`
 - `driver.js` — `__usxRunOne(descriptor)` on `/universal-search`
 - `capture.js` — `__usxCapture()` / bulk + watch capture on `/admin/dex-log`
+- `authwatch.js` — `__usxAuthWatch()` / `__usxAuthProbe()` — **RND-71625 evidence capture** (see below)
 - `bridge.js` — ISOLATED-world relay: page → background worker (has `chrome.runtime`; MAIN world does not)
 - `background.js` — service worker; downloads via `chrome.downloads.download()`
 - `../../tools/import_captured_tests.ps1` — ingests downloaded records → `post_test.ps1`
@@ -155,3 +156,72 @@ clearing site data — which is how a hide button becomes a support call.
 A tenant can be visible-and-disarmed or hidden-and-armed. Turning the panel off never arms
 anything; arming never forces the panel on. The launcher dot turns green when the tenant is armed,
 so a hidden-but-armed tenant is still visible at a glance rather than being a silent trap.
+## v0.5.4 — `authwatch.js`: RND-71625 evidence capture (the yellow-icon / blocking question)
+
+**The ticket.** RND-71625 (P3, Amy Blair 2026-08-31, found in SQA-145 TC-10, IL-LEADS suite). With
+device simulation OFF — `dex.device_simulation_mode.enabled`, `dex.simulation_mode.enabled` and
+`dex.local_simulation_mode.enabled` all off — the expected **yellow warning icon on the "Queries"
+label** never appears, and the surfaces disagree:
+
+| Surface | Reported |
+|---|---|
+| **RMS** | no icon **and no blocking indicator of any kind** — nothing tells the officer queries are unavailable |
+| **CAD / First Responder** | no icon, but a ConnectCIC **"License Violation Notice"** appears and does block |
+
+**What this file is for.** It converts *"no icon appeared"* from an eyeball observation into a
+timestamped, downloadable record: which surface, whether the icon **ever** rendered and at what
+offset, what notice text appeared, and whether **Send** was actually disabled.
+**It proves WHETHER, never WHY.** The cause is platform-side; only engineering can settle it.
+
+```js
+__usxAuthWatch()                    // 10s watch, prints verdict + downloads the record
+__usxAuthWatch({ seconds: 20 })     // longer window
+__usxAuthWatch({ download: false })  // print only
+__usxAuthProbe()                    // one instantaneous snapshot
+```
+
+Saves `usx_authwatch_<SURFACE>_<timestamp>.json`.
+
+### Why it POLLS, and why that is not gold-plating
+The ticket's expectation is that the icon appears *"within 2-3 seconds (or after a refresh)"*. A
+one-shot probe at `t=0` would miss a late render and report a **false absence** — the same vacuous
+measurement pattern this repo keeps finding in its own gates. So the default is a 10 s watch
+recording **first-seen offset** per signal, and an absence is only asserted after the whole window.
+
+### It measures the two expectations SEPARATELY
+"A warning icon" and "a blocked interface" are independent. `no icon but correctly blocked` and
+`icon shown but still sendable` are **different bugs**, so they never collapse into one verdict.
+`verdict.matchesRnd71625RmsSymptom` is true only when the icon never appeared, no notice appeared,
+**and** Send was never disabled for the entire window — i.e. the exact RMS shape in the ticket.
+
+### Run it TWICE per surface — a single run cannot conclude
+Once with simulation **ON** (control) and once **OFF** (the reported condition). The page cannot
+read the `dex.*simulation*` settings, so whether a warning is *due* is unmeasurable from here — the
+record states `simulationSettingsReadable: false` rather than implying otherwise. This is also why
+the verdict is **descriptive, not pass/fail**: calling an absence a FAILURE would assert something
+unmeasured.
+
+### It runs STANDALONE, and that is deliberate
+The manifest matches only `https://*.mark43.com/rms/*`, but this ticket spans **RMS, CAD and First
+Responder**. Widening that match would also load the **driver** onto CAD/FR, and the stated safety
+model is exactly that allowlist plus the on-screen ARM switch — so widening it is **Rob's decision**,
+not a side effect of adding a diagnostic. Instead the file degrades: with `usx_lib` present it uses
+the proven SW-bridge download; **pasted into the Console on CAD/FR it falls back** to a local sleep
+and a single anchor download. `authwatch` is **read-only** — it observes and saves, never fills or
+sends — so pasting it carries none of the driver's risk.
+
+### Known limits, stated up front
+- The icon probe **anchors on the "Queries" label**. If the label is absent (or its text changed),
+  the probe has nothing to anchor to and its silence proves nothing — so the run prints a loud
+  warning and `verdict.queriesLabelFound` is false. Do not read that as "no icon".
+- Colour is **reported, not decisive**. The ticket says *yellow*, but a themed icon can inherit its
+  colour, so `warnish` is driven by class/aria/title/data-icon, with `colour` recorded alongside.
+- It cannot reach Foundation or LIVE tenants — same constraint as the capture tool.
+
+### Verified
+Per the "Verifying a change to these scripts" note above: headless Edge as a real V8 parser, with a
+deliberate `function broken( {` control run **first** (→ `FAIL: Unexpected end of input`), then
+`authwatch.js` → `OK` and `driver.js` unchanged → `OK`. `manifest.json` re-parsed, and load order
+asserted (`usx_lib` → `authwatch` → `ui`). **Reload the unpacked extension** after pulling this —
+`manifest.json` changed.
+
