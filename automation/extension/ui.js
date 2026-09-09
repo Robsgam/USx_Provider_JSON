@@ -404,7 +404,7 @@
         const order = Object.keys(trigs).sort((a, b) => (a === 'control-normal' ? -1 : b === 'control-normal' ? 1 : 0));
         order.forEach((k, i) => {
           const o = document.createElement('option');
-          o.value = k; o.textContent = k; o.title = trigs[k];
+          o.value = k; o.textContent = trigs[k].label; o.title = trigs[k].setup;
           if (i === 0) o.selected = true;
           awTrig.appendChild(o);
         });
@@ -414,7 +414,13 @@
       // describe what the OPERATOR must have set up (simulation off, a user with no State ID),
       // and a run made under the wrong setup is a mislabelled record, not a failed one.
       const awMeans = el('div', 'font:10px/1.35 system-ui;color:#9cf;margin:2px 0 4px');
-      const showMeans = () => { awMeans.textContent = (trigs && trigs[awTrig.value]) ? trigs[awTrig.value] : ''; };
+      // Show the SETUP, prefixed so it reads as an instruction rather than a description. This is
+      // the line that answers "what am I supposed to have done before clicking?" -- the question
+      // my chat instructions failed to answer.
+      const showMeans = () => {
+        const t = trigs && trigs[awTrig.value];
+        awMeans.textContent = t ? ('SET UP: ' + t.setup + '  [' + t.ticket + ']') : '';
+      };
       awTrig.onchange = showMeans; showMeans();
       awWrap.appendChild(awMeans);
 
@@ -482,9 +488,29 @@
           ' — instantaneous, and Send/checkbox state is only meaningful NEXT TO A CONTROL RUN.';
       };
       awWrap.appendChild(awProbe);
+
+      // HOVER THE ICON. Its own button, because the message is the half of the ticket that was
+      // unreachable: the icon carries no title and no aria-label, so its text exists only in a
+      // tooltip portal that is absent from the DOM until the icon is hovered.
+      const awHover = el('button', BTN + ';' + BLU, '🔍 Hover the icon → read its message');
+      awHover.onclick = async () => {
+        if (!window.__usxAuthHover) { awStatus.style.color = '#f77'; awStatus.textContent = '✖ authwatch.js is stale — RELOAD the extension (chrome://extensions → Reload).'; return; }
+        awHover.disabled = true;
+        awStatus.style.color = '#fa0'; awStatus.textContent = '● hovering each icon near "Queries:"…';
+        try {
+          const hits = await window.__usxAuthHover();
+          const msgs = hits.reduce((a, h) => a.concat((h && h.tooltipText) || []), []);
+          awStatus.style.color = msgs.length ? '#7c7' : '#fa0';
+          awStatus.textContent = msgs.length
+            ? '✔ message found: ' + msgs.map((m) => '"' + m + '"').join(' / ')
+            : '— no tooltip appeared on hover. Not proof of none: it may need a real pointer, or the text may live somewhere these selectors do not reach.';
+        } catch (e) { awStatus.style.color = '#f77'; awStatus.textContent = '✖ ' + e.message; }
+        finally { awHover.disabled = false; }
+      };
+      awWrap.appendChild(awHover);
       awWrap.appendChild(awStatus);
       awWrap.appendChild(el('div', 'color:#999;font-size:11px;margin-top:2px',
-        'Run control-normal FIRST, then the trigger. One run cannot conclude: the selectors were written without ever having seen the icon, so a negative needs a positive control beside it.'));
+        'Pick what you have ALREADY set up, then Watch. Do the CONTROL (E) too — without it, a disabled Send button cannot be told from an ordinary empty form.'));
       p.appendChild(awWrap);
     }
     return p;

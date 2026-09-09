@@ -484,5 +484,5 @@
   // Prose belongs in comments like this one, where an apostrophe cannot terminate anything.
   // The per-change narrative lives in the commit body and README.md, not in a runtime string.
   console.log('%c[USx]', 'color:#0a0;font-weight:bold',
-    'usx_lib loaded. BUILD 2026-09-09c -- manifest 0.5.7. See README.md + git log for what changed.');
+    'usx_lib loaded. BUILD 2026-09-09d -- manifest 0.5.8. See README.md + git log for what changed.');
 })();

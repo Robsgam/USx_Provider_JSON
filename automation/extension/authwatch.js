@@ -155,6 +155,86 @@
     return out;
   }
 
+  // ── 1b. THE MESSAGE IS IN A TOOLTIP, AND A TOOLTIP DOES NOT EXIST UNTIL YOU HOVER ────────
+  // Rob, 2026-09-09: "i have the warning indicator when you hover over the indicator this is the
+  // displayed error". That one sentence explains an empty field I had already shipped: the live
+  // icon has title=null, aria-label=null and textContent=null, so `warnIconText` came back [] --
+  // not because there is no message, but because a Chakra tooltip renders its text into a
+  // SEPARATE PORTAL ELEMENT that is absent from the DOM while the icon is not hovered. Reading
+  // attributes can never find it. SQA-217's fail condition is "icon doesn't appear WITH CORRECT
+  // MESSAGE", so the message is half the ticket and it was unreachable.
+  //
+  // DIFF-BASED, deliberately: snapshot the tooltip-ish elements BEFORE hovering, hover, snapshot
+  // again, and report only what is NEW. Otherwise an unrelated tooltip already open somewhere on
+  // the page would be attributed to this icon -- the same false-attribution shape as reading a
+  // sibling combination's optionals.
+  //
+  // NOTE ON "READ-ONLY": this DISPATCHES HOVER EVENTS, so authwatch is no longer strictly passive.
+  // It still never fills a field and never clicks Send, which is what the ARM switch protects
+  // against -- but the claim is now "cannot submit", not "touches nothing".
+  const TIP_SEL = '[role="tooltip"], .chakra-tooltip, [id^="tooltip"], [id*="tooltip"], [data-popper-placement], [class*="tooltip"], [class*="Tooltip"], [class*="popover"]';
+  function tipSet() {
+    const m = new Map();
+    for (const e of document.querySelectorAll(TIP_SEL)) {
+      const t = (e.textContent || '').trim().replace(/\s+/g, ' ');
+      if (t) m.set(e, t);
+    }
+    return m;
+  }
+  function fire(el, types) {
+    for (const ty of types) {
+      try {
+        const E = (ty.indexOf('pointer') === 0) ? PointerEvent : MouseEvent;
+        el.dispatchEvent(new E(ty, { bubbles: true, cancelable: true, view: window }));
+      } catch (e) {
+        try { el.dispatchEvent(new MouseEvent(ty, { bubbles: true, cancelable: true })); } catch (e2) {}
+      }
+    }
+  }
+  async function hoverCapture() {
+    const lbl = queriesLabel();
+    let targets = iconsNear(lbl).length ? null : null;
+    // Re-collect the live ELEMENTS (iconsNear returns snapshots, not nodes).
+    const scopes = [lbl, lbl && lbl.parentElement, lbl && lbl.parentElement && lbl.parentElement.parentElement].filter(Boolean);
+    const seen = new Set(); const els = [];
+    for (const s of scopes) {
+      for (const c of s.querySelectorAll('svg, img, i, [class*="icon"], [class*="Icon"], [aria-label], [title], [data-icon]')) {
+        if (seen.has(c)) continue; seen.add(c); els.push(c);
+      }
+    }
+    const out = [];
+    for (const c of els) {
+      const before = tipSet();
+      // Hover the icon AND its wrapper: a Chakra Tooltip attaches to the TRIGGER element, which is
+      // commonly the icon's parent rather than the svg itself.
+      for (const h of [c, c.parentElement].filter(Boolean)) {
+        fire(h, ['pointerover', 'pointerenter', 'mouseover', 'mouseenter', 'mousemove']);
+      }
+      await sleep(450);
+      const after = tipSet();
+      const gained = [];
+      after.forEach((txt, el) => { if (!before.has(el)) gained.push(txt); });
+      // aria-describedby is the standard trigger->tooltip link once the tooltip is open.
+      const desc = [];
+      for (const h of [c, c.parentElement].filter(Boolean)) {
+        const id = h.getAttribute && h.getAttribute('aria-describedby');
+        if (id) for (const one of id.split(/\s+/)) {
+          const t = document.getElementById(one);
+          if (t) { const s2 = (t.textContent || '').trim().replace(/\s+/g, ' '); if (s2) desc.push(s2); }
+        }
+      }
+      for (const h of [c, c.parentElement].filter(Boolean)) fire(h, ['mouseout', 'mouseleave', 'pointerleave']);
+      await sleep(120);
+      if (gained.length || desc.length) {
+        out.push(Object.assign(snap(c), {
+          tooltipText: gained.concat(desc.filter((d) => gained.indexOf(d) < 0)),
+          via: gained.length ? 'portal-diff' : 'aria-describedby'
+        }));
+      }
+    }
+    return out;
+  }
+
   // ── 2. blocking notices ───────────────────────────────────────────────────
   // Reuses the container selectors driver.js's RMS recon already proved find
   // Chakra toasts/alerts, and WIDENS the phrase set to the authorization family
@@ -258,7 +338,8 @@
     }
     const out = Object.assign({
       surface: surface(), trigger: o.trigger || null,
-      triggerMeans: o.trigger ? TRIGGERS[o.trigger] : null,
+      triggerMeans: o.trigger ? TRIGGERS[o.trigger].setup : null,
+      triggerTicket: o.trigger ? TRIGGERS[o.trigger].ticket : null,
       interpretable: !!o.trigger
     }, probeOnce());
     console.log(TAG, CSS, out);
@@ -271,17 +352,46 @@
   // a negative result meaningful: a probe that finds nothing under TC-10 alone
   // is indistinguishable from a broken probe, but one that finds nothing under
   // TC-10 AND something under TC-12 has proven its own selectors.
+  // EACH ENTRY CARRIES THE SETUP THE OPERATOR MUST HAVE DONE, IN PLAIN ENGLISH.
+  // Rob, 2026-09-09: "your instructions were not clear" -- and they were not. I handed over enum
+  // slugs (`tc10-sim-off`) and never said what to CONFIGURE for each, which is exactly the
+  // "translate console names into GUI buttons, do not echo them" rule. The dropdown now shows
+  // `label`; `setup` is what you must have already done; `ticket` is the authority. If the panel
+  // cannot be operated without a chat message beside it, the panel is not finished.
   const TRIGGERS = {
-    'tc10-sim-off':    'SQA-215/145: Settings > Universal Search, device simulation OFF (dex.device_simulation_mode / dex.simulation_mode / dex.local_simulation_mode). TENANT-WIDE -- turn it back ON immediately.',
-    'tc12-no-stateid': 'SQA-217: signed in as a user with NO State User ID assigned. PER-USER, so it does not disturb the tenant. Expects the icon WITH a message on RMS; blocked on CAD/FR; and NO USX entry point at all on FR.',
-    'tc13-image-reason': 'SQA-218: ImageIndicator="Y-yes" with ReasonCode blank must block submission. PER-FORM and deterministic -- but only reproducible where the provider builds a ReasonCode control (TX_TLETS only; IL_LEADS_OFML metadata defines none).',
-    'control-normal':  'No trigger applied -- a fully authorized user with simulation ON. The baseline every other run is compared against.'
+    'no-device-id': {
+      label: 'A - No device ID configured (simulation OFF)',
+      setup: 'Device simulation is OFF and this device has NO device ID configured. This is the exact condition RND-71625 describes, so it is the run that matters most.',
+      ticket: 'RND-71625'
+    },
+    'tc10-sim-off': {
+      label: 'B - Simulation turned OFF (device IS registered)',
+      setup: 'Settings > Universal Search: turn OFF device simulation (dex.device_simulation_mode / dex.simulation_mode / dex.local_simulation_mode). TENANT-WIDE -- turn it back ON straight after.',
+      ticket: 'SQA-215'
+    },
+    'tc12-no-stateid': {
+      label: 'C - Signed in as a user with NO State User ID',
+      setup: 'Sign in as a user that has no State User ID assigned. PER-USER, so it does not disturb the tenant. Expect the icon WITH a message on RMS, blocking on CAD/FR, and NO Universal Search at all on First Responder.',
+      ticket: 'SQA-217'
+    },
+    'tc13-image-reason': {
+      label: 'D - NCIC Image = Y with Reason Code blank',
+      setup: 'On the person form set NCIC Image to Y and leave Reason Code empty; submission must be blocked. Only reproducible where the provider builds a ReasonCode control -- TX_TLETS only, IL_LEADS_OFML metadata defines none.',
+      ticket: 'SQA-218'
+    },
+    'control-normal': {
+      label: 'E - CONTROL: everything normal (simulation ON)',
+      setup: 'A fully authorized user, device simulation ON, nothing special configured. This is the BASELINE every other run is compared against -- without it, a disabled Send button cannot be told from an ordinary empty form.',
+      ticket: 'baseline'
+    }
   };
 
   // EXPORTED so ui.js can build its dropdown FROM this list rather than restating it.
   // A second copy of an enum in the panel would drift from the one the recorder validates
   // against, and the failure would be a trigger the button offers and the function rejects.
   window.__usxAuthTriggers = TRIGGERS;
+  // Standalone hover capture, so the message can be read without committing to a full watch.
+  window.__usxAuthHover = hoverCapture;
 
   // ── the watch ─────────────────────────────────────────────────────────────
   window.__usxAuthWatch = async function (opts) {
@@ -316,6 +426,10 @@
     }
 
     const last = probeOnce();
+    // Hover LAST, after the passive window has closed, so dispatching events cannot influence any
+    // of the timing measurements above.
+    let hover = [];
+    try { hover = await hoverCapture(); } catch (e) { hover = [{ error: e.message }]; }
     // VERDICT is deliberately descriptive, not pass/fail. Whether a warning is DUE
     // depends on the tenant's simulation settings, which this page cannot read -- so
     // calling an absence a FAILURE here would be asserting something unmeasured.
@@ -332,6 +446,10 @@
       windowMs: o.seconds * 1000,
       samples: samples.length,
       usxEntryPointFound: last.entryPoint.found,
+      // The message half of SQA-217's fail condition. Absent from attributes on this build --
+      // it lives in a hover-only tooltip portal.
+      hoverMessagesFound: hover.filter((h) => h && h.tooltipText && h.tooltipText.length).length,
+      hoverMessages: hover.reduce((a, h) => a.concat((h && h.tooltipText) || []), []),
       // The exact shape RND-71625 reports on RMS: nothing at all.
       // GUARDED on the entry point existing. SQA-217 says First Responder shows NO
       // USX icon at all for a user without a State ID -- on that surface "no warning"
@@ -346,7 +464,8 @@
       capturedAt: new Date().toISOString(),
       note: o.note,
       trigger: o.trigger || null,
-      triggerMeans: o.trigger ? TRIGGERS[o.trigger] : null,
+      triggerMeans: o.trigger ? TRIGGERS[o.trigger].setup : null,
+      triggerTicket: o.trigger ? TRIGGERS[o.trigger].ticket : null,
       simulationSettingsReadable: false,   // stated, not implied: this page cannot see dex.*simulation* settings
       surface: sfc, verdict, firstSeen, samples, finalSnapshot: last
     };
