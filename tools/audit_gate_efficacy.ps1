@@ -624,14 +624,24 @@ $MUTS = @(
      # the provider JSON ...; logs and the test plan still come from the provider directory". Looking
      # in the replica would return $false because the FILE IS ABSENT, i.e. the right verdict for the
      # wrong reason, and would keep reading INVALID even after a Boat guardrail test was added.
-     Valid={ param($j)
-             $pl = Join-Path $srcDir 'logs'
-             $pf = @(Get-ChildItem $pl -Filter 'NJ_NJCJIS_TEST_PLAN_v*.json' -File -ErrorAction SilentlyContinue |
-                     Sort-Object Name -Descending | Select-Object -First 1)
-             if (-not $pf.Count) { throw 'no NJ TEST_PLAN found -- cannot establish the precondition' }
-             $p = Get-Content $pf[0].FullName -Raw | ConvertFrom-Json
-             @($p.tests | Where-Object { "$($_.kind)" -eq 'guardrail' -and "$($_.entity)" -eq 'Boat' }).Count -gt 0 }
-     ValidWhy="NJ's plan has NO kind='guardrail' test on Boat (only Vehicle + Person), so audit_log_content's guardrail-wire check never evaluates a Boat pool change. Re-aim at Vehicle or Person -- do NOT add a Boat guardrail test: NJ's devdoc permits RegistrationNumber to ride along on the hull query, so winner-only XML would FAIL on a correct build."
+     # RECLASSIFIED N/A 2026-09-09, after MEASURING that it is unhostable ANYWHERE.
+     # The instruction above said "re-aim at Vehicle or Person". That was investigated and it does
+     # not work, for a structural reason worth writing down so nobody re-attempts it:
+     #   A -Path mutation can only change the WINNER'S POOL (set[] u any[] from the JSON). The
+     #   losing identifiers, the winner ids and the wire itself all come from the PLAN and the
+     #   COMMITTED LOGS, which -Path does not touch. So the ONLY way a pool removal can cause a
+     #   FAIL is if a losing identifier is ON THE WIRE and exempted ONLY by the pool.
+     #   NJ's two guardrails are both CLEAN -- Vehicle RANDFULL's wire carries no VIN, Person
+     #   FULLN's carries no Name -- so there is no exemption to withdraw on either.
+     #   A 20-provider sweep of every guardrail plan test found **ZERO** cases portfolio-wide where
+     #   the pool exemption changes a verdict. The exemption is currently INERT everywhere.
+     # KEEP THE EXEMPTION REGARDLESS: it is a guard against a FALSE FAIL when a provider legitimately
+     # rides an optional identifier along (the live NJ v4.15 Boat case that motivated it). Inert is
+     # not dead -- removing it would re-break Rob's devdoc-order ruling the moment such a plan test
+     # exists. What is NOT true any more is that this mutation proves the guard works; nothing can,
+     # until a provider's plan carries a guardrail of that shape.
+     NaIf={ param($j) $true }
+     NaWhy="UNHOSTABLE PORTFOLIO-WIDE, not stale and not re-aimable. A -Path mutation can only change the winner's POOL; losers/winner-ids/wire come from the plan + committed logs. Failing needs a losing identifier ON THE WIRE exempted ONLY by the pool -- a 20-provider sweep found ZERO such guardrails (NJ Vehicle sends no VIN, NJ Person sends no Name). Do NOT add a Boat guardrail test to NJ: its devdoc permits RegistrationNumber on the hull query, so winner-only XML would FAIL on a correct build. The exemption stays as a false-FAIL guard; it is inert, not dead."
      Mut={ param($j) $c=Get-Cfg $j '*_BoatQuery'; $cm=Get-Combo $c 'QBN'
            $cm.requirements.any=@(@($cm.requirements.any) | Where-Object { $_ -ne 'RegistrationNumber' }) } }
 
@@ -720,6 +730,13 @@ $MUTS = @(
      # the mutation used to die with "Cannot bind argument to parameter 'InputObject'", which reads
      # like a broken harness. Throw a clear message instead: the gate is not blind, there is simply
      # nothing for it to check on that provider, and its silence there proves nothing either way.
+     # DECLARED N/A rather than left to throw. The throw above produced the right words under the
+     # wrong verdict -- "[INVALID] mutation could not be applied" -- which counts toward the INVALID
+     # total that ENGINEERING_STANDARD 5 requires to be ZERO. So a provider whose devdoc simply does
+     # not call for a VehicleMakeCode control could never reach "finished", an un-clearable FAIL
+     # (LAW 2b). Now it reports [N/A] and is counted separately. 6 of 20 providers are in this class.
+     NaIf={ param($j) -not (Get-Node $j 'Vehicle' 'VehicleMakeCode') }
+     NaWhy='this provider builds NO VehicleMakeCode control (form or QIDM) -- verified 2026-08-01, its devdoc COMBINATIONS do not require one. The gate is not blind; there is nothing here to check, and its silence proves nothing either way. Building one to satisfy this mutation would be OVER-BUILDING.'
      Mut={ param($j) $n=Get-Node $j 'Vehicle' 'VehicleMakeCode'
            if (-not $n) { throw "N/A -- this provider has no VehicleMakeCode form field, so the VehicleMakeCode gate has nothing to check here (not a gate defect, not a harness defect)" }
            # Craft.js stores type as {"resolvedName":"FormSelect"}; older shapes use a bare string.
@@ -802,7 +819,7 @@ if ($ownCount -gt 0) {
 }
 
 # ── run ───────────────────────────────────────────────────────────────────────────────
-$killed=0; $survived=0; $invalid=0
+$killed=0; $survived=0; $invalid=0; $na_count=0
 Emit "" $null
 Emit ("  {0,-26} {1,-34} {2}" -f 'MUTATION','GATE','VERDICT') $null
 Emit ("  " + ("-"*88)) $null
@@ -855,6 +872,35 @@ foreach ($m in $MUTS) {
     # A mutation MAY declare Valid={ param($j) ... } returning $true when its defect is still
     # creatable, plus ValidWhy for the message. Absent = assumed valid, so every existing row keeps
     # its current behaviour and this adds no verdict churn.
+    # NOT-APPLICABLE IS NOT THE SAME AS STALE, and conflating them cost real time.
+    # Added 2026-09-09. `INVALID` was carrying two opposite meanings:
+    #   STALE -- the mutation USED to create its defect and no longer can. A real problem: it hides
+    #            a gate nobody is testing, and a stale mutation is indistinguishable from a blind
+    #            gate. Must be fixed.
+    #   N/A   -- this provider legitimately has no such construct, so there is nothing to mutate.
+    #            NOT a problem, and NOT fixable: "fixing" it means BUILDING something the provider's
+    #            authority does not call for, which is the OVER-BUILD defect class.
+    # ENGINEERING_STANDARD 5 requires 0 INVALID, and with both classes in one bucket that bar was
+    # unreachable on providers with a legitimate N/A -- an un-clearable FAIL, which LAW 2b calls
+    # noise. Measured on NJ_NJCJIS: BOTH its INVALIDs were N/A, not stale.
+    #   * vehiclemake-as-input -- NJ builds NO VehicleMakeCode field (its devdoc does not require
+    #     one), so verify_build's check has nothing to see here.
+    #   * nj-guardrail-wire-leak -- unhostable ANYWHERE: a -Path mutation can only change the
+    #     winner's POOL, while the losing ids, winner ids and wire all come from the plan and the
+    #     committed logs. Failing needs a losing identifier that is ON THE WIRE and exempted ONLY by
+    #     the pool, and a 20-provider sweep found ZERO such guardrails. It is not re-aimable.
+    # N/A is still COUNTED AND PRINTED separately so it can never become a quiet dumping ground,
+    # and it must be DECLARED by the mutation with a reason -- silence still reads as STALE.
+    if ($m.NaIf) {
+        $nj = $pristine | ConvertFrom-Json
+        $na = $false
+        try { $na = [bool](& $m.NaIf $nj) } catch { $na = $false }
+        if ($na) {
+            $why = if ($m.NaWhy) { $m.NaWhy } else { 'this provider has no such construct -- nothing to mutate' }
+            Emit ("  {0,-26} {1,-34} [N/A] {2}" -f $m.Id, $m.Gate, $why) 'DarkGray'
+            $na_count++; continue
+        }
+    }
     if ($m.Valid) {
         $vj = $pristine | ConvertFrom-Json
         $ok = $false
@@ -892,12 +938,20 @@ Reset-Mutant
 $total = $killed + $survived
 Emit "" $null
 Emit "----------------------------------------------------------------" 'Cyan'
-Emit "  KILLED $killed / $total   SURVIVED $survived   INVALID $invalid" $(if($survived -or $invalid){'Red'}else{'Green'})
+# N/A is printed in the totals ALWAYS, including when it is 0, so a reader can tell "no
+# not-applicable rows" from "this build does not report them" -- print the denominator.
+Emit ("  KILLED $killed / $total   SURVIVED $survived   INVALID(stale) $invalid   N/A $na_count") $(if($survived -or $invalid){'Red'}else{'Green'})
 if ($survived -eq 0 -and $invalid -eq 0 -and $total -gt 0) {
     Emit "  Every gate in this suite demonstrably FAILS on its own defect class." 'Green'
     Emit "  That is what makes their PASS meaningful." 'Green'
+    if ($na_count -gt 0) {
+        Emit "  $na_count row(s) are N/A: this provider has no such construct, so there is nothing to" 'DarkGray'
+        Emit "  mutate. NOT a gap and NOT fixable -- building the construct to satisfy a mutation is" 'DarkGray'
+        Emit "  the OVER-BUILD defect class. Distinct from INVALID(stale), which IS a real problem." 'DarkGray'
+    }
 } else {
     Emit "  A SURVIVED row means that gate cannot see that defect -- its green light proves nothing there." 'Red'
+    if ($invalid) { Emit "  An INVALID(stale) row means the mutation no longer creates its defect -- fix the MUTATION." 'Red' }
 }
 Emit "----------------------------------------------------------------" 'Cyan'
 Emit "" $null
