@@ -1,0 +1,316 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>USx Provider JSON - Project Guide</title>
+<style>
+@page { size: Letter; margin: 16mm 14mm; }
+body { font: 10.5pt/1.45 "Segoe UI", system-ui, sans-serif; color:#1a1a1a; max-width:190mm; margin:0 auto; }
+h1 { font-size:22pt; margin:0 0 2mm; color:#0b3d63; }
+h2 { font-size:14pt; margin:9mm 0 2mm; color:#0b3d63; border-bottom:2px solid #0b3d63; padding-bottom:1mm; page-break-after:avoid; }
+h3 { font-size:11.5pt; margin:5mm 0 1.5mm; color:#1a5c8f; page-break-after:avoid; }
+p, li { margin:0 0 2mm; }
+code { font-family:Consolas,monospace; font-size:9.2pt; background:#f2f4f7; padding:0.5mm 1mm; border-radius:2px; }
+pre { font-family:Consolas,monospace; font-size:8.8pt; background:#f7f8fa; border-left:3px solid #b8c4d0; padding:2mm 3mm; white-space:pre-wrap; }
+table { border-collapse:collapse; width:100%; margin:2mm 0 3mm; font-size:9.2pt; page-break-inside:avoid; }
+th { background:#0b3d63; color:#fff; text-align:left; padding:1.4mm 2mm; font-weight:600; }
+td { border-bottom:1px solid #dde3ea; padding:1.4mm 2mm; vertical-align:top; }
+tr:nth-child(even) td { background:#fafbfc; }
+.lead { font-size:11.5pt; color:#333; background:#eef4f9; padding:3mm 4mm; border-left:4px solid #0b3d63; margin:0 0 5mm; }
+.warn { background:#fff6e5; border-left:4px solid #d78700; padding:2.5mm 3.5mm; margin:3mm 0; }
+.key { background:#eaf6ec; border-left:4px solid #2a8a55; padding:2.5mm 3.5mm; margin:3mm 0; }
+.stop { background:#fdeded; border-left:4px solid #a33; padding:2.5mm 3.5mm; margin:3mm 0; }
+.small { font-size:8.8pt; color:#555; }
+.toc { columns:2; font-size:9.5pt; }
+.pb { page-break-before:always; }
+ul,ol { margin-top:0; padding-left:6mm; }
+</style></head><body>
+
+<h1>USx Provider JSON &mdash; Project Guide</h1>
+<p class="small">A handover guide for whoever runs this next. Written for someone who has never seen the project.<br>
+Generated 2026-09-09 &middot; describes the repository at <code>USx_Provider_JSON</code> &middot; 20 providers, 121 tools.</p>
+
+<div class="lead">
+<strong>What this project does, in one paragraph.</strong> A police officer in a patrol car needs to look up a
+licence plate, a driver, a gun, or a boat in their state law-enforcement database. Mark43 software shows them a
+search form. <em>This repository holds the configuration files that define those forms and translate what the
+officer types into the exact message each state system expects.</em> One configuration per state system
+(a &ldquo;provider&rdquo;). Get it right and the officer gets an answer. Get it subtly wrong and the query
+silently returns nothing &mdash; or returns the wrong record.
+</div>
+
+<h2>Contents</h2>
+<div class="toc">
+1. The mental model<br>
+2. Repository map<br>
+3. The documents at the root<br>
+4. Anatomy of a provider<br>
+5. The two authorities (read twice)<br>
+6. The three commands<br>
+7. The tools, by job<br>
+8. What &ldquo;done&rdquo; means<br>
+9. How testing actually happens<br>
+10. Traps that have cost real time<br>
+11. Your first week<br>
+12. Glossary<br>
+</div>
+
+<h2>1. The mental model</h2>
+<p>Four things happen between the officer and the state. This chain explains every file in the repository.</p>
+<pre>OFFICER types into a FORM
+        |
+        v
+COMBINATION matching   - the config decides WHICH query the typed fields amount to
+        |
+        v
+WIRE XML               - the request actually sent to the state system
+        |
+        v
+RESPONSE               - mapped back onto the officer screen</pre>
+
+<h3>The form</h3>
+<p>Input boxes and dropdowns, defined in the provider JSON file. Called a <strong>QIF</strong> (Query Input
+Form). Each control has a <code>fieldId</code>, for example <code>LicensePlateNumber</code>.</p>
+
+<h3>The combination &mdash; the concept that matters most</h3>
+<p>A state system does not accept &ldquo;whatever the officer typed&rdquo;. It offers a fixed menu of specific
+queries, each requiring specific fields. A <strong>combination</strong> declares one of them:</p>
+<table>
+<tr><th>Part</th><th>Meaning</th></tr>
+<tr><td><code>set[]</code></td><td><strong>Required.</strong> Every field listed must be filled or this query cannot run.</td></tr>
+<tr><td><code>any[]</code></td><td><strong>Optional.</strong> Sent if filled, ignored if not. Does not affect which query runs.</td></tr>
+<tr><td><code>conditions[]</code></td><td><strong>Gates.</strong> For example &ldquo;only use this query if no VIN was entered&rdquo;. This is how priority is enforced.</td></tr>
+<tr><td><code>keyReference</code></td><td>An internal name for the combination. <em>Never sent to the state.</em> A label only.</td></tr>
+</table>
+<div class="key"><strong>The single most important rule in the project:</strong> the platform fires the
+<strong>FIRST</strong> combination whose requirements are met. Order is therefore not cosmetic &mdash; it is
+logic. If a loose combination sits above a specific one, it steals every search and the specific one can never
+run. Such a combination is called a <strong>dead combo</strong>, and several tools exist purely to find them.</div>
+
+<h2 class="pb">2. Repository map</h2>
+<table>
+<tr><th>Path</th><th>What it is</th><th>Who edits it</th></tr>
+<tr><td><code>providers/</code></td><td>The 20 deliverables. One folder per state system.</td><td>Build scripts, not you directly</td></tr>
+<tr><td><code>tools/</code></td><td>121 PowerShell scripts: builders, validators, auditors, reporters.</td><td>You, carefully</td></tr>
+<tr><td><code>tools/_*.ps1</code></td><td>18 <strong>shared modules</strong> (underscore prefix). Included by other scripts; never run directly.</td><td>You, very carefully &mdash; a change here touches all 20</td></tr>
+<tr><td><code>tools/_probes/</code></td><td>8 one-off investigation scripts that proved worth keeping.</td><td>You</td></tr>
+<tr><td><code>tools/config/</code></td><td>6 JSON lookup tables used by the tools.</td><td>Rarely</td></tr>
+<tr><td><code>knowledge-base/</code></td><td>17 reference documents. <strong>The accumulated hard-won knowledge.</strong></td><td>You, whenever you learn something</td></tr>
+<tr><td><code>automation/extension/</code></td><td>A Chrome extension (10 files) that drives the real forms and captures evidence.</td><td>You</td></tr>
+<tr><td><code>.claude/skills/</code></td><td>9 procedure documents written for the AI assistant, but plain enough for a human to use.</td><td>You</td></tr>
+</table>
+
+<h3>What is in the knowledge base</h3>
+<table>
+<tr><th>File</th><th>Use</th></tr>
+<tr><td><code>README.txt</code></td><td>Index of the other sixteen. Start here.</td></tr>
+<tr><td><code>BUILD_RULES.txt</code></td><td>The numbered rules a build must obey.</td></tr>
+<tr><td><code>PLATFORM_CONSTRAINTS.txt</code></td><td>Anti-patterns and platform limitations &mdash; things that do not work and why.</td></tr>
+<tr><td><code>QIDM_REFERENCE.txt</code></td><td>How combinations, requirements and conditions behave.</td></tr>
+<tr><td><code>FIELD_REFERENCE.txt</code></td><td>Per-field conventions: names, state handling, dates, composite names.</td></tr>
+<tr><td><code>TOOL_REFERENCE.txt</code></td><td><strong>Why each tool exists</strong>, the incident that produced it, and what its PASS does and does not prove.</td></tr>
+<tr><td><code>TESTING_REQUIREMENTS.txt</code></td><td>The testing rules and gates.</td></tr>
+<tr><td><code>RULE_HANDLERS.txt</code>, <code>UNIVERSAL_SEARCH_HANDLERS.txt</code></td><td>The platform behaviours available for wiring fields. Check the second before concluding a capability does not exist.</td></tr>
+<tr><td><code>IMPORT_ERRORS.txt</code></td><td>Import error text mapped to its cause.</td></tr>
+<tr><td>others</td><td>Jira templates, production triage, per-provider constraints, a platform bug report.</td></tr>
+</table>
+
+<h2>3. The documents at the root</h2>
+<p>Read in this order. The first two are not optional.</p>
+<table>
+<tr><th>File</th><th>Read it because</th></tr>
+<tr><td><code>ENGINEERING_STANDARD.md</code></td><td><strong>Read first.</strong> Defines what &ldquo;done&rdquo; means: the three laws and the six lifecycle stages.</td></tr>
+<tr><td><code>CLAUDE.md</code></td><td>The operating manual &mdash; build rules, field conventions, tool index, workflow. Large; skim the headings and use it as a reference.</td></tr>
+<tr><td><code>SESSION_STATE.md</code></td><td><strong>Where things stand right now.</strong> Capped at 120 lines so it stays readable. Current state only, no history.</td></tr>
+<tr><td><code>providers/IMPORT_LEDGER.md</code></td><td>Which version is installed on which customer system. <strong>Never answer &ldquo;where is X installed?&rdquo; from memory.</strong></td></tr>
+<tr><td><code>FINDINGS_REGISTER.md</code></td><td>Open problems, and &mdash; importantly &mdash; <em>rejected</em> fixes with the measurements that rejected them. Read before re-attempting anything.</td></tr>
+<tr><td><code>REBUILD_TRACKER.md</code> / <code>REVERSE_PROPAGATION_LOG.md</code></td><td>Which providers still owe a pickup of a shared fix.</td></tr>
+<tr><td><code>CHANGELOG.md</code> / <code>DEX_TICKETS.md</code></td><td>Release history and the Jira ticket map.</td></tr>
+<tr><td><code>NEW_PROVIDER_PROCEDURE.txt</code></td><td>Step by step for adding a 21st provider.</td></tr>
+</table>
+<div class="key"><strong>The three laws</strong> (from <code>ENGINEERING_STANDARD.md</code>):
+<ol>
+<li><strong>The form comes first.</strong> If the officer cannot use it, nothing else matters.</li>
+<li><strong>A gate that cannot fail is not a gate.</strong> A check that always passes proves nothing &mdash; which is why this project deliberately breaks its own configs to confirm the checks notice.</li>
+<li><strong>Authority is directional, and both directions must be checked.</strong> &ldquo;Everything we built is allowed&rdquo; and &ldquo;everything required was built&rdquo; are different questions.</li>
+</ol></div>
+
+<h2 class="pb">4. Anatomy of a provider</h2>
+<p>All 20 folders share one shape. Using <code>providers/NJ_NJCJIS/</code> as the example:</p>
+<table>
+<tr><th>Path</th><th>Meaning and use</th></tr>
+<tr><td><code>NJ_NJCJIS_v4.17.json</code></td><td><strong>THE DELIVERABLE.</strong> The file imported into the customer system. The version sits in the filename, so a version is never silently overwritten. <em>Exactly one JSON lives in the provider root.</em></td></tr>
+<tr><td><code>source/*.pdf</code> and <code>_DEVDOC.txt</code></td><td>The state developer manual. <strong>Authority on WHICH queries exist.</strong></td></tr>
+<tr><td><code>source/*.xml</code></td><td>The platform metadata. <strong>Authority on WHAT FIELDS each query needs.</strong></td></tr>
+<tr><td><code>scripts/build_*.ps1</code></td><td>The program that generates the JSON. <strong>You never hand-edit the JSON &mdash; you edit this and rebuild.</strong></td></tr>
+<tr><td><code>docs/tracking/</code></td><td>Hand-maintained, updated every version. Detailed below.</td></tr>
+<tr><td><code>docs/reports/</code></td><td>16 auto-generated audit outputs. Disposable; regenerated on every build.</td></tr>
+<tr><td><code>docs/reference/</code></td><td>Derived from the metadata: field definitions, supported queries, captured tenant dropdowns, test values.</td></tr>
+<tr><td><code>docs/deliverables/</code></td><td><code>OFFICER_GUIDE_*.html/.pdf</code> &mdash; the plain-language sheet a police department actually reads.</td></tr>
+<tr><td><code>logs/&lt;Entity&gt;/</code></td><td><strong>The evidence.</strong> One file per test holding the real request and response captured from a live system.</td></tr>
+<tr><td><code>logs/_archive_pre_v*/</code></td><td>Evidence from superseded versions. A new version invalidates old evidence, so it is archived rather than deleted.</td></tr>
+</table>
+
+<h3>Inside <code>docs/tracking/</code></h3>
+<table>
+<tr><th>File</th><th>Purpose</th></tr>
+<tr><td><code>*_BUILD_NOTES.txt</code></td><td><strong>The source of truth for history.</strong> What changed each version, and why.</td></tr>
+<tr><td><code>CHANGELOG_*.md</code></td><td>Auto-generated from BUILD_NOTES. Do not hand-edit.</td></tr>
+<tr><td><code>*_STATUS.txt</code></td><td>The test matrix and current state.</td></tr>
+<tr><td><code>*_SQVR.txt</code></td><td>Supported Query Validation Report &mdash; every query path and whether it is confirmed working.</td></tr>
+<tr><td><code>*_ACCEPTED_DIVERGENCES.txt</code></td><td><strong>Reasoned exceptions.</strong> Where the build deliberately differs from an authority, with the evidence. This is what stops a known, accepted difference from re-appearing as a fresh problem forever.</td></tr>
+<tr><td><code>PENDING_UPDATES.txt</code></td><td>Work that <em>blocks</em> this provider. <strong>Only lines WITHOUT a leading <code>#</code> block anything</strong> &mdash; commented lines are retired records kept for their reasoning.</td></tr>
+<tr><td><code>DEX_TICKET.md</code></td><td>Pointer to the Jira ticket and the release notes posted there.</td></tr>
+<tr><td><code>JSON_INVENTORY.md</code></td><td>Every version ever produced.</td></tr>
+<tr><td><code>BUILD_MANIFEST_*.json</code></td><td>Hashes used by <code>enforce</code> to confirm the reports match the shipped file.</td></tr>
+</table>
+
+<h2 class="pb">5. The two authorities &mdash; read this twice</h2>
+<div class="stop"><strong>Nearly every real defect this project has shipped came from misreading an authority,
+not from bad code.</strong> There are exactly two. They answer different questions, and confusing them is the
+classic mistake.</div>
+<table>
+<tr><th></th><th>The DEVDOC (state manual)</th><th>The METADATA (platform XML)</th></tr>
+<tr><td><strong>Answers</strong></td><td><em>Which</em> queries may we build?</td><td><em>What fields</em> does each query need?</td></tr>
+<tr><td><strong>Authority over</strong></td><td>Scope</td><td>Fields and requirements</td></tr>
+<tr><td><strong>Never use it for</strong></td><td>Deciding whether a field is mandatory</td><td>Deciding whether a query is in scope</td></tr>
+</table>
+<p>So: if the devdoc does not list a query as supported, do not build it &mdash; even if the metadata describes
+it. And if the metadata says a field is mandatory, it is mandatory &mdash; even if the state manual shows it in
+brackets as optional. Building to the manual in that case produces a request the system rejects.</p>
+
+<div class="warn"><strong>The trap that has caused the most damage.</strong> The generated file
+<code>docs/reference/*_METADATA_REFERENCE.txt</code> is convenient but <strong>flattens alternatives</strong>.
+Where a query genuinely has three valid field combinations, that file shows one merged row. Building to the
+merged row produces a request that <em>no</em> alternative accepts. For any &ldquo;is this field
+mandatory?&rdquo; question, open the raw XML and read the <code>&lt;Requirements&gt;</code> of that specific
+combination. This is the one sanctioned use of the raw XML.</div>
+
+<h2>6. The three commands</h2>
+<p>The whole workflow reduces to three words, and each has exactly one command that owns it.</p>
+<table>
+<tr><th>Word</th><th>Command</th><th>What happens</th></tr>
+<tr><td><strong>build</strong></td><td><code>tools\build_phase1.ps1 -Provider NAME</code></td><td>Hands off. Proves the config against both authorities before a human is asked for anything: every documented query built, every optional actually transmitted, priority correct, requirements faithful, and the checks themselves verified able to fail.</td></tr>
+<tr><td><strong>test</strong></td><td><code>tools\test_phase2.ps1 -Provider NAME</code><br>then the same with <code>-PostIngest</code></td><td>Runs the real forms on a real system through the browser extension, captures the actual requests, then verifies the captured evidence.</td></tr>
+<tr><td><strong>finalize</strong></td><td><code>tools\enforce.ps1 -Provider NAME</code></td><td>The final gate. <strong>Exit code 0 is the definition of done.</strong> Then commit, push, and confirm the Jira entry and install record exist.</td></tr>
+</table>
+<p>Two conveniences: <code>tools\pipeline.ps1 -Provider NAME</code> chains a build with all its reports and
+audits; <code>tools\doctor.ps1</code> is a read-only health dashboard for the whole repository.</p>
+<div class="key"><strong>If <code>enforce.ps1</code> exits 0, the work is done. If it does not, fix what it
+names.</strong> There is no separate checklist to remember &mdash; removing that need is the entire point of the
+design.</div>
+
+<h2 class="pb">7. The tools, by job</h2>
+<p>121 scripts is a lot. You do not need them individually &mdash; you need to know which <em>job</em> each
+group does. The reasoning behind every one is in <code>knowledge-base/TOOL_REFERENCE.txt</code>.</p>
+<table>
+<tr><th>Job</th><th>Representative tools</th></tr>
+<tr><td><strong>Build the config</strong></td><td><code>providers/*/scripts/build_*.ps1</code>, with shared modules <code>_build_layout_helpers</code>, <code>_build_rms_bundle</code>, <code>_build_provider_helpers</code></td></tr>
+<tr><td><strong>Check structure</strong></td><td><code>validate.ps1</code> (six-phase structural validator), <code>verify_build.ps1</code></td></tr>
+<tr><td><strong>Check against the authorities</strong></td><td><code>audit_metadata</code>, <code>audit_devdoc_combinations</code>, <code>audit_devdoc_optionals</code>, <code>audit_requirement_fidelity</code>, <code>audit_supported_queries</code></td></tr>
+<tr><td><strong>Check the logic</strong></td><td><code>audit_combo_reachability</code> (dead combos), <code>audit_prefill_shadow</code>, <code>audit_devdoc_order</code>, <code>audit_wiring_closure</code> (does every control actually reach the wire?)</td></tr>
+<tr><td><strong>Check the evidence</strong></td><td><code>audit_log_content</code>, <code>audit_log_combo_attribution</code>, <code>audit_log_inflation</code> (are N logs really N distinct tests?), <code>audit_artifact_provenance</code></td></tr>
+<tr><td><strong>Check the checks</strong></td><td><code>audit_gate_efficacy</code> (breaks the config on purpose to confirm each check notices), <code>fuzz_gate_efficacy</code> (random breakage, aimed at nothing)</td></tr>
+<tr><td><strong>Report</strong></td><td><code>portfolio_status</code> (the canonical one-screen table), <code>report_mission_status</code>, <code>report_import_owed</code>, <code>render_officer_guide</code></td></tr>
+<tr><td><strong>Orchestrate</strong></td><td><code>build_phase1</code>, <code>test_phase2</code>, <code>enforce</code>, <code>pipeline</code>, <code>doctor</code></td></tr>
+</table>
+<div class="key"><strong>Why &ldquo;check the checks&rdquo; exists, and why it is not paranoia.</strong> A check
+that always passes and a config that is genuinely correct look <em>identical</em> from outside. So
+<code>audit_gate_efficacy</code> injects each known kind of defect into a throwaway copy and confirms the
+responsible check fails. If it does not, that check&rsquo;s green light meant nothing. The current figure is
+<strong>261 injected defects, 0 undetected</strong>. This has repeatedly found checks that were silently blind
+&mdash; including, on the day this guide was written, a blocking check that could not see the simplest kind of
+dead combination.</div>
+
+<h2>8. What &ldquo;done&rdquo; means</h2>
+<p>Six stages. A provider is finished only when all six hold. <code>tools\report_mission_status.ps1</code>
+computes this rather than anyone tracking it by hand.</p>
+<table>
+<tr><th>#</th><th>Stage</th><th>Satisfied when</th></tr>
+<tr><td>1</td><td>Build</td><td>Structural validator reports 0 failures and 0 warnings</td></tr>
+<tr><td>2</td><td>Spec</td><td>Every query the devdoc lists is built</td></tr>
+<tr><td>3</td><td>Reachability</td><td>Every built combination can actually run</td></tr>
+<tr><td>4</td><td>Test</td><td>All five entities pass on a real system, with captured evidence</td></tr>
+<tr><td>5</td><td>Jira</td><td>The ticket names the shipped version</td></tr>
+<tr><td>6</td><td>Import</td><td>The ledger accounts for that version &mdash; installed, or explicitly not yet</td></tr>
+</table>
+<p class="small">At the time of writing: 13 of 20 complete. Five need a tenant test, one needs a Jira comment,
+one is deliberately parked.</p>
+
+<h2 class="pb">9. How testing actually happens</h2>
+<p>Testing is not simulated. A real query goes to a real state system and the real request is captured.</p>
+<ol>
+<li><code>tools\emit_test_plan.ps1</code> produces a machine-readable plan: every combination, with values to type.</li>
+<li>A <strong>Chrome extension</strong> is loaded in the browser. It fills the form and clicks Send, then scrapes the request XML from the platform own log page.</li>
+<li><code>tools\watch_captures.ps1</code> watches the Downloads folder and ingests each captured file.</li>
+<li>Four checks verify the evidence: content matches the plan, the combination that fired is the one claimed, and the logs are genuinely distinct tests rather than duplicates.</li>
+</ol>
+<table>
+<tr><th>Extension file</th><th>Role</th></tr>
+<tr><td><code>manifest.json</code></td><td>Declares which pages the extension may touch. <strong>This allowlist is a safety control</strong> &mdash; it is what stops the driver running on a live customer site.</td></tr>
+<tr><td><code>usx_lib.js</code></td><td>Shared primitives: fill a field, pick from a dropdown, click Send, extract the request XML.</td></tr>
+<tr><td><code>driver.js</code></td><td>Runs a plan &mdash; one combination or a whole entity.</td></tr>
+<tr><td><code>capture.js</code></td><td>Scrapes the request and response from the platform log page.</td></tr>
+<tr><td><code>ui.js</code></td><td>The on-screen panel, so the work is buttons rather than typed commands.</td></tr>
+<tr><td><code>authwatch.js</code></td><td>Diagnostic added 2026-09-09 for a ticket about a missing warning icon.</td></tr>
+<tr><td><code>bridge.js</code>, <code>background.js</code>, <code>nethook.js</code></td><td>Plumbing: downloads and network interception.</td></tr>
+</table>
+<div class="warn"><strong>Two safety rules.</strong> The extension is <strong>disarmed by default</strong> on
+every site and must be armed with an on-screen switch, because some tenants are live systems where real
+officers run real queries. And <strong>no browser dialogs are ever used</strong>: Chrome lets a user suppress
+them, and a suppressed confirmation silently returns &ldquo;no&rdquo; &mdash; which once made the arming
+switch itself unusable.</div>
+<div class="key"><strong>A rebuild invalidates all testing.</strong> Changing the config means the old
+evidence describes a file that no longer ships. Logs are archived automatically and the test matrix restarts.
+This is deliberate: re-test cost is never a reason to skip a fix.</div>
+
+<h2>10. Traps that have cost real time</h2>
+<table>
+<tr><th>Trap</th><th>What to do instead</th></tr>
+<tr><td><strong>Prefilling a field that decides routing.</strong> Giving a form field a default makes it always present, which permanently hides every query that required its absence. This silently killed 35 query paths across 6 providers.</td><td>Never set a default on a field appearing in any <code>set[]</code>. Put it in the combination <code>defaults[]</code> instead, which does not affect routing.</td></tr>
+<tr><td><strong>Treating another provider as precedent.</strong> Two providers can look identical and have opposite correct answers, because their state manuals differ.</td><td>Read <em>that</em> provider own authority every time. Five conclusions were retracted in a single day for this.</td></tr>
+<tr><td><strong>Trusting a stale note.</strong> Notes saying work is owed repeatedly outlive the work, manufacturing phantom tasks.</td><td>Measure the current state with the tool before acting on any written claim &mdash; including one in this guide.</td></tr>
+<tr><td><strong>Reading a report without checking it is fresh.</strong> A leftover file from an earlier run satisfies &ldquo;does the file exist?&rdquo;.</td><td>Compare write times, never mere existence.</td></tr>
+<tr><td><strong>Counting commented-out lines as live.</strong> Retired records look identical to active flags.</td><td>In <code>PENDING_UPDATES.txt</code>, only lines without a leading <code>#</code> block anything.</td></tr>
+<tr><td><strong>PowerShell: <code>@($null).Count</code> is 1, not 0.</strong> This has produced wrong measurements <em>and</em> a real defect in a shipping check.</td><td>Test &ldquo;property absent&rdquo;, &ldquo;is null&rdquo; and &ldquo;count&rdquo; separately.</td></tr>
+<tr><td><strong>PowerShell 5.1 versus 7.</strong> The tools are run by 5.1; interactive work often uses 7. Grammar and error handling differ, so a script can be &ldquo;verified&rdquo; under 7 and be broken under 5.1.</td><td>Verify with <code>powershell</code>, not <code>pwsh</code>. <code>tools\audit_ps51_parse.ps1</code> checks all 129 scripts.</td></tr>
+</table>
+
+<h2 class="pb">11. Your first week</h2>
+<ol>
+<li><strong>Day 1 &mdash; read.</strong> <code>ENGINEERING_STANDARD.md</code>, then <code>SESSION_STATE.md</code>, then skim the headings of <code>CLAUDE.md</code>. Change nothing.</li>
+<li><strong>Day 1 &mdash; look.</strong> Run <code>tools\portfolio_status.ps1</code> and <code>tools\doctor.ps1</code>. Both are read-only. This is the current truth of the repository.</li>
+<li><strong>Day 2 &mdash; one provider end to end.</strong> Take <code>NJ_NJCJIS</code>, the reference implementation. Open its build script, its devdoc, its metadata XML and one test log. Trace one query from form field to wire XML.</li>
+<li><strong>Day 3 &mdash; run the gates.</strong> <code>tools\build_phase1.ps1 -Provider NJ_NJCJIS</code>, then <code>tools\enforce.ps1 -Provider NJ_NJCJIS</code>. Read what they print. Change nothing.</li>
+<li><strong>Day 4 &mdash; break something on purpose.</strong> <code>tools\audit_gate_efficacy.ps1 -Provider NJ_NJCJIS</code>. Watch it inject defects and confirm the checks catch them. This teaches the failure modes faster than reading about them.</li>
+<li><strong>Day 5 &mdash; make one small change.</strong> A field label. Rebuild with <code>pipeline.ps1</code>, watch every document update, and see enforce go green. Then you understand the loop.</li>
+</ol>
+<div class="key"><strong>The habit that matters most:</strong> run the tool that owns the question instead of
+reasoning about the answer. <code>CLAUDE.md</code> contains a routing table (&ldquo;Source Authority Lookup
+Table&rdquo;) naming the one correct source for each kind of question. Nearly every mistake in this
+project history is someone answering from memory when a tool would have answered from fact.</div>
+
+<h2>12. Glossary</h2>
+<table>
+<tr><th>Term</th><th>Meaning</th></tr>
+<tr><td><strong>USx</strong></td><td>Universal Search &mdash; the Mark43 feature this configures.</td></tr>
+<tr><td><strong>Provider</strong></td><td>One state or regional law-enforcement system (TX_TLETS is Texas).</td></tr>
+<tr><td><strong>QIF</strong></td><td>Query Input Form &mdash; the on-screen form.</td></tr>
+<tr><td><strong>QIDM</strong></td><td>Query Input Data Mapping &mdash; the rules turning form input into a request. Holds the combinations.</td></tr>
+<tr><td><strong>Combination</strong></td><td>One specific query with its required and optional fields.</td></tr>
+<tr><td><strong>keyRef</strong></td><td>Internal label for a combination. Never transmitted.</td></tr>
+<tr><td><strong>Devdoc</strong></td><td>The state developer manual. Authority on which queries exist.</td></tr>
+<tr><td><strong>Metadata</strong></td><td>Platform XML. Authority on what fields a query requires.</td></tr>
+<tr><td><strong>Entity</strong></td><td>One of the five search subjects: Person, Vehicle, Firearm, Article, Boat.</td></tr>
+<tr><td><strong>Dead combo</strong></td><td>A combination that can never run because an earlier one always matches first.</td></tr>
+<tr><td><strong>Guardrail</strong></td><td>A condition enforcing priority, such as preferring a plate over a VIN.</td></tr>
+<tr><td><strong>Gate</strong></td><td>An automated check that can block the work.</td></tr>
+<tr><td><strong>Mutation testing</strong></td><td>Deliberately breaking a copy of the config to prove the checks notice.</td></tr>
+<tr><td><strong>Tenant</strong></td><td>One customer installation. Test tenants are safe; Foundation is staging; LIVE has real officers.</td></tr>
+<tr><td><strong>Wire XML</strong></td><td>The actual request sent to the state system. The thing that ultimately matters.</td></tr>
+</table>
+
+<p class="small" style="margin-top:8mm; border-top:1px solid #ccc; padding-top:2mm">
+Generated from the repository itself rather than from recollection: file counts, provider count, tool counts
+and status figures were measured at generation time. If a number here disagrees with
+<code>tools\portfolio_status.ps1</code>, the tool is right and this document is stale.</p>
+
+</body></html>
