@@ -124,6 +124,16 @@ Everything renders in-panel now via `flash()` writing to `#usx-arm-msg` — the 
 five Run Plan / Scope validation messages that had the same flaw (a suppressed validation dialog
 looks exactly like "the button did nothing"). `alert(`/`confirm(`/`prompt(` count in `ui.js`: **0**.
 
+⚠️ **That count was WRONG from the day the Reset-queue button shipped until 2026-09-09.** It used
+`window.confirm()` — in this same file, against the rule stated directly above — so the exact v0.5.0
+failure was live again: with dialogs suppressed, `confirm()` returns `false`, Reset queue does
+nothing, and there is no error. Now a **two-click in-panel confirm** reusing the ARM switch's
+`pendingConfirm` pattern, with the queue contents shown in the panel and a 6 s auto-cancel. The
+pending flag lives on the **element** (`dataset.pending`), because `tick()` repaints that label on a
+timer and would otherwise erase the "⚠ CLICK AGAIN" cue while leaving the confirm armed — the same
+destroyed-feedback bug in a new place. **A documented invariant with no check is a comment**;
+`audit_extension_syntax.ps1` cannot see this one, so the count above is still maintained by hand.
+
 ### Provider resolution on a non-`usx-` tenant
 `providerFromHost()` derives the provider from `usx-<name>`. A Foundation/live host carries no
 provider name, so the panel shows a text field to set an override, stored per hostname. Unset, it
@@ -172,6 +182,27 @@ label** never appears, and the surfaces disagree:
 timestamped, downloadable record: which surface, whether the icon **ever** rendered and at what
 offset, what notice text appeared, and whether **Send** was actually disabled.
 **It proves WHETHER, never WHY.** The cause is platform-side; only engineering can settle it.
+
+### Use the PANEL, not the console (v0.5.6)
+On `universal-search` the panel carries a **"RND-71625 — warning-icon check (read-only)"** section:
+pick the trigger, pick the window, click **▶ Watch + download record**. **Probe now** takes an
+instant snapshot without downloading. The verdict prints in the panel as three *separate* signals —
+`icon · notice · Send` — because "a warning appeared" and "the interface is blocked" are independent
+expectations and collapsing them would hide the two interesting mixed cases.
+
+- The trigger dropdown is built **from `authwatch.js`'s exported `__usxAuthTriggers`**, never a
+  second copy — a restated enum drifts, and the failure mode is a trigger the button offers and the
+  function rejects. `control-normal` is the **default**, because a run with no baseline beside it
+  cannot conclude anything.
+- **Not ARM-gated, deliberately.** The ARM switch exists because the driver *submits real queries*;
+  `authwatch` only reads the DOM and saves a JSON. Gating it would mean arming the driver on a
+  customer site to answer a question about an icon — the opposite of what the switch protects. The
+  section header says *read-only* so that difference is visible rather than assumed.
+- The panel only loads on `/rms/*`, so **CAD and First Responder still need a console paste** — the
+  file degrades standalone for exactly that reason. Widening the manifest would also load the
+  **driver** onto those surfaces, which is Rob's call, not a side effect of adding a diagnostic.
+
+The console entry points remain, and are what CAD/FR use:
 
 ```js
 __usxAuthWatch({ trigger: 'control-normal'   })   // BASELINE first -- authorized user, simulation ON

@@ -222,6 +222,11 @@
     'control-normal':  'No trigger applied -- a fully authorized user with simulation ON. The baseline every other run is compared against.'
   };
 
+  // EXPORTED so ui.js can build its dropdown FROM this list rather than restating it.
+  // A second copy of an enum in the panel would drift from the one the recorder validates
+  // against, and the failure would be a trigger the button offers and the function rejects.
+  window.__usxAuthTriggers = TRIGGERS;
+
   // ── the watch ─────────────────────────────────────────────────────────────
   window.__usxAuthWatch = async function (opts) {
     const o = Object.assign({ seconds: 10, everyMs: 500, download: true, note: null, trigger: null }, opts || {});

@@ -187,19 +187,45 @@
       const resetBatch = el('button', BTN + ';' + RED, '🧹 Reset queue');
       resetBatch.id = 'usx-reset-batch';
       resetBatch.title = 'Clear the queued Run Plan entries. Anything not yet captured must be re-driven.';
+      // TWO-CLICK IN-PANEL CONFIRM, NOT window.confirm(). Fixed 2026-09-09.
+      // This button shipped using window.confirm() while THIS FILE's own header records the rule
+      // it breaks -- Chrome offers "Prevent this page from creating additional dialogs", and once
+      // ticked confirm() returns FALSE silently. The exact failure that made the ARM switch
+      // unusable in v0.5.0 was therefore live again here: the operator clicks Reset queue,
+      // nothing happens, and there is no error -- indistinguishable from a dead button. The
+      // README also claimed the alert/confirm/prompt count in this file was 0, so nothing
+      // contradicted it. Reuses the ARM switch's pendingConfirm pattern, which exists precisely
+      // because a control whose only feedback path the browser can switch off is not a control.
+      // The pending flag lives on the ELEMENT, not just in this closure, because tick() repaints
+      // this button's label on a timer. Without that, the "click again" cue would be wiped within
+      // a tick while resetPending stayed armed -- a confirm the operator can no longer see, which
+      // is the same destroyed-feedback failure as the suppressed dialog it replaces.
+      let resetPending = false;
+      const resetPaint = () => {
+        const n = (() => { try { return JSON.parse(localStorage.getItem('__usx_batch') || '[]').length; } catch (e) { return 0; } })();
+        resetBatch.dataset.pending = resetPending ? '1' : '0';
+        resetBatch.textContent = resetPending
+          ? '⚠ CLICK AGAIN to drop ' + n + ' queued'
+          : '🧹 Reset queue' + (n ? ' (' + n + ')' : '');
+        resetBatch.style.background = resetPending ? '#c60' : '#a33';
+      };
       resetBatch.onclick = () => {
         let prior = [];
         try { prior = JSON.parse(localStorage.getItem('__usx_batch') || '[]'); } catch (e) {}
-        if (!prior.length) { flash('Queue is already empty — nothing to reset.'); return; }
-        // CONFIRM, because this is not recoverable: an uncaptured query must be re-driven.
+        if (!prior.length) { resetPending = false; resetPaint(); flash('Queue is already empty — nothing to reset.'); return; }
         const summary = {};
         for (const e of prior) { const k = e.entity + '/' + e.comboKeyRef; summary[k] = (summary[k] || 0) + 1; }
-        const lines = Object.keys(summary).sort().map((k) => '  ' + k + ' x' + summary[k]).join('\n');
-        if (!window.confirm(
-          'Clear ' + prior.length + ' queued entr' + (prior.length === 1 ? 'y' : 'ies') + '?\n\n' + lines +
-          '\n\nAnything not yet captured becomes unrecoverable and must be re-driven. ' +
-          'That is deliberate — pairing a stale label onto a fresh row is how fabricated evidence happens.')) return;
+        const lines = Object.keys(summary).sort().map((k) => k + ' x' + summary[k]).join(', ');
+        if (!resetPending) {
+          // Arm the confirm and SHOW what would be lost, in the panel where it cannot be suppressed.
+          resetPending = true; resetPaint();
+          flash('Drop ' + prior.length + ' queued: ' + lines + '. Uncaptured queries become unrecoverable and must be re-driven. Click again to confirm.', '#fa0');
+          setTimeout(() => { if (resetPending) { resetPending = false; resetPaint(); flash('Reset cancelled — queue untouched.', '#7c7'); } }, 6000);
+          return;
+        }
+        resetPending = false;
         localStorage.removeItem('__usx_batch');
+        resetPaint();
         flash('Queue reset — ' + prior.length + ' entr' + (prior.length === 1 ? 'y' : 'ies') + ' dropped. Re-drive anything you still need.');
         console.warn('%c[USx-UI]', 'color:#c60;font-weight:bold', 'queue reset, dropped:', summary);
       };
@@ -347,6 +373,113 @@
       p.appendChild(scopeStatus);
 
       p.appendChild(el('div', 'margin-top:6px;color:#999;font-size:11px', '0. Run tools\\watch_captures.ps1 + tools\\serve_plans.ps1 once  1. ⟳ Load plan  2. Pick entity  3. Run Plan (or 🔍 Scope)  4. Fetch results'));
+
+      // ── RND-71625: the warning-icon / blocking check ────────────────────────────────────
+      // GUI, not a console command. Rob, 2026-09-09: "can you build a button or something for
+      // this" -- and he was right twice over, because "translate console names into GUI buttons
+      // rather than echoing them" is a standing directive I had been ignoring by handing over
+      // __usxAuthWatch({trigger:'...'}) to paste. A diagnostic nobody can reach from the panel
+      // is a diagnostic that does not get run.
+      //
+      // DELIBERATELY NOT ARM-GATED, and that is a decision rather than an oversight. The ARM
+      // switch exists because the driver SUBMITS REAL QUERIES on tenants that may be live;
+      // authwatch only reads the DOM and saves a JSON -- it never fills a field or clicks Send.
+      // Gating it would mean arming the driver on a customer site just to answer a question
+      // about a warning icon, which is the opposite of what the switch is for. The label says
+      // read-only so the difference is visible rather than assumed.
+      const awWrap = el('details', 'margin-top:8px;border-top:1px solid #333;padding-top:6px');
+      const awSum = el('summary', 'cursor:pointer;color:#fc6;font:12px system-ui;list-style:none;user-select:none;padding:2px 0', 'RND-71625 — warning-icon check (read-only)');
+      awWrap.appendChild(awSum);
+
+      const awStatus = el('div', 'font:11px system-ui;color:#fa0;margin:4px 0;min-height:14px');
+      const awTrig = el('select', 'width:100%;margin:4px 0;padding:5px;box-sizing:border-box;background:#222;color:#eee;border:1px solid #555;border-radius:4px');
+      // Options come FROM authwatch.js's exported enum -- never a second hand-written copy here.
+      const trigs = window.__usxAuthTriggers || null;
+      if (!trigs) {
+        awTrig.disabled = true;
+        const o = document.createElement('option'); o.textContent = '— authwatch.js not loaded —'; awTrig.appendChild(o);
+      } else {
+        // control-normal first: the baseline must be the default, because a run with no control
+        // to compare against cannot conclude anything (README: "Run it TWICE per surface").
+        const order = Object.keys(trigs).sort((a, b) => (a === 'control-normal' ? -1 : b === 'control-normal' ? 1 : 0));
+        order.forEach((k, i) => {
+          const o = document.createElement('option');
+          o.value = k; o.textContent = k; o.title = trigs[k];
+          if (i === 0) o.selected = true;
+          awTrig.appendChild(o);
+        });
+      }
+      awWrap.appendChild(awTrig);
+      // The selected trigger's full meaning, shown rather than hidden in a tooltip -- these
+      // describe what the OPERATOR must have set up (simulation off, a user with no State ID),
+      // and a run made under the wrong setup is a mislabelled record, not a failed one.
+      const awMeans = el('div', 'font:10px/1.35 system-ui;color:#9cf;margin:2px 0 4px');
+      const showMeans = () => { awMeans.textContent = (trigs && trigs[awTrig.value]) ? trigs[awTrig.value] : ''; };
+      awTrig.onchange = showMeans; showMeans();
+      awWrap.appendChild(awMeans);
+
+      const awSecs = el('select', 'width:100%;margin:2px 0;padding:5px;box-sizing:border-box;background:#222;color:#eee;border:1px solid #555;border-radius:4px');
+      [10, 20, 30].forEach((n, i) => { const o = document.createElement('option'); o.value = String(n); o.textContent = 'watch ' + n + 's'; if (i === 0) o.selected = true; awSecs.appendChild(o); });
+      awWrap.appendChild(awSecs);
+
+      let awProbe;   // declared here: awRun's handler disables it, and relying on var-hoisting
+                     // (or worse, an implicit global) for that is how a panel button silently
+                     // stops being re-enabled after a failed run.
+      const awRun = el('button', BTN, '▶ Watch + download record');
+      awRun.onclick = async () => {
+        if (!window.__usxAuthWatch) { awStatus.style.color = '#f77'; awStatus.textContent = '✖ authwatch.js not loaded — reload the extension.'; return; }
+        awRun.disabled = true; awProbe.disabled = true;
+        const secs = parseInt(awSecs.value, 10);
+        awStatus.style.color = '#fa0';
+        awStatus.textContent = '● watching ' + secs + 's… an absence is only reported after the FULL window.';
+        try {
+          const rec = await window.__usxAuthWatch({ trigger: awTrig.value, seconds: secs });
+          const v = rec.verdict;
+          // Report the THREE signals separately. "A warning icon" and "a blocked interface" are
+          // independent expectations, so collapsing them into one pass/fail would hide the two
+          // interesting mixed cases (icon but still sendable / no icon but correctly blocked).
+          const bits = [
+            'icon ' + (v.warnIconEverSeen ? 'YES @' + v.warnIconFirstSeenMs + 'ms' : 'no'),
+            'notice ' + (v.noticeEverSeen ? 'YES @' + v.noticeFirstSeenMs + 'ms' : 'no'),
+            'Send ' + (v.sendEverDisabled ? 'disabled @' + v.sendDisabledFirstSeenMs + 'ms' : 'never disabled')
+          ];
+          let colour = '#7c7';
+          let extra = '';
+          if (!v.usxEntryPointFound) {
+            colour = '#f77';
+            extra = ' — NO Universal Search on this page, so this run is NOT evidence about the icon.';
+          } else if (v.matchesRnd71625RmsSymptom) {
+            colour = '#fa0';
+            extra = ' — matches the RND-71625 RMS symptom. Compare against a control-normal run.';
+          } else if (!v.queriesLabelFound) {
+            colour = '#f77';
+            extra = ' — the "Queries" label was never found, so the icon probe had nothing to anchor to.';
+          }
+          awStatus.style.color = colour;
+          awStatus.textContent = '✔ ' + v.surface + ' [' + awTrig.value + '] ' + bits.join(' · ') + extra;
+        } catch (e) {
+          awStatus.style.color = '#f77';
+          awStatus.textContent = '✖ ' + e.message;
+        } finally { awRun.disabled = false; awProbe.disabled = false; }
+      };
+      awWrap.appendChild(awRun);
+
+      awProbe = el('button', BTN + ';' + BLU, 'Probe now (no download)');
+      awProbe.onclick = () => {
+        if (!window.__usxAuthProbe) { awStatus.style.color = '#f77'; awStatus.textContent = '✖ authwatch.js not loaded — reload the extension.'; return; }
+        const s = window.__usxAuthProbe();
+        awStatus.style.color = s.warnIconPresent ? '#7c7' : '#fa0';
+        awStatus.textContent = 'snapshot ' + s.surface.name + ': icon ' + (s.warnIconPresent ? 'YES' : 'no') +
+          ' · notice ' + (s.noticePresent ? 'YES' : 'no') +
+          ' · Send ' + (s.send.present ? (s.send.disabled ? 'disabled' : 'enabled') : 'absent') +
+          ' · USx here ' + (s.entryPoint.found ? 'yes' : 'NO') +
+          ' — instantaneous, so a "no" here proves nothing; use the watch.';
+      };
+      awWrap.appendChild(awProbe);
+      awWrap.appendChild(awStatus);
+      awWrap.appendChild(el('div', 'color:#999;font-size:11px;margin-top:2px',
+        'Run control-normal FIRST, then the trigger. One run cannot conclude: the selectors were written without ever having seen the icon, so a negative needs a positive control beside it.'));
+      p.appendChild(awWrap);
     }
     return p;
   }
@@ -383,7 +516,12 @@
         rb.disabled = queued === 0;
         rb.style.opacity = queued === 0 ? '0.45' : '1';
         rb.style.cursor = queued === 0 ? 'default' : 'pointer';
-        rb.textContent = queued > 0 ? '🧹 Reset queue (' + queued + ')' : '🧹 Reset queue';
+        // DO NOT repaint while a two-click confirm is armed -- this timer would otherwise erase
+        // the "⚠ CLICK AGAIN" cue and leave the operator staring at an ordinary-looking button
+        // that is one click from dropping the queue. The handler owns the label in that state.
+        if (rb.dataset.pending !== '1') {
+          rb.textContent = queued > 0 ? '🧹 Reset queue (' + queued + ')' : '🧹 Reset queue';
+        }
       }
       const w = document.getElementById('usx-watch');
       if (w) w.textContent = window.__usxWatchTimer ? '⏹ Click-capturing… (click to stop)' : '▶ Start click-capture';
