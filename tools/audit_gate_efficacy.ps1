@@ -198,6 +198,103 @@ function Get-Node($j, [string]$entity, [string]$fieldId) {
 # skip: 'a step that did not run is NOT a pass', and a stale mutation is indistinguishable from a
 # blind gate (the fl-drop-devdoc-optional lesson).
 # Selects on the PROPERTY the rule is about, so it self-extends to any future dropdown.
+# ── DERIVED (auto-targeting) MUTATION HELPERS ────────────────────────────────────────────
+# WHY THESE EXIST. Measured 2026-09-09: of 47 catalogued mutations, 33 hardcode ONE provider's
+# query/keyRef/field, so IL ran 20 and TX 18 while FIFTEEN providers ran only 7-9 -- essentially
+# the globals. Those fifteen scored "0 SURVIVED / 0 INVALID" because almost nothing was aimed at
+# them, which is not the same as their gates being proven. Hand-writing 15 bespoke sets would be
+# ~150 rows, each hardcoding a target that rots the moment that provider is rebuilt -- the exact
+# staleness the [INVALID] verdict exists to catch. So instead the DEFECT CLASS is expressed once
+# and the TARGET is computed from whatever provider is in front of it.
+#
+# THE RULE THAT MAKES THEM SAFE: a derived mutation must CREATE the defect, not merely resemble it.
+# The `prefill-routing-field` note above records what happens otherwise -- its first draft prefilled
+# a field present in BOTH combos, which starves neither, and it FALSELY ACCUSED a working gate. So
+# each helper below returns a target ONLY when the mutation provably changes routing, and $null
+# otherwise, which the caller reports as [N/A] rather than as a survivor.
+# MIRRORS audit_combo_reachability's OWN config filter, deliberately. The first draft excluded
+# only QUERYINPUTFORM, which let RMS-bundle QIDMs through -- and on TN_TIES the alphabetically
+# first match was "RMS Person Search query". Mutating that produced no finding and reported
+# SURVIVED against a gate that never looks at RMS combinations and is right not to. If a mutation
+# targets a config its gate does not examine, it measures nothing and libels the gate; so the
+# selector must be the gate's, not a plausible approximation of it (ENGINEERING_STANDARD 4.4 --
+# never re-implement an existing parser).
+function Get-QidmConfigs($j) {
+    $out = @()
+    foreach ($b in $j.bundles) {
+        if ($b.provider -in @('MARK43','RMS')) { continue }
+        foreach ($c in $b.configurations) {
+            if ($c.type -ne 'QUERYINPUTDATAMAPPING') { continue }
+            if ($c.handlerFunction -eq 'RmsRestPayloadHandler') { continue }
+            if (@($c.combinations).Count -ge 2) { $out += $c }
+        }
+    }
+    # Deterministic order: the harness must pick the SAME target every run, or a KILLED today and a
+    # SURVIVED tomorrow would look like a gate regression instead of a coin toss.
+    return @($out | Sort-Object { "$($_.name)" })
+}
+# A SHADOW needs the victim's set[] to become a duplicate of an EARLIER combo's, with nothing left
+# to discriminate them -- so conditions are cleared too. A leftover NOT_EXISTS gate would keep the
+# victim reachable and the mutation would report SURVIVED against a gate that was right.
+function Get-ShadowTarget($j) {
+    foreach ($c in (Get-QidmConfigs $j)) {
+        $cms = @($c.combinations)
+        # THE SOURCE'S CONDITIONS ARE CLEARED BY THE MUTATION, so the source does not need to be
+        # ungated to begin with -- and that matters, because requiring an ungated source produced
+        # [N/A] on exactly the guardrailed providers this exists to cover (MD_METERS, TN_TIES: every
+        # early combo carries an identifier-priority gate like Hull>Reg, so nothing qualified).
+        #
+        # WHY THE FIRST DRAFT LIBELLED THE GATE, kept because the lesson is the point: it copied a
+        # GATED source's set[] onto the victim and cleared only the VICTIM's conditions. On MD's
+        # BoatQuery the source ZBOA.H carries `RegistrationNumber NOT_EXISTS`, so filling Hull+Reg
+        # BLOCKS the source while the victim still matches -- the victim stayed perfectly REACHABLE,
+        # no defect was created, and it reported SURVIVED against a gate that was entirely right.
+        # A conditioned combo is not unconditionally dominant and cannot starve anything.
+        $srcSet = @($cms[0].requirements.set)
+        if (-not $srcSet.Count) { continue }
+        for ($i = $cms.Count - 1; $i -ge 1; $i--) {
+            $vSet = @($cms[$i].requirements.set)
+            # Must currently DIFFER, else the mutation is a no-op and a no-op cannot fail.
+            $same = ($vSet.Count -eq $srcSet.Count) -and -not @(Compare-Object $vSet $srcSet -ErrorAction SilentlyContinue).Count
+            if (-not $same) { return @{ Cfg = $c; Source = $cms[0]; Victim = $cms[$i] } }
+        }
+    }
+    return $null
+}
+# A PREFILL only shadows when the victim's set[] is its earlier sibling's set[] PLUS EXACTLY ONE
+# extra field, and that field carries no form initialValue yet. Prefilling it makes the extra field
+# always-present, so the victim matches whenever the sibling does and first-match starves it.
+# This is TX's real RQ/REG case (BUILD_RULES 24), derived instead of hardcoded.
+function Get-PrefillShadowTarget($j) {
+    foreach ($c in (Get-QidmConfigs $j)) {
+        $cms = @($c.combinations)
+        for ($a = 0; $a -lt $cms.Count - 1; $a++) {
+            $aSet = @($cms[$a].requirements.set)
+            if (-not $aSet.Count) { continue }
+            for ($b = $a + 1; $b -lt $cms.Count; $b++) {
+                $bSet = @($cms[$b].requirements.set)
+                if ($bSet.Count -ne $aSet.Count + 1) { continue }
+                $extra = @($bSet | Where-Object { $aSet -notcontains $_ })
+                $missing = @($aSet | Where-Object { $bSet -notcontains $_ })
+                if ($extra.Count -ne 1 -or $missing.Count -ne 0) { continue }
+                # the extra field must exist as a form control WITHOUT a prefill
+                foreach ($bnd in $j.bundles) { foreach ($cf in $bnd.configurations) {
+                    if ($cf.type -ne 'QUERYINPUTFORM') { continue }
+                    $lay = $cf.layout.'default'; if (-not $lay) { continue }
+                    foreach ($nid in $lay.PSObject.Properties.Name) {
+                        $n = $lay.$nid
+                        if (-not $n.props) { continue }
+                        if ("$($n.props.fieldId)" -ne "$($extra[0])") { continue }
+                        if ($n.props.PSObject.Properties.Name -contains 'initialValue' -and "$($n.props.initialValue)" -ne '') { continue }
+                        return @{ Node = $n; Field = "$($extra[0])"; Victim = $cms[$b]; Cfg = $c }
+                    }
+                } }
+            }
+        }
+    }
+    return $null
+}
+
 function Get-CodeTypeSelectNode($j) {
     foreach ($b in $j.bundles) { foreach ($c in $b.configurations) {
         if ($c.type -ne 'QUERYINPUTFORM') { continue }
@@ -811,6 +908,38 @@ $MUTS = @(
      Gate='audit_combo_reachability.ps1'; Args={ @('-Path',$workJson) }
      Mut={ param($j) $c=Get-Cfg $j '*_GunQuery'; $cm=Get-Combo $c 'QGNCICNumber'
            $cm.requirements.set=@('serialNumber') } }
+
+  # ── DERIVED, EVERY PROVIDER ─────────────────────────────────────────────────────────────
+  # These two carry the same defect classes as the TX/IL rows above, but compute their target
+  # from whichever provider is running, so the fifteen thin providers stop scoring clean on the
+  # globals alone. Each declares NaIf so a provider with no valid target reports [N/A] instead of
+  # a false SURVIVED, and each Desc names the target it actually chose.
+  @{ Id='derived-shadow-pair'
+     Desc='DERIVED: the LAST combination of the largest QIDM has its set[] overwritten with the FIRST combination''s set[] and its conditions cleared, making it an exact duplicate ordered later -- so first-match starves it and it is unreachable. Same class as true-shadow-pair (TX) but self-targeting, so it exercises audit_combo_reachability on EVERY provider rather than one.'
+     Gate='audit_combo_reachability.ps1'; Args={ @('-Path',$workJson) }
+     NaIf={ param($j) -not (Get-ShadowTarget $j) }
+     NaWhy='no QIDM has two combinations whose set[] currently DIFFER, so no duplicate can be manufactured -- the mutation would be a no-op and a no-op cannot fail'
+     Mut={ param($j) $t = Get-ShadowTarget $j
+           if (-not $t) { throw 'no shadow target' }
+           $t.Victim.requirements.set = @(@($t.Source.requirements.set))
+           # BOTH sides' conditions go. The victim's, so nothing discriminates it; the SOURCE's,
+           # so the source is unconditionally dominant and genuinely starves the victim. Clearing
+           # only the victim's leaves a gated source that cannot starve anything -- see the note
+           # in Get-ShadowTarget for the MD_METERS run where that reported a false SURVIVED.
+           foreach ($cm in @($t.Source, $t.Victim)) {
+               if ($cm.requirements.PSObject.Properties.Name -contains 'conditions') {
+                   $cm.requirements.conditions = @()
+               }
+           } } }
+
+  @{ Id='derived-prefill-routing-field'
+     Desc='DERIVED: BUILD_RULES 24. Finds a combination whose set[] is an earlier sibling''s set[] PLUS EXACTLY ONE extra field, where that field has no form initialValue, and prefills it -- so the extra field is always present, the victim matches whenever the sibling does, and first-match starves the victim. This is TX''s real RQ/REG prefill derived rather than hardcoded. The one-extra-field test is what keeps it honest: prefilling a field present in BOTH combos starves neither and would falsely accuse a working gate, which is exactly how the first draft of prefill-routing-field went wrong.'
+     Gate='audit_combo_reachability.ps1'; Args={ @('-Path',$workJson) }
+     NaIf={ param($j) -not (Get-PrefillShadowTarget $j) }
+     NaWhy='no (earlier-sibling + exactly-one-extra-unprefilled-field) triple exists here, so no prefill can create a shadow -- prefilling anything else would not change routing and the gate would be right to stay silent'
+     Mut={ param($j) $t = Get-PrefillShadowTarget $j
+           if (-not $t) { throw 'no prefill-shadow target' }
+           $t.Node.props | Add-Member -NotePropertyName initialValue -NotePropertyValue 'X' -Force } }
 )
 
 # Fold in this provider's own map. A provider with no map still runs the generic mutations, but

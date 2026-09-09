@@ -111,7 +111,24 @@ foreach ($bundle in $json.bundles) {
             $A = $combos[$i]
             $checked++
             $aSet  = @($A.requirements.set)
-            $aCond = @($A.requirements.conditions | ForEach-Object { "$($_.field)|$($_.operator)" })
+            # GUARD THE NULL PIPE. `$null | ForEach-Object {...}` executes ONCE in PowerShell with
+            # $_ = $null, so a combination with NO `conditions` property yielded a PHANTOM entry
+            # "|" (empty field, empty operator) instead of an empty list. An EMPTY ARRAY pipes zero
+            # times, so the bug only bit combos where the property is ABSENT -- which is the normal
+            # shape for a plain ungated combination.
+            # WHAT IT COST (found 2026-09-09 by a derived mutation aimed at the thin providers):
+            # the phantom is never present in the other combo's list, falls through to the generic
+            # `else` branch, and is counted as one extra unmatchable condition -- so `continue`
+            # fires and THE PAIR IS NEVER EVALUATED. Consequence: this gate could not see a shadow
+            # whose SHADOWER had no conditions property. Proven on a mutated MD_METERS where
+            # BoatQuery held ZBOA.H and ZBOA.R both ungated with set=[BoatHullIdNumber], ZBOA.H
+            # first: ZBOA.R can never fire, and the gate reported "[PASS] 12 combination(s)
+            # checked -- all reachable", byte-identical to the pristine run. This is enforce
+            # PHASE 2h, i.e. a BLOCKING gate that was silently missing the simplest shadow shape.
+            $aCond = @()
+            if ($null -ne $A.requirements.conditions) {
+                $aCond = @($A.requirements.conditions | ForEach-Object { "$($_.field)|$($_.operator)" })
+            }
 
             # ── SELF-UNSATISFIABLE: A is dead on its OWN terms, no shadower required ────────
             # Everything below this looks for a SHADOWER -- an earlier B that always matches when A
@@ -146,7 +163,13 @@ foreach ($bundle in $json.bundles) {
             for ($k = 0; $k -lt $i; $k++) {
                 $B = $combos[$k]
                 $bSet  = @($B.requirements.set)
-                $bCond = @($B.requirements.conditions | ForEach-Object { "$($_.field)|$($_.operator)" })
+                # Same null-pipe guard as $aCond above -- and THIS is the side that mattered:
+                # B is the SHADOWER, so a phantom condition here made every conditionless combo
+                # unable to shadow anything.
+                $bCond = @()
+                if ($null -ne $B.requirements.conditions) {
+                    $bCond = @($B.requirements.conditions | ForEach-Object { "$($_.field)|$($_.operator)" })
+                }
 
                 # B's set must be satisfied whenever A's is: every field B needs that A
                 # does not is pre-filled by the form.
