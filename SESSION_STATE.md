@@ -37,22 +37,24 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 <!-- END GENERATED -->
 
 **MISSION: 13 of 20 LIFECYCLE-COMPLETE** (`report_mission_status.ps1`, 2026-09-08; was 9). The other
-6 need two things: **5 a tenant test** (CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA,
-LA_LEMS) and **CA_CLETS_OCATS ONE Jira comment** (DEX-980 `Blocked`, release line drafted).
-TX_TLETS_CCH is PARKED so it can never complete -- whether the 19-of-20 target moves to the eligible
-denominator is Rob's call on ENGINEERING_STANDARD 5.1.
-**CA_eSUN DEX-1313** -- comment 811409 covers the RADIOBUTTON line ONLY; v3.x still owes a release
-line. eSUN is the first provider with a SUBTASK: name the ticket (DEX-1312 parent / DEX-1313 sub).
+6: **5 owe a tenant test** (CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA, LA_LEMS) and
+**CA_CLETS_OCATS ONE Jira comment** (DEX-980 `Blocked`, release line drafted). TX_TLETS_CCH is
+PARKED so it can never complete -- whether 19-of-20 moves to the eligible denominator is Rob's call.
+**CA_eSUN DEX-1313** -- comment 811409 covers the RADIOBUTTON line ONLY; v3.x owes a release line,
+and eSUN is the first provider with a SUBTASK (DEX-1312 parent / DEX-1313 sub) so NAME the ticket.
 
-**The queue** = the 5 above (`report_import_owed.ps1`). **SDSO LIVE runs eSUN v1.0 against a repo at
-v3.1** -- a LIVE bump is a coordinated re-import and Rob's call, never a repo action. **IMPORT FIRST,
-THEN PICKLIST CAPTURE** (Rob 2026-08-28): the console script scrapes the RENDERED form, so the capture
-precedes CHOOSING TEST VALUES -- which is why CA_VENTURA cannot fix its hollow toggle yet.
+**TEST-AND-READY, NOT FOR RELEASE (Rob 2026-09-09).** The never-tested providers will NOT be
+released, but they ARE owed a full sweep so they are ready to go -- **and that includes
+CA_CLETS_OCATS**. Do not frame these as an import queue. CA_CONTRA_COSTA is the ONE exception:
+BLOCKED on Rob's JAWS call. **Nothing else blocks them** -- measured 2026-09-09, PENDING_UPDATES
+live-blocking lines = **0** on all 6. ⚠️ Every `[FLAG:]` in those files is a `#`-COMMENTED RETIRED
+record and a naive grep reports 2-6 FALSE blockers; only lines WITHOUT a leading `#` block enforce.
+**IMPORT FIRST, THEN PICKLIST CAPTURE** (Rob 2026-08-28) -- why CA_VENTURA's hollow toggle waits.
+**SDSO LIVE runs eSUN v1.0 vs repo v3.1** -- a LIVE bump is Rob's coordinated call, never a repo one.
 
-**OFFICER GUIDES 20/20 CURRENT** (473 rows, 0 stale); convention in `usx-build` Step 4c, checker is
-`_probes/audit_guide_completeness.ps1`. **EXTENSION v0.5.6** -- `audit_extension_syntax.ps1` (in
-`doctor`) parses the browser scripts, which nothing did until a 1-char break killed the driver and
-capture tools for 5 days (2026-09-04..09).
+**OFFICER GUIDES 20/20 CURRENT** (473 rows, 0 stale); convention `usx-build` 4c, checker
+`_probes/audit_guide_completeness.ps1`. **EXTENSION v0.5.9** -- `audit_extension_syntax.ps1` (in
+`doctor`) parses the browser scripts; nothing did until a 1-char break killed driver+capture 5 days.
 
 ## ROB'S CALLS, NOT MINE
 
@@ -64,14 +66,12 @@ capture tools for 5 days (2026-09-04..09).
 
 ## OPEN FINDINGS -- detail lives in `FINDINGS_REGISTER.md`, do NOT restate it here
 
-- **194 of 264 registry rows (73%) unverifiable** by `audit_registry_currency`; 7 providers at zero
-  checkable rows, and the first row opened by hand in that zone was FALSE.
-- **CA_eSUN v2.2: 2 items in its BUILD_NOTES, deliberately OFF the ticket** -- the 7 validator FAILs
-  the 53 captures REFUTE, and the BirthDate over-permit whose fix collapses the owner-name search.
-- **CA_VENTURA hollow toggle**: `LicensePlateTypeCode` toggles to its own form default -- needs a
-  TEST_VALUE_OVERRIDE, value chosen AFTER its picklist capture.
+- **194 of 264 registry rows (73%) unverifiable** by `audit_registry_currency`; 7 providers at zero checkable rows, and the first row opened by hand there was FALSE.
+- **CA_eSUN v2.2: 2 BUILD_NOTES items deliberately OFF the ticket** -- the 7 validator FAILs the 53 captures REFUTE, and the BirthDate over-permit whose fix collapses the owner-name search.
+- **CA_VENTURA hollow toggle**: `LicensePlateTypeCode` toggles to its own form default -- needs a TEST_VALUE_OVERRIDE, value chosen AFTER its picklist capture.
 - **LIMITATION #41** (HOME state routes a local plate to NLETS) -- paused pending CommSys. 5 providers owe the picklist capture. **NCIC hit blocks CONFIG-PRESENT, NOT RENDERING-VERIFIED** on HI and TN.
 - **RESWEEP 2026-09-08: 20/20 ENFORCED 0F/0W, no defect in any provider JSON.** Fidelity 426 branches / 4 UNDER / 4 OVER / 0 NEVER-COMPARED -- all 4+4 are CA_CONTRA_COSTA's (Rob's JAWS call).
+
 ## RND-71625 -- IN FLIGHT, JIRA REPLY HELD (Rob: "hold the jira reply and hold on any changes")
 
 **EVIDENCE GATHERED 2026-09-09 -- THE TICKET'S RMS CLAIM DOES NOT REPRODUCE.** Full detail +
@@ -92,22 +92,22 @@ support it -- RMS *does* block, the opposite of what that hypothesis predicts.
 - `State2`-`State5` multi-state broadcast: OUT OF SCOPE 2026-08-02. OH's `ReasonCode`/`Requestor` =
   the BMVIMS case. CommSys asks HELD. TX_TLETS_CCH testing PARKED. DH NOT SUPPORTED FROM CAD.
   TN `RQ01` + name-component casing CLOSED 08-24.
-- **A keyRef NEVER reaches the wire, and neither does `primaryFieldReference`.** Before calling an
-  identity-label difference a defect, ask whether the label ships.
-- **THE NY DEMOTED-QUALIFIER GAP IS CLOSED, not owed** -- measured 2026-09-09,
-  `ny-demote-mandatory-qualifier` is **[KILLED]** (2/2, 0 SURVIVED/INVALID); the NEVER-COMPARED ->
-  FAIL change fixed it. No third fix (two REJECTED, see `FINDINGS_REGISTER.md`). **Second** stale-OWED
-  claim here to manufacture work on a tenant-verified provider -- **measure before believing this.**
-- **`[FLAG:plan-dedupe-vacuous-tests]` is DONE, not deferred** (FL, HI, IL, NJ, NY) -- TAKEN
-  2026-08-31; `audit_log_inflation` reads 853 logs / 0 findings.
+- **A keyRef NEVER reaches the wire, nor does `primaryFieldReference`** -- before calling an
+  identity-label difference a defect, ask whether the label ships. **`[FLAG:plan-dedupe-vacuous-
+  tests]` is DONE** (FL/HI/IL/NJ/NY, 2026-08-31); inflation reads 853 logs / 0 findings.
+- **NY DEMOTED-QUALIFIER: CLOSED, not owed** -- `ny-demote-mandatory-qualifier` is **[KILLED]**
+  (2026-09-09); the NEVER-COMPARED -> FAIL change fixed it. No third fix (two REJECTED, see
+  `FINDINGS_REGISTER.md`). **Second** stale-OWED claim here to invent work on a tenant-verified
+  provider -- **measure before believing this file.** **NJ guardrail mutation: N/A, not stale** --
+  unhostable portfolio-wide (0 of 20 guardrails can host it); do NOT re-aim, do NOT add a Boat test.
 - **Jira is HELD and lifts ONE PROVIDER AT A TIME.** No approval carries to the next provider.
 
 ## RULES I BROKE -- READ BEFORE EDITING
 
-- Two durable rules MOVED to `usx-tooling` (Step 6 / Step 8a) where they are read at the right
-  moment: **a registry row only suppresses if its rule name is the string the gate greps**, and
-  **validate every probe against a known answer WITH negative controls** (a too-narrow detector
-  reports a clean miss -- `authwatch` read `warnish:false` on a live amber icon).
+- Two durable rules MOVED to `usx-tooling` (Steps 6 / 8a): **a registry row only suppresses if its
+  rule name is the string the gate greps**, and **validate every probe against a known answer WITH
+  negative controls**. **A `#`-COMMENTED LINE IS NOT A FINDING** -- grepping `[FLAG:]` in
+  PENDING_UPDATES reported 2-6 false blockers on 4 providers; only un-commented lines block.
 - **NEVER verify a produced file with `Test-Path`** -- a leftover satisfies it. Compare write times.
 - **REPLACE this file, never append.** It has failed its own 120-line gate three times.
 - **A SAME-LOOKING STRUCTURE ON ANOTHER PROVIDER IS A QUESTION, NEVER A PRECEDENT.** FIVE claims
