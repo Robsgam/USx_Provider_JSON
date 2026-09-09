@@ -295,6 +295,33 @@ function Get-PrefillShadowTarget($j) {
     return $null
 }
 
+# A combination that ALREADY carries at least one real condition -- the inert-field mutation
+# REWRITES an existing condition rather than inventing one, so it cannot accidentally create a
+# combo shape the provider never has. Null-vs-absent is tested explicitly: `@($null).Count` is 1
+# in PowerShell, and trusting it is exactly what made an earlier draft of this harness read a
+# conditionless combo as having one condition and then write a confidently wrong diagnosis.
+function Get-ConditionBearingCombo($j) {
+    foreach ($c in (Get-QidmConfigs $j)) {
+        foreach ($cm in @($c.combinations)) {
+            if ($null -eq $cm.requirements.conditions) { continue }
+            if (@($cm.requirements.conditions).Count -lt 1) { continue }
+            return @{ Cfg = $c; Combo = $cm }
+        }
+    }
+    return $null
+}
+# Any combination with a non-empty set[] serves for the poisoned-array mutation: the defect is the
+# OPERATOR, not the field, so the target only needs a real fieldId to point at.
+function Get-PoisonTargetCombo($j) {
+    foreach ($c in (Get-QidmConfigs $j)) {
+        foreach ($cm in @($c.combinations)) {
+            if (@($cm.requirements.set).Count -lt 1) { continue }
+            return @{ Cfg = $c; Combo = $cm; Field = "$(@($cm.requirements.set)[0])" }
+        }
+    }
+    return $null
+}
+
 function Get-CodeTypeSelectNode($j) {
     foreach ($b in $j.bundles) { foreach ($c in $b.configurations) {
         if ($c.type -ne 'QUERYINPUTFORM') { continue }
@@ -940,6 +967,27 @@ $MUTS = @(
      Mut={ param($j) $t = Get-PrefillShadowTarget $j
            if (-not $t) { throw 'no prefill-shadow target' }
            $t.Node.props | Add-Member -NotePropertyName initialValue -NotePropertyValue 'X' -Force } }
+
+  @{ Id='derived-inert-condition-field'
+     Desc='DERIVED: rewrites an EXISTING conditions[].field to a fieldId that exists nowhere in the QIF, so the guardrail is silently INERT -- it never fires and the combination it was meant to gate is unprotected. verify_build CHECK 11 owns this, and it is LIVE-PROVEN (FL v4.x-v5.x, HI v3.2-v3.3, where exactly this turned identifier-priority guardrails into dead text). Same class as inert-condition-field (TX) but self-targeting, so CHECK 11 is exercised on every provider that has any condition at all instead of on one.'
+     Gate='verify_build.ps1'; Args={ @('-Path',$workJson) }
+     NaIf={ param($j) -not (Get-ConditionBearingCombo $j) }
+     NaWhy='no CommSys combination here carries any routing condition, so there is no guardrail to make inert -- CHECK 11 has nothing to check and its silence is correct, not blind'
+     Mut={ param($j) $t = Get-ConditionBearingCombo $j
+           if (-not $t) { throw 'no condition-bearing combo' }
+           $t.Combo.requirements.conditions = @([pscustomobject]@{ field = @('NoSuchFieldAnywhere'); operator = 'NOT_EXISTS' }) } }
+
+  @{ Id='derived-poisoned-condition'
+     Desc='DERIVED: adds a VALUE-COMPARISON routing condition (EQUALS) to a real combination. Per the poisoned-array rule, ANY value-comparison operator in a conditions array makes the WHOLE array inert on the CommSys form path -- so every existence gate sitting beside it stops working too, which is why this is a defect and not a style preference. Owned by verify_build''s value-comparison sweep and validate G-31. Same class as poisoned-condition (TX), self-targeting. The injected condition is APPENDED rather than replacing what is there, so the mutation also proves the gate sees a poison entry mixed in among legitimate existence gates -- the real-world shape.'
+     Gate='verify_build.ps1'; Args={ @('-Path',$workJson) }
+     NaIf={ param($j) -not (Get-PoisonTargetCombo $j) }
+     NaWhy='no CommSys combination has a non-empty set[] to hang a condition on'
+     Mut={ param($j) $t = Get-PoisonTargetCombo $j
+           if (-not $t) { throw 'no poison target' }
+           $existing = @()
+           if ($null -ne $t.Combo.requirements.conditions) { $existing = @($t.Combo.requirements.conditions) }
+           $poison = [pscustomobject]@{ field = @($t.Field); operator = 'EQUALS'; value = 'ZZ' }
+           $t.Combo.requirements | Add-Member -NotePropertyName conditions -NotePropertyValue @($existing + $poison) -Force } }
 )
 
 # Fold in this provider's own map. A provider with no map still runs the generic mutations, but

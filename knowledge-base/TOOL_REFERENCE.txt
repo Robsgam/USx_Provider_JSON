@@ -87,6 +87,54 @@ Base↔variant lockstep drift check. For each provider declaring `# BASE-SYNC: <
 
 **NJ_NJCJIS closed this way: `KILLED 12/12, SURVIVED 0, INVALID(stale) 0, N/A 2`** -- both of its long-standing INVALIDs were N/A, not stale. (1) `vehiclemake-as-input` -- NJ and HI build no `VehicleMakeCode` control at all. (2) `nj-guardrail-wire-leak` -- **UNHOSTABLE PORTFOLIO-WIDE, MEASURED not assumed.** A `-Path` mutation can only change the winner's POOL; the losing ids, the winner ids and the wire all come from the plan and the committed logs, which `-Path` does not touch. So a pool removal can only FAIL when a losing identifier is ON THE WIRE and exempted ONLY by the pool -- and a 20-provider sweep of every guardrail plan test found **ZERO** such cases (NJ Vehicle `RANDFULL` sends no VIN; NJ Person `FULLN` sends no Name). The earlier instruction "re-aim at Vehicle or Person" is therefore **impossible**, and adding a Boat guardrail test to NJ is still wrong (its devdoc permits `RegistrationNumber` on the hull query, so winner-only XML would FAIL on a correct build). ⚠️ **The pool exemption itself STAYS:** it guards against a FALSE FAIL when a provider legitimately rides an optional identifier along -- inert is not dead. What is no longer true is that any mutation proves that guard works.
 
+**DERIVED (AUTO-TARGETING) MUTATIONS, added 2026-09-09 -- the fix for the uneven coverage measured
+below, and the exercise that found a blind spot in a BLOCKING gate.** Rob: *"aim mutations at the
+fifteen thin providers"*. Hand-writing ~150 bespoke rows would hardcode a target per provider that
+rots on the next rebuild -- the staleness `[INVALID]` exists to catch. So the DEFECT CLASS is
+expressed once and the TARGET is computed from whichever provider is running. Four exist:
+`derived-shadow-pair`, `derived-prefill-routing-field`, `derived-inert-condition-field`,
+`derived-poisoned-condition`.
+
+> **PORTFOLIO AFTER: 261 mutations run, 0 SURVIVED, 0 INVALID(stale).** Thin providers went from
+> **7-9 to 10-12**; IL 23, TX 21, NY 19, FL 17, NJ 15. Three defect classes that were tested on ONE
+> provider each are now tested on all twenty.
+
+**THE FIND THAT JUSTIFIED THE WHOLE EXERCISE (see `audit_combo_reachability` for the fix):**
+`$null | ForEach-Object {...}` executes ONCE in PowerShell with `$_ = $null`, while an EMPTY array
+pipes zero times -- so a combination whose `conditions` property is ABSENT (the normal shape for a
+plain ungated combo) produced a PHANTOM `"|"` entry instead of an empty list. That phantom counted
+as an extra unmatchable condition, `continue` fired, and **the pair was never evaluated** -- so
+enforce PHASE 2h could not see a shadow whose SHADOWER had no conditions property, the simplest
+dead-combo shape there is. Proven on a mutated MD_METERS (`ZBOA.H`/`ZBOA.R` both ungated,
+`set=[BoatHullIdNumber]`, H first): the gate said *"[PASS] 12 combination(s) checked -- all
+reachable"*, byte-identical to pristine. **Nothing was hiding behind it** -- all 20 pristine
+providers still report 0 dead combos after the fix, so the blind spot cost no shipped defect.
+
+**RULES THESE FOUR OBEY, each paid for by a wrong draft the same day:**
+- **MIRROR THE GATE'S OWN CONFIG SELECTOR, never approximate it.** The first `Get-QidmConfigs`
+  excluded only `QUERYINPUTFORM`, which let RMS-bundle QIDMs through; on TN_TIES the first match was
+  *"RMS Person Search query"*, which `audit_combo_reachability` never examines. The mutation
+  measured nothing and reported SURVIVED against a gate that was right. Now skips MARK43/RMS
+  bundles, requires `QUERYINPUTDATAMAPPING`, excludes `RmsRestPayloadHandler` (LAW/§4.4).
+- **THE MUTATION MUST CREATE THE DEFECT, NOT RESEMBLE IT.** `derived-shadow-pair`'s first draft
+  cleared only the VICTIM's conditions; a CONDITIONED source is not unconditionally dominant, so it
+  starves nothing and the victim stayed reachable. Both sides' conditions are now cleared.
+- **NEVER TRUST `@($x).Count` TO MEAN "how many".** `@($null).Count` is **1**, which made me read
+  MD's conditionless `ZBOA.H` as having one condition and write a confidently wrong diagnosis
+  blaming its Hull>Reg guardrail. The same quirk that broke the gate broke my reading of the gate.
+  Test `hasProperty` / `isNull` / real count SEPARATELY.
+- **`NaIf` WITH AN ACCURATE REASON, or the row lies.** `derived-prefill-routing-field` requires an
+  earlier-sibling + EXACTLY-ONE-extra-unprefilled-field triple (that one-extra test is what keeps it
+  honest -- prefilling a field present in BOTH combos starves neither, exactly how the original TX
+  prefill mutation went wrong). It is **N/A on 19 of 20 and KILLED on FL_FCIC** -- kept precisely
+  because FL proves it CAN fail; a derived mutation that is N/A everywhere buys nothing.
+
+⚠️ **A FOURTH CLASS WAS DELIBERATELY NOT ADDED.** A derived `demote-set-to-any` needs to know which
+`set[]` field is METADATA-MANDATORY; demoting one that is not leaves `audit_metadata` correctly
+silent, which would register as a permanent false SURVIVED and teach the next reader to ignore the
+report. Deriving it properly means re-implementing the metadata parser (§4.4). Two honest classes
+beat three with one that lies.
+
 **FULL 20-PROVIDER BASELINE, 2026-09-09 -- and the headline number is not the interesting one.**
 `KILLED n/n · SURVIVED 0 · INVALID(stale) 0` on **all 20**, with N/A on 4 (HI 1, LA_LEMS 1, NJ 2,
 OR 1). So the `0 SURVIVED / 0 INVALID` bar is met portfolio-wide. ⚠️ **BUT THE MUTATION COUNT IS
