@@ -161,21 +161,45 @@
     return { total: cbs.length, checked: cbs.filter((c) => c.checked).length, disabled: cbs.filter((c) => c.disabled).length };
   }
 
+  // ── 4. IS UNIVERSAL SEARCH OFFERED HERE AT ALL? ───────────────────────────
+  // SQA-217 (TC-12) states it outright: "In First Responder, there is no USX
+  // icon available at all for a user without a State ID assigned." So an ABSENT
+  // entry point is the EXPECTED behaviour on at least one surface -- and without
+  // this check, "no warning icon" on such a surface would satisfy
+  // matchesRnd71625RmsSymptom and report a symptom where the product is correct.
+  // A verdict that cannot tell "no warning" from "nothing to warn about" is the
+  // vacuous measurement this repo keeps finding in its own gates.
+  function entryPoint(lbl, snd, cbs) {
+    const heading = [...document.querySelectorAll('h1,h2,h3,h4,[role="heading"]')]
+      .find((el) => /universal search/i.test((el.textContent || '').trim().slice(0, 80))) || null;
+    const found = !!(lbl || snd.present || cbs.total || heading);
+    return { found, viaQueriesLabel: !!lbl, viaSendButton: snd.present, viaCheckboxes: cbs.total > 0, viaHeading: snap(heading) };
+  }
+
   // ── the instantaneous probe ────────────────────────────────────────────────
   function probeOnce() {
     const lbl = queriesLabel();
     const icons = iconsNear(lbl);
     const n = notices();
+    const snd = sendState();
+    const cbs = queryCheckboxes();
     return {
       at: new Date().toISOString(),
       queriesLabel: snap(lbl),
       queriesLabelFound: !!lbl,
       icons,
       warnIconPresent: icons.some((i) => i.warnish),
+      // TC-12's fail condition is "icon doesn't appear WITH CORRECT MESSAGE", so the
+      // icon's own accessible text is carried out separately -- presence alone
+      // cannot answer whether the message was right.
+      warnIconText: icons.filter((i) => i.warnish)
+        .map((i) => [i.ariaLabel, i.title, i.text].filter(Boolean).join(' | '))
+        .filter(Boolean),
       notices: n,
       noticePresent: !!(n.containers.length || n.phrase.length),
-      send: sendState(),
-      checkboxes: queryCheckboxes()
+      send: snd,
+      checkboxes: cbs,
+      entryPoint: entryPoint(lbl, snd, cbs)
     };
   }
 
@@ -185,13 +209,37 @@
     return out;
   };
 
+  // ── the documented triggers ───────────────────────────────────────────────
+  // Sourced from the SQA suite, NOT inferred. All three are expected to produce
+  // a warning/blocked interface, and they are INDEPENDENT -- which is what makes
+  // a negative result meaningful: a probe that finds nothing under TC-10 alone
+  // is indistinguishable from a broken probe, but one that finds nothing under
+  // TC-10 AND something under TC-12 has proven its own selectors.
+  const TRIGGERS = {
+    'tc10-sim-off':    'SQA-215/145: Settings > Universal Search, device simulation OFF (dex.device_simulation_mode / dex.simulation_mode / dex.local_simulation_mode). TENANT-WIDE -- turn it back ON immediately.',
+    'tc12-no-stateid': 'SQA-217: signed in as a user with NO State User ID assigned. PER-USER, so it does not disturb the tenant. Expects the icon WITH a message on RMS; blocked on CAD/FR; and NO USX entry point at all on FR.',
+    'tc13-image-reason': 'SQA-218: ImageIndicator="Y-yes" with ReasonCode blank must block submission. PER-FORM and deterministic -- but only reproducible where the provider builds a ReasonCode control (TX_TLETS only; IL_LEADS_OFML metadata defines none).',
+    'control-normal':  'No trigger applied -- a fully authorized user with simulation ON. The baseline every other run is compared against.'
+  };
+
   // ── the watch ─────────────────────────────────────────────────────────────
   window.__usxAuthWatch = async function (opts) {
-    const o = Object.assign({ seconds: 10, everyMs: 500, download: true, note: null }, opts || {});
+    const o = Object.assign({ seconds: 10, everyMs: 500, download: true, note: null, trigger: null }, opts || {});
     const sfc = surface();
     const t0 = Date.now();
     const samples = [];
     const firstSeen = { warnIcon: null, notice: null, sendDisabled: null, queriesLabel: null };
+    // A run that does not say WHICH documented trigger it was made under is not
+    // comparable to any other run, and comparing runs is the entire value here.
+    // The SQA suite documents three independent triggers for the same symptom
+    // family, so the label is an enum, not free text.
+    if (o.trigger && !TRIGGERS[o.trigger]) {
+      console.log(TAG, 'color:#c00;font-weight:bold', `unknown trigger "${o.trigger}". Known: ${Object.keys(TRIGGERS).join(', ')}`);
+      throw new Error('__usxAuthWatch: unknown trigger -- refusing to record an unlabelled run');
+    }
+    if (!o.trigger) {
+      console.log(TAG, 'color:#c00;font-weight:bold', `no trigger given. Pass one of: ${Object.keys(TRIGGERS).join(', ')} -- an unlabelled record cannot be compared to a control.`);
+    }
 
     console.log(TAG, CSS, `watching ${sfc.name} for ${o.seconds}s -- an ABSENCE is only reported after the full window`);
     while (Date.now() - t0 < o.seconds * 1000) {
@@ -222,14 +270,22 @@
       queriesLabelFound: firstSeen.queriesLabel !== null,
       windowMs: o.seconds * 1000,
       samples: samples.length,
+      usxEntryPointFound: last.entryPoint.found,
       // The exact shape RND-71625 reports on RMS: nothing at all.
-      matchesRnd71625RmsSymptom: firstSeen.warnIcon === null && firstSeen.notice === null && firstSeen.sendDisabled === null
+      // GUARDED on the entry point existing. SQA-217 says First Responder shows NO
+      // USX icon at all for a user without a State ID -- on that surface "no warning"
+      // is the CORRECT product behaviour, and reporting it as the RMS symptom would be
+      // a false positive on this tool's own headline verdict.
+      matchesRnd71625RmsSymptom: last.entryPoint.found
+        && firstSeen.warnIcon === null && firstSeen.notice === null && firstSeen.sendDisabled === null
     };
 
     const rec = {
       kind: 'usx-authwatch', ticket: 'RND-71625',
       capturedAt: new Date().toISOString(),
       note: o.note,
+      trigger: o.trigger || null,
+      triggerMeans: o.trigger ? TRIGGERS[o.trigger] : null,
       simulationSettingsReadable: false,   // stated, not implied: this page cannot see dex.*simulation* settings
       surface: sfc, verdict, firstSeen, samples, finalSnapshot: last
     };
@@ -237,6 +293,9 @@
     console.log(TAG, CSS, verdict);
     if (verdict.matchesRnd71625RmsSymptom) {
       console.log(TAG, CSS, 'NO icon, NO notice and Send never disabled for the whole window -- this is the RND-71625 RMS symptom. Pair it with a simulation-ON control run before concluding.');
+    }
+    if (!verdict.usxEntryPointFound) {
+      console.log(TAG, 'color:#c00;font-weight:bold', 'NO Universal Search entry point found on this surface -- no Queries label, no Send button, no query checkboxes, no heading. Per SQA-217 that is the EXPECTED state on First Responder for a user without a State ID, so this run reports no symptom. It is NOT evidence about the icon.');
     }
     if (!verdict.queriesLabelFound) {
       console.log(TAG, 'color:#c00;font-weight:bold', 'The "Queries" label was never found -- the icon probe had NOTHING to anchor to, so its absence proves nothing. Check the label text/markup changed, and re-run on a page where the query list renders.');

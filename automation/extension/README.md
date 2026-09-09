@@ -156,7 +156,7 @@ clearing site data — which is how a hide button becomes a support call.
 A tenant can be visible-and-disarmed or hidden-and-armed. Turning the panel off never arms
 anything; arming never forces the panel on. The launcher dot turns green when the tenant is armed,
 so a hidden-but-armed tenant is still visible at a glance rather than being a silent trap.
-## v0.5.4 — `authwatch.js`: RND-71625 evidence capture (the yellow-icon / blocking question)
+## v0.5.5 — `authwatch.js`: RND-71625 evidence capture (the yellow-icon / blocking question)
 
 **The ticket.** RND-71625 (P3, Amy Blair 2026-08-31, found in SQA-145 TC-10, IL-LEADS suite). With
 device simulation OFF — `dex.device_simulation_mode.enabled`, `dex.simulation_mode.enabled` and
@@ -174,11 +174,16 @@ offset, what notice text appeared, and whether **Send** was actually disabled.
 **It proves WHETHER, never WHY.** The cause is platform-side; only engineering can settle it.
 
 ```js
-__usxAuthWatch()                    // 10s watch, prints verdict + downloads the record
-__usxAuthWatch({ seconds: 20 })     // longer window
-__usxAuthWatch({ download: false })  // print only
-__usxAuthProbe()                    // one instantaneous snapshot
+__usxAuthWatch({ trigger: 'control-normal'   })   // BASELINE first -- authorized user, simulation ON
+__usxAuthWatch({ trigger: 'tc12-no-stateid'  })   // per-USER, does not disturb the tenant
+__usxAuthWatch({ trigger: 'tc10-sim-off'     })   // tenant-wide -- turn simulation back ON immediately
+__usxAuthWatch({ trigger: 'tc10-sim-off', seconds: 20 })
+__usxAuthProbe()                                  // one instantaneous snapshot
 ```
+
+`trigger` is a required-in-practice **enum** (see the table below): an unknown value **throws**, and
+omitting it prints a loud warning. An unlabelled record cannot be compared against a control, and
+comparing runs is the entire value — so the record refuses to look tidier than it is.
 
 Saves `usx_authwatch_<SURFACE>_<timestamp>.json`.
 
@@ -193,6 +198,46 @@ recording **first-seen offset** per signal, and an absence is only asserted afte
 `icon shown but still sendable` are **different bugs**, so they never collapse into one verdict.
 `verdict.matchesRnd71625RmsSymptom` is true only when the icon never appeared, no notice appeared,
 **and** Send was never disabled for the entire window — i.e. the exact RMS shape in the ticket.
+
+### What actually triggers it — THREE documented triggers, from the SQA suite
+
+Answering *"do we know what triggers it, and how do we reproduce it?"* — **yes, and from written
+test cases rather than inference.** The same symptom family has three **independent** triggers, which
+is what makes a negative result interpretable at all:
+
+| Trigger | Ticket | Scope | Expected |
+|---|---|---|---|
+| **`tc10-sim-off`** device simulation OFF | SQA-215 / 174 / **145** / 114 / 76 | **TENANT-WIDE** | yellow warning icon on the "Queries" label within 2–3 s |
+| **`tc12-no-stateid`** user has **no State User ID** | SQA-217 / 176 / 147 / 116 / 78 | **PER-USER** | icon **with a message** on RMS · query blocked on CAD **and** FR · **no USX icon at all** on FR |
+| **`tc13-image-reason`** `ImageIndicator="Y-yes"` + `ReasonCode` blank | SQA-218 / 177 / 148 / 117 / 79 | **PER-FORM** | submission blocked until a Reason Code is entered |
+
+**TC-10 verbatim:** Settings → Universal Search → turn OFF device simulation → RMS → Universal
+Search → Person Query → wait 2–3 s → look at the "Queries" label → **turn it back ON immediately**.
+Fail condition: *"Yellow warning icon doesn't appear, or query interface remains fully functional
+when it should be blocked."*
+
+**TC-12 is the better instrument, and that is the useful finding.** It is **per-user**, so it does
+not disturb a shared tenant the way flipping three `dex.*simulation*` settings does; it is the only
+one that expects a **message** alongside the icon; and its trigger is a field this repo actually
+configures (`dexStateUserId`, set by `Build-Auth`). So it doubles as the **positive control** the
+icon probe otherwise lacks.
+
+**TC-13 is deterministic but NOT reproducible on IL_LEADS_OFML** — the provider RND-71625 was filed
+against. IL's metadata defines `ReasonCode` **zero** times and its devdoc never mentions it, while
+TX_TLETS's metadata defines it 13 times. So the Image/Reason conditional is a **TX-family**
+requirement, not an IL gap — checked against IL's own authority, not assumed from the resemblance.
+
+### Why the third trigger matters: it makes a NEGATIVE run mean something
+A probe that finds nothing under **one** trigger is **indistinguishable from a broken probe** — the
+selectors here were written without ever having seen the icon, so they are a hypothesis. Running a
+**second, independent** trigger resolves that:
+
+- icon appears under TC-12 but not TC-10 → **selectors are proven**, and TC-10 is a real product gap
+- icon appears under **neither** → either the icon does not exist on this build (a stronger finding
+  than the ticket's single observation) **or** the probe is wrong — and the raw `icons[]` array,
+  which records **every** icon near the label with its computed colour, is what an engineer reads to
+  tell those apart
+- icon appears under **both** → RND-71625 does not reproduce here, which is also worth knowing
 
 ### Run it TWICE per surface — a single run cannot conclude
 Once with simulation **ON** (control) and once **OFF** (the reported condition). The page cannot
@@ -220,8 +265,20 @@ sends — so pasting it carries none of the driver's risk.
 
 ### Verified
 Per the "Verifying a change to these scripts" note above: headless Edge as a real V8 parser, with a
-deliberate `function broken( {` control run **first** (→ `FAIL: Unexpected end of input`), then
-`authwatch.js` → `OK` and `driver.js` unchanged → `OK`. `manifest.json` re-parsed, and load order
-asserted (`usx_lib` → `authwatch` → `ui`). **Reload the unpacked extension** after pulling this —
-`manifest.json` changed.
+deliberate `function broken( {` control run **first** (→ `PARSE-FAIL`), then `authwatch.js` →
+`PARSE-OK` **and both globals exported** (`__usxAuthWatch`, `__usxAuthProbe` are functions).
+`manifest.json` re-parsed, and load order asserted (`usx_lib` → … → `authwatch` → `ui`).
+**Reload the unpacked extension** after pulling this — `manifest.json` changed.
+
+⚠️ **The scope of that claim, stated precisely — an earlier version of this section overstated it.**
+The harness loads a file and asks whether its global appeared, which is **stricter than a parse
+check**: it fails on a syntax error *and* on a runtime throw during the IIFE. Under `file://`,
+`usx_lib.js`, `capture.js` and `driver.js` do **not** export — Chrome sanitizes the reason to
+`Script error.` because a `file://` page is an opaque origin, so no detail is recoverable this way.
+Those three are **unmodified** here and demonstrably work in a real tenant, so that is an artifact
+of the harness's environment, not a defect. What it means practically: **this harness validates a
+file that is written to degrade standalone (which `authwatch.js` deliberately is) and cannot verify
+one that requires the extension context.** Do not read a `PARSE-FAIL` on those three as a finding,
+and do not "fix" them to satisfy it. To check them properly, serve the directory over HTTP so the
+origin is not opaque and the real error text survives.
 
