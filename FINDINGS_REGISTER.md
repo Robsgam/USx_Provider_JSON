@@ -1134,3 +1134,48 @@ normally enabled — worth doing if cheap, no longer blocking.
 `RestAuthenticationHandler` vs `$false` on `CommsysOriAuthenticationHandler` across all 20
 providers) is **untouched and unverified** — and note this evidence does not support it: RMS *does*
 block here, which is the opposite of what that hypothesis predicts.
+
+### RND-71625 follow-up 2026-09-09: Cringer's suggested fix is ALREADY IN PLACE, portfolio-wide
+
+**His comment (812334, 2026-09-07):** *"In the configuration under type AUTHENTICATION, set
+`deviceRegistrationOptional` to false. If you include the full configuration, I can check it."* —
+with a snippet naming `handlerFunction: CommsysOriAuthenticationHandler`, `providerType: Commsys`,
+`signInRequired: false`.
+
+**What the flag does:** it governs whether device registration is REQUIRED (`false`) or OPTIONAL
+(`true`). It controls **enforcement, not presentation** — it cannot affect which glyph renders or
+whether a message is accessible.
+
+**Measured four ways, all agreeing:**
+
+| Evidence | Result |
+|---|---|
+| All 20 repo JSONs, current versions | `CommsysOriAuthenticationHandler` = **`false`** (20/20); `RestAuthenticationHandler` = `true` (20/20) |
+| `Build-Auth` (`_build_provider_helpers.ps1:97`) | `$false` since introduced **2026-05-14** (`28fa1924`), **never changed** — `git log -S` shows one touch, the consolidation itself |
+| Every version in `IMPORT_LEDGER.md` | all post-date 2026-05-14 (oldest install: NJ_NJCJIS v4.9, 2026-07-20) |
+| **`TENANT_EXPORT_HDLE_4.15_2026-09-08.json`** — pulled FROM a running tenant | **`false`** — confirms the deployed artifact, not just our build |
+
+**The decisive one, because it is outside our pipeline entirely:** engineering's OWN hand-built
+`Lafayette Parish LA_LEMS 8.13.2026.json` (§B.1 — the only tenant JSON this repo did not build)
+carries the **identical pair**: `CommsysOriAuthenticationHandler` = `false`,
+`RestAuthenticationHandler` = `true`. So the pattern is the platform norm, produced by engineering
+themselves — not a quirk of `Build-Auth`.
+
+**Adjudication: NO CHANGE. Nothing to do.** The suggestion is satisfied everywhere, and Rob's live
+test proves the enforcement works — an unregistered device was refused by name. Cringer's diagnosis
+was a sound inference from "RMS shows no blocking indicator" (which `true` would cause); it simply
+was not the state.
+
+⚠️ **`RestAuthenticationHandler: true` IS THE NORM — do NOT "fix" it.** This finding retires the
+[LIKELY] hypothesis recorded earlier (that its `true` explained RMS not blocking while CAD/FR did).
+Dead twice over: RMS *does* block, **and** the value matches engineering's own hand-built config. It
+is worth ASKING him about since he offered to review the full configuration, but it is not a defect
+and must not become a 20-provider bump.
+
+**Also confirmed 2026-09-09 (Rob, CA_CLETS test tenant): ALL THREE SURFACES show the icon** — RMS,
+CAD and First Responder, on their respective USx forms. The ticket claims it appears on none of
+them. The CAD/FR "License Violation Notice" mechanism described in the ticket body was NOT observed
+and is treated as superseded (Rob: *"they may not be valid any longer"*). Remaining honest gap:
+CAD/FR were checked on **CA_CLETS**, RMS on **IL_LEADS_OFML** — nobody has checked IL LEADS CAD/FR
+specifically. This is platform UI so the risk is low, but say so in the reply rather than imply
+full coverage.
