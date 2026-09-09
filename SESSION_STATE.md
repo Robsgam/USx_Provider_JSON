@@ -43,14 +43,14 @@ PARKED so it can never complete -- whether 19-of-20 moves to the eligible denomi
 **CA_eSUN DEX-1313** -- comment 811409 covers the RADIOBUTTON line ONLY; v3.x owes a release line,
 and eSUN is the first provider with a SUBTASK (DEX-1312 parent / DEX-1313 sub) so NAME the ticket.
 
-**TEST-AND-READY, NOT FOR RELEASE (Rob 2026-09-09).** The never-tested providers will NOT be
-released, but they ARE owed a full sweep so they are ready to go -- **and that includes
-CA_CLETS_OCATS**. Do not frame these as an import queue. CA_CONTRA_COSTA is the ONE exception:
-BLOCKED on Rob's JAWS call. **Nothing else blocks them** -- measured 2026-09-09, PENDING_UPDATES
-live-blocking lines = **0** on all 6. ⚠️ Every `[FLAG:]` in those files is a `#`-COMMENTED RETIRED
-record and a naive grep reports 2-6 FALSE blockers; only lines WITHOUT a leading `#` block enforce.
-**IMPORT FIRST, THEN PICKLIST CAPTURE** (Rob 2026-08-28) -- why CA_VENTURA's hollow toggle waits.
-**SDSO LIVE runs eSUN v1.0 vs repo v3.1** -- a LIVE bump is Rob's coordinated call, never a repo one.
+**TEST-AND-READY, NOT FOR RELEASE (Rob 2026-09-09).** Never-tested providers will NOT be released
+but ARE owed a sweep -- **includes CA_CLETS_OCATS**; not an import queue. CA_CONTRA_COSTA is the ONE
+exception: BLOCKED on Rob's JAWS call. ⚠️ **THE OTHER FOUR ARE ALREADY SWEEP-READY, MEASURED
+2026-09-09 -- NOTHING WAS OWED:** `test_phase2` pre-flight CLEAR on all four (254 tests / 1024 fills
+/ 0 unfireable) and every plan regenerates BYTE-IDENTICAL (SHA256 via `-OutFile` to scratch), so the
+dedupe pickups are applied. PENDING_UPDATES live-blocking lines = 0 on all 6 -- every `[FLAG:]`
+there is a `#`-COMMENTED RETIRED record. Only residual: CA_VENTURA's hollow toggle, blocked on
+picklist capture -> import. **SDSO LIVE runs eSUN v1.0 vs repo v3.1** -- a LIVE bump is Rob's call.
 
 **OFFICER GUIDES 20/20 CURRENT** (473 rows, 0 stale); convention `usx-build` 4c, checker
 `_probes/audit_guide_completeness.ps1`. **EXTENSION v0.5.9** -- `audit_extension_syntax.ps1` (in
