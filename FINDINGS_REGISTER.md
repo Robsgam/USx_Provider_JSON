@@ -1050,3 +1050,87 @@ from a structure that looked familiar instead of reading the provider's own auth
 gates were right materially more often than my reading of them. Treat a same-looking structure on a
 different provider as a question, never as a precedent.
 
+
+---
+
+## RND-71625 — RMS device-block indicator: EVIDENCE GATHERED 2026-09-09 (Jira reply still HELD)
+
+**The ticket's claim** (P3, filed 2026-08-31 from SQA-145 TC-10, IL LEADS): with device simulation
+OFF, the expected yellow warning icon on the "Queries" label never appears, and *"RMS shows no
+blocking indicator at all — nothing tells the officer queries are unavailable."* CAD/FR block via a
+ConnectCIC "License Violation Notice".
+
+**Conditions of this run.** `usx-il-leads-ofml.mark43.com/rms/#/universal-search`, device simulation
+**OFF** and **no device ID configured** — the ticket's own condition. Machine record:
+`usx_authwatch_RMS_2026-09-09T15-01-18-375Z.json` / `...15-02-22-244Z.json` (extension v0.5.8).
+
+### What is actually on screen
+
+| Signal | Observed | Source |
+|---|---|---|
+| Icon beside "Queries:" | **PRESENT**, first seen **1–3 ms** | machine record, `warnIconFirstSeenMs` |
+| Icon colour | `rgb(149,111,13)` = **amber** (hue 43°, sat 0.84) | computed style |
+| Icon **glyph** | `mdi-information` (circle-**i**) — **NOT** a warning/alert glyph | captured SVG path `M13,9H11V7H13 M13,17H11V11H13 M12,2A10,10…` |
+| Accessible name | **NONE** — `aria-label` null, `title` null, class is a hashed `arc-1oy47jo` | machine record |
+| Hover message | **PRESENT and specific** (verbatim below) | **Rob, by hand** — see the probe caveat |
+| Send / Send & Clear Form | **both DISABLED** | machine record |
+| Query checkboxes | **2 of 2 DISABLED**, 0 checked | machine record |
+
+**The hover message, verbatim:**
+
+> The Vehicle Registration query is not available due to the following issue:
+> • Computer/Device name "LAPTOP-NLHTE6T0" not found, please have your administrator add this
+> device to the universal search devices
+
+### Adjudication
+
+**The ticket's RMS claim does not reproduce on this build.** The officer *is* told: an indicator
+renders in ~1 ms, the interface is blocked, and the message names the offending device and the
+remedy ("have your administrator add this device to the universal search devices"). It is also
+**per-query** ("The Vehicle Registration query…"), which is more precise than the ticket implies is
+possible.
+
+**What IS defensible as a finding, and it is narrower than the ticket:**
+1. **Wrong glyph.** The tenant renders an *information* icon (circle-i) where the ticket expects a
+   *yellow warning* icon. It is amber-coloured, so it reads as a warning at a glance while being
+   semantically "info".
+2. **Not discoverable without a mouse.** The message exists only in a hover tooltip on an icon with
+   **no `aria-label` and no `title`**. A screen-reader user gets nothing; a user who does not hover
+   sees a small amber "i". That is a plausible mechanism for a tester reporting "no icon / no
+   indicator" in good faith.
+
+**NOT concluded, deliberately:** whether a *notice* (the CAD/FR "License Violation Notice" analogue)
+appears on RMS. The one notice the probe reported was **its own panel text** — see below — so that
+field carries **zero** evidence, not a negative.
+
+### Two probe defects this run exposed, both mine
+
+1. **THE PROBE READ ITS OWN UI AS EVIDENCE.** v0.5.8 added a panel line *"SET UP: Device simulation
+   is OFF and this device has NO device ID configured…"*, and `NOTICE_RE` matches
+   `/device (registration|simulation)/` — so `noticeEverSeen` read **true at 1 ms** against my own
+   help text. This would have gone into a Jira reply as "RMS does show a notice". Fixed in v0.5.9:
+   every DOM sweep is filtered through `notOurs()` (`#usx-panel`/`#usx-launcher`), regression-tested
+   with a decoy panel carrying that exact phrase plus a fake Send button, checkbox and amber icon.
+   **Same "matched its own injected string" trap that bit a grep earlier the same day** — the
+   difference is this one shipped.
+2. **`hoverMessagesFound: 0` twice was the probe, not an absent message.** `data-state="closed"` on
+   the icon identifies **Ark UI (Zag)**, not a Chakra v1 tooltip: Zag ignores a `pointerenter` whose
+   `pointerType` is empty (the default for a constructed `PointerEvent`), and Ark keeps content
+   **mounted while closed** addressed by `data-scope`/`data-part` rather than `role="tooltip"`.
+   v0.5.9 sets `pointerType:'mouse'`, tries `focus()`, adds the Ark selectors, and records
+   `dataStateBefore/After` + `hoverRegistered` so an ignored hover **says so** instead of
+   reporting a silent zero. **The text in this record came from Rob's eyes, not the tool.**
+
+### The control run is NO LONGER required to answer the ticket
+
+Earlier notes said a simulation-ON control was needed because disabled buttons on an *empty* form
+prove nothing. That reasoning applied to the **Send/checkbox** evidence alone. The hover message is
+an **explicit, positive statement** that the query is unavailable and why, so the "is the officer
+informed?" question is settled without it. A control run would still tidily prove the checkboxes are
+normally enabled — worth doing if cheap, no longer blocking.
+
+**Jira remains HELD** (Rob: *"hold the jira reply and hold on any changes"*). The
+`deviceRegistrationOptional` hypothesis (`_build_rms_bundle.ps1:90`, `$true` on
+`RestAuthenticationHandler` vs `$false` on `CommsysOriAuthenticationHandler` across all 20
+providers) is **untouched and unverified** — and note this evidence does not support it: RMS *does*
+block here, which is the opposite of what that hypothesis predicts.

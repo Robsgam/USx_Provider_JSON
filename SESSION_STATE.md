@@ -74,18 +74,18 @@ capture tools for 5 days (2026-09-04..09).
 - **RESWEEP 2026-09-08: 20/20 ENFORCED 0F/0W, no defect in any provider JSON.** Fidelity 426 branches / 4 UNDER / 4 OVER / 0 NEVER-COMPARED -- all 4+4 are CA_CONTRA_COSTA's (Rob's JAWS call).
 ## RND-71625 -- IN FLIGHT, JIRA REPLY HELD (Rob: "hold the jira reply and hold on any changes")
 
-Ticket: simulation OFF -> no yellow icon, and RMS shows NO blocking indicator. **FIRST LIVE PROBE
-(IL, v0.5.6, UNLABELLED so NOT interpretable) already unsettles both halves:** an icon IS beside
-"Queries:" at `rgb(149,111,13)` = amber, and Send + BOTH query checkboxes were disabled. But the
-icon has NO aria/title/semantic class (hashed `arc-1oy47jo`), so name-based detection missed it --
-**v0.5.7 promotes computed COLOUR to evidence** (hue 20-70 amber / red, grey+green negative-
-controlled) and makes the probe carry its trigger, because "Send disabled" = BLOCKED under
-`tc10-sim-off` but an ORDINARY EMPTY FORM under `control-normal`. **NEXT: a `control-normal` watch,
-then `tc10-sim-off`** -- the discriminator is whether the checkboxes are disabled in BOTH.
-Triggers are real test cases: SQA-215 (tenant-wide), SQA-217 (per-user, the positive control),
-SQA-218 (TX only). **NEEDS ROB:** `_build_rms_bundle.ps1:90` sets `deviceRegistrationOptional=$true`
-on `RestAuthenticationHandler` while all 20 set `$false` on `CommsysOriAuthenticationHandler` --
-[LIKELY] cause of the RMS/CAD split; 1 line, 20 providers, live Mariposa + SDSO. Not on a hypothesis.
+**EVIDENCE GATHERED 2026-09-09 -- THE TICKET'S RMS CLAIM DOES NOT REPRODUCE.** Full detail +
+verbatim message in `FINDINGS_REGISTER.md`; do not restate here. IL LEADS, simulation OFF + no
+device ID: an amber icon renders in 1-3ms, Send + both checkboxes are DISABLED, and hovering gives
+*"Computer/Device name "LAPTOP-NLHTE6T0" not found, please have your administrator add this device
+to the universal search devices"*. So the officer IS told. **The narrower real findings:** the glyph
+is `mdi-information` (circle-i), not a warning icon, and the message is hover-only on an icon with
+NO aria-label/title -- invisible to a screen reader, which plausibly explains the original report.
+**The control run is NO LONGER blocking.** **NOT concluded:** whether RMS shows a NOTICE -- the only
+hit was MY OWN PANEL TEXT (v0.5.8 self-detection bug, fixed v0.5.9): zero evidence, not a negative.
+**Jira still HELD.** `deviceRegistrationOptional` (`_build_rms_bundle.ps1:90`, `$true` on
+`RestAuthenticationHandler` vs `$false` on Commsys, all 20) is untouched AND this evidence does not
+support it -- RMS *does* block, the opposite of what that hypothesis predicts.
 
 ## DO NOT RE-RAISE
 
