@@ -96,6 +96,51 @@ is genuinely never-installed (PARKED, not owed).
 | Albany County NY Foundation | NY_NYSPIN_EJUSTICE | **v4.26** | **2026-08-24** | **FIRST IMPORT -- this provider's first Foundation tenant, and NY's first install outside the USx provider tenant.** Reported by Rob 2026-08-24. Version recorded as **v4.26**, the current repo + DEX-969 attachment version (release line comment 803322, posted 2026-08-21) -- Rob's report did not name a version, so if an earlier build was installed this row is what needs correcting, not the repo. Picks up everything through v4.26: the 8 name components in the `any[]` of every name combo, so **an Albany officer can enter a middle name and a suffix and both reach the state** -- before v4.26 the wire could only ever carry `DOE, JOHN`. Also carries the v4.11 DGRP name-search removal (DEX-1284), the DH-suffixed self-contained Driver History card with its own StateDH/ImageDH and OOS combos (DALHOUT/DALLOUT), and the Choice-set OOS pattern (LIMIT #36). Backed by the v4.26 sweep in NY's own USx provider tenant: **ALL-PASS 65/65** (Veh 12 / Per 27 / Gun 8 / Art 8 / Boat 10), four log gates 65/65 each, inflation 0/0/0/0, 16 CommSys combos all covered and all reachable, validator 76P/0F/0W. **NO capture tool reaches a Foundation tenant**, so this row is the ONLY record of what is installed here -- it is a REPORTED fact, not a derived one, and nothing in the repo can verify or refute it. **NY IS ALIGNED ON EVERY AXIS AT v4.26** -- repo v4.26 - provider tenant v4.26 (65 logs) - this Foundation tenant v4.26 - DEX-969 release line comment 803322. |
 | Aurora Foundation | IL_LEADS_OFML | **v2.8** | **2026-08-24** | **FIRST IMPORT -- this provider's first Foundation tenant.** Reported by Rob 2026-08-24 ("Aurora Foundation has been updated with the latest json"); recorded as **v2.8**, which is both the current repo version and the DEX-984 attachment version, so it is what "the latest json" resolves to today. Picks up everything through v2.8, and the officer-visible part is the name components: middle name and suffix are wired into `Z2.N`, so **an Aurora officer can enter a middle name and a suffix and both reach the state** -- before v2.8 the wire could only ever carry `DOE, JOHN`. Also carries the DEX-1284 convention pass and the card collapse. Backed by evidence from IL's OWN provider tenant, not by this row: the v2.8 sweep was **ALL-PASS 44/44**, four log gates 44/44 each, 9 CommSys combos all covered and reachable, validator 61P/0F/0W. Release line **comment 800073**. **NO capture tool reaches a Foundation tenant**, so this row is the ONLY record of what is installed at Aurora -- a REPORTED fact, not a derived one, and nothing in the repo can verify or refute it. **IL IS ALIGNED ON EVERY AXIS AT v2.8** -- repo v2.8 - provider tenant v2.8 (44 logs) - this Foundation tenant v2.8 - DEX-984 attachment + catalog v2.8 - release line comment 800073. |
 
+### B.0 NAME CORRELATION -- the ledger calls it one thing, the platform calls it another
+
+Rob 2026-09-10: *"the tenant naming conventions are not intuative so we will need to keep them
+correlated when possible."* Nothing in **HDLE LIVE** implies `hawaii-dle`, and reading that
+correlation by eye is exactly how `ingest_tenant_scan.ps1` reported a RECORDED production
+tenant as an UNKNOWN discovery on its first full run. **`deptId` is the only stable join key**
+-- subdomains get renamed and this ledger uses prose names.
+
+**GENERATED FROM `tools/config/tenant_map.json`, which is the single owner of this join.**
+Do not hand-edit rows here; regenerate. `ingest_tenant_scan.ps1` reads that same file, so the
+ledger and the census tool cannot disagree about which tenant is which.
+
+| Ledger name | Platform subdomain | deptId | Bundle / platform counter | Status |
+|---|---|---|---|---|
+| Aurora Foundation | `aurorapd-il-foundation` | `66323459475` | `IL_LEADS_OFML/3` | TEST |
+| Balcones Heights TX Foundation | `balconesheightspd-foundation` | `69189298576` | `TX_TLETS/34` | TEST |
+| Bert Anzini USx test tenant | `practice-bertanzini` | `65003603844` | `NJ_NJCJIS/74` | TEST |
+| HDLE Foundation | `hdle-foundation` | `54721427755` | `HI_HCJDC_OFML/32` | TEST |
+| HDLE LIVE | `hawaii-dle` | `58443422576` | `HI_HCJDC_OFML/32` | LIVE |
+| Homestead Foundation | `homesteadpd-fl-foundation` | `69669966842` | `FL_FCIC/114` | TEST |
+| Lafayette Parish | `lafayettesheriff-la` | `20032392972` | `LA_LEMS/22` | LIVE |
+| Mariposa Foundation | `mariposacso-foundation` | `55074106416` | `CA_CLETS/24` | TRAINING |
+| Mariposa LIVE | `mariposacso` | `57528255873` | `CA_CLETS/24` | LIVE |
+| Miami Springs Foundation | `miamispringspd-foundation` | `68086125887` | `FL_FCIC/114` | TEST |
+| Newark Foundation | `newarkpd-foundation` | `68055618928` | `NJ_NJCJIS/77` | TEST |
+| North Miami Foundation | `northmiami-foundation` | `67633161477` | `FL_FCIC/114` | TEST |
+
+**UNLOCATED -- a ledger row with no tenant is as much a gap as a tenant with no ledger row:**
+- **Albany County NY Foundation** (NY_NYSPIN_EJUSTICE, v4.26 imported 2026-08-24) -- No subdomain matching /albany/ carries a provider bundle; albany-ny-covid19 is LIVE with none. ny-nycapss-foundation (NY_NYSPIN_EJUSTICE/46) is the only CANDIDATE and is deliberately NOT mapped -- settle it with an Export JSON read, do not assume.
+
+**OPEN QUESTION FOR A HUMAN -- this one cannot be answered from the platform.** Rob 2026-09-10:
+*"the naming may need to be hand down. i have no idea what ny capss is."* The admin pages give a
+subdomain, a deptId and a bundle list and **nothing that identifies the customer**, so where the
+name is not self-evident the correlation has to be handed down by whoever provisioned the tenant.
+
+- **`ny-nycapss-foundation`** (dept `47169169464`, TRAINING) carries `NY_NYSPIN_EJUSTICE/46` --
+  the **same platform counter as our own `usx-ny-nyspin-ejustice`**, so [Likely] our build,
+  imported and never recorded. A LIVE sibling **`ny-nycapss`** (dept `51496356971`) exists and
+  carries **no** provider bundle.
+- ⚠️ **Do NOT close this by matching it to the "Albany County NY Foundation" row above.** Both are
+  unknown; two unknowns do not confirm each other. An Export JSON read settles **what** is
+  installed there even while **who** stays open -- do that before naming it.
+
+Tracked as `_needsHumanInput` in `tools/config/tenant_map.json` so it survives this session.
+
 ### B.1 Lafayette Parish LA_LEMS — the hand-built engineering JSON, and how it differs from ours
 
 Recorded 2026-08-13. Rob supplied the deployed file so we can answer Lafayette issue reports against

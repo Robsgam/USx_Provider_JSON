@@ -1,0 +1,864 @@
+{
+  "_what": "CANONICAL TENANT CORRELATION MAP. Subdomain <-> deptId <-> ledger human name <-> provider bundle(s).",
+  "_why": "Rob 2026-09-10: \"the tenant naming conventions are not intuative so we will need to keep them correlated when possible.\" Proven necessary the same hour: IMPORT_LEDGER section B calls a tenant \"HDLE LIVE\" and the platform calls it \"hawaii-dle\" -- nothing in either string implies the other. That correlation lived ONLY as a hand-typed hashtable inside ingest_tenant_scan.ps1, I transcribed 11 of 13 rows, and the tool duly reported a RECORDED production tenant as an UNKNOWN discovery.",
+  "_rules": [
+    "deptId is the JOIN KEY. Subdomains get renamed; the ledger uses prose names; only the id is stable.",
+    "ledgerName null = no IMPORT_LEDGER section B row. That is a FINDING for a LIVE tenant, not a defect in this file.",
+    "platformCounter is a PLATFORM REVISION ID, not our version. Equal counters mean same config generation. Versions come from ingest_tenant_export.ps1 only.",
+    "UNLOCATED ledger rows are listed in _unlocated -- a ledger row with no tenant is as much a gap as a tenant with no ledger row."
+  ],
+  "_unlocated": [
+    {
+      "claimed": "v4.26 imported 2026-08-24",
+      "provider": "NY_NYSPIN_EJUSTICE",
+      "ledgerName": "Albany County NY Foundation",
+      "note": "No subdomain matching /albany/ carries a provider bundle; albany-ny-covid19 is LIVE with none. ny-nycapss-foundation (NY_NYSPIN_EJUSTICE/46) is the only CANDIDATE and is deliberately NOT mapped -- settle it with an Export JSON read, do not assume."
+    }
+  ],
+  "generated": "2026-09-10",
+  "source": "extension full census, 8 chunks, 1785/1785 offsets",
+  "tenants": [
+    {
+      "subdomain": "1836",
+      "deptId": "19930015536",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TRAINING",
+      "bundles": [
+        {
+          "name": "FL_FCIC",
+          "platformCounter": "6"
+        }
+      ]
+    },
+    {
+      "subdomain": "abbey-demo",
+      "deptId": "67531517395",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TRAINING",
+      "bundles": [
+        {
+          "name": "LA_LEMS",
+          "platformCounter": "20"
+        }
+      ]
+    },
+    {
+      "subdomain": "amyblair",
+      "deptId": "33641477034",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "FL_FCIC",
+          "platformCounter": "111"
+        }
+      ]
+    },
+    {
+      "subdomain": "aurorapd-il-foundation",
+      "deptId": "66323459475",
+      "ledgerName": "Aurora Foundation",
+      "class": "ledger-foundation",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "IL_LEADS_OFML",
+          "platformCounter": "3"
+        }
+      ]
+    },
+    {
+      "subdomain": "balconesheightspd-foundation",
+      "deptId": "69189298576",
+      "ledgerName": "Balcones Heights TX Foundation",
+      "class": "ledger-foundation",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "TX_TLETS",
+          "platformCounter": "34"
+        }
+      ]
+    },
+    {
+      "subdomain": "cbp-demo",
+      "deptId": "65505627848",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TRAINING",
+      "bundles": [
+        {
+          "name": "LA_LEMS",
+          "platformCounter": "15"
+        }
+      ]
+    },
+    {
+      "subdomain": "ccpd",
+      "deptId": "1001142",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "LIVE",
+      "bundles": [
+        {
+          "name": "RecordsArchive",
+          "platformCounter": "5"
+        }
+      ]
+    },
+    {
+      "subdomain": "ccpd-jms-migration-round-1",
+      "deptId": "63333802057",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "MIGRATED",
+      "bundles": [
+        {
+          "name": "RecordsArchive",
+          "platformCounter": "4"
+        }
+      ]
+    },
+    {
+      "subdomain": "dark-demo",
+      "deptId": "1870685224",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "LA_LEMS",
+          "platformCounter": "20"
+        }
+      ]
+    },
+    {
+      "subdomain": "dea-demo",
+      "deptId": "67404108343",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TRAINING",
+      "bundles": [
+        {
+          "name": "LA_LEMS",
+          "platformCounter": "15"
+        }
+      ]
+    },
+    {
+      "subdomain": "demo",
+      "deptId": "510605240",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TRAINING",
+      "bundles": [
+        {
+          "name": "LA_LEMS",
+          "platformCounter": "20"
+        }
+      ]
+    },
+    {
+      "subdomain": "demo-boston-cad2025",
+      "deptId": "62638109121",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "LA_LEMS",
+          "platformCounter": "20"
+        }
+      ]
+    },
+    {
+      "subdomain": "demo-ny-se",
+      "deptId": "71875989157",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "LA_LEMS",
+          "platformCounter": "20"
+        }
+      ]
+    },
+    {
+      "subdomain": "erich-demo1",
+      "deptId": "67996979499",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TRAINING",
+      "bundles": [
+        {
+          "name": "LA_LEMS",
+          "platformCounter": "20"
+        }
+      ]
+    },
+    {
+      "subdomain": "fullwooddemo",
+      "deptId": "35013420755",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TRAINING",
+      "bundles": [
+        {
+          "name": "CA_eSUN",
+          "platformCounter": "30"
+        }
+      ]
+    },
+    {
+      "subdomain": "gordo",
+      "deptId": "30578897692",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "HI_HCJDC",
+          "platformCounter": "20"
+        }
+      ]
+    },
+    {
+      "subdomain": "hawaii-dle",
+      "deptId": "58443422576",
+      "ledgerName": "HDLE LIVE",
+      "class": "ledger-foundation",
+      "status": "LIVE",
+      "bundles": [
+        {
+          "name": "HI_HCJDC_OFML",
+          "platformCounter": "32"
+        }
+      ]
+    },
+    {
+      "subdomain": "hdle-foundation",
+      "deptId": "54721427755",
+      "ledgerName": "HDLE Foundation",
+      "class": "ledger-foundation",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "HI_HCJDC_OFML",
+          "platformCounter": "32"
+        }
+      ]
+    },
+    {
+      "subdomain": "homesteadpd-fl-foundation",
+      "deptId": "69669966842",
+      "ledgerName": "Homestead Foundation",
+      "class": "ledger-foundation",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "FL_FCIC",
+          "platformCounter": "114"
+        }
+      ]
+    },
+    {
+      "subdomain": "jeffco-demo",
+      "deptId": "68397625745",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TRAINING",
+      "bundles": [
+        {
+          "name": "LA_LEMS",
+          "platformCounter": "20"
+        }
+      ]
+    },
+    {
+      "subdomain": "justin-demo",
+      "deptId": "64985141433",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TRAINING",
+      "bundles": [
+        {
+          "name": "LA_LEMS",
+          "platformCounter": "15"
+        }
+      ]
+    },
+    {
+      "subdomain": "kris-demo",
+      "deptId": "65456869021",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TRAINING",
+      "bundles": [
+        {
+          "name": "LA_LEMS",
+          "platformCounter": "20"
+        }
+      ]
+    },
+    {
+      "subdomain": "kyle-demo",
+      "deptId": "54589578643",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TRAINING",
+      "bundles": [
+        {
+          "name": "LA_LEMS",
+          "platformCounter": "20"
+        }
+      ]
+    },
+    {
+      "subdomain": "lafayettela-sherifftraining",
+      "deptId": "5107052982",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TRAINING",
+      "bundles": [
+        {
+          "name": "LA_LEMS",
+          "platformCounter": "22"
+        }
+      ]
+    },
+    {
+      "subdomain": "lafayettesheriff-la",
+      "deptId": "20032392972",
+      "ledgerName": "Lafayette Parish",
+      "class": "ledger-foundation",
+      "status": "LIVE",
+      "bundles": [
+        {
+          "name": "LA_LEMS",
+          "platformCounter": "22"
+        }
+      ]
+    },
+    {
+      "subdomain": "lakewoodoh-foundation",
+      "deptId": "67753954395",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "OH_LEADS",
+          "platformCounter": "4"
+        }
+      ]
+    },
+    {
+      "subdomain": "lam-demo",
+      "deptId": "56475148757",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "LA_LEMS",
+          "platformCounter": "20"
+        }
+      ]
+    },
+    {
+      "subdomain": "louisville-demo",
+      "deptId": "25763508631",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TRAINING",
+      "bundles": [
+        {
+          "name": "LA_LEMS",
+          "platformCounter": "20"
+        }
+      ]
+    },
+    {
+      "subdomain": "lyle-demo",
+      "deptId": "56768145752",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "LA_LEMS",
+          "platformCounter": "20"
+        }
+      ]
+    },
+    {
+      "subdomain": "mariposacso",
+      "deptId": "57528255873",
+      "ledgerName": "Mariposa LIVE",
+      "class": "ledger-foundation",
+      "status": "LIVE",
+      "bundles": [
+        {
+          "name": "CA_CLETS",
+          "platformCounter": "24"
+        }
+      ]
+    },
+    {
+      "subdomain": "mariposacso-foundation",
+      "deptId": "55074106416",
+      "ledgerName": "Mariposa Foundation",
+      "class": "ledger-foundation",
+      "status": "TRAINING",
+      "bundles": [
+        {
+          "name": "CA_CLETS",
+          "platformCounter": "24"
+        }
+      ]
+    },
+    {
+      "subdomain": "miamispringspd-foundation",
+      "deptId": "68086125887",
+      "ledgerName": "Miami Springs Foundation",
+      "class": "ledger-foundation",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "FL_FCIC",
+          "platformCounter": "114"
+        }
+      ]
+    },
+    {
+      "subdomain": "mint",
+      "deptId": "36568869640",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TRAINING",
+      "bundles": [
+        {
+          "name": "LA_LEMS",
+          "platformCounter": "20"
+        }
+      ]
+    },
+    {
+      "subdomain": "newarkpd-foundation",
+      "deptId": "68055618928",
+      "ledgerName": "Newark Foundation",
+      "class": "ledger-foundation",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "NJ_NJCJIS",
+          "platformCounter": "77"
+        }
+      ]
+    },
+    {
+      "subdomain": "neworleanspd",
+      "deptId": "66397342490",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "LIVE",
+      "bundles": [
+        {
+          "name": "LA_LEMS",
+          "platformCounter": "14"
+        }
+      ]
+    },
+    {
+      "subdomain": "neworleanspd-foundation",
+      "deptId": "57501651030",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "LA_LEMS",
+          "platformCounter": "14"
+        }
+      ]
+    },
+    {
+      "subdomain": "northmiami-foundation",
+      "deptId": "67633161477",
+      "ledgerName": "North Miami Foundation",
+      "class": "ledger-foundation",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "FL_FCIC",
+          "platformCounter": "114"
+        }
+      ]
+    },
+    {
+      "subdomain": "ny-nycapss-foundation",
+      "deptId": "47169169464",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TRAINING",
+      "bundles": [
+        {
+          "name": "NY_NYSPIN_EJUSTICE",
+          "platformCounter": "46"
+        }
+      ],
+      "note": "UNIDENTIFIED ACCOUNT. Rob 2026-09-10: \"i have no idea what ny capss is.\" Carries NY_NYSPIN_EJUSTICE/46 -- the SAME platform counter as our own usx-ny-nyspin-ejustice tenant, so [Likely] our build. A LIVE sibling `ny-nycapss` (dept 51496356971) exists and carries NO provider bundle. Do NOT assume this is the ledger's \"Albany County NY Foundation\" -- that is a guess two unknowns deep."
+    },
+    {
+      "subdomain": "onscene",
+      "deptId": "54300680862",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "HI_HCJDC_OFML",
+          "platformCounter": "32"
+        }
+      ]
+    },
+    {
+      "subdomain": "practice-bertanzini",
+      "deptId": "65003603844",
+      "ledgerName": "Bert Anzini USx test tenant",
+      "class": "ledger-foundation",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "NJ_NJCJIS",
+          "platformCounter": "74"
+        }
+      ]
+    },
+    {
+      "subdomain": "practice-robsgambellone",
+      "deptId": "68908334972",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "CA_eSUN",
+          "platformCounter": "41"
+        }
+      ]
+    },
+    {
+      "subdomain": "qa-amyb-test",
+      "deptId": "72362435981",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "IL_LEADS_OFML",
+          "platformCounter": "3"
+        }
+      ]
+    },
+    {
+      "subdomain": "qa-amyblair-test",
+      "deptId": "72270142625",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "IL_LEADS_OFML",
+          "platformCounter": "3"
+        }
+      ]
+    },
+    {
+      "subdomain": "reno-nv-demo",
+      "deptId": "29967674360",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TRAINING",
+      "bundles": [
+        {
+          "name": "LA_LEMS",
+          "platformCounter": "20"
+        }
+      ]
+    },
+    {
+      "subdomain": "sandiegoharborpd-foundation",
+      "deptId": "63160611189",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "CA_eSUN",
+          "platformCounter": "18"
+        }
+      ]
+    },
+    {
+      "subdomain": "sandiegoso-foundation",
+      "deptId": "59872925305",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TRAINING",
+      "bundles": [
+        {
+          "name": "CA_eSUN",
+          "platformCounter": "42"
+        }
+      ]
+    },
+    {
+      "subdomain": "sdso",
+      "deptId": "71459778290",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "LIVE",
+      "bundles": [
+        {
+          "name": "CA_eSUN",
+          "platformCounter": "42"
+        }
+      ]
+    },
+    {
+      "subdomain": "shelby-demo",
+      "deptId": "64975047986",
+      "ledgerName": null,
+      "class": "discovered-2026-09-10",
+      "status": "TRAINING",
+      "bundles": [
+        {
+          "name": "LA_LEMS",
+          "platformCounter": "20"
+        }
+      ]
+    },
+    {
+      "subdomain": "usx-az-azdps",
+      "deptId": "69585917479",
+      "ledgerName": null,
+      "class": "usx-fleet",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "AZ_AZDPS",
+          "platformCounter": "18"
+        }
+      ]
+    },
+    {
+      "subdomain": "usx-ca-clets",
+      "deptId": "69586234535",
+      "ledgerName": null,
+      "class": "usx-fleet",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "CA_CLETS",
+          "platformCounter": "24"
+        }
+      ]
+    },
+    {
+      "subdomain": "usx-ca-clets-ocats",
+      "deptId": "72322272044",
+      "ledgerName": null,
+      "class": "usx-fleet",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "CA_CLETS_OCATS",
+          "platformCounter": "2"
+        }
+      ]
+    },
+    {
+      "subdomain": "usx-ca-esun",
+      "deptId": "69510509021",
+      "ledgerName": null,
+      "class": "usx-fleet",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "CA_eSUN",
+          "platformCounter": "48"
+        }
+      ]
+    },
+    {
+      "subdomain": "usx-fl-fcic",
+      "deptId": "69510828830",
+      "ledgerName": null,
+      "class": "usx-fleet",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "CA_eSUN",
+          "platformCounter": "41"
+        }
+      ]
+    },
+    {
+      "subdomain": "usx-hi-hcjdc-ofml",
+      "deptId": "69510710914",
+      "ledgerName": null,
+      "class": "usx-fleet",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "HI_HCJDC_OFML",
+          "platformCounter": "36"
+        }
+      ]
+    },
+    {
+      "subdomain": "usx-il-leads-ofml",
+      "deptId": "69510394285",
+      "ledgerName": null,
+      "class": "usx-fleet",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "IL_LEADS_OFML",
+          "platformCounter": "3"
+        }
+      ]
+    },
+    {
+      "subdomain": "usx-la-lems",
+      "deptId": "69510242248",
+      "ledgerName": null,
+      "class": "usx-fleet",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "LA_LETTS_OFML",
+          "platformCounter": "1"
+        }
+      ]
+    },
+    {
+      "subdomain": "usx-md-meters",
+      "deptId": "69509976793",
+      "ledgerName": null,
+      "class": "usx-fleet",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "MD_METERS",
+          "platformCounter": "2"
+        }
+      ]
+    },
+    {
+      "subdomain": "usx-nj-njcjis",
+      "deptId": "69509881306",
+      "ledgerName": null,
+      "class": "usx-fleet",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "NJ_NJCJIS",
+          "platformCounter": "78"
+        }
+      ]
+    },
+    {
+      "subdomain": "usx-nm-nmlets",
+      "deptId": "69586413893",
+      "ledgerName": null,
+      "class": "usx-fleet",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "NM_NMLETS_OFML",
+          "platformCounter": "5"
+        }
+      ]
+    },
+    {
+      "subdomain": "usx-ny-nyspin-ejustice",
+      "deptId": "69509789559",
+      "ledgerName": null,
+      "class": "usx-fleet",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "NY_NYSPIN_EJUSTICE",
+          "platformCounter": "46"
+        }
+      ]
+    },
+    {
+      "subdomain": "usx-oh-leads",
+      "deptId": "69509682080",
+      "ledgerName": null,
+      "class": "usx-fleet",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "OH_LEADS",
+          "platformCounter": "4"
+        }
+      ]
+    },
+    {
+      "subdomain": "usx-or-leds",
+      "deptId": "69586491910",
+      "ledgerName": null,
+      "class": "usx-fleet",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "OR_LEDS",
+          "platformCounter": "1"
+        }
+      ]
+    },
+    {
+      "subdomain": "usx-tn-ties",
+      "deptId": "69586333849",
+      "ledgerName": null,
+      "class": "usx-fleet",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "TN_TIES",
+          "platformCounter": "4"
+        }
+      ]
+    },
+    {
+      "subdomain": "usx-tx-tlets",
+      "deptId": "69509542782",
+      "ledgerName": null,
+      "class": "usx-fleet",
+      "status": "TEST",
+      "bundles": [
+        {
+          "name": "TX_TLETS",
+          "platformCounter": "34"
+        }
+      ]
+    }
+  ],
+  "_needsHumanInput": [
+    {
+      "narrowsItWithoutAnswering": "An Export JSON read on the foundation tenant returns our version string if it is our build -- that settles WHAT is installed even while WHO remains open.",
+      "question": "What account is `ny-nycapss` / `ny-nycapss-foundation`?",
+      "why": "Rob 2026-09-10: \"the naming may need to be hand down. i have no idea what ny capss is.\" The platform gives subdomain + deptId + bundle and NOTHING that identifies the customer, so this cannot be resolved from the data -- it has to be handed down by whoever provisioned the tenant.",
+      "doNotDo": "Do not resolve it by pattern-matching it onto the ledger row \"Albany County NY Foundation\". Two unknowns do not confirm each other.",
+      "whatWeKnow": "ny-nycapss-foundation (dept 47169169464, TRAINING) carries NY_NYSPIN_EJUSTICE/46, same counter as our usx-ny tenant. ny-nycapss (dept 51496356971) is LIVE and carries NO provider bundle."
+    }
+  ]
+}

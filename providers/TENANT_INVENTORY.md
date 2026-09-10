@@ -211,6 +211,28 @@ measurement, not the cause.** Not fixed here: importing is an outward-facing cha
 reports because "the capture tool can't reach them", and nothing could check it. First full
 run, first real drift — on a Foundation tenant, three weeks old.
 
+### The counter hypothesis now has SEVEN confirmations and exactly ONE contradiction
+
+When the full census correlated every ledger row to its platform subdomain (2026-09-10), the
+platform counter could be checked against the ledger's own version claims across tenants that
+should agree -- an independent test I could not run with one tenant at a time:
+
+| ledger claims | tenants | counter |
+|---|---|---|
+| FL_FCIC v7.24 | Miami Springs, North Miami, Homestead | **all `/114`** |
+| CA_CLETS v2.27 | Mariposa Foundation, Mariposa LIVE | **both `/24`** |
+| HI_HCJDC_OFML v4.15 | HDLE Foundation, HDLE LIVE | **both `/32`** |
+
+Seven tenants, three providers, three separate import dates: **same claimed version, same counter,
+every time.** The counter is therefore a usable proxy for "same config generation" -- NOT for a
+version number, which it still cannot give (Anzini reads `74` having been imported once, so it is
+not a per-tenant import count either).
+
+Against that, ONE contradiction: **Newark reads `77` while our own `usx-nj-njcjis` tenant, on repo
+v4.17, reads `78`.** The rule holds in all seven cases where the ledger is right and breaks in the
+one case where the version string already said it was wrong. That is corroboration, not a second
+finding -- and it is why the Newark row above is stated as a measurement rather than a suspicion.
+
 ## ✅ LAFAYETTE CONFIRMS THE LEDGER BY WHAT IS *MISSING*
 
 `lafayettesheriff-la` exported a bundle named `LA_LEMS` (counters `ENTITIES/358 LA_LEMS/22

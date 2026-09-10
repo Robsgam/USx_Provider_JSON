@@ -689,6 +689,19 @@ TOOLS
     dropdown UNFILTERED and dumps the tenant's actual option list (cap 500/field).
     Usage: .\tools\emit_picklist_scope.ps1 -Path providers/<P>/<P>_vX.Y.json
 
+  tools/config/tenant_map.json
+    THE CANONICAL TENANT JOIN: subdomain <-> deptId <-> IMPORT_LEDGER human name <-> bundle(s).
+    Rob 2026-09-10: "the tenant naming conventions are not intuative so we will need to keep them
+    correlated when possible." Nothing in the ledger's "HDLE LIVE" implies the platform's
+    `hawaii-dle`. That correlation used to live ONLY as a hand-typed hashtable inside
+    ingest_tenant_scan.ps1; I transcribed 11 of section B's 13 rows and the tool reported a
+    RECORDED PRODUCTION tenant as an UNKNOWN discovery -- wrong in the alarm-manufacturing
+    direction. One file owns the join now, and both ingest_tenant_scan.ps1 and IMPORT_LEDGER
+    section B.0 are generated from it, so they cannot disagree.
+    deptId is the JOIN KEY -- subdomains get renamed, the ledger uses prose, only the id is stable.
+    Carries `_unlocated` for the REVERSE gap (a ledger row matching no tenant), which a
+    tenant-first sweep structurally cannot see: today that is "Albany County NY Foundation".
+    64 tenants: 16 usx-fleet / 12 ledger-foundation / 36 discovered 2026-09-10.
   tools/ingest_tenant_scan.ps1
     WHICH TENANTS HAVE A PROVIDER JSON WE DO NOT KNOW ABOUT? Rob 2026-09-10: "the goal is to
     uncover any json imports that we do not know about" -- and, added straight after,

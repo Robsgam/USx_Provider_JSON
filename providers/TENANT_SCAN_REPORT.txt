@@ -1,0 +1,63 @@
+
+====================================================================================
+  TENANT CENSUS -> PROVIDER JSONS WE DO NOT KNOW ABOUT
+====================================================================================
+  chunk files: 8   rows: 1785   index total reported by the census: 1785
+  OK COMPLETE: all 1785 index offsets covered.
+
+  scanned 1785 | with a provider bundle 64 | no provider 1664 | UNRESOLVED 57 | errored 0
+  !! UNRESOLVED IS NOT "NO PROVIDER" -- those pages did not fill in time and are UNKNOWN.
+
+  KNOWN-FLEET (usx-*): 16    KNOWN-LEDGER (section B): 12    *** UNKNOWN: 36 ***
+
+  RESULT: PROVIDER JSONS ON TENANTS WE HAVE NO RECORD OF ------------------------
+    subdomain                            deptId         status                 provider bundle(s)
+    1836                                 19930015536    TrainingTRAINING       FL_FCIC/6
+    abbey-demo                           67531517395    TrainingTRAINING       LA_LEMS/20
+    amyblair                             33641477034    TestTEST               FL_FCIC/111
+    cbp-demo                             65505627848    TrainingTRAINING       LA_LEMS/15
+    ccpd                                 1001142        LiveLIVE               RecordsArchive/5
+    ccpd-jms-migration-round-1           63333802057    MigratedMIGRATED       RecordsArchive/4
+    dark-demo                            1870685224     TestTEST               LA_LEMS/20
+    dea-demo                             67404108343    TrainingTRAINING       LA_LEMS/15
+    demo                                 510605240      TrainingTRAINING       LA_LEMS/20
+    demo-boston-cad2025                  62638109121    TestTEST               LA_LEMS/20
+    demo-ny-se                           71875989157    TestTEST               LA_LEMS/20
+    erich-demo1                          67996979499    TrainingTRAINING       LA_LEMS/20
+    fullwooddemo                         35013420755    TrainingTRAINING       CA_eSUN/30
+    gordo                                30578897692    TestTEST               HI_HCJDC/20
+    jeffco-demo                          68397625745    TrainingTRAINING       LA_LEMS/20
+    justin-demo                          64985141433    TrainingTRAINING       LA_LEMS/15
+    kris-demo                            65456869021    TrainingTRAINING       LA_LEMS/20
+    kyle-demo                            54589578643    TrainingTRAINING       LA_LEMS/20
+    lafayettela-sherifftraining          5107052982     TrainingTRAINING       LA_LEMS/22
+    lakewoodoh-foundation                67753954395    TestTEST               OH_LEADS/4
+    lam-demo                             56475148757    TestTEST               LA_LEMS/20
+    louisville-demo                      25763508631    TrainingTRAINING       LA_LEMS/20
+    lyle-demo                            56768145752    TestTEST               LA_LEMS/20
+    mint                                 36568869640    TrainingTRAINING       LA_LEMS/20
+    neworleanspd                         66397342490    LiveLIVE               LA_LEMS/14
+    neworleanspd-foundation              57501651030    TestTEST               LA_LEMS/14
+    ny-nycapss-foundation                47169169464    TrainingTRAINING       NY_NYSPIN_EJUSTICE/46
+    onscene                              54300680862    TestTEST               HI_HCJDC_OFML/32
+    practice-robsgambellone              68908334972    TestTEST               CA_eSUN/41
+    qa-amyblair-test                     72270142625    TestTEST               IL_LEADS_OFML/3
+    qa-amyb-test                         72362435981    TestTEST               IL_LEADS_OFML/3
+    reno-nv-demo                         29967674360    TrainingTRAINING       LA_LEMS/20
+    sandiegoharborpd-foundation          63160611189    TestTEST               CA_eSUN/18
+    sandiegoso-foundation                59872925305    TrainingTRAINING       CA_eSUN/42
+    sdso                                 71459778290    LiveLIVE               CA_eSUN/42
+    shelby-demo                          64975047986    TrainingTRAINING       LA_LEMS/20
+
+  !! LEDGER ROWS THAT MATCH NO TENANT ON THIS HOST (the reverse gap):
+     Albany County NY Foundation        NY_NYSPIN_EJUSTICE     v4.26 imported 2026-08-24
+        No subdomain matching /albany/ carries a provider bundle; albany-ny-covid19 is LIVE with none. ny-nycapss-foundation (NY_NYSPIN_EJUSTICE/46) is the only CANDIDATE and is deliberately NOT mapped -- settle it with an Export JSON read, do not assume.
+
+  !! BUNDLE NAMES THAT ARE NOT OURS (an unrecognised provider is its own finding):
+     HI_HCJDC                 on: gordo
+     RecordsArchive           on: ccpd, ccpd-jms-migration-round-1
+
+  NOTE: no version is claimed here -- this phase reads the bundle TABLE, whose Version
+        column is a PLATFORM COUNTER. For real versions run ingest_tenant_export.ps1.
+====================================================================================
+

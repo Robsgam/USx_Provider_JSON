@@ -53,21 +53,23 @@ $ourProviders = @(Get-ChildItem (Join-Path $repoRoot 'providers') -Directory | S
 $legacyNames  = @('LA_LETTS_OFML')
 $knownNames   = @($ourProviders + $legacyNames)
 
-# IMPORT_LEDGER section B, located in the 1785-row index on 2026-09-10. Kept as data with a
-# provenance note; re-derive by searching a fresh index rather than trusting this list blind.
-$ledgerIds = @{
-  '68055618928' = 'Newark Foundation'
-  '65003603844' = 'Bert Anzini USx test tenant'
-  '68086125887' = 'Miami Springs Foundation'
-  '67633161477' = 'North Miami Foundation'
-  '69669966842' = 'Homestead Foundation'
-  '69189298576' = 'Balcones Heights TX Foundation'
-  '54721427755' = 'HDLE Foundation'
-  '55074106416' = 'Mariposa Foundation'
-  '57528255873' = 'Mariposa LIVE'
-  '66323459475' = 'Aurora Foundation'
-  '20032392972' = 'Lafayette Parish (hand-built, not ours)'
+# THE LEDGER CORRELATION IS DATA, NOT A HAND-TYPED LIST IN THIS FILE (changed 2026-09-10).
+# It WAS an inline hashtable here. I transcribed 11 of IMPORT_LEDGER section B's 13 rows by eye,
+# missed the "HDLE LIVE" row, and this tool reported `hawaii-dle` -- a RECORDED PRODUCTION
+# tenant -- as an UNKNOWN discovery. Wrong in the alarm-manufacturing direction.
+# Rob's ruling the same hour: "the tenant naming conventions are not intuative so we will need to
+# keep them correlated when possible." Nothing in "HDLE LIVE" implies "hawaii-dle"; deptId is the
+# only stable join key. One file owns that join now: tools/config/tenant_map.json.
+$mapPath = Join-Path $PSScriptRoot 'config\tenant_map.json'
+if (-not (Test-Path $mapPath)) {
+    Write-Host "  [FAIL] tools/config/tenant_map.json is MISSING -- every tenant would classify as UNKNOWN."
+    Write-Host "         That would read as 64 discoveries. Refusing to run rather than report it."
+    exit 1
 }
+$map = Get-Content $mapPath -Raw | ConvertFrom-Json
+$ledgerIds = @{}
+foreach ($t in @($map.tenants)) { if ($t.ledgerName) { $ledgerIds["$($t.deptId)"] = $t.ledgerName } }
+$unlocated = @($map._unlocated)
 
 $srcDir = if ($Path) { $Path } else { Join-Path $env:USERPROFILE 'Downloads' }
 $files = @(Get-ChildItem $srcDir -Filter 'usx_admin_scan_*.json' -File -ErrorAction SilentlyContinue | Sort-Object Name)
@@ -146,6 +148,18 @@ if ($unknown.Count -eq 0) {
     foreach ($u in ($unknown | Sort-Object subdomain)) {
         $b = (@($u.providerBundles) | ForEach-Object { $_.name + '/' + $_.platformCounter }) -join '  '
         Say ('    {0,-36} {1,-14} {2,-22} {3}' -f $u.subdomain, $u.deptId, $u.status, $b)
+    }
+}
+
+# THE REVERSE DIRECTION, and it is the one a tenant-first sweep structurally cannot see:
+# a LEDGER ROW WITH NO TENANT is as much a gap as a tenant with no ledger row. Without this the
+# tool could only ever find extra tenants, never a recorded install that is not there.
+if ($unlocated.Count -gt 0) {
+    Say ''
+    Say '  !! LEDGER ROWS THAT MATCH NO TENANT ON THIS HOST (the reverse gap):'
+    foreach ($u in $unlocated) {
+        Say ("     {0,-34} {1,-22} {2}" -f $u.ledgerName, $u.provider, $u.claimed)
+        Say ("        {0}" -f $u.note)
     }
 }
 
