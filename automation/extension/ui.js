@@ -334,6 +334,27 @@
         finally { tryExp.disabled = false; }
       };
       expWrap.appendChild(tryExp);
+
+      // ⑥ THE CATALOGUE. Uses the dept-ids box above, so it sweeps exactly the tenants
+      // named there -- our fleet and/or the ledger's Foundation rows. One click, N tenants,
+      // one file. Proven on a single tenant FIRST (eSUN v3.3 == repo v3.3); a sweep built
+      // before the single case worked is how the fetch-based bundle sweep produced 21
+      // confident zeros.
+      const sweep = el('button', BTN + ';' + BLU, '⑥ Version catalogue for the dept ids above');
+      sweep.onclick = async () => {
+        const ids = document.getElementById('usx-admin-ids').value;
+        const n = ids.split(',').filter(s => /^\s*\d+\s*$/.test(s)).length;
+        sweep.disabled = true; aStatus.style.color = '#fa0';
+        aStatus.textContent = 'reading versions for ' + n + ' tenant(s)… (~2s each)';
+        try {
+          const o = await window.__usxAdminProbe.runExportSweepDl({ deptIds: ids });
+          const got = (o.results || []).filter(r => r.verdict === 'VERSION-READ').length;
+          aStatus.style.color = got === (o.results || []).length ? '#7c7' : '#fa0';
+          aStatus.textContent = '✔ ' + got + '/' + (o.results || []).length + ' version(s) read · saved to Downloads';
+        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
+        finally { sweep.disabled = false; }
+      };
+      expWrap.appendChild(sweep);
       p.appendChild(expWrap);
 
       p.appendChild(aStatus);

@@ -602,6 +602,87 @@
     return o;
   }
 
+  // ── v7: EXPORT SWEEP -- the actual "document what version each tenant has" ─────────
+  // One click, N tenants. Proven single-tenant first (eSUN: tenant v3.3 == repo v3.3), which
+  // is the order that matters -- a sweep built before the single case worked would have
+  // produced N confident wrongs, exactly as the fetch-based bundle sweep did.
+  //
+  // ⚠️ DOES NOT KEEP THE FULL PAYLOAD BY DEFAULT. One export measured 294,107 chars; 31 of
+  // them is ~9MB in a single download, and the catalogue only needs provider + version +
+  // counters. `keepFull` is opt-in for when the whole config is actually wanted for diffing.
+  async function runExportSweep(opts) {
+    opts = opts || {};
+    const idList = (opts.deptIds || '').split(',').map(s => s.trim()).filter(s => /^\d+$/.test(s));
+    const out = {
+      probe: 'admin-export-sweep', version: 7, capturedAt: new Date().toISOString(),
+      host: location.hostname, requested: idList.length, results: [],
+      notes: ['READ-ONLY: clicks at most ONE allowlisted, non-destructive control per tenant.']
+    };
+    if (!idList.length) { out.notes.push('NO VALID DEPT IDS GIVEN -- nothing attempted.'); return out; }
+
+    // The index gives each id a subdomain, which is what makes the catalogue readable.
+    let byId = {};
+    try {
+      const listing = await listDepartments();
+      (listing.deptIds || []).forEach(r => { byId[r.deptId] = r; });
+    } catch (e) { out.notes.push('index unavailable (' + String(e && e.message || e) + ') -- ids will have no subdomain'); }
+
+    for (const id of idList) {
+      let rec = { deptId: id, subdomain: (byId[id] && byId[id].subdomain) || null,
+                  status: (byId[id] && byId[id].status) || null,
+                  provider: null, version: null, counters: null, verdict: null, error: null };
+      try {
+        const r = await probeExportControls(id, { click: true, budgetMs: opts.budgetMs });
+        const blobs = (r.clicked && r.clicked.newText) ? r.clicked.newText : [];
+        let full = null, summary = null;
+        blobs.forEach(b => {
+          if (b.indexOf('"departmentBundle"') >= 0) { if (!full || b.length > full.length) full = b; }
+          else if (b.indexOf('"bundles"') >= 0 && b.length < 4000) summary = b;
+        });
+        if (summary) {
+          try {
+            const sj = JSON.parse(summary);
+            rec.counters = (sj.bundles || []).map(b => b.name + '/' + b.version).join(' ');
+            rec.departmentBundleVersion = sj.version;
+          } catch (e) {}
+        }
+        if (full) {
+          // OUR version string -- the bundle description. Prefer a non-RMS provider.
+          const rx = /Provider configuration for ([A-Za-z0-9_]+) v([0-9]+\.[0-9]+)/g;
+          let m, first = null;
+          while ((m = rx.exec(full)) !== null) {
+            if (!first) first = m;
+            if (m[1] !== 'RMS') { rec.provider = m[1]; rec.version = m[2]; break; }
+          }
+          if (!rec.provider && first) { rec.provider = first[1]; rec.version = first[2]; }
+          rec.fullBytes = full.length;
+          if (opts.keepFull) rec.full = full;
+          rec.verdict = rec.version ? 'VERSION-READ' : 'EXPORTED-BUT-NO-VERSION-STRING';
+        } else if (!r.clicked) {
+          rec.verdict = 'NO-SAFE-CONTROL';   // nothing passed both lists
+        } else {
+          rec.verdict = 'CLICKED-BUT-NO-JSON';
+        }
+      } catch (e) {
+        rec.verdict = 'ERROR'; rec.error = String(e && e.message || e);
+      }
+      out.results.push(rec);
+      await new Promise(r => setTimeout(r, 200));
+    }
+    const got = out.results.filter(r => r.verdict === 'VERSION-READ').length;
+    out.notes.push(got + ' of ' + out.results.length + ' tenant(s) yielded a version string.');
+    if (got < out.results.length) {
+      out.notes.push('A non-VERSION-READ row is UNRESOLVED, not "no config" -- read its verdict.');
+    }
+    return out;
+  }
+
+  async function runExportSweepDl(opts) {
+    const o = await runExportSweep(opts);
+    dl('usx_admin_versions_' + location.hostname + '_' + nowStamp() + '.json', o);
+    return o;
+  }
+
   async function runOne(deptId) {
     const onThisPage = new RegExp('configurations/' + deptId + '$').test(location.pathname);
     let o;
@@ -634,6 +715,7 @@
   }
 
   window.__usxAdminProbe = { runList, runScan, runOne, runExportLook, runExportTry,
+                             runExportSweep, runExportSweepDl,
                              probeExportControls, enumerateControls, listDepartments, scanConfigurations,
                              extractTables, extractDeptRecords, extractDeptIds, filterRecords,
                              extractBundles, readViaIframe, ADMIN_BASE };

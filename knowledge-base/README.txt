@@ -689,6 +689,33 @@ TOOLS
     dropdown UNFILTERED and dumps the tenant's actual option list (cap 500/field).
     Usage: .\tools\emit_picklist_scope.ps1 -Path providers/<P>/<P>_vX.Y.json
 
+  tools/ingest_tenant_export.ps1
+    WHICH VERSION IS ACTUALLY INSTALLED ON A TENANT -- read from the platform, not inferred.
+    Built 2026-09-10 for Rob's "i want to be able to parse all the tenants and document what
+    each tenant has for a version of json". Reads the browser extension's
+    usx_admin_export_<deptId>_*.json, extracts the EMBEDDED full configuration to a real
+    .json under _versions/tenant_exports/ (so it can be diffed against the repo build), pulls
+    the provider + version out of the bundle description, and cross-references the repo's
+    current version for that provider.
+    THE CHAIN, every link MEASURED not assumed: the admin endpoints are session-authenticated
+    (repo-side GET -> 303 /rms/login/), so reading happens in the operator's browser; the
+    bundle table is JAVASCRIPT-POPULATED so a fetch returns 0 rows (that produced 21
+    confident zeros) and a hidden iframe returns them; ⚠️ the table's `Version` column is a
+    PLATFORM COUNTER, NOT ours (eSUN's table says 590/48/70 while the provider is v3.3) so it
+    cannot answer this at all; there is NO API endpoint to harvest (the page references only
+    CDN scripts); so the answer is the page's own **Export JSON** control, and OUR version is
+    inside it as the bundle description "Provider configuration for CA_eSUN v3.3". That
+    convention exists because the platform REJECTS a top-level version field (parses it as
+    java.lang.Integer) -- the workaround for one problem is what makes a tenant's version
+    readable at all.
+    First result: dept 69510509021 = CA_eSUN, tenant v3.3, repo v3.3, MATCHES REPO.
+    ⚠️ A matching version means the tenant runs a build carrying that version STRING. It does
+    NOT mean byte-equality: `-Diff` compares hashes and reports that a difference is EXPECTED,
+    because the platform RE-SERIALIZES on export (an earlier tenant export measured 246KB
+    against the repo's 928KB for the same version). Only equality would be surprising.
+    0 files found FAILs rather than passing quietly -- a zero denominator says nothing.
+    Usage: .\tools\ingest_tenant_export.ps1 [-All] [-Path <file>] [-Diff] [-OutDir <dir>]
+
   tools/audit_query_selectable.ps1
     CAN THE OFFICER ACTUALLY SEND EVERY QUERY WE BUILT? (enforce PHASE 2y, BLOCKING)
     The direction nothing else covered: every other gate asks whether the REQUEST is correct
