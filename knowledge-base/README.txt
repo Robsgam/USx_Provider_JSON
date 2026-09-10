@@ -689,6 +689,34 @@ TOOLS
     dropdown UNFILTERED and dumps the tenant's actual option list (cap 500/field).
     Usage: .\tools\emit_picklist_scope.ps1 -Path providers/<P>/<P>_vX.Y.json
 
+  tools/get_provider_version.ps1
+    RETRIEVE ANY PRIOR PROVIDER JSON, ON DEMAND -- byte-exact, from git history.
+    Built 2026-09-10 after Rob asked for HI_HCJDC_OFML v4.15 in the folder and got back
+    only the tenant export he had supplied himself; the repo-authored v4.15 had been in
+    git the whole time and nothing made that one command.
+    RETRIEVAL, NOT REBUILD -- and this is the load-bearing distinction. Re-running an old
+    build script does NOT reproduce an old version: the shared modules and each provider's
+    own script keep moving (3 shared-module + 6 HI-script commits landed after v4.15), so
+    today's run of yesterday's script emits today's RMS bundle. The git blob is the ONLY
+    byte-exact source; anything else is a reconstruction that may silently differ.
+    671 retrievable artifacts across 21 providers: 257 versioned-filename versions plus
+    414 pre-versioned blobs (-IncludeLegacy reads the version out of the bundle
+    description for the <PROVIDER>.json / _MC / _BASE era, where the filename carries none).
+    ENUMERATION TRAP: --diff-filter=A UNDER-REPORTS BADLY. A version swap is recorded as a
+    RENAME, so filtering on additions finds 40 versions portfolio-wide instead of 257, and
+    reports HI as having 2 instead of 18. Enumerate every path that ever appeared.
+    Verification is CONTENT, not existence: git hash-object vs the committed blob sha. A
+    mismatch deletes the file and FAILs -- proven by feeding it a valid, plausible,
+    same-provider blob. Refuses rather than guesses on an ambiguous version (BASE and MC
+    were two JSONs of ONE version, so -Commit alone cannot name one artifact; -Variant does).
+    REFUSES an -OutPath inside providers\ -- an archive landing in a provider root would
+    give Get-ProviderRootJson two candidates and break ONE-JSON-IN-ROOT. Default output is
+    the gitignored _versions\ ; extracts are NEVER committed (git already stores them
+    losslessly; duplicating them as files is ~240MB and a new exclusion in every resolver).
+    Usage: .\tools\get_provider_version.ps1 -Provider <name> -List [-IncludeLegacy]
+           .\tools\get_provider_version.ps1 -Provider <name> -Version <X.Y> [-Commit <sha>]
+           .\tools\get_provider_version.ps1 -All [-IncludeLegacy]
+
   tools/audit_xml_consistency.ps1
     On-demand (manual; not run by enforce/pipeline/build_report).
     Cross-run XML regression check: same combo + same fills must produce the SAME wire
