@@ -5,7 +5,8 @@
     "deptId is the JOIN KEY. Subdomains get renamed; the ledger uses prose names; only the id is stable.",
     "ledgerName null = no IMPORT_LEDGER section B row. That is a FINDING for a LIVE tenant, not a defect in this file.",
     "platformCounter is a PLATFORM REVISION ID, not our version. Equal counters mean same config generation. Versions come from ingest_tenant_export.ps1 only.",
-    "UNLOCATED ledger rows are listed in _unlocated -- a ledger row with no tenant is as much a gap as a tenant with no ledger row."
+    "UNLOCATED ledger rows are listed in _unlocated -- a ledger row with no tenant is as much a gap as a tenant with no ledger row.",
+    "ledgerVersion is what IMPORT_LEDGER section B CLAIMS, transcribed once. It is a CLAIM, not a measurement -- ingest_tenant_versions.ps1 compares it against what the tenant reports."
   ],
   "_unlocated": [
     {
@@ -68,7 +69,8 @@
           "name": "IL_LEADS_OFML",
           "platformCounter": "3"
         }
-      ]
+      ],
+      "ledgerVersion": "2.8"
     },
     {
       "subdomain": "balconesheightspd-foundation",
@@ -81,7 +83,8 @@
           "name": "TX_TLETS",
           "platformCounter": "34"
         }
-      ]
+      ],
+      "ledgerVersion": "4.22"
     },
     {
       "subdomain": "cbp-demo",
@@ -237,7 +240,8 @@
           "name": "HI_HCJDC_OFML",
           "platformCounter": "32"
         }
-      ]
+      ],
+      "ledgerVersion": "4.15"
     },
     {
       "subdomain": "hdle-foundation",
@@ -250,7 +254,8 @@
           "name": "HI_HCJDC_OFML",
           "platformCounter": "32"
         }
-      ]
+      ],
+      "ledgerVersion": "4.15"
     },
     {
       "subdomain": "homesteadpd-fl-foundation",
@@ -263,7 +268,8 @@
           "name": "FL_FCIC",
           "platformCounter": "114"
         }
-      ]
+      ],
+      "ledgerVersion": "7.24"
     },
     {
       "subdomain": "jeffco-demo",
@@ -341,7 +347,8 @@
           "name": "LA_LEMS",
           "platformCounter": "22"
         }
-      ]
+      ],
+      "ledgerVersion": "NOT-OURS"
     },
     {
       "subdomain": "lakewoodoh-foundation",
@@ -406,7 +413,8 @@
           "name": "CA_CLETS",
           "platformCounter": "24"
         }
-      ]
+      ],
+      "ledgerVersion": "2.27"
     },
     {
       "subdomain": "mariposacso-foundation",
@@ -419,7 +427,8 @@
           "name": "CA_CLETS",
           "platformCounter": "24"
         }
-      ]
+      ],
+      "ledgerVersion": "2.27"
     },
     {
       "subdomain": "miamispringspd-foundation",
@@ -432,7 +441,8 @@
           "name": "FL_FCIC",
           "platformCounter": "114"
         }
-      ]
+      ],
+      "ledgerVersion": "7.24"
     },
     {
       "subdomain": "mint",
@@ -458,7 +468,8 @@
           "name": "NJ_NJCJIS",
           "platformCounter": "77"
         }
-      ]
+      ],
+      "ledgerVersion": "4.17"
     },
     {
       "subdomain": "neworleanspd",
@@ -497,7 +508,8 @@
           "name": "FL_FCIC",
           "platformCounter": "114"
         }
-      ]
+      ],
+      "ledgerVersion": "7.24"
     },
     {
       "subdomain": "ny-nycapss-foundation",
@@ -537,7 +549,8 @@
           "name": "NJ_NJCJIS",
           "platformCounter": "74"
         }
-      ]
+      ],
+      "ledgerVersion": "4.9"
     },
     {
       "subdomain": "practice-robsgambellone",

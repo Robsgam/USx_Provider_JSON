@@ -725,6 +725,25 @@ TOOLS
     inside DOUBLE-QUOTED strings, the documented cp1252 trap. ASCII only in "..." strings.
     Usage: .\tools\ingest_tenant_scan.ps1 [-Path <dir>] [-OutFile <report>] [-Quiet]
 
+  tools/ingest_tenant_versions.ps1
+    THE SECOND HALF OF ROB'S ASK. His words, 2026-09-10: "visit each configuration page to 1
+    determimn if it has a usx provider installed and download to compare what version for cross
+    checking." ingest_tenant_scan.ps1 answered PRESENCE; I then offered to export a HANDFUL and
+    was corrected -- "i thought you were supposed to export every json you find." Exporting all
+    64 carriers was the goal from the start.
+    Reads usx_admin_versions_*.json (panel button 6) and compares THREE sources per tenant:
+    MEASURED (the tenant's own Export JSON) / LEDGER (IMPORT_LEDGER section B, via
+    tools/config/tenant_map.json) / REPO (current versioned root JSON). The verdict names which
+    PAIR disagrees -- a MEASURED-vs-LEDGER split is a record defect; MEASURED-vs-REPO is just an
+    import that has not happened yet, which is normal for a Foundation tenant.
+    !! FOUR REFUSALS: a non-VERSION-READ row is UNRESOLVED, never "no config"; ABSENCE of our
+    "Provider configuration for <P> vX.Y" bundle description is POSITIVE EVIDENCE of a config we
+    did not build (how Lafayette was confirmed), reported as NOT-OUR-BUILD; the platform counter
+    is corroboration and is never printed as a version; 0 files FAILs rather than passing.
+    Button 6 saves every 3 tenants so partial files OVERLAP -- rows are keyed by deptId and the
+    LAST-WRITTEN file wins, or an early partial would outvote the finished run.
+    Proven able to fail: on the 11-tenant sweep it reports 8 agreeing, 3 behind repo, and the
+    single LEDGER DRIFT (Newark measured v4.16 against a claimed v4.17).
   tools/ingest_tenant_export.ps1
     WHICH VERSION IS ACTUALLY INSTALLED ON A TENANT -- read from the platform, not inferred.
     Built 2026-09-10 for Rob's "i want to be able to parse all the tenants and document what
