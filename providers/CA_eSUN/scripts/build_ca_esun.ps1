@@ -50,7 +50,7 @@
 #    ArticleSingleQuery       : QA -- metadata-exact, no split needed
 #  The officer guide resolves these BACK to the metadata keyRef, so a supervisor reading a
 #  state manual sees QV / DQ / BQ and not our bookkeeping.
-param([string]$Version = '3.1')
+param([string]$Version = '3.2')
 $ErrorActionPreference = 'Stop'
 
 $DIR  = Split-Path $PSScriptRoot -Parent
@@ -103,7 +103,22 @@ function StateAttr([string]$src = 'RegistrationState') {
 # Existence-only state gates -- the house convention. See the header note.
 function StateOut([string]$f = 'RegistrationState') { [PSCustomObject]@{ field = @($f); operator = 'EXISTS' } }
 function StateIn ([string]$f = 'RegistrationState') { [PSCustomObject]@{ field = @($f); operator = 'NOT_EXISTS' } }
-function Absent  ([string[]]$f) { $f | ForEach-Object { [PSCustomObject]@{ field = @($_); operator = 'NOT_EXISTS' } } }
+# COMMA-GUARDED, AND IT MUST STAY THAT WAY. A pipeline returning ONE object
+# unwraps to a scalar on return, so `conditions = (Absent @('X'))` assigned an
+# OBJECT and ConvertTo-Json wrote `"conditions": {...}` instead of `[{...}]`.
+# The platform deserializes that field as ArrayList<Combination$Condition>, so an
+# object token is a hard import reject:
+#   JSON parse error: Cannot deserialize value of type
+#   `java.util.ArrayList<...Combination$Condition>` from Object value
+#   (token `JsonToken.START_OBJECT`)
+# Live-caught by Rob importing v3.1 (2026-09-10). It entered at v3.0 with this
+# helper and made SIX combinations object-shaped -- exactly the six call sites
+# passing ONE field; the two passing two fields produced a real array and hid the
+# pattern. v2.6 and earlier were clean. `,$out` survives the unwrap.
+function Absent  ([string[]]$f) {
+    $out = @($f | ForEach-Object { [PSCustomObject]@{ field = @($_); operator = 'NOT_EXISTS' } })
+    return ,$out
+}
 
 # =====================================================================
 #  1. VehicleRegistrationQuery -- 7 metadata branches, 6 built.

@@ -1,14 +1,14 @@
 ======================================================================
-  PICKLIST / DROPDOWN REPORT: CA_eSUN_v3.1
-  Source: CA_eSUN_v3.1.json
-  Generated: 2026-09-04 10:06
+  PICKLIST / DROPDOWN REPORT: CA_eSUN_v3.2
+  Source: CA_eSUN_v3.2.json
+  Generated: 2026-09-10 10:58
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
 --------------------------------------------------
 
   Entity: Article
-    ArticleTypeCode [Article Type]
+    ArticleTypeCode [Article Type (optional)]
       Config: codeTypeCategory=NCIC_ARTICLE_TYPE, codeTypeSource=CA_CLETS
     PurposeCode [CA Purpose Code]
       Config: attributeTypeId=DEX_INQUIRY_PURPOSE_CODE
@@ -20,15 +20,15 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
       Config: attributeTypeId=STATE
 
   Entity: Firearm
-    GunCaliber [Caliber]
+    GunCaliber [Caliber (optional)]
       Config: codeTypeCategory=NCIC_FIREARM_CALIBER, codeTypeSource=NCIC
-    GunMake [Make]
+    GunMake [Make (optional)]
       Config: codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NCIC
-    GunTypeCode [Type]
+    GunTypeCode [Type (optional)]
       Config: codeTypeCategory=NCIC_FIREARM_TYPE, codeTypeSource=NCIC
     PurposeCode [CA Purpose Code]
       Config: attributeTypeId=DEX_INQUIRY_PURPOSE_CODE
-    relatedHitSearchIndicator [Stolen Check]
+    relatedHitSearchIndicator [Stolen Check (optional)]
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Person
@@ -52,7 +52,7 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
       Config: attributeTypeId=DEX_INQUIRY_PURPOSE_CODE
     RegistrationState [State (leave blank for California)]
       Config: attributeTypeId=STATE
-    VehicleMakeCode [Make]
+    VehicleMakeCode [Make (optional)]
       Config: attributeTypeId=VEHICLE_MAKE, codeTypeProvider=NCIC
 
 SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES

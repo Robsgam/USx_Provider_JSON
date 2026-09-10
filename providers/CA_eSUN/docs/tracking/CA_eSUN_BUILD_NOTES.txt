@@ -2,6 +2,70 @@ CA_eSUN -- Build Notes
 ======================
 Provider: CA_eSUN
 State: California
+v3.2  2026-09-10  IMPORT REJECT FIXED -- `conditions` was a JSON OBJECT, not an ARRAY
+  CHANGED:
+    ONE LINE. The `Absent()` helper is now comma-guarded:
+
+      -  function Absent ([string[]]$f) { $f | ForEach-Object { ...NOT_EXISTS... } }
+      +  function Absent ([string[]]$f) {
+      +      $out = @($f | ForEach-Object { ...NOT_EXISTS... })
+      +      return ,$out
+      +  }
+
+  REASON: Rob tried to import v3.1 and the platform rejected the file outright:
+
+      {"error":"Bad Request","details":"JSON parse error: Cannot deserialize value of
+       type `java.util.ArrayList<com.mark43.configlib.models.Combination$Condition>`
+       from Object value (token `JsonToken.START_OBJECT`)"}
+
+    A PowerShell pipeline returning exactly ONE object unwraps to a SCALAR on return, so
+    `conditions = (Absent @('OperatorLicenseNumber'))` assigned an object rather than a
+    one-element array, and `ConvertTo-Json` wrote `"conditions": {...}` where the platform
+    deserializes `ArrayList<Combination$Condition>`. An object token is a hard 400.
+
+  WHY IT HIT EXACTLY SIX COMBINATIONS -- and why that is what hid it. Only the call sites
+  passing a SINGLE field unwrap; the two passing two fields produced a real array. Six of
+  eight call sites are single-field (DQ.N, and the OLN/OLN-DH/GunSerialNumber guardrails),
+  which is exactly the six object-shaped blocks in the emitted v3.1. The feature therefore
+  worked in every place it was easy to look at.
+
+  HOW LONG: v3.0 and v3.1 BOTH shipped it -- the helper arrived with the v3.0 rebuild.
+  v2.6 and every earlier version are clean (0 object-shaped `conditions` of 31 keys).
+  Measured across the whole v2.0..v3.1 line with `tools\get_provider_version.ps1`, which
+  was written the same morning; this was its first real use. **CA_eSUN has been
+  un-importable since v3.0.**
+
+  SCOPE: CA_eSUN ONLY. A raw-text sweep of all 20 emitted JSONs over 15 array-typed
+  platform fields (`conditions set any sourceField field arguments queriesToDeselect nodes
+  defaults attributes combinations bundles configurations codeTypes order`) found the 6
+  `conditions` blocks here and nothing else. The `order` key reads as an object on all 20
+  and is CORRECT -- the ENTITIES `order` genuinely is
+  `{default, CAD_DISPATCH, FIRST_RESPONDER}` -- which is the negative control proving the
+  sweep discriminates rather than convicting every object it sees.
+
+  SERIALIZATION-ONLY, PROVEN, NOT ASSERTED. The complete v3.1 -> v3.2 diff is 6 x
+  `"conditions": {` becoming `"conditions": [ { ... } ]` plus the one version string in the
+  bundle description. No routing change, no wire change, no combination added or removed
+  (37 `conditions` keys before and after; 22 combinations, all reachable; query trace 26/26
+  form-reachable, 0 prefill-dead; fidelity 0 UNDER / 0 OVER). Nothing was owed on the
+  routing side and nothing was touched there.
+    NOTE: an earlier attempt to prove this by canonicalising both trees in PowerShell
+    reported "DIFFERENT" -- that was MY probe mangling string arrays (`nodes: ["FORM_ROOT"]`
+    serialised as `[{"Length":9}]`), not a real divergence. The raw-text diff is the
+    honest measurement and it is the one recorded above.
+
+  TEST PACKAGE: nothing archived -- CA_eSUN has 0 logs at any version and v3.1 was on no
+  tenant (SDSO LIVE/TRAINING run the v1.0 capture line, per IMPORT_LEDGER section B.2).
+  The pre-flight sweep readiness recorded for v3.1 stands for v3.2 unchanged, but note
+  that v3.1 could never have been imported to sweep against.
+
+  STILL OPEN, deliberately unchanged here (pre-existing, not caused by this fix):
+    - DriverHistoryQuery #4 +[Attention,PurposeCode] -> fires L1.ODH but `Attention` is in
+      no matching combo's set[]/any[] (PHASE 2q advisory, product call).
+    - Picklist capture lacks category YES_NO_UNKNOWN (1 control, Firearm
+      relatedHitSearchIndicator).
+    - Supported-query extract still PROVISIONAL.
+
 v3.1  2026-09-04  Unblocked the portfolio, and closed v3.0's build tail
   CHANGED:
     A. nameMiddle / nameSuffix controls ADDED on Vehicle, Person (DL + DH-suffixed) and
