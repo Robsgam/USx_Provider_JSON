@@ -162,6 +162,67 @@ outward-facing change and Rob's call, and this file is a record, not an action.
 ~70), so this is an ancient import, not a recent mistake. Consistent with LA_LEMS being
 NEVER-TESTED in our records: the bundle predates the rename and nothing has been imported since.
 
+---
+
+# VERSION CATALOGUE — read off the tenants, 2026-09-10
+
+**Method:** the extension clicks each configuration page's own **Export JSON** control in a
+hidden iframe and reads the version out of the exported bundle's `description`
+(`"Provider configuration for <P> v<X.Y>"`). 11 requested, **10 version strings read**.
+
+⚠️ This is the ONLY way to get our version. The bundle table's `Version` column is a
+platform counter (see above), and there is no API endpoint to harvest.
+
+| tenant | provider | **MEASURED** | ledger claims | verdict |
+|---|---|---|---|---|
+| **newarkpd-foundation** | NJ_NJCJIS | **v4.16** | **v4.17** | 🔴 **DRIFT** |
+| practice-bertanzini | NJ_NJCJIS | v4.9 | v4.9 | agrees (frozen on purpose) |
+| miamispringspd-foundation | FL_FCIC | v7.24 | v7.24 | agrees |
+| northmiami-foundation | FL_FCIC | v7.24 | v7.24 | agrees |
+| homesteadpd-fl-foundation | FL_FCIC | v7.24 | v7.24 | agrees |
+| balconesheightspd-foundation | TX_TLETS | v4.22 | v4.22 | agrees |
+| hdle-foundation | HI_HCJDC_OFML | v4.15 | v4.15 | agrees (held by decision) |
+| mariposacso-foundation | CA_CLETS | v2.27 | v2.27 | agrees |
+| mariposacso **(LIVE)** | CA_CLETS | v2.27 | v2.27 | agrees |
+| aurorapd-il-foundation | IL_LEADS_OFML | v2.8 | v2.8 | agrees |
+| lafayettesheriff-la **(LIVE)** | — | **(no version string)** | "not ours — hand-built" | ✅ **CONFIRMS** |
+
+**agrees = 10 · drift = 1**
+
+## 🔴 NEWARK FOUNDATION RUNS v4.16 WHILE THE LEDGER CLAIMS v4.17
+
+The ledger's Newark row reads *"**v4.17** | **2026-08-20** | current — **v4.16 → v4.17,
+imported by Rob and reported same day**"*. The tenant reports **v4.16**.
+
+**TWO INDEPENDENT SIGNALS AGREE, which is why this is stated as a finding rather than a
+suspicion:**
+1. **The version string** in Newark's exported bundle description: `v4.16`.
+2. **The platform bundle counter, from a different column entirely.** Our own
+   `usx-nj-njcjis` tenant runs repo v4.17 and reports `NJ_NJCJIS/78`. Newark reports
+   `NJ_NJCJIS/77` — exactly one import behind. And `practice-bertanzini`, deliberately
+   frozen at v4.9, reports `74`. The counter increments per import and orders the three
+   tenants exactly as their version strings do.
+
+So either the v4.17 import to Newark did not take, was rolled back, or was reported as
+intent rather than completion. **Which of those is Rob's to say — this file records the
+measurement, not the cause.** Not fixed here: importing is an outward-facing change.
+
+**This is what the whole exercise was for.** Section B is maintained by hand from verbal
+reports because "the capture tool can't reach them", and nothing could check it. First full
+run, first real drift — on a Foundation tenant, three weeks old.
+
+## ✅ LAFAYETTE CONFIRMS THE LEDGER BY WHAT IS *MISSING*
+
+`lafayettesheriff-la` exported a bundle named `LA_LEMS` (counters `ENTITIES/358 LA_LEMS/22
+RMS/10`) but carries **NO** `"Provider configuration for …"` description. Our builds always
+carry it — the convention exists because the platform rejects a top-level `version` field.
+Its **absence is positive evidence** that this is not our build, which is exactly what the
+ledger says: *"NOT OURS — hand-built by engineering"*. A gap in the data confirming a
+documented fact is the cheapest kind of verification there is.
+
+(Note the contrast with our own `usx-la-lems` test tenant, which carries `LA_LETTS_OFML/1` —
+the pre-rename name, and a different bundle entirely.)
+
 ## The 4 empty tenants CORROBORATE the record
 
 `usx-ca-contra-costa`, `usx-ca-san-louis-obispo`, `usx-ca-ventura-county` have **no provider

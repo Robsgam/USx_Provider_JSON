@@ -689,6 +689,29 @@ TOOLS
     dropdown UNFILTERED and dumps the tenant's actual option list (cap 500/field).
     Usage: .\tools\emit_picklist_scope.ps1 -Path providers/<P>/<P>_vX.Y.json
 
+  tools/ingest_tenant_scan.ps1
+    WHICH TENANTS HAVE A PROVIDER JSON WE DO NOT KNOW ABOUT? Rob 2026-09-10: "the goal is to
+    uncover any json imports that we do not know about" -- and, added straight after,
+    "well also verifiying the known ones that proved useful here". Both directions matter:
+    verification caught Newark Foundation running v4.16 while the ledger claimed v4.17.
+    Reads the extension census chunk files (usx_admin_scan_<from>-<to>_*.json), each holding
+    one department per row with its bundle table read from a hidden iframe. Classifies every
+    tenant carrying a bundle that is neither ENTITIES nor RMS as KNOWN-FLEET (subdomain
+    usx-*), KNOWN-LEDGER (deptId in IMPORT_LEDGER section B), or *** UNKNOWN *** -- the
+    answer to the question. Separately flags any bundle NAME that is not one of our 20
+    providers, because an unrecognised provider is its own finding.
+    ⚠️ THREE CONFLATIONS IT REFUSES, each of which produced a wrong answer earlier the same
+    day: (1) UNRESOLVED IS NOT EMPTY -- a page that did not fill within the iframe budget has
+    not been shown to lack a provider, so a run with unresolved rows cannot support "that is
+    all of them"; (2) A MISSING CHUNK IS NOT AN EMPTY RANGE -- it computes which index
+    offsets are uncovered and names them as ranges rather than reporting a partial fleet as
+    the fleet; (3) NO VERSION IS CLAIMED -- this phase reads the bundle TABLE, whose Version
+    column is a platform counter. Versions come from ingest_tenant_export.ps1.
+    0 chunk files FAILs rather than passing quietly.
+    Its own first run FAILED the PS 5.1 parse gate: non-ASCII (warning/check/middot glyphs)
+    inside DOUBLE-QUOTED strings, the documented cp1252 trap. ASCII only in "..." strings.
+    Usage: .\tools\ingest_tenant_scan.ps1 [-Path <dir>] [-OutFile <report>] [-Quiet]
+
   tools/ingest_tenant_export.ps1
     WHICH VERSION IS ACTUALLY INSTALLED ON A TENANT -- read from the platform, not inferred.
     Built 2026-09-10 for Rob's "i want to be able to parse all the tenants and document what

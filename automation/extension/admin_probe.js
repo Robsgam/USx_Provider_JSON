@@ -667,6 +667,15 @@
         rec.verdict = 'ERROR'; rec.error = String(e && e.message || e);
       }
       out.results.push(rec);
+      // Hand the caller a partial every N tenants so a slow or interrupted run still
+      // yields data. Abort is honoured between tenants.
+      if (opts.onBatch && (out.results.length % (opts.saveEvery || 3) === 0)) {
+        try { opts.onBatch({ probe: out.probe, version: out.version, partial: true,
+                             capturedAt: new Date().toISOString(), host: out.host,
+                             requested: out.requested, doneSoFar: out.results.length,
+                             results: out.results.slice() }); } catch (e) {}
+      }
+      if (window.__usxAdminAbort) { out.notes.push('ABORTED by operator after ' + out.results.length + ' tenant(s)'); break; }
       await new Promise(r => setTimeout(r, 200));
     }
     const got = out.results.filter(r => r.verdict === 'VERSION-READ').length;
@@ -677,9 +686,26 @@
     return out;
   }
 
+  // ⚠️ SAVES INCREMENTALLY. The first cut downloaded ONCE, at the end -- so a run that was
+  // merely SLOW looked identical to a run that had died, and produced no file at all. Rob hit
+  // exactly that: the console showed it working through Newark, Anzini and Miami Springs while
+  // Downloads stayed empty. Each tenant costs a page load plus a click plus a wait (up to ~24s
+  // worst case), so ten tenants is minutes, not seconds. The same lesson as ⑦'s per-chunk
+  // files, which I had already learned and then failed to apply here.
   async function runExportSweepDl(opts) {
-    const o = await runExportSweep(opts);
-    dl('usx_admin_versions_' + location.hostname + '_' + nowStamp() + '.json', o);
+    opts = opts || {};
+    const every = Math.max(1, parseInt(opts.saveEvery, 10) || 3);
+    const stamp = nowStamp();
+    let partNo = 0;
+    const wrapped = Object.assign({}, opts, {
+      onBatch: (partial) => {
+        partNo++;
+        dl('usx_admin_versions_' + location.hostname + '_' + stamp + '_part' + String(partNo).padStart(2, '0') + '.json', partial);
+      },
+      saveEvery: every
+    });
+    const o = await runExportSweep(wrapped);
+    dl('usx_admin_versions_' + location.hostname + '_' + stamp + '_FINAL.json', o);
     return o;
   }
 
@@ -826,5 +852,12 @@
                              probeExportControls, enumerateControls, listDepartments, scanConfigurations,
                              extractTables, extractDeptRecords, extractDeptIds, filterRecords,
                              extractBundles, readViaIframe, ADMIN_BASE };
-  console.log('[USx-ADMIN] admin_probe v5 loaded -- reads each configuration page in a HIDDEN IFRAME so its own scripts populate the bundle table. A FETCH returns it EMPTY (that produced 21 confident zeros); the iframe reproduces the live-DOM result for every department from one click. READ-ONLY, GET only. BUILD 2026-09-10e.');
+  // ⚠️ KEEP THIS BANNER IN STEP WITH THE FILE. It said "v5" while v6, v7 and v8 were live,
+  // because I added features without touching the string -- and that is not cosmetic: when
+  // Rob pasted a console log to debug a run, the banner claimed v5 while the stack traces
+  // showed v7 functions. A version banner that lies costs more than no banner at all.
+  console.log('[USx-ADMIN] admin_probe v8 -- READ-ONLY (GET only, no import path). '
+    + 'Hidden-iframe read (a fetch returns the JS-populated bundle table EMPTY -- that produced 21 confident zeros). '
+    + 'Export click is allowlist+denylist gated (Import JSON is refused). '
+    + 'Full census is chunked/abortable and saves per chunk. BUILD 2026-09-10h.');
 })();
