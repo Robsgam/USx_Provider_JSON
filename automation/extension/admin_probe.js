@@ -205,6 +205,73 @@
     return cands;
   }
 
+  // ── v5: READ EACH PAGE IN A HIDDEN IFRAME, SO ITS OWN SCRIPTS RUN ────────────────
+  // This replaces both bad options. The bundle table is JS-populated, so:
+  //   - fetching gives an empty table (proven: 21 confident zeros), and
+  //   - the "find the endpoint the page calls" route needs a diagnostic round-trip
+  //     through the operator before a single tenant can be read.
+  // An iframe is same-origin here, so the page loads, ITS OWN SCRIPTS FILL THE TABLE,
+  // and the DOM is directly readable -- identical to what the live-DOM read produced,
+  // for every department, from one click.
+  //
+  // WHY THIS IS CHEAP: the 3.4MB page is the departments LIST. A configuration page
+  // measured ~63KB, so 21 of them is ~1.3MB total. The earlier "unfiltered sweep is
+  // ~6GB" warning was about fetching the LIST repeatedly, not these.
+  //
+  // WAITS FOR THE ROWS, does not guess a fixed delay: polls until a table has rows or
+  // the budget expires, and REPORTS which happened. A timeout that silently returns an
+  // empty table would recreate the exact defect this is fixing.
+  function readViaIframe(url, budgetMs) {
+    budgetMs = budgetMs || 12000;
+    return new Promise((resolve) => {
+      const fr = document.createElement('iframe');
+      fr.style.cssText = 'position:fixed;left:-10000px;top:0;width:1200px;height:800px;opacity:0;pointer-events:none';
+      let done = false;
+      const t0 = Date.now();
+
+      const finish = (why) => {
+        if (done) return;
+        done = true;
+        let tables = null, err = null;
+        try {
+          const doc = fr.contentDocument;
+          tables = doc ? extractTables(doc) : null;
+          if (!doc) err = 'no contentDocument (cross-origin or blocked)';
+        } catch (e) { err = 'DOM access threw: ' + String(e && e.message || e); }
+        try { fr.remove(); } catch (e) {}
+        const rowTotal = (tables || []).reduce((a, t) => a + (t.rowCount || 0), 0);
+        resolve({
+          method: 'iframe', url: url, why: why, waitedMs: Date.now() - t0,
+          tables: tables, error: err, rowTotal: rowTotal,
+          // An empty result is REPORTED as unresolved rather than as "no bundles".
+          verdict: err ? 'ERROR' : (rowTotal > 0 ? 'ROWS' : 'NO-ROWS-WITHIN-BUDGET')
+        });
+      };
+
+      const poll = () => {
+        if (done) return;
+        let rows = 0;
+        try {
+          const doc = fr.contentDocument;
+          if (doc) {
+            doc.querySelectorAll('table').forEach(t => {
+              rows += t.querySelectorAll('tbody tr').length;
+            });
+          }
+        } catch (e) { finish('dom-access-error'); return; }
+        if (rows > 0) { finish('rows-appeared'); return; }
+        if (Date.now() - t0 > budgetMs) { finish('budget-expired'); return; }
+        setTimeout(poll, 250);
+      };
+
+      fr.onload = () => setTimeout(poll, 150);
+      fr.onerror = () => finish('iframe-error');
+      fr.src = url;
+      document.body.appendChild(fr);
+      setTimeout(() => { if (!done) finish('hard-timeout'); }, budgetMs + 3000);
+    });
+  }
+
   // ---- fetch: report the response, extract WITHOUT truncating first -------
   async function getParsed(url) {
     const res = await fetch(url, {
@@ -271,6 +338,32 @@
     return out;
   }
 
+  // Pull the bundle rows out of whichever table carries [ID, Name, Version].
+  // Proven shape from CA_eSUN's live DOM: tfas8xq|ENTITIES|590, w7p2cdq|CA_eSUN|48,
+  // 0ydnyze|RMS|70 -- i.e. our mandated ENTITIES / <PROVIDER> / RMS trio.
+  // ⚠️ `version` here is a PLATFORM BUNDLE COUNTER (590/48/70), NOT our JSON version
+  // (v3.3). Never present it as the provider version.
+  function extractBundles(tables) {
+    const out = [];
+    (tables || []).forEach(t => {
+      const h = (t.headers || []).map(normHdr);
+      const iId = h.indexOf('id'), iName = h.indexOf('name'), iVer = h.indexOf('version');
+      if (iName < 0) return;
+      (t.rows || []).forEach(r => {
+        const c = r.cells || [];
+        const name = (c[iName] || '').trim();
+        if (!name) return;
+        out.push({
+          bundleId: iId >= 0 ? (c[iId] || '').trim() : '',
+          name: name,
+          platformBundleVersion: iVer >= 0 ? (c[iVer] || '').trim() : '',
+          note: 'platformBundleVersion is a PLATFORM counter, NOT the provider JSON version'
+        });
+      });
+    });
+    return out;
+  }
+
   // ---- STEP 2: per-department configuration / bundles --------------------
   async function scanConfigurations(deptIds, opts) {
     opts = opts || {};
@@ -285,20 +378,31 @@
     };
     for (const item of ids) {
       const id = (item && item.deptId) ? item.deptId : item;
-      const r = await getParsed(ADMIN_BASE + '/configurations/' + encodeURIComponent(id));
-      // Keep the tables (that is where bundles live) but drop nothing silently.
+      const url = ADMIN_BASE + '/configurations/' + encodeURIComponent(id);
+      // IFRAME, NOT FETCH. The bundle table is JS-populated; a fetch returns it empty
+      // (proven across all 21 tenants). The iframe runs the page's own scripts.
+      const r = await readViaIframe(url, opts.budgetMs);
+      const bundles = extractBundles(r.tables);
       out.results.push({
         deptId: id,
-        tenantHint: (item && (item.rowText || item.linkText)) || null,
-        meta: r.meta,
+        subdomain: (item && item.subdomain) || null,
+        status: (item && item.status) || null,
+        method: r.method, verdict: r.verdict, waitedMs: r.waitedMs, why: r.why, error: r.error,
+        bundleCount: bundles.length,
+        bundles: bundles,
         tableSummary: (r.tables || []).map(t => ({ index: t.index, heading: t.heading, headers: t.headers, rowCount: t.rowCount })),
-        tables: r.tables,
-        json: r.json
+        tables: r.tables
       });
       if (delayMs) await new Promise(res => setTimeout(res, delayMs));
     }
-    const empties = out.results.filter(x => !x.tables || !x.tables.length).length;
-    out.notes.push(out.results.length + ' department(s) read; ' + empties + ' returned no table at all.');
+    const withRows = out.results.filter(x => x.verdict === 'ROWS').length;
+    const noRows   = out.results.filter(x => x.verdict === 'NO-ROWS-WITHIN-BUDGET').length;
+    const errored  = out.results.filter(x => x.verdict === 'ERROR').length;
+    out.notes.push(out.results.length + ' department(s) read via iframe: ' + withRows + ' returned rows, '
+      + noRows + ' returned none within the wait budget, ' + errored + ' errored.');
+    if (noRows > 0) {
+      out.notes.push('A NO-ROWS-WITHIN-BUDGET result is UNRESOLVED, not "no bundles imported" -- raise budgetMs or re-run those ids before drawing any conclusion.');
+    }
     return out;
   }
 
@@ -367,6 +471,7 @@
   }
 
   window.__usxAdminProbe = { runList, runScan, runOne, listDepartments, scanConfigurations,
-                             extractTables, extractDeptRecords, extractDeptIds, filterRecords, ADMIN_BASE };
-  console.log('[USx-ADMIN] admin_probe v3 loaded -- reads the ID COLUMN (v2 looked only for configurations/<id> links and found 0 of 1785). Subdomain + Status come straight off the departments table, so "which tenants are active" needs no per-tenant fetch. READ-ONLY, GET only. BUILD 2026-09-10c.');
+                             extractTables, extractDeptRecords, extractDeptIds, filterRecords,
+                             extractBundles, readViaIframe, ADMIN_BASE };
+  console.log('[USx-ADMIN] admin_probe v5 loaded -- reads each configuration page in a HIDDEN IFRAME so its own scripts populate the bundle table. A FETCH returns it EMPTY (that produced 21 confident zeros); the iframe reproduces the live-DOM result for every department from one click. READ-ONLY, GET only. BUILD 2026-09-10e.');
 })();
