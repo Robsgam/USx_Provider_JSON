@@ -52,17 +52,13 @@ dedupe pickups are applied. PENDING_UPDATES live-blocking lines = 0 on all 6 -- 
 there is a `#`-COMMENTED RETIRED record. Only residual: CA_VENTURA's hollow toggle, blocked on
 picklist capture -> import. **SDSO LIVE runs eSUN v1.0 vs repo v3.1** -- a LIVE bump is Rob's call.
 
-**OFFICER GUIDES 20/20 CURRENT** (473 rows, 0 stale); convention `usx-build` 4c, checker
-`_probes/audit_guide_completeness.ps1`. **EXTENSION v0.5.9** -- `audit_extension_syntax.ps1` (in
-`doctor`) parses the browser scripts; nothing did until a 1-char break killed driver+capture 5 days.
+**OFFICER GUIDES 20/20 CURRENT** (473 rows); checker `_probes/audit_guide_completeness.ps1`. **Handover guide for a new owner: `USX_PROJECT_GUIDE.pdf`** (repo root). **`audit_extension_syntax.ps1`** (in `doctor`) parses the browser scripts -- nothing did until a 1-char break killed driver+capture for 5 days.
 
 ## ROB'S CALLS, NOT MINE
 
 - **CA_CONTRA_COSTA JAWS/SuperQuery** -- 4 UNDER / 3 OVER, verbatim in its BUILD_NOTES. Hold the
   SWEEP, not the import. **LA_LEMS `QB{reg}` vs `BQ{reg}`** -- in LA's registry, not taken.
-- **MINED-KEYREF, 4 EXPOSED** (`_probes/sweep_mined_keyref_shadow.ps1`): eSUN QV.V->4V, QB.H->4V,
-  QB.R->4B; CA_SAN_LUIS_OBISPO QV.V->4V. A rename, not a wire change; both never-tested. eSUN's
-  228KB tenant export sits in pushed history at `8273a87f` -- removal needs a force-push.
+- **MINED-KEYREF, 4 EXPOSED** (`_probes/sweep_mined_keyref_shadow.ps1`): eSUN QV.V->4V, QB.H->4V, QB.R->4B; CA_SAN_LUIS_OBISPO QV.V->4V. A rename, not a wire change; both never-tested. eSUN's 228KB tenant export sits in pushed history at `8273a87f` -- removal needs a force-push.
 
 ## OPEN FINDINGS -- detail lives in `FINDINGS_REGISTER.md`, do NOT restate it here
 
@@ -72,20 +68,24 @@ picklist capture -> import. **SDSO LIVE runs eSUN v1.0 vs repo v3.1** -- a LIVE 
 - **LIMITATION #41** (HOME state routes a local plate to NLETS) -- paused pending CommSys. 5 providers owe the picklist capture. **NCIC hit blocks CONFIG-PRESENT, NOT RENDERING-VERIFIED** on HI and TN.
 - **RESWEEP 2026-09-08: 20/20 ENFORCED 0F/0W, no defect in any provider JSON.** Fidelity 426 branches / 4 UNDER / 4 OVER / 0 NEVER-COMPARED -- all 4+4 are CA_CONTRA_COSTA's (Rob's JAWS call).
 
-## RND-71625 -- IN FLIGHT, JIRA REPLY HELD (Rob: "hold the jira reply and hold on any changes")
+## NEXT PHYSICAL ACTION -- CA_eSUN v3.1 TENANT SWEEP (Rob drives; pre-flight CLEAR 2026-09-09)
 
-**EVIDENCE GATHERED 2026-09-09 -- THE TICKET'S RMS CLAIM DOES NOT REPRODUCE.** Full detail +
-verbatim message in `FINDINGS_REGISTER.md`; do not restate here. IL LEADS, simulation OFF + no
-device ID: an amber icon renders in 1-3ms, Send + both checkboxes are DISABLED, and hovering gives
-*"Computer/Device name "LAPTOP-NLHTE6T0" not found, please have your administrator add this device
-to the universal search devices"*. So the officer IS told. **The narrower real findings:** the glyph
-is `mdi-information` (circle-i), not a warning icon, and the message is hover-only on an icon with
-NO aria-label/title -- invisible to a screen reader, which plausibly explains the original report.
-**The control run is NO LONGER blocking.** **NOT concluded:** whether RMS shows a NOTICE -- the only
-hit was MY OWN PANEL TEXT (v0.5.8 self-detection bug, fixed v0.5.9): zero evidence, not a negative.
-**Jira still HELD.** `deviceRegistrationOptional` (`_build_rms_bundle.ps1:90`, `$true` on
-`RestAuthenticationHandler` vs `$false` on Commsys, all 20) is untouched AND this evidence does not
-support it -- RMS *does* block, the opposite of what that hypothesis predicts.
+74 tests / 309 fills / 0 unfireable, versions aligned. **A REBOOT KILLS TWO PROCESSES THAT MUST BE
+RESTARTED** -- `serve_plans.ps1` (browser fetches the plan from `127.0.0.1:8477`) and
+`watch_captures.ps1` (ingests captures). Also **RELOAD the extension** (0.5.9 / `BUILD 2026-09-09e`
+-- manifest changed) and **ARM it** on the tenant. ⚠️ Advisory gap: the picklist capture
+(2026-09-04, NEWER than the build) lacks category `YES_NO_UNKNOWN`, used by ONE control -- Firearm
+`relatedHitSearchIndicator` -- which **2 of 74 tests fill with `Y`**; low risk, re-scope to close.
+**WATCH THE RADIO PATH:** eSUN's `CaRequestPurposeCode` radio only became reachable when its
+default was removed, and the driver was BROKEN the five days after, so it is UNEXERCISED.
+
+## RND-71625 -- ANSWERED, JIRA REPLY STILL HELD
+
+**Claim does NOT reproduce; all 3 surfaces show the icon.** Evidence + verbatim device message in
+`FINDINGS_REGISTER.md` -- do NOT restate here. Narrower real findings: the glyph is
+`mdi-information`, not a warning icon, and the message is hover-only with NO aria-label. Cringer's
+`deviceRegistrationOptional: false` is ALREADY on all 20 AND in engineering's own hand-built
+Lafayette JSON, so nothing is owed. No control run needed.
 
 ## DO NOT RE-RAISE
 
