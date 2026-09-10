@@ -355,6 +355,65 @@
         finally { sweep.disabled = false; }
       };
       expWrap.appendChild(sweep);
+
+      // ── ⑦ THE FULL CENSUS: every department, not just the ones we know about ──────────
+      // Rob: "scan the entire departments page and visit each configuration page to
+      // 1 determine if it has a usx provider installed and download to compare what version".
+      // PHASE 1 only -- reads the bundle table for all 1785. Phase 2 (the version, via the
+      // export click) runs afterwards against ONLY the tenants this finds, because exporting
+      // all 1785 would be ~525MB of payload.
+      // Chunked + resumable + abortable, because this is ~20-25 minutes of page loads and a
+      // single end-of-run download would lose the lot to one hiccup at #1700.
+      const censusWrap = el('div', 'margin-top:8px;border-top:1px solid #333;padding-top:6px');
+      censusWrap.appendChild(el('div', 'font-size:11px;color:#fc6', 'full census — ALL departments (phase 1)'));
+      const cRow = el('div', 'display:flex;gap:4px;align-items:center;margin:4px 0');
+      cRow.appendChild(el('span', 'font-size:11px;color:#999', 'from:'));
+      const cFrom = el('input', 'width:58px;padding:4px;background:#222;color:#eee;border:1px solid #555;border-radius:4px');
+      cFrom.type = 'number'; cFrom.min = '0'; cFrom.value = '0'; cFrom.id = 'usx-census-from';
+      cRow.appendChild(cFrom);
+      cRow.appendChild(el('span', 'font-size:11px;color:#999', 'chunk:'));
+      const cChunk = el('input', 'width:58px;padding:4px;background:#222;color:#eee;border:1px solid #555;border-radius:4px');
+      cChunk.type = 'number'; cChunk.min = '10'; cChunk.value = '250'; cChunk.id = 'usx-census-chunk';
+      cRow.appendChild(cChunk);
+      censusWrap.appendChild(cRow);
+
+      const cProg = el('div', 'font:11px ui-monospace,monospace;color:#7cf;margin:3px 0;min-height:28px');
+      censusWrap.appendChild(cProg);
+
+      const census = el('button', BTN, '⑦ Scan ALL departments (~20-25 min)');
+      const stopC = el('button', BTN + ';' + RED, '⏹ Stop the census');
+      stopC.style.display = 'none';
+
+      census.onclick = async () => {
+        window.__usxAdminAbort = false;
+        census.disabled = true; stopC.style.display = 'block';
+        aStatus.style.color = '#fa0'; aStatus.textContent = 'census running — leave this tab open';
+        const t0 = Date.now();
+        try {
+          const t = await window.__usxAdminProbe.runFullScan({
+            from: parseInt(document.getElementById('usx-census-from').value, 10) || 0,
+            chunk: parseInt(document.getElementById('usx-census-chunk').value, 10) || 250,
+            onProgress: (p) => {
+              const mins = ((Date.now() - t0) / 60000).toFixed(1);
+              const rate = p.scanned / Math.max(1, (Date.now() - t0) / 1000);
+              const left = ((p.total - p.scanned) / Math.max(0.01, rate) / 60).toFixed(0);
+              cProg.textContent = p.scanned + '/' + p.total + '  providers found: ' + p.withProvider
+                + '\n' + mins + ' min elapsed, ~' + left + ' min left  ' + (p.found ? ('<< ' + p.found) : '');
+            }
+          });
+          aStatus.style.color = t.aborted ? '#fa0' : '#7c7';
+          aStatus.textContent = (t.aborted ? '⏹ STOPPED after ' : '✔ census done: ') + t.scanned + '/' + t.indexTotal
+            + ' · ' + t.withProvider + ' with a provider · ' + t.unresolved + ' unresolved · ' + t.errored + ' errored · '
+            + t.chunks + ' file(s)';
+        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
+        finally { census.disabled = false; stopC.style.display = 'none'; }
+      };
+      stopC.onclick = () => { window.__usxAdminAbort = true; stopC.textContent = '⏹ stopping after this page…'; };
+      censusWrap.appendChild(census);
+      censusWrap.appendChild(stopC);
+      censusWrap.appendChild(el('div', 'color:#999;font-size:11px;margin-top:2px',
+        'Saves one file per chunk, so a failure costs one chunk. Stopping is safe — finished chunks are already saved.'));
+      p.appendChild(censusWrap);
       p.appendChild(expWrap);
 
       p.appendChild(aStatus);

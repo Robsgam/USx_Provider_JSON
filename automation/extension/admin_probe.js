@@ -683,6 +683,113 @@
     return o;
   }
 
+  // ── v8: THE FULL CENSUS -- ALL 1785 DEPARTMENTS ─────────────────────────────────────
+  // Rob's actual goal, restated: "scan the entire departments page and visit each
+  // configuration page to 1 determine if it has a usx provider installed and download to
+  // compare what version for cross checking".
+  //
+  // TWO PHASES, BECAUSE ONE PHASE CANNOT WORK:
+  //   PHASE 1 (this function) -- iframe each configuration page and read the BUNDLE TABLE
+  //     only. That answers "does it have a USx provider installed?" for every tenant, and
+  //     costs one ~63KB page load each. No export click, no 294KB payload.
+  //   PHASE 2 (runExportSweep, already built) -- click Export JSON ONLY for the tenants
+  //     phase 1 found a provider bundle on, to read the actual version.
+  // Doing phase 2 for all 1785 would be ~525MB of payload (294KB x 1785) and is the reason
+  // the phases are split rather than merged.
+  //
+  // CHUNKED AND RESUMABLE ON PURPOSE. 1785 page loads is ~20-25 minutes; a single
+  // end-of-run download would lose everything to one browser hiccup at #1700. Each chunk
+  // saves its own self-contained file, so a failure costs one chunk and I can resume from a
+  // named index instead of starting over.
+  //
+  // A PROVIDER BUNDLE is any bundle whose name is neither ENTITIES nor RMS -- deliberately
+  // NOT matched against our 20 provider names, so an UNKNOWN provider bundle (a name nobody
+  // here recognises) shows up as a finding instead of being filtered out as noise.
+  const NON_PROVIDER_BUNDLES = { 'ENTITIES': 1, 'RMS': 1 };
+  window.__usxAdminAbort = false;
+
+  async function runFullScan(opts) {
+    opts = opts || {};
+    const chunk = Math.max(10, Math.min(parseInt(opts.chunk, 10) || 250, 1000));
+    const from = Math.max(0, parseInt(opts.from, 10) || 0);
+    const delayMs = Math.max(0, parseInt(opts.delayMs, 10) || 150);
+    const budgetMs = opts.budgetMs || 9000;
+    const onProgress = opts.onProgress || function () {};
+
+    const listing = await listDepartments();
+    const all = listing.deptIds || [];
+    if (!all.length) { throw new Error('department index came back empty -- nothing to scan'); }
+
+    let idx = from;
+    let chunkNo = 0;
+    const totals = { scanned: 0, withProvider: 0, empty: 0, unresolved: 0, errored: 0, files: [] };
+
+    while (idx < all.length) {
+      if (window.__usxAdminAbort) { totals.aborted = true; break; }
+      const slice = all.slice(idx, idx + chunk);
+      const out = {
+        probe: 'admin-full-scan', version: 8, capturedAt: new Date().toISOString(),
+        host: location.hostname, indexTotal: all.length,
+        range: { from: idx, to: idx + slice.length - 1 },
+        results: [], notes: ['READ-ONLY: GET only, no click, no import. Bundle table read from a hidden iframe.']
+      };
+
+      for (let i = 0; i < slice.length; i++) {
+        if (window.__usxAdminAbort) { out.notes.push('ABORTED by operator at offset ' + (idx + i)); totals.aborted = true; break; }
+        const rec = slice[i];
+        const url = ADMIN_BASE + '/configurations/' + encodeURIComponent(rec.deptId);
+        let r;
+        try { r = await readViaIframe(url, budgetMs); }
+        catch (e) { r = { verdict: 'ERROR', error: String(e && e.message || e), tables: null, waitedMs: 0 }; }
+
+        const bundles = extractBundles(r.tables);
+        const provs = bundles.filter(b => !NON_PROVIDER_BUNDLES[b.name]);
+        const row = {
+          deptId: rec.deptId, subdomain: rec.subdomain, status: rec.status,
+          verdict: r.verdict, waitedMs: r.waitedMs,
+          bundleCount: bundles.length,
+          providerBundles: provs.map(b => ({ name: b.name, platformCounter: b.platformBundleVersion })),
+          hasRms: bundles.some(b => b.name === 'RMS'),
+          hasEntities: bundles.some(b => b.name === 'ENTITIES'),
+          error: r.error || null
+        };
+        out.results.push(row);
+
+        totals.scanned++;
+        if (r.verdict === 'ERROR') totals.errored++;
+        else if (provs.length) totals.withProvider++;
+        else if (r.verdict === 'NO-ROWS-WITHIN-BUDGET') totals.unresolved++;
+        else totals.empty++;
+
+        if ((totals.scanned % 10) === 0 || provs.length) {
+          onProgress({ scanned: totals.scanned, total: all.length, withProvider: totals.withProvider,
+                       current: rec.subdomain, found: provs.map(p => p.name).join(',') });
+        }
+        if (delayMs) await new Promise(res => setTimeout(res, delayMs));
+      }
+
+      out.chunkTotals = {
+        scanned: out.results.length,
+        withProvider: out.results.filter(x => x.providerBundles.length).length,
+        empty: out.results.filter(x => !x.providerBundles.length && x.verdict === 'ROWS').length,
+        unresolved: out.results.filter(x => x.verdict === 'NO-ROWS-WITHIN-BUDGET').length,
+        errored: out.results.filter(x => x.verdict === 'ERROR').length
+      };
+      // UNRESOLVED IS NOT EMPTY. A page that did not fill within the budget has NOT been
+      // shown to lack a provider -- conflating those would understate the fleet.
+      out.notes.push('unresolved = page did not fill within ' + budgetMs + 'ms; that is UNKNOWN, not "no provider".');
+      const name = 'usx_admin_scan_' + String(out.range.from).padStart(5, '0') + '-' + String(out.range.to).padStart(5, '0') + '_' + nowStamp() + '.json';
+      dl(name, out);
+      totals.files.push(name);
+      chunkNo++;
+      idx += slice.length;
+      if (totals.aborted) break;
+    }
+    totals.indexTotal = all.length;
+    totals.chunks = chunkNo;
+    return totals;
+  }
+
   async function runOne(deptId) {
     const onThisPage = new RegExp('configurations/' + deptId + '$').test(location.pathname);
     let o;
@@ -715,7 +822,7 @@
   }
 
   window.__usxAdminProbe = { runList, runScan, runOne, runExportLook, runExportTry,
-                             runExportSweep, runExportSweepDl,
+                             runExportSweep, runExportSweepDl, runFullScan,
                              probeExportControls, enumerateControls, listDepartments, scanConfigurations,
                              extractTables, extractDeptRecords, extractDeptIds, filterRecords,
                              extractBundles, readViaIframe, ADMIN_BASE };
