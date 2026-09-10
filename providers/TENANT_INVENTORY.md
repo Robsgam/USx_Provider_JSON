@@ -41,7 +41,7 @@ read straight from the table's ID / Subdomain / Status columns.
 | **73046844870** | **usx-sc-sled** | Test | ⚠️ **NO PROVIDER IN THIS REPO** |
 | 69987555758 | usx (bare) | **DEPARTMENT_SETUP_FAILURE** | none — broken tenant |
 
-## Four findings, none of them guesses
+## Findings -- one since EXPLAINED by Rob, three standing
 
 1. **CA_eSUN's tenant is `usx-ca-esun` / 69510509021.** That is the exact department id from
    the configuration URL Rob supplied, so the mapping is confirmed rather than inferred. The
@@ -115,7 +115,7 @@ fixed delay returning an empty table would recreate the 21-zeros defect with a n
 | usx-or-leds | OR_LEDS /1 | yes | ok |
 | usx-tn-ties | TN_TIES /4 | yes | ok |
 | usx-tx-tlets | TX_TLETS /34 | yes | ok |
-| **usx-fl-fcic** | **CA_eSUN /41** | **NO** | 🔴 **WRONG PROVIDER** |
+| usx-fl-fcic | CA_eSUN /41 | NO | ✅ unrelated test (Rob) -- re-import before sweeping |
 | **usx-la-lems** | **LA_LETTS_OFML /1** | yes | 🟠 **PRE-RENAME NAME** |
 | usx-ca-contra-costa | — | no | none imported |
 | usx-ca-san-louis-obispo | — | no | none imported |
@@ -123,7 +123,15 @@ fixed delay returning an empty table would recreate the 21-zeros defect with a n
 | usx-sc-sled | — | no | none imported (no provider here either) |
 | usx (bare) | — | no | none; DEPARTMENT_SETUP_FAILURE |
 
-## 🔴 FL_FCIC's TENANT IS RUNNING CA_eSUN's CONFIG
+## ✅ FL_FCIC's TENANT CARRIES CA_eSUN's BUNDLE -- EXPLAINED, NOT A DEFECT
+
+**Rob, 2026-09-10: "fl running esun was a unrelated test".** That closes it. The observation
+below is accurate and is kept ONLY so the next sweep does not re-raise it as a discovery --
+and because the verification method is worth keeping. The one thing that survives: whoever
+re-sweeps FL_FCIC must RE-IMPORT FL first, or the test would drive eSUN's form. Sequencing
+note, not a finding.
+
+### The observation and how it was verified
 
 `usx-fl-fcic` (69510828830) carries `ENTITIES/588` + **`CA_eSUN/41`**, and **no RMS bundle**.
 There is no `FL_FCIC` bundle on it at all.
@@ -144,8 +152,8 @@ longer runs it.** Anyone re-testing FL_FCIC today would be driving CA_eSUN's for
 capturing CA_eSUN's wire, filed under FL — the unattributable-log hazard, arriving through the
 one door no gate watches: the tenant changing under a green repo.
 
-**DO NOT re-sweep FL_FCIC until its tenant is re-imported.** Not fixed here: importing into a
-tenant is an outward-facing change and Rob's call, and this file is a record, not an action.
+**Re-import FL before any FL sweep.** Not done here: importing into a tenant is an
+outward-facing change and Rob's call, and this file is a record, not an action.
 
 ## 🟠 LA_LEMS's TENANT CARRIES THE PRE-RENAME NAME
 
