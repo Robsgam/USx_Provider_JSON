@@ -87,7 +87,77 @@ one page (department 69510509021) minutes apart.
 "which version is installed" — that remains what `logs/` proves for a provider tenant. What
 the table DOES establish is *whether* a provider bundle is present and under what name.
 
-**Consequence for tooling:** either read each page's live DOM (21 page loads), or find the
-endpoint the page's JS calls and sweep that. `admin_probe.js` v4 reports the candidate URLs a
-configuration page's own scripts reference (reported, never called) so the second route can be
-built from evidence.
+**Consequence for tooling — SOLVED in v5:** read each configuration page in a HIDDEN IFRAME.
+Same-origin, so the page's own scripts run, the table fills, and the DOM is readable — the
+live-DOM result for all 21 from one click, no endpoint archaeology and no manual page loads.
+It polls until rows appear and reports `ROWS` / `NO-ROWS-WITHIN-BUDGET` / `ERROR`, because a
+fixed delay returning an empty table would recreate the 21-zeros defect with a new cause.
+
+---
+
+# WHAT IS ACTUALLY IMPORTED — full sweep, 2026-09-10
+
+**21 read via iframe · 21 returned rows · 0 timed out · 0 errored.**
+
+| tenant | provider bundle | RMS? | verdict |
+|---|---|---|---|
+| usx-az-azdps | AZ_AZDPS /18 | yes | ok |
+| usx-ca-clets | CA_CLETS /24 | yes | ok |
+| usx-ca-clets-ocats | CA_CLETS_OCATS /2 | yes | ok |
+| usx-ca-esun | CA_eSUN /48 | yes | ok |
+| usx-hi-hcjdc-ofml | HI_HCJDC_OFML /36 | yes | ok |
+| usx-il-leads-ofml | IL_LEADS_OFML /3 | yes | ok |
+| usx-md-meters | MD_METERS /2 | yes | ok |
+| usx-nj-njcjis | NJ_NJCJIS /78 | yes | ok |
+| usx-nm-nmlets | NM_NMLETS_OFML /5 | yes | ok |
+| usx-ny-nyspin-ejustice | NY_NYSPIN_EJUSTICE /46 | yes | ok |
+| usx-oh-leads | OH_LEADS /4 | yes | ok |
+| usx-or-leds | OR_LEDS /1 | yes | ok |
+| usx-tn-ties | TN_TIES /4 | yes | ok |
+| usx-tx-tlets | TX_TLETS /34 | yes | ok |
+| **usx-fl-fcic** | **CA_eSUN /41** | **NO** | 🔴 **WRONG PROVIDER** |
+| **usx-la-lems** | **LA_LETTS_OFML /1** | yes | 🟠 **PRE-RENAME NAME** |
+| usx-ca-contra-costa | — | no | none imported |
+| usx-ca-san-louis-obispo | — | no | none imported |
+| usx-ca-ventura-county | — | no | none imported |
+| usx-sc-sled | — | no | none imported (no provider here either) |
+| usx (bare) | — | no | none; DEPARTMENT_SETUP_FAILURE |
+
+## 🔴 FL_FCIC's TENANT IS RUNNING CA_eSUN's CONFIG
+
+`usx-fl-fcic` (69510828830) carries `ENTITIES/588` + **`CA_eSUN/41`**, and **no RMS bundle**.
+There is no `FL_FCIC` bundle on it at all.
+
+**VERIFIED, NOT INFERRED — two independent checks:**
+1. **The page identifies itself.** Each configuration page renders its own heading
+   `<subdomain> (<deptId>)`. FL's result carries `usx-fl-fcic (69510828830)`, and across all
+   21 results **0 headings mismatched their requested id** — so this is not an iframe reading
+   a stale or wrong document, which is the failure mode that would fake exactly this.
+2. **The bundle id proves shared identity.** Every provider bundle id is unique to one tenant
+   (`aqiaric`=AZ, `dvd855o`=CA_CLETS, `dr0eolh`=TX, …) — **except `w7p2cdq`, which appears on
+   TWO tenants: `usx-ca-esun` and `usx-fl-fcic`.** Same bundle object, two tenants, different
+   versions (48 vs 41). A name collision cannot produce a shared id.
+
+**WHY THIS MATTERS MORE THAN A TIDINESS PROBLEM.** FL_FCIC is recorded here as ALL-PASS 5/5
+with 104 logs at v7.24. Those logs were captured when FL's config was loaded. **The tenant no
+longer runs it.** Anyone re-testing FL_FCIC today would be driving CA_eSUN's form and
+capturing CA_eSUN's wire, filed under FL — the unattributable-log hazard, arriving through the
+one door no gate watches: the tenant changing under a green repo.
+
+**DO NOT re-sweep FL_FCIC until its tenant is re-imported.** Not fixed here: importing into a
+tenant is an outward-facing change and Rob's call, and this file is a record, not an action.
+
+## 🟠 LA_LEMS's TENANT CARRIES THE PRE-RENAME NAME
+
+`usx-la-lems` has `LA_LETTS_OFML/1` — the provider's name **before** the repo renamed it to
+`LA_LEMS`. Its `ENTITIES/365` and `RMS/59` are far older than every other tenant (~570-590 and
+~70), so this is an ancient import, not a recent mistake. Consistent with LA_LEMS being
+NEVER-TESTED in our records: the bundle predates the rename and nothing has been imported since.
+
+## The 4 empty tenants CORROBORATE the record
+
+`usx-ca-contra-costa`, `usx-ca-san-louis-obispo`, `usx-ca-ventura-county` have **no provider
+bundle** — and those are exactly three of the providers this repo lists as NEVER-TESTED. Never
+imported → nothing to import → no bundle. Independent confirmation of the ledger's
+never-imported rows from the platform side, which is the first time that has been possible.
+`usx-sc-sled` is empty too and has no provider here at all.
