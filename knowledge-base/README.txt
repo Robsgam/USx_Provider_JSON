@@ -689,6 +689,40 @@ TOOLS
     dropdown UNFILTERED and dumps the tenant's actual option list (cap 500/field).
     Usage: .\tools\emit_picklist_scope.ps1 -Path providers/<P>/<P>_vX.Y.json
 
+  tools/audit_query_selectable.ps1
+    CAN THE OFFICER ACTUALLY SEND EVERY QUERY WE BUILT? (enforce PHASE 2y, BLOCKING)
+    The direction nothing else covered: every other gate asks whether the REQUEST is correct
+    (devdoc, metadata, reachability, wiring, logs); none asked whether the query can be
+    SELECTED at all. A query the platform never activates is perfectly formed, completely
+    unsendable, and indistinguishable from a working one in every artifact this repo makes.
+    Built 2026-09-10 after Rob hit it mid-sweep: "dh is getting hung up with checkbox enabled
+    but nothing in the check box so it never transmits." CA_eSUN's DriverHistoryQuery carried
+    autoSelect=$false, so the platform RENDERED its checkbox and never ACTIVATED it -- Send
+    stayed DISABLED and 13 of 13 DH tests could not send while all 17 non-DH tests did. It
+    shipped in v3.0, v3.1 AND v3.2 with ~40 gates green; autoSelect had been $true at v2.4-v2.6.
+    ⚠️ THE NAIVE GATE IS WRONG AND IT WAS MEASURED FIRST. "assert autoSelect -eq $true" is a
+    false accusation on the one provider where $false is correct: of 124 QIDMs across 20
+    providers exactly 8 carry $false and ALL EIGHT are TX_TLETS_CCH's CCH transactions, where
+    opt-in IS the design (CCH must be a conscious officer action, not auto-fired by a name).
+    They are MECHANICALLY IDENTICAL to the bug -- both $false with a queryLabel, and every QIDM
+    has a queryLabel -- so nothing in the JSON separates design from defect. THE GATE THEREFORE
+    DEMANDS A DECLARATION: an ACCEPTED_DIVERGENCES row `<Query> | * | autoSelect | opt-in-query
+    | <reason>`, classified 'selectability' in _divergence_rules.ps1 so a demoted-to-any or
+    dead-combo row can never silence it and it can never silence anything else.
+    ⚠️ ABSENT IS NOT FALSE, AND THE FIRST CUT GOT THIS WRONG: failing on anything that was not
+    $true produced 67 findings across 13 providers, most of them tenant-verified ALL-PASS --
+    the shape that means the probe is broken. Discriminated with committed logs, not by
+    reasoning about platform defaults: 44 of 44 absent-autoSelect queries on the 15
+    tenant-verified providers hold logs for their entity, so ABSENT behaves as the platform
+    default and IS sendable. Only an EXPLICIT $false suppresses activation. Do NOT re-tighten.
+    LAW 2 proven both ways, and against history rather than a synthetic mutant: FAILs on the
+    retrieved real pre-fix CA_eSUN v3.1 naming DriverHistoryQuery, passes on the fixed
+    portfolio, and the catalogued mutation 'query-not-selectable' is KILLED on every provider.
+    Emits a per-provider [PASS] line deliberately -- audit_gate_efficacy judges baseline
+    vacuity by counting PASS lines, and without one this gate scored [INVALID] "never looked".
+    Baseline 2026-09-10: 124 QIDMs examined / 116 auto-or-absent / 8 declared opt-in / 0 FAIL.
+    Usage: .\tools\audit_query_selectable.ps1 -Provider <name> | -Path <json> | -All
+
   tools/get_provider_version.ps1
     RETRIEVE ANY PRIOR PROVIDER JSON, ON DEMAND -- byte-exact, from git history.
     Built 2026-09-10 after Rob asked for HI_HCJDC_OFML v4.15 in the folder and got back

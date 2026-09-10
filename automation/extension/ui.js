@@ -142,7 +142,7 @@
     p.id = 'usx-panel'; p.dataset.kind = kind;
     p.style.cssText = 'position:fixed;z-index:2147483647;top:12px;left:12px;background:#141414;color:#eee;font:12px/1.4 system-ui;padding:9px 11px;border-radius:9px;box-shadow:0 6px 22px rgba(0,0,0,.5);width:230px;opacity:.94';
     const head = el('div', 'display:flex;justify-content:space-between;align-items:center;font-weight:700;margin-bottom:6px');
-    head.appendChild(el('span', null, kind === 'dex' ? 'USx Capture — dex-log' : 'USx Driver'));
+    head.appendChild(el('span', null, kind === 'dex' ? 'USx Capture — dex-log' : (kind === 'admin' ? 'USx Admin — inventory' : 'USx Driver')));
     // ✕ = turn the panel OFF for this tenant, and MAKE IT STICK. Until v0.5.1 this called
     // p.remove() only, and tick() re-appended the panel on its next 1s pass -- so the close
     // button visibly did nothing. Now it persists a per-host flag and drops a small launcher dot
@@ -152,7 +152,97 @@
     hide.title = 'turn the USx panel off for ' + location.hostname;
     hide.onclick = () => { setUiOff(true); p.remove(); mountLauncher(); };
     head.appendChild(hide); p.appendChild(head);
-    buildArmBlock(p);
+    // NO ARM BLOCK ON THE ADMIN PANEL. The arm switch is the safety for SUBMITTING QUERIES;
+    // this panel only issues read-only GETs against the support-admin endpoints. Showing an
+    // arm control here would imply the driver is live on a page where it is not, and would
+    // invite arming the query driver on a customer host to answer an inventory question.
+    if (kind !== 'admin') { buildArmBlock(p); }
+
+    if (kind === 'admin') {
+      // ── READ-ONLY ADMIN INVENTORY ─────────────────────────────────────────────────────
+      // Rob 2026-09-10: "see if we can't get a list of active tenant that have a json
+      // imported ... if possible download and ingest the json for reference and cross
+      // checking. We can add any feelers and probes to the exsiting extension."
+      // The endpoints are session-authenticated -- a repo-side fetch gets 303 -> /rms/login/ --
+      // so this has to run in the operator's own browser. GET only; there is deliberately no
+      // import/upload button here, because importing into a tenant changes someone's
+      // environment and must never be a side effect of an inventory probe.
+      const aStatus = el('div', 'font:11px system-ui;color:#fa0;margin:4px 0;min-height:14px');
+
+      if (!window.__usxAdminProbe) {
+        aStatus.style.color = '#f77';
+        aStatus.textContent = '✖ admin probe not loaded — RELOAD the extension (chrome://extensions → Reload), then refresh this page.';
+        p.appendChild(aStatus);
+        return p;
+      }
+
+      p.appendChild(el('div', 'color:#999;font-size:11px;margin:2px 0',
+        'Read-only. Sends GET only — never imports.'));
+
+      // 1. This page's own department (the id is in the URL, so nothing is guessed).
+      const idFromUrl = (location.pathname.match(/configurations\/(\d+)/) || [])[1] || '';
+      if (idFromUrl) {
+        const one = el('button', BTN, '① Read this department (' + idFromUrl + ')');
+        one.onclick = async () => {
+          one.disabled = true; aStatus.style.color = '#fa0'; aStatus.textContent = 'reading department ' + idFromUrl + '…';
+          try {
+            const o = await window.__usxAdminProbe.runOne(idFromUrl);
+            const r = (o.results && o.results[0]) || {};
+            const st = r.raw ? r.raw.status : '?';
+            aStatus.style.color = r.raw && r.raw.ok ? '#7c7' : '#f77';
+            aStatus.textContent = '✔ HTTP ' + st + ' · ' + ((r.raw && r.raw.bytes) || 0) + ' bytes · saved to Downloads'
+              + (r.raw && r.raw.looksLikeLogin ? ' — LOGIN REDIRECT, not authenticated' : '');
+          } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
+          finally { one.disabled = false; }
+        };
+        p.appendChild(one);
+      }
+
+      // 2. The tenant list.
+      const lst = el('button', BTN + ';' + BLU, '② List all tenants + department ids');
+      lst.onclick = async () => {
+        lst.disabled = true; aStatus.style.color = '#fa0'; aStatus.textContent = 'reading department list…';
+        try {
+          const o = await window.__usxAdminProbe.runList();
+          const n = o.derived ? o.derived.count : 0;
+          aStatus.style.color = o.raw.ok && !o.raw.looksLikeLogin ? '#7c7' : '#f77';
+          aStatus.textContent = o.raw.looksLikeLogin
+            ? '✖ LOGIN REDIRECT — log into the RMS UI in this tab first.'
+            : '✔ HTTP ' + o.raw.status + ' · ' + n + ' record(s) found · saved to Downloads';
+        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
+        finally { lst.disabled = false; }
+      };
+      p.appendChild(lst);
+
+      // 3. Bounded bundle sweep. BOUNDED ON PURPOSE: a demo host may carry hundreds of
+      // departments, and an unbounded per-department loop is the one thing here that could
+      // look like hammering. Default deliberately small; the operator raises it knowingly.
+      const rowLim = el('div', 'display:flex;gap:4px;align-items:center;margin:4px 0');
+      rowLim.appendChild(el('span', 'font-size:11px;color:#999', 'how many:'));
+      const limIn = el('input', 'width:56px;padding:4px;background:#222;color:#eee;border:1px solid #555;border-radius:4px');
+      limIn.type = 'number'; limIn.min = '1'; limIn.max = '500'; limIn.value = '5'; limIn.id = 'usx-admin-lim';
+      rowLim.appendChild(limIn);
+      p.appendChild(rowLim);
+
+      const scan = el('button', BTN + ';' + BLU, '③ Scan bundles for that many tenants');
+      scan.onclick = async () => {
+        const lim = parseInt(document.getElementById('usx-admin-lim').value, 10) || 5;
+        scan.disabled = true; aStatus.style.color = '#fa0'; aStatus.textContent = 'scanning ' + lim + ' department(s)…';
+        try {
+          const o = await window.__usxAdminProbe.runScan({ limit: lim });
+          const withCfg = (o.results || []).filter(r => r.raw && r.raw.ok).length;
+          aStatus.style.color = '#7c7';
+          aStatus.textContent = '✔ ' + withCfg + '/' + (o.results || []).length + ' returned a config · saved to Downloads';
+        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
+        finally { scan.disabled = false; }
+      };
+      p.appendChild(scan);
+
+      p.appendChild(aStatus);
+      p.appendChild(el('div', 'color:#999;font-size:11px;margin-top:4px',
+        'Files land in Downloads; I ingest them from there. Start with ① so the real response shape is known before any sweep.'));
+      return p;
+    }
 
     if (kind === 'dex') {
       // Two plain-language status lines.
@@ -524,7 +614,15 @@
     // error. Accepting both keeps renamed and un-renamed tenants working from one build.
     const isDex = location.hash.includes('dex-log') || location.hash.includes('usx-log');
     const isSearch = location.hash.includes('universal-search');
-    const want = isDex ? 'dex' : (isSearch ? 'search' : null);
+    // ADMIN ROUTE IS PATH-BASED, NOT HASH-BASED -- and that distinction is the whole reason
+    // this needed adding. The support-admin endpoints are plain paths
+    // (/rms/api/support/admin/departments[/configurations/<id>]) with NO hash, so the two
+    // hash tests above are both false there and `want` was null -- which takes the
+    // !want branch below and REMOVES the panel. The admin buttons would have been invisible
+    // on the only pages they work on. Caught before shipping by reading tick(), not by
+    // discovering it on the tenant.
+    const isAdmin = /\/rms\/api\/support\/admin\/departments/.test(location.pathname);
+    const want = isDex ? 'dex' : (isSearch ? 'search' : (isAdmin ? 'admin' : null));
     let p = document.getElementById('usx-panel');
     if (!want) { if (p) p.remove(); unmountLauncher(); return; }
     // Panel switched off for this tenant: show only the launcher dot. This check must come BEFORE

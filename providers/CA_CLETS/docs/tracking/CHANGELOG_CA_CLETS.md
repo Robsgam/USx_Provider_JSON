@@ -2,7 +2,7 @@
 
 Auto-generated from `CA_CLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.27** | Generated: 2026-08-24
+Current: **v2.27** | Generated: 2026-09-10
 
 ---
 

@@ -477,6 +477,61 @@ $PROV_MUTS = @{
 # ── THE MUTATION TABLE ────────────────────────────────────────────────────────────────
 # Each entry: the defect class, the gate that owns it, and the exact injection.
 $MUTS = @(
+  # ── platform deserialization shape (import reject) ─────────────────────────────────────
+  @{ Id='conditions-object-not-array'
+     Desc='A combination''s requirements.conditions is collapsed from a one-element ARRAY to a bare OBJECT, which is what ConvertTo-Json emits when a PowerShell builder returns a single object without a comma guard. THE PLATFORM REJECTS THE WHOLE FILE AT THE DOOR: "JSON parse error: Cannot deserialize value of type `java.util.ArrayList<...Combination$Condition>` from Object value (token `JsonToken.START_OBJECT`)". Catalogued 2026-09-10 because CA_eSUN v3.0 AND v3.1 both SHIPPED this and ~40 gates read green -- Rob found it by trying to import. The type-shape check already existed in validate.ps1 for the Craft.js LAYOUT subtree (templateColumns must be an ARRAY of STRINGs) and for the top-level `version` field (deserializes as java.lang.Integer), but had never been extended to the QIDM subtree, which is where combinations live. Applies to EVERY provider: any build script whose condition helper returns one object is one edit away from an un-importable JSON. First proven not on a synthetic mutant but on the retrieved real artifact -- validate.ps1 against the actual rejected eSUN v3.1 reports 78 PASS / 6 FAIL, naming all six combos.'
+     Gate='validate.ps1'; Args={ @('-Path',$workJson) }
+     # ⚠️ @($null).Count IS 1 -- the documented PowerShell trap, and it bit this mutation on the
+     # first run: the original predicate `@($cm.requirements.conditions).Count -ge 1` was TRUE for
+     # a combination with NO conditions property at all, so on TX_TLETS the mutation tried to
+     # assign a property that does not exist and reported [INVALID] "The property 'conditions'
+     # cannot be found on this object". Check PRESENCE and non-null BEFORE counting.
+     Valid={ param($j) # needs SOME combination carrying a real conditions array to collapse
+             foreach ($b in $j.bundles) { foreach ($c in $b.configurations) {
+               if ($c.type -ne 'QUERYINPUTDATAMAPPING') { continue }
+               foreach ($cm in @($c.combinations)) {
+                 if (-not $cm.requirements) { continue }
+                 if ($cm.requirements.PSObject.Properties.Name -notcontains 'conditions') { continue }
+                 if ($null -eq $cm.requirements.conditions) { continue }
+                 if (@($cm.requirements.conditions).Count -ge 1) { return $true }
+               } } }
+             return $false }
+     Mut={ param($j)
+           foreach ($b in $j.bundles) { foreach ($c in $b.configurations) {
+             if ($c.type -ne 'QUERYINPUTDATAMAPPING') { continue }
+             foreach ($cm in @($c.combinations)) {
+               if (-not $cm.requirements) { continue }
+               if ($cm.requirements.PSObject.Properties.Name -notcontains 'conditions') { continue }
+               if ($null -eq $cm.requirements.conditions) { continue }
+               $cond = @($cm.requirements.conditions)
+               if ($cond.Count -ge 1) {
+                 # collapse the array to its first element -- the single-element unwrap
+                 $cm.requirements.conditions = $cond[0]
+                 return
+               }
+             } } } } }
+
+  # ── query selectability (officer cannot send it at all) ────────────────────────────────
+  @{ Id='query-not-selectable'
+     Desc='A built query''s autoSelect is flipped to $false with no ''opt-in-query'' declaration in the provider registry. The platform then RENDERS that query''s checkbox but never ACTIVATES it, so no query is selected, Send stays DISABLED, and the officer cannot send it at all. Catalogued 2026-09-10: CA_eSUN v3.0, v3.1 AND v3.2 all shipped exactly this on DriverHistoryQuery -- 13 of 13 DH tests reported "NOT submitted (Send still DISABLED)" while all 17 non-DH tests sent, it survived a re-run, and ~40 gates read green the whole time. Rob found it by driving the sweep: "checkbox enabled but nothing in the check box so it never transmits". ⚠️ THE GATE CANNOT BE "assert $true" AND THAT WAS MEASURED, NOT ASSUMED: 8 of 124 QIDMs legitimately carry $false (all TX_TLETS_CCH CCH transactions, where opt-in IS the design) and they are MECHANICALLY IDENTICAL to the bug -- both $false with a queryLabel, and every QIDM has a queryLabel. So the gate demands a DECLARATION, and this mutation must therefore remove any declaration as well as flipping the flag. ALSO measured: autoSelect ABSENT is the platform default and IS sendable (44 of 44 absent-autoSelect queries on the 15 tenant-verified providers hold committed logs), so absent must NOT be mutated to -- the first cut of the gate FAILed on absent and produced 59 false findings on ALL-PASS providers.'
+     Gate='audit_query_selectable.ps1'; Args={ @('-Path',$workJson) }
+     Valid={ param($j) # needs at least one non-RMS QIDM currently selectable
+             foreach ($b in $j.bundles) {
+               if ($b.provider -eq 'RMS') { continue }
+               foreach ($c in $b.configurations) {
+                 if ($c.type -eq 'QUERYINPUTDATAMAPPING' -and $c.autoSelect -eq $true) { return $true }
+               } }
+             return $false }
+     Mut={ param($j)
+           foreach ($b in $j.bundles) {
+             if ($b.provider -eq 'RMS') { continue }
+             foreach ($c in $b.configurations) {
+               if ($c.type -eq 'QUERYINPUTDATAMAPPING' -and $c.autoSelect -eq $true) {
+                 $c.autoSelect = $false
+                 return
+               }
+             } } } }
+
   # ── registry currency ──────────────────────────────────────────────────────────────────
   @{ Id='nj-registry-row-stranded'; OnlyProvider='NJ_NJCJIS'
      Desc='LicensePlateTypeCode removed from RANDFULL any[] while NJ''s registry still carries the live row "RANDFULLN|RANDFULL ... LicensePlateTypeCode | demoted-to-any". That row now describes a placement that does not exist -- the exact shape of the FL_FCIC defect of 2026-08-03, where a promoted-to-any row outlived by four days the commit that closed it and got a version bump APPROVED before the emitted JSON refuted it. Catalogued because the gate built for that defect was BLIND to it on first write: v1 pooled every attribute in the QIDM, so a field defined on a SIBLING combo counted as present. It passed a clean 20-provider run while unable to fail.'

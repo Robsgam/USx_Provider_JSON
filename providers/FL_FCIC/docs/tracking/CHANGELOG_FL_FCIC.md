@@ -2,14 +2,42 @@
 
 Auto-generated from `FL_FCIC_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v7.24** | Generated: 2026-08-17
+Current: **v7.24** | Generated: 2026-09-10
 
 ---
 
-## v7.24 -- 2026-08-17 -- Pipeline rebuild
+## v7.24 -- 2026-08-17 -- RESTORE middle name + suffix on DL / DH / Boat
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:** Wired the metadata-defined middle-name and suffix components of the composite `Name`
+  field so they reach the wire: added the two form controls per name path, appended them to that  
+  query's composite Name sourceField, and added them to every name-search combination's any[].  
+  FormatStringRuleHandler separators went @(', ') -> @(', ',' ',' ') -- AP #15 requires fields-1  
+  separators, so four sourceFields need three. Name rows regrouped to carry all four parts, with  
+  mandatory qualifiers moved to their own row beneath (layout rules L8/L2). No set[] was touched  
+  and every addition is any[]-only, so NO ROUTING CHANGED.  
+**REASON:** Found by tools\audit_name_components.ps1 (new 2026-08-17) -- the authority->built gate at
+  COMPONENT granularity. This provider's own metadata declares request `Name` with FOUR components  
+  (First/Last/Middle/Suffix) on the queries built here, but middle and suffix had no form control,  
+  so the officer could not enter them at all. No existing gate could see it: every other gate  
+  enumerates the JSON and is therefore closed under what we built, and because the test plan is  
+  generated FROM the JSON, a missing control produces no test and so can never fail.  
+  CAPABILITY IS WIRE-PROVEN, not theoretical: AZ_AZDPS v3.11 and CA_CLETS v2.25 (109/109 logs)  
+  both emit <Name>DOE, JOHN A JR</Name> and degrade cleanly to "DOE, JOHN JR" when the middle name  
+  is absent -- no double space, no stray comma.  THIS IS A RESTORATION OF CONTROLS THIS REPO DELETED, and the provenance matters. v7.17 (commit  
+  56b8b7ca, 2026-08-02) removed nameMiddle, nameSuffix and nameMiddleDH here as "dead officer  
+  controls" after audit_wiring_closure correctly reported their values went nowhere. They WERE  
+  dead -- but the correct fix was to WIRE them, because FL metadata declares request Name with four  
+  components on DriverLicenseQuery, DriverHistoryQuery and BoatQuery alike. That gate answers "is  
+  it wired?"; only the metadata answers "should it exist?". The commit records the decision as  
+  Rob's ("Your call: remove, do not wire"), taken on a framing from me that omitted the metadata  
+  authority; Rob reversed it on 2026-08-17 ("the goal is to make all combinations as described by  
+  metadata and dev doc").  
+nameSuffixDH is NEW, not restored -- FL had no DH suffix control even before v7.17, so this closes  
+  a gap the removal did not open.  
+nameMiddleDH KEEPS the 'MI' label at maxLength=1. This is the one place in the portfolio where  
+  'MI' is honest under rule L7: the field genuinely takes a single initial. Do not widen it  
+  without relabelling it.  
+COST: all 5 entities re-open; 110 logs archived.  
 
 ## v7.23 -- 2026-08-12 -- ImageIndicator REMOVED from all 4 FBQ combos -- a real over-permit since v7.6
 

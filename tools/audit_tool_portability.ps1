@@ -51,6 +51,10 @@ $gates = @(
     # harness that characterises the stack: check EVERY harness when adding a gate, not just enforce.
     'audit_wiring_closure.ps1'
     'audit_prefill_shadow.ps1'
+    # Added 2026-09-10 IN THE SAME COMMIT as the gate itself, because the note above records this
+    # being forgotten twice in one day. audit_query_selectable is BLOCKING in enforce PHASE 2y and
+    # takes -Path from the outset (so it can be aimed at a mutation replica AND audited here).
+    'audit_query_selectable.ps1'
 )
 # A verdict is any line a human would read as "this tool finished and reached a conclusion".
 $verdictRx = '(?m)^\s*(?:RESULT|RESULTS|TOTALS|Total|VERDICT|SUMMARY)\s*:|VERIFICATION (?:PASSED|FAILED)|^\s*\[(?:PASS|FAIL|NOTE|INFO)\]'

@@ -1039,6 +1039,59 @@ if ($true) {
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
+#  PHASE 2y: Query selectability (audit_query_selectable.ps1) -- BLOCKING
+# ══════════════════════════════════════════════════════════════════════════════
+#  Can the officer SELECT every query we built? 2t proves a control reaches the wire; this
+#  proves the query can be activated at all. CA_eSUN v3.0/v3.1/v3.2 shipped DriverHistoryQuery
+#  with autoSelect=$false -- the checkbox renders, never activates, Send stays DISABLED, and
+#  13 of 13 DH tests could not send while every other gate read green. BLOCKING from day one
+#  because the portfolio is at 0 undeclared: the only $false values are TX_TLETS_CCH's eight
+#  CCH transactions, each now carrying an 'opt-in-query' registry row. A query nobody can send
+#  is not a judgement call.
+SectionHeader "PHASE 2y: Query Selectability"
+if ($true) {
+    $qsTool = Join-Path $toolDir 'audit_query_selectable.ps1'
+    if (-not (Test-Path $qsTool)) {
+        # FAIL, not Info: this gate ships WITH enforce, so a missing file means a broken
+        # checkout, not an optional extra. "A tool that cannot run has not PASSED" -- and a
+        # BLOCKING phase that silently skips itself is the same defect as one that cannot
+        # fail, which this phase already committed once (see the no-verdict branch below).
+        Fail "audit_query_selectable.ps1 MISSING from tools\ -- PHASE 2y cannot run, so query selectability is UNVERIFIED (not passed)"
+    } else {
+        foreach ($pdq in $providers) {
+            $provName = $pdq.Name
+            $qsOut = & powershell -NoProfile -ExecutionPolicy Bypass -File $qsTool -Provider $provName -Quiet 2>&1 | Out-String
+            $qsM = [regex]::Match($qsOut, 'QIDMs examined:\s*(\d+)\s+auto-selected or absent-default:\s*(\d+)\s+opt-in DECLARED:\s*(\d+)\s+UNDECLARED \(FAIL\):\s*(\d+)')
+            if (-not $qsM.Success) {
+                # FAIL, NOT INFO -- A GATE THAT PRODUCED NO VERDICT HAS NOT PASSED.
+                # This exact branch fired for all 20 providers on the phase's first run (the
+                # tool's -Quiet suppressed the summary line the regex needs) and enforce still
+                # reported 690 PASS / 0 FAIL / 0 WARN, because an Info does not block. A
+                # BLOCKING phase wired in and checking NOTHING, on a green board. An
+                # unparseable gate is now a failure, so the same silence can never recur.
+                Fail "$provName -- query selectability produced NO PARSEABLE VERDICT (the gate did not run, or its summary format changed): tools\audit_query_selectable.ps1 -Provider $provName"
+                continue
+            }
+            $qsExam = [int]$qsM.Groups[1].Value
+            $qsDecl = [int]$qsM.Groups[3].Value
+            $qsFail = [int]$qsM.Groups[4].Value
+            # A zero denominator is a vacuous run, not a pass (ENGINEERING_STANDARD 4.3).
+            if ($qsExam -eq 0) {
+                Fail "$provName -- query selectability examined 0 QIDMs (vacuous, not a pass)"
+            } elseif ($qsFail -gt 0) {
+                Fail "$provName -- $qsFail built query/queries the officer CANNOT SEND (autoSelect=false, no 'opt-in-query' declaration): the platform renders the checkbox but never activates it (tools\audit_query_selectable.ps1 -Provider $provName)"
+                $qsOut -split "`n" | Where-Object { $_ -match '^\s*\[FAIL\]' } | Select-Object -First 6 |
+                    ForEach-Object { Out "       $($_.Trim())" }
+            } else {
+                $note = ''
+                if ($qsDecl -gt 0) { $note = " ($qsDecl declared opt-in)" }
+                Pass "$provName -- every built query is selectable$note ($qsExam QIDM(s) examined)"
+            }
+        }
+    }
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
 #  PHASE 2u: BUILD_NOTES fidelity (audit_buildnotes_fidelity.ps1) -- BLOCKING
 # ══════════════════════════════════════════════════════════════════════════════
 #  Is the CURRENT version's BUILD_NOTES entry the stub pipeline.ps1 stamps

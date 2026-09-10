@@ -28,6 +28,54 @@ param([switch]$NoCommit, [switch]$Once)
 $downloads    = [System.IO.Path]::Combine($env:USERPROFILE, 'Downloads')
 $importScript = Join-Path $PSScriptRoot 'import_captured_tests.ps1'
 
+# ─────────────────────────────────────────────────────────────────────────────
+#  WHICH FILES ARE ACTUALLY CAPTURES -- narrowed 2026-09-10, and the divergence
+#  this fixes was between this file's OWN HEADER and its code. The header says
+#  "Watches Downloads for usx_captured_*.json"; the globs below said 'usx_*.json'
+#  and handed EVERYTHING over 4 bytes to the importer.
+#
+#  WHAT THAT COST: authwatch.js (added 2026-09-09 for RND-71625) writes
+#  usx_authwatch_RMS_<timestamp>.json into the SAME Downloads namespace. Those
+#  matched, were >4 bytes, were not '.unmatched*' and were not 'usx_picklists_*',
+#  so they went to Import-CaptureFile -- and under -Once a non-null summary hits
+#  `exit 0`. The watcher consumes itself on stale evidence and REPORTS SUCCESS
+#  while the operator's real batch sits unimported. Silent, and indistinguishable
+#  from a clean run. Found 2026-09-10 with 6 such files sitting in Downloads on
+#  the morning of a sweep. This is the recorded "watcher filter width" class
+#  recurring: a NEW TOOL claimed a filename namespace an OLD TOOL was globbing.
+#
+#  THE ALLOWLIST IS MEASURED, NOT GUESSED. Every filename ever ingested, from the
+#  470+ entries in automation/captures/:
+#     usx_captured_batch_labeled.json          397  (+49 with a stray space)
+#     usx_captured_<ULID>.json                   9
+#     usx_captured_reclassify/_rebuilt_ca/...    3
+#     *.unmatched.json sidecars                 13  (already excluded below)
+#     FL_batch1.json, nj_vehicle_relabel.json    5  <- do NOT start with 'usx_'
+#  Those last two never came through this glob; they were hand-fed to
+#  import_captured_tests -InputFile. So EVERY watcher-ingested file in the repo's
+#  history matches 'usx_captured_*', and 'usx_picklists_*' is routed separately
+#  by the startup sweep. Narrowing to those two prefixes drops nothing.
+#
+#  ⚠️ NARROWING A FILTER CAN SILENTLY DROP A FUTURE FAMILY -- the mirror of the
+#  bug being fixed. So anything matching 'usx_*.json' that is NOT a capture is
+#  ANNOUNCED, never silently skipped. If a new capture family appears, the
+#  operator sees it named on the console instead of wondering where it went.
+# ─────────────────────────────────────────────────────────────────────────────
+function Test-IsCaptureName([string]$name) {
+    return ($name -like 'usx_captured_*' -or $name -like 'usx_picklists_*')
+}
+
+function Report-IgnoredUsxFiles([string]$dir) {
+    $ignored = @(Get-ChildItem -Path $dir -Filter 'usx_*.json' -File -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -notlike '*.unmatched*' -and -not (Test-IsCaptureName $_.Name) })
+    foreach ($i in $ignored) {
+        Write-Host "[WATCH] IGNORING non-capture file (not usx_captured_* / usx_picklists_*): $($i.Name)" -ForegroundColor DarkYellow
+    }
+    if ($ignored.Count -gt 0) {
+        Write-Host "[WATCH] ^ if one of those IS a capture, the allowlist in Test-IsCaptureName needs widening -- do not rename the file." -ForegroundColor DarkYellow
+    }
+}
+
 Write-Host "[WATCH] Monitoring $downloads for usx_captured_*.json" -ForegroundColor Cyan
 Write-Host "[WATCH] Ctrl+C to stop.`n" -ForegroundColor Cyan
 
@@ -158,8 +206,9 @@ function Import-CaptureFile($path, $label) {
 # imports EVERY non-empty file, because a largest-only rule discarded 4 of 5 distinct NJ batches on
 # 2026-07-21. Fixing the order must not reintroduce a selection.
 $preExisting = @(Get-ChildItem -Path $downloads -Filter 'usx_*.json' -File -ErrorAction SilentlyContinue |
-    Where-Object { $_.Name -notlike '*.unmatched*' } |
+    Where-Object { $_.Name -notlike '*.unmatched*' -and (Test-IsCaptureName $_.Name) } |
     Sort-Object LastWriteTime)
+Report-IgnoredUsxFiles $downloads
 # NOTE: exclude relabel's own audit sidecars ('<file>.unmatched.json') -- they still start with
 # 'usx_' so they match the watch filter, and re-sweeping one re-drops it (0 new) AND spawns a
 # deeper '.unmatched.unmatched.json' each pass (self-perpetuating chain, TX v4.8 run 2026-07-27).
@@ -219,7 +268,7 @@ while ($true) {
     # (re-importing one yields 0 new + spawns a deeper .unmatched chain, TX v4.8). Oldest-first
     # so a burst of captures ingests in arrival order.
     $files = @(Get-ChildItem -Path $downloads -Filter 'usx_*.json' -File -ErrorAction SilentlyContinue |
-        Where-Object { $_.Name -notlike '*.unmatched*' } | Sort-Object LastWriteTime)
+        Where-Object { $_.Name -notlike '*.unmatched*' -and (Test-IsCaptureName $_.Name) } | Sort-Object LastWriteTime)
     if ($files.Count -eq 0) { continue }
     # Drop empty ('[]' ~2-4 bytes) captures so a stale empty file doesn't re-trip every poll.
     foreach ($e in @($files | Where-Object { $_.Length -le 4 })) {

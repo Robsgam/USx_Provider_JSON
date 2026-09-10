@@ -1032,6 +1032,51 @@ foreach ($bundle in $providerBundles) {
             # Check combination requirements reference valid fields
             $keyRefs = @()
             foreach ($combo in $cfg.combinations) {
+                # ─────────────────────────────────────────────────────────────
+                #  PLATFORM DESERIALIZATION SHAPE -- the QIDM subtree.
+                #  Added 2026-09-10. This check ALREADY EXISTED for the Craft.js
+                #  layout subtree (templateColumns must be an ARRAY of STRINGs,
+                #  isCanvas/hidden/autoSelect must not arrive as strings) and for
+                #  the top-level 'version' field (deserializes as
+                #  java.lang.Integer, so a dotted string fails import). It was
+                #  never extended to QIDM combinations -- and that is exactly
+                #  where CA_eSUN v3.0/v3.1 shipped a file the platform REJECTED
+                #  AT THE DOOR while ~40 gates read green:
+                #    {"error":"Bad Request","details":"JSON parse error: Cannot
+                #     deserialize value of type `java.util.ArrayList<...
+                #     Combination$Condition>` from Object value
+                #     (token `JsonToken.START_OBJECT`)"}
+                #  Cause: a PowerShell helper whose pipeline returned exactly ONE
+                #  object unwrapped to a scalar, so ConvertTo-Json wrote
+                #  "conditions": {...} where the platform wants [{...}]. Six
+                #  combinations; the two call sites passing two fields produced a
+                #  real array and hid the pattern.
+                #  ⚠️ SCOPE, STATED HONESTLY: this validates the emitted JSON
+                #  against OUR RECORDED EXPECTATIONS, not against the platform's
+                #  schema, which this repo does not have. It cannot know about a
+                #  field the platform types differently than we assume, or a new
+                #  field. The only true test of deserializability is an import.
+                #  This closes the CLASS that bit us; it is not a guarantee.
+                # ─────────────────────────────────────────────────────────────
+                if ($combo.requirements) {
+                    foreach ($arrProp in @('set', 'any', 'conditions')) {
+                        $v = $combo.requirements.$arrProp
+                        if ($null -eq $v) { continue }
+                        if ($v -isnot [System.Array]) {
+                            Write-Fail "QIDM '$($cfg.name)' combo '$($combo.keyReference)': requirements.$arrProp is $($v.GetType().Name), must be ARRAY -- the platform deserializes it as a java.util.ArrayList and REJECTS an object/scalar token at import (PowerShell single-element unwrap; comma-guard the builder)"
+                        }
+                    }
+                    foreach ($cond in @($combo.requirements.conditions)) {
+                        if ($null -eq $cond) { continue }
+                        if ($null -ne $cond.field -and $cond.field -isnot [System.Array]) {
+                            Write-Fail "QIDM '$($cfg.name)' combo '$($combo.keyReference)': a condition's 'field' is $($cond.field.GetType().Name), must be ARRAY of field names"
+                        }
+                    }
+                }
+                if ($null -ne $combo.keyReference -and $combo.keyReference -isnot [string]) {
+                    Write-Fail "QIDM '$($cfg.name)': keyReference is $($combo.keyReference.GetType().Name), must be a STRING"
+                }
+
                 if ($combo.keyReference) { $keyRefs += $combo.keyReference }
                 else {
                     $comboIdx = [array]::IndexOf($cfg.combinations, $combo)

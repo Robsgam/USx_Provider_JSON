@@ -2,14 +2,32 @@
 
 Auto-generated from `IL_LEADS_OFML_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.8** | Generated: 2026-08-17
+Current: **v2.8** | Generated: 2026-09-10
 
 ---
 
-## v2.8 -- 2026-08-17 -- Pipeline rebuild
+## v2.8 -- 2026-08-17 -- middle name + suffix wired on DriverLicenseQuery
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:** Wired the metadata-defined middle-name and suffix components of the composite `Name`
+  field so they reach the wire: added the two form controls per name path, appended them to that  
+  query's composite Name sourceField, and added them to every name-search combination's any[].  
+  FormatStringRuleHandler separators went @(', ') -> @(', ',' ',' ') -- AP #15 requires fields-1  
+  separators, so four sourceFields need three. Name rows regrouped to carry all four parts, with  
+  mandatory qualifiers moved to their own row beneath (layout rules L8/L2). No set[] was touched  
+  and every addition is any[]-only, so NO ROUTING CHANGED.  
+**REASON:** Found by tools\audit_name_components.ps1 (new 2026-08-17) -- the authority->built gate at
+  COMPONENT granularity. This provider's own metadata declares request `Name` with FOUR components  
+  (First/Last/Middle/Suffix) on the queries built here, but middle and suffix had no form control,  
+  so the officer could not enter them at all. No existing gate could see it: every other gate  
+  enumerates the JSON and is therefore closed under what we built, and because the test plan is  
+  generated FROM the JSON, a missing control produces no test and so can never fail.  
+  CAPABILITY IS WIRE-PROVEN, not theoretical: AZ_AZDPS v3.11 and CA_CLETS v2.25 (109/109 logs)  
+  both emit <Name>DOE, JOHN A JR</Name> and degrade cleanly to "DOE, JOHN JR" when the middle name  
+  is absent -- no double space, no stray comma.  NEW controls, not a restoration -- IL never had them. Single name path (Z2.N), so one row, one  
+  composite and one combination any[].  
+**NOTE:** this provider also owes ONE Firearm plan test. Valuing firearmMake in _combo_value_resolver
+  on 2026-08-17 grew its plan by one test, so it read PARTIAL before this bump; the v2.8 re-sweep  
+  covers both in one pass.  
 
 ## v2.7 -- 2026-08-13 -- COSMETIC: Person ROW_PER_1 widths 6/2/2/2 -> 3/3/3/3. Zero wire change.
 

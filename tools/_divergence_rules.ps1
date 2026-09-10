@@ -28,6 +28,14 @@ function Get-DivergenceRuleClass([string]$rule) {
     if ($r -eq 'promoted-to-set') { return 'to-set' }
     if ($r -in @('promoted-to-any', 'demoted-to-any', 'added-to-any')) { return 'to-any' }
     if ($r -match 'not-built|unbuilt|shadow|dead-combo|dropped-combo|missing-primary-combo') { return 'existence' }
+    # selectability -- the decision is that a QUERY is deliberately OPT-IN: autoSelect=$false, so
+    # the officer must tick its named checkbox. Added 2026-09-10 with audit_query_selectable.
+    # IT GETS ITS OWN CLASS RATHER THAN JOINING 'other' ON PURPOSE. 'other' licenses NOTHING by
+    # design, and this rule must license exactly one check; equally, a 'demoted-to-any' or
+    # 'dead-combo' row must NOT be able to silence a selectability finding. The header above says
+    # to give a new check a properly-named rule instead of widening a class, so that is what this
+    # is. Only audit_query_selectable honours it, and only for the query it names.
+    if ($r -eq 'opt-in-query') { return 'selectability' }
     return 'other'
 }
 

@@ -335,3 +335,59 @@ Standing rule that follows: **keep the build tag short and free of apostrophes.*
 belongs in comments and commit bodies, where a quote cannot terminate anything.
 `tools\audit_extension_syntax.ps1` now gates this.
 
+
+## v0.6.0 — `admin_probe.js`: READ-ONLY support-admin inventory (2026-09-10)
+
+Rob: *"i want you to look at this page and see if you can import/export or do anything else …
+Can you use both of these links and information and see if we can't get a list of active tenant
+that have a json imported … We can add any feelers and probes to the exsiting extension."*
+
+**Why it had to be an extension probe, measured not assumed.** A repo-side fetch of
+`https://demo.mark43.com/rms/api/support/admin/departments` returns **`303 See Other` →
+`/rms/login/`**. Both endpoints are session-authenticated, so only the operator's own logged-in
+browser can read them. Nothing in `tools/` can ever do this.
+
+**What it closes.** `providers/IMPORT_LEDGER.md` section B is maintained BY HAND — *"the capture
+tool can't reach them, so their versions are recorded manually in the ledger from actual import
+reports only."* An authenticated read of the admin endpoints is the first thing that could make
+that section DERIVED rather than remembered.
+
+**The panel now has a third mode: `admin`.** ⚠️ **The admin route is PATH-based, not hash-based**,
+and that is the whole reason `tick()` needed changing: those URLs
+(`/rms/api/support/admin/departments[/configurations/<id>]`) carry NO hash, so the existing
+`dex-log` / `universal-search` hash tests were both false, `want` came out `null`, and the
+`!want` branch REMOVES the panel. The buttons would have been invisible on the only pages they
+work on. Caught by reading `tick()` before shipping, not by discovering it on the tenant.
+
+Three buttons, in order, on the admin pages:
+
+| Button | Does |
+|---|---|
+| **① Read this department (`<id>`)** | GETs the configuration for the department id already in the URL — nothing guessed |
+| **② List all tenants + department ids** | GETs `/departments` |
+| **③ Scan bundles for that many tenants** | GETs `/configurations/<id>` per department, **bounded** by the `how many:` box (default 5, max 500, 250ms apart) |
+
+Each writes a JSON to Downloads (`usx_admin_departments_*`, `usx_admin_bundles_*`,
+`usx_admin_one_*`) which is then ingested repo-side for cross-checking.
+
+**READ-ONLY BY CONSTRUCTION.** `admin_probe.js` issues **GET only** — there is no POST/PUT/PATCH/
+DELETE and no upload path anywhere in it. Importing a JSON into a tenant changes someone's
+environment and must never be a side effect of an inventory probe; that stays a deliberate,
+separately-authorised action.
+
+**NOT arm-gated, and no arm block is drawn on this panel** — following the `authwatch` precedent.
+The ARM switch exists because the driver SUBMITS REAL QUERIES on hosts that may be live; this only
+reads. Requiring an arm would mean arming the query driver on a customer host to answer an
+inventory question, which is the opposite of what the switch is for.
+
+⚠️ **PASS 1 IS RECON AND ASSUMES NOTHING ABOUT SHAPE.** It is not known whether these endpoints
+return JSON or HTML, nor the key names for department id / name / bundles. So the probe records the
+**raw response** (status, content-type, byte count, login-redirect flag, and the parsed tree or the
+first 20KB of HTML), reports a **described shape**, and extracts `(deptId, name)` only
+best-effort — every guessed key is labelled `guessed:true` and the FULL record is kept, so a wrong
+key choice is correctable from the file without re-driving the browser. Guessing field names is how
+a probe reports a confident wrong answer.
+
+**These files are deliberately OUTSIDE the capture watcher's allowlist.** `watch_captures.ps1` was
+narrowed the same day to `usx_captured_*` / `usx_picklists_*`, so an `usx_admin_*` file is IGNORED
+and **announced by name** rather than silently fed to the test-log importer. Verified with a decoy.

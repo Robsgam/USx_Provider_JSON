@@ -2,7 +2,7 @@
 
 Auto-generated from `CA_CONTRA_COSTA_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.4** | Generated: 2026-08-20
+Current: **v2.4** | Generated: 2026-09-10
 
 ---
 

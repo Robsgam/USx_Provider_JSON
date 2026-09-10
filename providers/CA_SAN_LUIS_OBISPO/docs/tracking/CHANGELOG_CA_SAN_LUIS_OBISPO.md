@@ -2,7 +2,7 @@
 
 Auto-generated from `CA_SAN_LUIS_OBISPO_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.8** | Generated: 2026-09-02
+Current: **v2.8** | Generated: 2026-09-10
 
 ---
 

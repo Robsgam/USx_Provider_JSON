@@ -401,3 +401,80 @@ Portability: not a `-Path` gate, so it is outside `audit_tool_portability`'s cel
 Swept separately -- **20 providers exercised / 20 reached a verdict / 256 versions
 indexed / 0 UNRESOLVED blobs** (the 257th is `NY_NYSPIN_EJUSTICE_SKILLTEST`, which
 has no directory on disk and is NOTED rather than refused).
+
+==============================================================================
+  audit_query_selectable.ps1
+==============================================================================
+**CAN THE OFFICER ACTUALLY SEND EVERY QUERY WE BUILT?** (enforce PHASE 2y, BLOCKING)
+
+THE DIRECTION NOTHING ELSE COVERED. Every other gate asks whether the REQUEST is
+correct -- does it match the devdoc, the metadata, the logs; is the combo reachable;
+does the control reach the wire. None asked the prior question: can the query be
+SELECTED at all? A query the platform never activates is perfectly formed, completely
+unsendable, and indistinguishable from a working one in every artifact this repo
+produces.
+
+WHY IT EXISTS. Rob, driving the CA_eSUN v3.2 sweep, 2026-09-10: *"dh is getting hung
+up with checkbox enabled but nothing in the check box so it never transmits."*
+`DriverHistoryQuery` carried `autoSelect=$false`, so the platform RENDERED the query
+checkbox and never ACTIVATED it -- no query selected, Send DISABLED, nothing sent.
+**13 of 13 DH tests could not send while all 17 non-DH tests did**, and the identical
+13 failed again on a re-run, so it was not the latency the driver's own message
+suggests. eSUN's registry already described the mechanism from an earlier sweep
+("the tenant never activates a query checkbox and Send stays DISABLED ... there is
+simply no query to run"). It shipped in **v3.0, v3.1 AND v3.2** with ~40 gates green;
+`autoSelect` had been `$true` at v2.4/v2.5/v2.6.
+
+⚠️ **THE NAIVE GATE IS WRONG, AND THAT WAS MEASURED BEFORE THE GATE WAS WRITTEN.**
+"assert `autoSelect -eq $true`" is a false accusation on the one provider where
+`$false` is correct. Census of all **124 QIDMs across 20 providers: exactly 8 carry
+`$false`, and ALL EIGHT are TX_TLETS_CCH's CCH transactions** (AQ AR FQ IQ QH QR QWI
+ZR), where opt-in IS the design -- a criminal-history query must be a conscious
+officer action, not something fired by typing a name into the Person card.
+
+**AND THEY ARE MECHANICALLY INDISTINGUISHABLE FROM THE BUG.** Both are `$false` with
+a `queryLabel`, and EVERY QIDM has a `queryLabel` (it is mandatory), so the label
+cannot discriminate. Nothing in the JSON separates "opt-in by design" from "silently
+unsendable". **So the gate demands a DECLARATION, not a shape:**
+
+    <Query> | * | autoSelect | opt-in-query | <reason a stranger can evaluate>
+
+classified `selectability` in `_divergence_rules.ps1` -- its own class on purpose, so a
+`demoted-to-any` or `dead-combo` row can never silence a finding here, and this rule
+can never silence anything else. That module's own header says to give a new check a
+properly-named rule rather than widen an existing class.
+
+**THAT IS ALSO WHAT PROVES IT WOULD HAVE WORKED:** eSUN's `$false` had no reason
+recorded anywhere -- not the build script, not BUILD_NOTES, not the registry -- so the
+gate FAILs on it, while TX_TLETS_CCH's eight are a real decision and get written down
+where a stranger can read them, which they should have been all along.
+
+⚠️ **ABSENT IS NOT FALSE, AND THE FIRST CUT OF THIS GATE GOT IT WRONG.** Failing on
+anything that was not `$true` produced **67 findings across 13 providers, most of them
+tenant-verified ALL-PASS** -- the shape that means the probe is broken, not the
+portfolio (`usx-tooling` 8a). Discriminated with COMMITTED LOGS rather than by
+reasoning about platform defaults: a query whose `autoSelect` is absent could not hold
+logs for its entity if absence made it unselectable. **Measured: 44 of 44
+absent-autoSelect queries on the 15 tenant-verified providers hold logs** -- AZ,
+CA_CLETS, CA_CLETS_OCATS, FL, HI, IL, MD, NJ, NM, NY, OH, OR, TN, TX. Absent behaves
+as the platform default and IS sendable. Only an EXPLICIT `$false` suppresses
+activation. **Do NOT re-tighten this to "not $true" -- it was tried and it was wrong.**
+
+**LAW 2, proven against HISTORY rather than a synthetic mutant.** Pointed at the
+retrieved real pre-fix `CA_eSUN v3.1` (via `get_provider_version.ps1`, replica placed
+INSIDE the provider dir per `usx-tooling` 8a) it FAILs naming `DriverHistoryQuery`;
+it passes on the fixed portfolio; and the catalogued mutation `query-not-selectable`
+is KILLED on every provider tried.
+
+**IT EMITS A PER-PROVIDER `[PASS]` LINE DELIBERATELY.** `audit_gate_efficacy` decides
+whether a gate's BASELINE run was vacuous by counting PASS lines, so a gate printing
+only `[NOTE]`/`[FAIL]` is scored `[INVALID] baseline run was VACUOUS -- the gate never
+looked` and its mutation can never be killed. That happened on this gate's first
+catalogued run. It also satisfies ENGINEERING_STANDARD 4.3 directly.
+
+A zero denominator FAILs rather than passing: `0 QIDMs examined` is a vacuous run.
+RMS QIDMs are excluded -- they are platform-fed, not officer-selected checkboxes.
+
+Baseline 2026-09-10: **124 QIDMs examined / 116 auto-or-absent / 8 declared opt-in /
+0 FAIL**, and registered in `audit_tool_portability`'s gate list in the SAME commit,
+because that harness had been forgotten twice in one day when new gates were added.
