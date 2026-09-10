@@ -1,269 +1,269 @@
 // ===========================================================================
 //  admin_probe.js -- READ-ONLY reconnaissance of the RMS support-admin
-//  department / configuration endpoints.
+//  department / configuration pages.
 //
-//  WHY THIS EXISTS (Rob, 2026-09-10): "i want you to look at this page and see
-//  if you can import/export or do anything else ... Can you use both of these
-//  links and information and see if we can't get a list of active tenant that
-//  have a json imported".
+//  WHY THIS EXISTS (Rob, 2026-09-10): "see if we can't get a list of active
+//  tenant that have a json imported ... if possible download and ingest the
+//  json for reference and cross checking."
 //
-//  I CANNOT REACH THOSE URLS AND THAT WAS MEASURED, NOT ASSUMED.
-//  GET https://demo.mark43.com/rms/api/support/admin/departments returns
-//  303 See Other -> /rms/login/. They are session-authenticated, so only the
-//  operator's own browser can read them. That is what forces this to be an
-//  extension probe rather than a repo-side tool.
+//  WHY IT RUNS IN THE BROWSER AND NOT IN tools/ -- MEASURED, NOT ASSUMED.
+//  A repo-side GET of /rms/api/support/admin/departments returns
+//  303 See Other -> /rms/login/. Session-authenticated; only the operator's
+//  logged-in browser can read it.
 //
-//  WHAT IT CLOSES. providers/IMPORT_LEDGER.md section B is MAINTAINED BY HAND:
-//  "the capture tool can't reach them, so their versions are recorded manually
-//  in the ledger from actual import reports only." An authenticated read of the
-//  admin endpoints is the first thing that could make that section DERIVED
-//  instead of remembered.
+//  ⚠️ v2 (2026-09-10, SAME DAY): THESE ARE HTML PAGES, NOT JSON APIS, AND v1
+//  THREW THE DATA AWAY. The path looks like an API (`/rms/api/support/...`) and
+//  I built v1 around a JSON envelope. The first real run settled it:
+//      status 200 · content-type: text/html · bytes 3,410,555
+//  v1 kept only the first 20KB "so the real structure can be read" -- which was
+//  20,022 of 3,410,555 chars (99.4% discarded) and contained ZERO <table>, <tr>
+//  or `configurations/<id>` matches, because 3.4MB of Semantic-UI CSS/JS sits
+//  above the content. The department table was never in the sample. The
+//  downstream sweep then reported `requested: 0` and did nothing -- correctly
+//  honest, but useless. The lesson is the repo's own: a recon pass must extract
+//  BEFORE it truncates, or the truncation decides the finding.
 //
-//  ⚠️ THIS FIRST PASS IS RECON AND DELIBERATELY ASSUMES NOTHING ABOUT SHAPE.
-//  I do not know whether these endpoints return JSON or HTML, nor the key names
-//  for department id / name / bundles. Guessing field names is how a probe
-//  reports a confident wrong answer, so pass 1 RECORDS the raw response and
-//  reports what it found; the enumerator gets hardened against a real sample.
-//  Every extractor here is best-effort and labels itself as such.
+//  SO v2 PARSES THE DOM. DOMParser is available in the page context, and these
+//  are server-rendered tables, so extraction is exact rather than regex-guessed.
+//  It also reads the LIVE `document` for the page the operator is already on --
+//  no refetch, and guaranteed to be what is actually rendered.
 //
-//  READ-ONLY BY CONSTRUCTION: this file issues GET only. There is no POST, PUT,
-//  PATCH or DELETE anywhere in it, and no import/upload path. Importing a JSON
-//  into a tenant is an outward-facing change to someone's environment and is
-//  NOT something a probe should be able to do as a side effect.
+//  READ-ONLY BY CONSTRUCTION: GET only. No POST/PUT/PATCH/DELETE, no upload,
+//  no import path. Importing a JSON into a tenant changes someone's environment
+//  and must never be a side effect of an inventory probe.
 //
-//  NOT ARM-GATED, following the authwatch precedent in ui.js: the ARM switch
-//  exists because the driver SUBMITS REAL QUERIES on tenants that may be live.
-//  This only reads. Requiring an arm would mean arming the query driver on a
-//  customer site to answer an inventory question, which is the opposite of what
-//  the switch is for. The captions say read-only so the difference is visible.
+//  NOT ARM-GATED, following the authwatch precedent: the ARM switch exists
+//  because the driver SUBMITS REAL QUERIES on hosts that may be live. This only
+//  reads.
 // ===========================================================================
 (() => {
   if (window.__usxAdminProbe) return;
 
   const ADMIN_BASE = '/rms/api/support/admin/departments';
+  const MAX_ROWS_PER_TABLE = 2000;   // generous; these are inventory tables
+  const MAX_TABLES = 40;
+  const SAMPLE_CHARS = 4000;         // diagnostic sample ONLY -- never the data path
 
   const nowStamp = () => new Date().toISOString().replace(/[:.]/g, '-');
 
   function dl(filename, obj) {
-    // Reuse the lib's proven download bridge rather than re-implementing it (a
-    // second copy is how one of them silently rots). Fail loudly if absent.
     if (!window.__usxLib || !window.__usxLib.triggerDownload) {
       throw new Error('usx_lib not loaded -- reload the extension before running a probe');
     }
     return window.__usxLib.triggerDownload(filename, obj);
   }
 
-  // ---- fetch that reports WHAT it got, never just the parsed guess ---------
-  async function getRaw(url) {
+  // ---- table extraction: the actual data path ----------------------------
+  const txt = (el) => (el && el.textContent ? el.textContent.replace(/\s+/g, ' ').trim() : '');
+
+  // Nearest preceding heading, so a table can be identified without guessing
+  // which one is "the" table.
+  function nearestHeading(tableEl) {
+    let n = tableEl;
+    for (let hops = 0; hops < 6 && n; hops++) {
+      let s = n.previousElementSibling;
+      while (s) {
+        if (/^H[1-6]$/.test(s.tagName)) return txt(s);
+        s = s.previousElementSibling;
+      }
+      n = n.parentElement;
+    }
+    const cap = tableEl.querySelector('caption');
+    return cap ? txt(cap) : '';
+  }
+
+  function extractTables(root) {
+    const out = [];
+    const tables = Array.from(root.querySelectorAll('table')).slice(0, MAX_TABLES);
+    tables.forEach((t, ti) => {
+      const headers = Array.from(t.querySelectorAll('thead th, thead td')).map(txt);
+      let bodyRows = Array.from(t.querySelectorAll('tbody tr'));
+      if (!bodyRows.length) {
+        // Tables without <tbody>: take all <tr>, dropping a header-only first row.
+        bodyRows = Array.from(t.querySelectorAll('tr')).filter(r => !r.querySelector('th') || r.querySelector('td'));
+      }
+      const rows = bodyRows.slice(0, MAX_ROWS_PER_TABLE).map(r => {
+        const cells = Array.from(r.querySelectorAll('th,td')).map(txt);
+        // Links carry the department id, so keep hrefs alongside the text.
+        const links = Array.from(r.querySelectorAll('a[href]')).map(a => a.getAttribute('href'));
+        return { cells: cells, links: links };
+      });
+      out.push({
+        index: ti,
+        heading: nearestHeading(t),
+        headers: headers,
+        rowCount: bodyRows.length,
+        rowsKept: rows.length,
+        truncated: bodyRows.length > rows.length,
+        rows: rows
+      });
+    });
+    return out;
+  }
+
+  // Department ids from any /configurations/<id> href anywhere in the document.
+  // Independent of table shape, so it still works if the markup changes.
+  function extractDeptIds(root) {
+    const ids = [];
+    const seen = {};
+    Array.from(root.querySelectorAll('a[href]')).forEach(a => {
+      const m = (a.getAttribute('href') || '').match(/configurations\/(\d+)/);
+      if (m && !seen[m[1]]) {
+        seen[m[1]] = true;
+        // The row this link sits in usually carries the tenant name.
+        const tr = a.closest('tr');
+        ids.push({ deptId: m[1], linkText: txt(a), rowText: tr ? txt(tr) : '' });
+      }
+    });
+    return ids;
+  }
+
+  // ---- fetch: report the response, extract WITHOUT truncating first -------
+  async function getParsed(url) {
     const res = await fetch(url, {
       method: 'GET',
       credentials: 'same-origin',
-      headers: { 'Accept': 'application/json, text/html;q=0.9, */*;q=0.8' },
+      headers: { 'Accept': 'text/html,application/json;q=0.9,*/*;q=0.8' },
       redirect: 'follow'
     });
     const ct = res.headers.get('content-type') || '';
-    const text = await res.text();
-    let json = null, parseError = null;
-    if (text && (ct.includes('json') || text.trim().startsWith('{') || text.trim().startsWith('['))) {
-      try { json = JSON.parse(text); } catch (e) { parseError = String(e && e.message || e); }
-    }
-    return {
-      url: url,
-      status: res.status,
-      ok: res.ok,
-      redirected: res.redirected,
-      finalUrl: res.url,
-      contentType: ct,
-      bytes: text ? text.length : 0,
-      // A login redirect is the single most likely failure and must be OBVIOUS,
-      // not inferred from an empty result later.
-      looksLikeLogin: /\/login\/?$/.test(res.url || '') || /name=["']?password/i.test(text || ''),
-      json: json,
-      parseError: parseError,
-      text: json ? null : (text || '').slice(0, 20000)   // keep HTML only when it did not parse
+    const body = await res.text();
+    const meta = {
+      url: url, status: res.status, ok: res.ok, finalUrl: res.url,
+      contentType: ct, bytes: body ? body.length : 0,
+      looksLikeLogin: /\/login\/?$/.test(res.url || '') || /name=["']?password/i.test(body || '')
     };
-  }
-
-  // ---- shape reporting: describe, do not interpret -------------------------
-  function describe(node, depth) {
-    depth = depth || 0;
-    if (node === null) return 'null';
-    if (Array.isArray(node)) {
-      return depth > 3 ? 'array[' + node.length + ']'
-        : 'array[' + node.length + ']' + (node.length ? ' of ' + describe(node[0], depth + 1) : '');
+    let json = null, tables = null, deptIds = null;
+    if (ct.includes('json') || /^\s*[\[{]/.test(body || '')) {
+      try { json = JSON.parse(body); } catch (e) { meta.jsonParseError = String(e && e.message || e); }
     }
-    const t = typeof node;
-    if (t !== 'object') return t;
-    const keys = Object.keys(node);
-    if (depth > 3) return 'object{' + keys.length + ' keys}';
-    const out = {};
-    keys.slice(0, 40).forEach(k => { out[k] = describe(node[k], depth + 1); });
-    return out;
-  }
-
-  // Find the array of records inside an unknown JSON envelope. Returns the
-  // LONGEST array of objects found, plus the path -- and reports both so a
-  // wrong pick is visible instead of silent.
-  function findRecordArray(root) {
-    let best = null;
-    (function walk(n, path) {
-      if (!n || typeof n !== 'object') return;
-      if (Array.isArray(n)) {
-        if (n.length && typeof n[0] === 'object' && n[0] !== null) {
-          if (!best || n.length > best.rows.length) best = { path: path || '$', rows: n };
-        }
-        n.slice(0, 3).forEach((c, i) => walk(c, path + '[' + i + ']'));
-        return;
-      }
-      Object.keys(n).forEach(k => walk(n[k], path ? path + '.' + k : k));
-    })(root, '');
-    return best;
-  }
-
-  // Best-effort (deptId, name) extraction. EVERY guess is labelled, and the
-  // whole record is kept so a wrong key choice can be corrected from the file
-  // without re-driving the browser.
-  const ID_KEYS   = ['departmentId', 'deptId', 'id', 'departmentID', 'configurationId'];
-  const NAME_KEYS = ['departmentName', 'name', 'displayName', 'deptName', 'agencyName', 'title'];
-
-  function pick(rec, keys) {
-    for (const k of keys) {
-      if (rec && Object.prototype.hasOwnProperty.call(rec, k) && rec[k] !== null && rec[k] !== '') {
-        return { key: k, value: rec[k] };
-      }
+    if (!json && body) {
+      const doc = new DOMParser().parseFromString(body, 'text/html');
+      tables = extractTables(doc);
+      deptIds = extractDeptIds(doc);
     }
-    // fall back to any key whose NAME looks right, so a novel schema still yields something
-    if (rec) {
-      for (const k of Object.keys(rec)) {
-        if (/departmentid|deptid|^id$/i.test(k) && keys === ID_KEYS) return { key: k, value: rec[k], guessed: true };
-        if (/name|agency|title/i.test(k) && keys === NAME_KEYS && typeof rec[k] === 'string') return { key: k, value: rec[k], guessed: true };
-      }
-    }
-    return null;
+    // Sample is for DIAGNOSIS ONLY. Never the data path -- that was the v1 bug.
+    meta.sample = (body || '').slice(0, SAMPLE_CHARS);
+    return { meta: meta, json: json, tables: tables, deptIds: deptIds };
   }
 
-  // ---- STEP 1: the department list ----------------------------------------
-  async function listDepartments() {
-    const raw = await getRaw(ADMIN_BASE);
+  // ---- STEP 1: department list -------------------------------------------
+  async function listDepartments(opts) {
+    opts = opts || {};
+    let r, source;
+    // If the operator is ALREADY on the departments page, read the live DOM --
+    // exact, and avoids re-downloading 3.4MB.
+    if (!opts.forceFetch && /\/rms\/api\/support\/admin\/departments\/?$/.test(location.pathname)) {
+      r = {
+        meta: { url: location.href, status: 200, ok: true, finalUrl: location.href,
+                contentType: 'text/html (LIVE DOM)', bytes: document.documentElement.outerHTML.length,
+                looksLikeLogin: false, sample: '(live DOM -- no sample needed)' },
+        json: null, tables: extractTables(document), deptIds: extractDeptIds(document)
+      };
+      source = 'live-dom';
+    } else {
+      r = await getParsed(ADMIN_BASE);
+      source = 'fetch';
+    }
     const out = {
-      probe: 'admin-departments',
-      capturedAt: new Date().toISOString(),
-      host: location.hostname,
-      raw: raw,
-      shape: raw.json ? describe(raw.json) : null,
-      derived: null,
+      probe: 'admin-departments', version: 2, source: source,
+      capturedAt: new Date().toISOString(), host: location.hostname,
+      meta: r.meta,
+      tableSummary: (r.tables || []).map(t => ({ index: t.index, heading: t.heading, headers: t.headers, rowCount: t.rowCount, truncated: t.truncated })),
+      tables: r.tables, json: r.json,
+      deptIds: r.deptIds, deptIdCount: (r.deptIds || []).length,
       notes: []
     };
-    if (raw.looksLikeLogin) {
-      out.notes.push('LOGIN REDIRECT -- the session is not authenticated for this host. Log in to the RMS UI in this tab first, then retry.');
-      return out;
-    }
-    if (!raw.ok) { out.notes.push('HTTP ' + raw.status + ' -- endpoint did not return a result.'); return out; }
-
-    if (raw.json) {
-      const found = findRecordArray(raw.json);
-      if (found) {
-        out.derived = {
-          recordPath: found.path,
-          count: found.rows.length,
-          idKeysSeen: {}, nameKeysSeen: {},
-          rows: found.rows.map(r => {
-            const id = pick(r, ID_KEYS), nm = pick(r, NAME_KEYS);
-            if (id) out.derived.idKeysSeen[id.key] = (out.derived.idKeysSeen[id.key] || 0) + 1;
-            if (nm) out.derived.nameKeysSeen[nm.key] = (out.derived.nameKeysSeen[nm.key] || 0) + 1;
-            return {
-              deptId: id ? id.value : null,
-              deptIdKey: id ? id.key : null,
-              name: nm ? nm.value : null,
-              nameKey: nm ? nm.key : null,
-              guessed: !!((id && id.guessed) || (nm && nm.guessed)),
-              record: r      // FULL record kept -- the point of a recon pass
-            };
-          })
-        };
-        out.notes.push('Extraction is BEST-EFFORT. Cross-check derived.rows against derived.recordPath + the full records before trusting any count.');
-      } else {
-        out.notes.push('JSON parsed but no array of objects found -- see shape and fix the extractor.');
-      }
+    if (r.meta.looksLikeLogin) out.notes.push('LOGIN REDIRECT -- not authenticated for this host.');
+    if (!r.meta.ok) out.notes.push('HTTP ' + r.meta.status);
+    if (out.deptIdCount === 0) {
+      out.notes.push('ZERO department ids found. That is a FINDING about this probe or the markup, NOT proof there are no tenants -- check tableSummary and sample.');
     } else {
-      out.notes.push('Response is NOT JSON (contentType=' + raw.contentType + '). First 20KB kept in raw.text so the real structure can be read.');
+      out.notes.push(out.deptIdCount + ' department id(s) extracted from /configurations/<id> links.');
     }
     return out;
   }
 
-  // ---- STEP 2: per-department configuration / bundles ---------------------
-  // Bounded on purpose. A demo host may carry hundreds of departments and a
-  // per-department fetch loop is the one part of this that could look like
-  // hammering, so the caller MUST pass a limit and the default is small.
+  // ---- STEP 2: per-department configuration / bundles --------------------
   async function scanConfigurations(deptIds, opts) {
     opts = opts || {};
-    const limit = Math.max(1, Math.min(parseInt(opts.limit, 10) || 5, 500));
-    const delayMs = Math.max(0, parseInt(opts.delayMs, 10) || 250);
+    const limit = Math.max(1, Math.min(parseInt(opts.limit, 10) || 5, 1000));
+    const delayMs = Math.max(0, parseInt(opts.delayMs, 10) || 200);
     const ids = (deptIds || []).slice(0, limit);
     const out = {
-      probe: 'admin-configurations',
-      capturedAt: new Date().toISOString(),
-      host: location.hostname,
-      requested: ids.length,
-      limitApplied: limit,
-      results: [],
-      notes: ['READ-ONLY: GET only, no import performed.']
+      probe: 'admin-configurations', version: 2,
+      capturedAt: new Date().toISOString(), host: location.hostname,
+      requested: ids.length, limitApplied: limit,
+      results: [], notes: ['READ-ONLY: GET only, no import performed.']
     };
-    for (const id of ids) {
-      const raw = await getRaw(ADMIN_BASE + '/configurations/' + encodeURIComponent(id));
-      const rec = { deptId: id, raw: raw, shape: raw.json ? describe(raw.json) : null, bundleGuess: null };
-      if (raw.json) {
-        const found = findRecordArray(raw.json);
-        // Look for anything that smells like a bundle list WITHOUT asserting the key.
-        const bundleKeys = [];
-        (function walk(n, path) {
-          if (!n || typeof n !== 'object') return;
-          if (Array.isArray(n)) { n.slice(0, 3).forEach((c, i) => walk(c, path + '[' + i + ']')); return; }
-          Object.keys(n).forEach(k => {
-            if (/bundle|configuration|provider/i.test(k)) {
-              bundleKeys.push({ path: path ? path + '.' + k : k, type: describe(n[k], 3) });
-            }
-            walk(n[k], path ? path + '.' + k : k);
-          });
-        })(raw.json, '');
-        rec.bundleGuess = { recordPath: found ? found.path : null, recordCount: found ? found.rows.length : 0, keysMatchingBundle: bundleKeys.slice(0, 40) };
-      }
-      out.results.push(rec);
-      if (delayMs) { await new Promise(r => setTimeout(r, delayMs)); }
+    for (const item of ids) {
+      const id = (item && item.deptId) ? item.deptId : item;
+      const r = await getParsed(ADMIN_BASE + '/configurations/' + encodeURIComponent(id));
+      // Keep the tables (that is where bundles live) but drop nothing silently.
+      out.results.push({
+        deptId: id,
+        tenantHint: (item && (item.rowText || item.linkText)) || null,
+        meta: r.meta,
+        tableSummary: (r.tables || []).map(t => ({ index: t.index, heading: t.heading, headers: t.headers, rowCount: t.rowCount })),
+        tables: r.tables,
+        json: r.json
+      });
+      if (delayMs) await new Promise(res => setTimeout(res, delayMs));
     }
+    const empties = out.results.filter(x => !x.tables || !x.tables.length).length;
+    out.notes.push(out.results.length + ' department(s) read; ' + empties + ' returned no table at all.');
     return out;
   }
 
-  // ---- entry points used by the panel buttons -----------------------------
+  // ---- entry points ------------------------------------------------------
   async function runList() {
     const o = await listDepartments();
     dl('usx_admin_departments_' + location.hostname + '_' + nowStamp() + '.json', o);
     return o;
   }
 
+  // ONE CLICK = LIST + SWEEP. The operator should not be navigating per tenant;
+  // the loop is the probe's job.
   async function runScan(opts) {
     opts = opts || {};
-    let ids = opts.deptIds;
-    let listing = null;
-    if (!ids || !ids.length) {
-      listing = await listDepartments();
-      ids = (listing.derived && listing.derived.rows ? listing.derived.rows : [])
-              .map(r => r.deptId).filter(v => v !== null && v !== undefined && v !== '');
-    }
+    const listing = await listDepartments();
+    const ids = listing.deptIds || [];
     const o = await scanConfigurations(ids, opts);
-    o.listing = listing ? { count: listing.derived ? listing.derived.count : 0, notes: listing.notes } : null;
+    o.listing = {
+      deptIdCount: listing.deptIdCount,
+      tableSummary: listing.tableSummary,
+      notes: listing.notes
+    };
     dl('usx_admin_bundles_' + location.hostname + '_' + nowStamp() + '.json', o);
     return o;
   }
 
-  // Single department -- for the exact URL Rob supplied, so the shape of ONE
-  // known-good page can be read before any sweep is attempted.
   async function runOne(deptId) {
-    const o = await scanConfigurations([deptId], { limit: 1, delayMs: 0 });
+    const onThisPage = new RegExp('configurations/' + deptId + '$').test(location.pathname);
+    let o;
+    if (onThisPage) {
+      // Read the rendered page directly.
+      o = {
+        probe: 'admin-configurations', version: 2, source: 'live-dom',
+        capturedAt: new Date().toISOString(), host: location.hostname,
+        requested: 1, limitApplied: 1,
+        results: [{
+          deptId: deptId, tenantHint: document.title || null,
+          meta: { url: location.href, status: 200, ok: true, contentType: 'text/html (LIVE DOM)',
+                  bytes: document.documentElement.outerHTML.length, looksLikeLogin: false,
+                  sample: '(live DOM -- no sample needed)' },
+          tables: extractTables(document), json: null
+        }],
+        notes: ['READ-ONLY. Read from the LIVE DOM of the page you are on.']
+      };
+      o.results[0].tableSummary = o.results[0].tables.map(t => ({ index: t.index, heading: t.heading, headers: t.headers, rowCount: t.rowCount }));
+    } else {
+      o = await scanConfigurations([deptId], { limit: 1, delayMs: 0 });
+    }
     dl('usx_admin_one_' + deptId + '_' + nowStamp() + '.json', o);
     return o;
   }
 
-  window.__usxAdminProbe = { runList, runScan, runOne, listDepartments, scanConfigurations, ADMIN_BASE };
-  console.log('[USx-ADMIN] admin_probe loaded. READ-ONLY (GET only, no import). BUILD 2026-09-10a. Use the "admin inventory" section of the USx panel.');
+  window.__usxAdminProbe = { runList, runScan, runOne, listDepartments, scanConfigurations, extractTables, extractDeptIds, ADMIN_BASE };
+  console.log('[USx-ADMIN] admin_probe v2 loaded -- HTML/DOM table extraction (v1 truncated at 20KB and lost the table). READ-ONLY, GET only. BUILD 2026-09-10b.');
 })();

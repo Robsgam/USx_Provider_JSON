@@ -188,10 +188,10 @@
           try {
             const o = await window.__usxAdminProbe.runOne(idFromUrl);
             const r = (o.results && o.results[0]) || {};
-            const st = r.raw ? r.raw.status : '?';
-            aStatus.style.color = r.raw && r.raw.ok ? '#7c7' : '#f77';
-            aStatus.textContent = '✔ HTTP ' + st + ' · ' + ((r.raw && r.raw.bytes) || 0) + ' bytes · saved to Downloads'
-              + (r.raw && r.raw.looksLikeLogin ? ' — LOGIN REDIRECT, not authenticated' : '');
+            const st = r.meta ? r.meta.status : '?';
+            aStatus.style.color = r.meta && r.meta.ok ? '#7c7' : '#f77';
+            aStatus.textContent = '✔ HTTP ' + st + ' · ' + ((r.meta && r.meta.bytes) || 0) + ' bytes · ' + ((r.tables && r.tables.length) || 0) + ' table(s) · saved to Downloads'
+              + (r.meta && r.meta.looksLikeLogin ? ' — LOGIN REDIRECT, not authenticated' : '');
           } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
           finally { one.disabled = false; }
         };
@@ -204,11 +204,11 @@
         lst.disabled = true; aStatus.style.color = '#fa0'; aStatus.textContent = 'reading department list…';
         try {
           const o = await window.__usxAdminProbe.runList();
-          const n = o.derived ? o.derived.count : 0;
-          aStatus.style.color = o.raw.ok && !o.raw.looksLikeLogin ? '#7c7' : '#f77';
-          aStatus.textContent = o.raw.looksLikeLogin
+          const n = o.deptIdCount || 0;
+          aStatus.style.color = (o.meta.ok && !o.meta.looksLikeLogin && n > 0) ? '#7c7' : '#f77';
+          aStatus.textContent = o.meta.looksLikeLogin
             ? '✖ LOGIN REDIRECT — log into the RMS UI in this tab first.'
-            : '✔ HTTP ' + o.raw.status + ' · ' + n + ' record(s) found · saved to Downloads';
+            : '✔ HTTP ' + o.meta.status + ' · ' + n + ' tenant(s) found · saved to Downloads';
         } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
         finally { lst.disabled = false; }
       };
@@ -230,7 +230,7 @@
         scan.disabled = true; aStatus.style.color = '#fa0'; aStatus.textContent = 'scanning ' + lim + ' department(s)…';
         try {
           const o = await window.__usxAdminProbe.runScan({ limit: lim });
-          const withCfg = (o.results || []).filter(r => r.raw && r.raw.ok).length;
+          const withCfg = (o.results || []).filter(r => r.meta && r.meta.ok).length;
           aStatus.style.color = '#7c7';
           aStatus.textContent = '✔ ' + withCfg + '/' + (o.results || []).length + ' returned a config · saved to Downloads';
         } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
