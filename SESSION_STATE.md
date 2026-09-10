@@ -17,7 +17,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | AZ_AZDPS | v3.12 | ALL-PASS (53 logs) |
 | CA_CLETS | v2.27 | ALL-PASS (99 logs) |
 | CA_CLETS_OCATS | v2.12 | ALL-PASS (62 logs) |
-| CA_eSUN | v3.3 | NEVER-TESTED -- 74 test(s) owed |
+| CA_eSUN | v3.3 | ALL-PASS (74 logs) |
 | FL_FCIC | v7.24 | ALL-PASS (104 logs) |
 | HI_HCJDC_OFML | v4.20 | ALL-PASS (48 logs) |
 | IL_LEADS_OFML | v2.8 | ALL-PASS (43 logs) |
@@ -36,20 +36,22 @@ No PASS count is recorded here on purpose: it moves every time a gate is added, 
 absolute number is guaranteed to go stale and teach the next session to distrust this file.
 <!-- END GENERATED -->
 
-**MISSION: 13 of 20 LIFECYCLE-COMPLETE** (`report_mission_status.ps1`, 2026-09-08; was 9). The other
-6: **5 owe a tenant test** (CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA, LA_LEMS) and
-**CA_CLETS_OCATS ONE Jira comment** (DEX-980 `Blocked`, release line drafted). TX_TLETS_CCH is
-PARKED so it can never complete -- whether 19-of-20 moves to the eligible denominator is Rob's call.
-**CA_eSUN DEX-1313** -- comment 811409 covers the RADIOBUTTON line ONLY; v3.x owes a release line,
-and eSUN is the first provider with a SUBTASK (DEX-1312 parent / DEX-1313 sub) so NAME the ticket.
+**MISSION: 13 of 20 LIFECYCLE-COMPLETE** (`report_mission_status.ps1`, 2026-09-10). CA_eSUN swept
+today and the count did NOT move -- it gained stage T and is now blocked on Jira alone, so the
+blocked-by-stage split shifted **test 5 -> 4, jira 1 -> 2**. Owed: **test 4** (CA_CONTRA_COSTA,
+CA_SAN_LUIS_OBISPO, CA_VENTURA, LA_LEMS) · **jira 2** (CA_CLETS_OCATS DEX-980, CA_eSUN DEX-1312).
+TX_TLETS_CCH is PARKED so it can never complete -- whether 19-of-20 becomes the denominator is
+Rob's call. **CA_eSUN DEX-1312/1313:** comment 811409 covers the v2.2 RADIOBUTTON line ONLY; v3.3
+owes a release line, and eSUN is the first provider with a SUBTASK (1312 parent / 1313 sub) so NAME
+the ticket. **Two Jira comments are the whole distance from 13 to 15.**
 
 **TEST-AND-READY, NOT FOR RELEASE (Rob 2026-09-09).** Never-tested providers will NOT be released
-but ARE owed a sweep -- **includes CA_CLETS_OCATS**; not an import queue. CA_CONTRA_COSTA is the ONE
-exception: BLOCKED on Rob's JAWS call. ⚠️ **THE OTHER FOUR ARE ALREADY SWEEP-READY, MEASURED
-2026-09-09 -- NOTHING WAS OWED:** pre-flight CLEAR on all four (254 tests / 1024 fills / 0
-unfireable), plans byte-identical. PENDING_UPDATES live-blocking lines = 0 on all 6 -- every
-`[FLAG:]` there is `#`-COMMENTED. Only residual: CA_VENTURA's hollow toggle, blocked on picklist
-capture -> import. **SDSO LIVE runs eSUN v1.0 vs repo v3.3** -- a LIVE bump is Rob's call.
+but ARE owed a sweep -- not an import queue. CA_CONTRA_COSTA is the ONE exception: BLOCKED on Rob's
+JAWS call. **CA_eSUN IS DONE (74 logs, 2026-09-10).** The remaining three -- CA_SAN_LUIS_OBISPO,
+CA_VENTURA_COUNTY, LA_LEMS -- were measured sweep-ready 2026-09-09 (pre-flight CLEAR, plans
+byte-identical) and nothing is owed on them. PENDING_UPDATES live-blocking lines = 0 on all -- every
+`[FLAG:]` there is `#`-COMMENTED. Residual: CA_VENTURA's hollow toggle, blocked on picklist capture.
+**SDSO LIVE runs eSUN v1.0 vs repo v3.3** -- a LIVE bump is Rob's call.
 
 **OFFICER GUIDES 20/20 CURRENT** (473 rows); checker `_probes/audit_guide_completeness.ps1`. **Handover guide for a new owner: `USX_PROJECT_GUIDE.pdf`** (repo root). **`audit_extension_syntax.ps1`** (in `doctor`) parses the browser scripts -- nothing did until a 1-char break killed driver+capture for 5 days. **ANY PRIOR JSON IS ONE COMMAND: `get_provider_version.ps1 -Provider <P> -Version <X.Y> [-IncludeLegacy]`** -- 671 artifacts, byte-exact from git, hash-verified, to gitignored `_versions\`. It is RETRIEVAL: re-running an old build script does NOT reproduce an old version.
 
@@ -67,22 +69,23 @@ capture -> import. **SDSO LIVE runs eSUN v1.0 vs repo v3.3** -- a LIVE bump is R
 - **LIMITATION #41** (HOME state routes a local plate to NLETS) -- paused pending CommSys. 5 providers owe the picklist capture. **NCIC hit blocks CONFIG-PRESENT, NOT RENDERING-VERIFIED** on HI and TN.
 - **RESWEEP 2026-09-08: 20/20 ENFORCED 0F/0W, no defect in any provider JSON.** Fidelity 426 branches / 4 UNDER / 4 OVER / 0 NEVER-COMPARED -- all 4+4 are CA_CONTRA_COSTA's (Rob's JAWS call).
 
-## NEXT PHYSICAL ACTION -- IMPORT CA_eSUN **v3.3**, THEN RE-SWEEP FROM T1 (Rob drives)
+## NEXT PHYSICAL ACTION -- ROB'S CALL: next sweep (SLO / VENTURA / LA_LEMS) or the 2 Jira lines
 
-⚠️ **v3.0/v3.1/v3.2 EACH SHIPPED A DEFECT NO GATE OWNS, AND BOTH ENTERED AT v3.0** (the
-"two-build-scripts collision" rebuild). (1) `conditions` emitted as a JSON OBJECT -> hard import
-reject `Cannot deserialize ArrayList<Combination$Condition>`; fixed v3.2. (2) DH
-`autoSelect=$false` -> the tenant renders the Driver History checkbox but never ACTIVATES it, so
-Send stays DISABLED and **13 of 13 DH tests could not send while all 17 non-DH tests did** (survived
-a re-run, so NOT the latency the driver suggests); fixed v3.3. autoSelect was True at v2.4-v2.6.
-**TWO GATE GAPS ARE OWED, NOT DONE:** nothing asks "can the platform DESERIALIZE this?" and nothing
-asks "can every built query actually be SELECTED?" -- 20 providers, 1 carried each.
-74 tests / 309 fills / 0 unfireable, versions aligned; expect **30/30 on Person**. **A REBOOT KILLS
-TWO PROCESSES** -- `serve_plans.ps1` (plan served on `127.0.0.1:8477`) and `watch_captures.ps1`;
-also RELOAD the extension (0.5.9 / `BUILD 2026-09-09e`) and ARM it. Advisory: the picklist capture
-lacks `YES_NO_UNKNOWN` (Firearm `relatedHitSearchIndicator`, 2 of 74 tests) -- low risk.
-**WATCH THE RADIO PATH:** `CaRequestPurposeCode` became reachable only when its default was
-removed, and the driver was broken the 5 days after, so it is UNEXERCISED.
+**CA_eSUN v3.3 SWEPT AND CLOSED 2026-09-10** -- 74/74 sent, captured, ingested; ALL-PASS 5/5; four
+log gates 74/74; ledger Section A row added. DH proven ON THE WIRE all three paths (`L1.ODH`
+in-state no State · `KQ.O` `<State>NJ</State>` · `KQ.N` `<Name>DOE, JOHN</Name>` no OLN) with
+`<Attention>` auto-populated. ⚠️ **eSUN has NO TENANT URL recorded** -- every other provider does;
+the ledger row is marked, ask Rob.
+
+⚠️ **TWO GATE GAPS, PROVEN REAL BY eSUN AND STILL OWED.** v3.0 shipped BOTH in one rebuild (the
+"two-build-scripts collision"): `conditions` as a JSON OBJECT -> hard import reject
+`Cannot deserialize ArrayList<Combination$Condition>` (fixed v3.2), and DH `autoSelect=$false` ->
+the checkbox renders but never ACTIVATES, so 13 of 13 DH tests could not send while all 17 non-DH
+did (fixed v3.3; it was True at v2.4-v2.6). **Nothing in ~40 gates asks "can the platform
+DESERIALIZE this?" or "can every built query be SELECTED?"** 1 of 20 carried each and every board
+read green to the tenant. Also unfixed: **`watch_captures` globs `usx_*.json`** and hands anything
+>4 bytes to the importer, so `usx_authwatch_*` files (added 2026-09-09) get eaten and `-Once` exits
+on them -- defused by moving files, NOT fixed.
 
 **RND-71625 -- ANSWERED, JIRA REPLY HELD.** Does NOT reproduce (all 3 surfaces show the icon);
 nothing owed. Evidence + narrower real findings: `FINDINGS_REGISTER.md`. Do NOT restate here.
@@ -106,15 +109,12 @@ nothing owed. Evidence + narrower real findings: `FINDINGS_REGISTER.md`. Do NOT 
 
 - Two durable rules MOVED to `usx-tooling` (Steps 6 / 8a): **a registry row only suppresses if its
   rule name is the string the gate greps**, and **validate every probe against a known answer WITH
-  negative controls**. **A `#`-COMMENTED LINE IS NOT A FINDING** -- grepping `[FLAG:]` in
-  PENDING_UPDATES reported 2-6 false blockers on 4 providers; only un-commented lines block.
-- **NEVER verify a produced file with `Test-Path`** -- a leftover satisfies it. Compare write times.
-- **REPLACE this file, never append.** It has failed its own 120-line gate three times.
-- **A SAME-LOOKING STRUCTURE ON ANOTHER PROVIDER IS A QUESTION, NEVER A PRECEDENT.** FIVE claims
-  retracted 2026-09-08, each from inferring off familiar shape instead of that provider's OWN
-  authority. Read the variant's `<Requirements>` FIRST.
-- **A STALE MUTATION IS INDISTINGUISHABLE FROM A BLIND GATE** and sends you to widen a gate that
-  works. `audit_gate_efficacy` takes `Valid={}` preconditions -- give every new mutation one.
-- **AN EXPLANATION IS NOT A MEASUREMENT.** My harness said 3 extension scripts did not load; I wrote
-  a plausible `file://` story instead of getting the real error, and committed the story. The files
-  were genuinely broken -- driver+capture dead 5 days. Go get the unsanitized error.
+  negative controls**. **A `#`-COMMENTED LINE IS NOT A FINDING** (2-6 false blockers on 4 providers).
+- **NEVER verify a produced file with `Test-Path`** (a leftover satisfies it -- compare write times). **REPLACE this file, never append:** it has failed its own 120-line gate five times, twice today.
+- **A SAME-LOOKING STRUCTURE ON ANOTHER PROVIDER IS A QUESTION, NEVER A PRECEDENT.** 5 claims
+  retracted 2026-09-08. Read that provider's OWN `<Requirements>` FIRST.
+- **A STALE MUTATION IS INDISTINGUISHABLE FROM A BLIND GATE** -- give every new mutation a `Valid={}`.
+- **AN EXPLANATION IS NOT A MEASUREMENT.** I wrote a plausible `file://` story for 3 extension
+  scripts instead of getting the real error; they were genuinely broken, dead 5 days.
+- **MY OWN LEDGER/STATE ROWS GO STALE WITHIN HOURS.** I wrote eSUN "NOT IMPORTED" and it was false
+  by afternoon; a tool caught that Section A had no eSUN row at all. Re-read before citing.
