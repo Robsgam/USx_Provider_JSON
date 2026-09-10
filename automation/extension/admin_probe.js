@@ -171,6 +171,40 @@
     });
   }
 
+  // ── FINDING THE DATA ENDPOINT (v4, 2026-09-10) ────────────────────────────────────
+  // PROVEN: the bundle table is JAVASCRIPT-POPULATED. The same configuration page returns
+  // rowCount 0 when FETCHED and rowCount 3 from the LIVE DOM:
+  //     tfas8xq | ENTITIES | 590
+  //     w7p2cdq | CA_eSUN  | 48
+  //     0ydnyze | RMS      | 70
+  // (that is the mandated 3-bundle structure, so the page really does say which JSON is
+  // imported). A fetch does not execute scripts, so a fetch-based sweep will ALWAYS see an
+  // empty table -- reading 21 pages that way would have produced 21 confident zeros.
+  //
+  // So: harvest the URL the page's own JS calls, and sweep THAT instead. Scanning inline
+  // scripts is diagnostic -- it reports candidates and does not act on them.
+  function extractEndpointCandidates(root) {
+    const cands = [];
+    const seen = {};
+    const push = (u, where) => {
+      if (!u || seen[u] || u.length > 300) return;
+      seen[u] = true;
+      cands.push({ url: u, where: where });
+    };
+    // Inline scripts: any quoted path that looks like an API route.
+    Array.from(root.querySelectorAll('script:not([src])')).forEach((s, i) => {
+      const code = s.textContent || '';
+      const rx = /["'`](\/[A-Za-z0-9_\-\/.${}:]*(?:bundle|configuration|department|admin)[A-Za-z0-9_\-\/.${}:]*)["'`]/gi;
+      let m;
+      while ((m = rx.exec(code)) !== null) push(m[1], 'inline-script[' + i + ']');
+      // Explicit jQuery/fetch call sites, which name the verb as well as the URL.
+      const rx2 = /(?:\$\.(?:get|post|ajax)|fetch)\s*\(\s*["'`]([^"'`]+)["'`]/gi;
+      while ((m = rx2.exec(code)) !== null) push(m[1], 'call-site inline-script[' + i + ']');
+    });
+    Array.from(root.querySelectorAll('script[src]')).forEach(s => push(s.getAttribute('src'), 'script-src'));
+    return cands;
+  }
+
   // ---- fetch: report the response, extract WITHOUT truncating first -------
   async function getParsed(url) {
     const res = await fetch(url, {
@@ -315,9 +349,14 @@
           meta: { url: location.href, status: 200, ok: true, contentType: 'text/html (LIVE DOM)',
                   bytes: document.documentElement.outerHTML.length, looksLikeLogin: false,
                   sample: '(live DOM -- no sample needed)' },
-          tables: extractTables(document), json: null
+          tables: extractTables(document), json: null,
+          // The bundle table is JS-populated, so a fetch-based sweep sees zeros. These are
+          // the candidate URLs the page's own scripts reference -- the way to a sweep that
+          // does not need 21 page loads.
+          endpointCandidates: extractEndpointCandidates(document)
         }],
-        notes: ['READ-ONLY. Read from the LIVE DOM of the page you are on.']
+        notes: ['READ-ONLY. Read from the LIVE DOM of the page you are on.',
+                'endpointCandidates lists URLs referenced by this page\'s scripts -- reported, NOT called.']
       };
       o.results[0].tableSummary = o.results[0].tables.map(t => ({ index: t.index, heading: t.heading, headers: t.headers, rowCount: t.rowCount }));
     } else {
