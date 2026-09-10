@@ -160,13 +160,21 @@
   // Filtering is MANDATORY in practice, not a nicety: demo.mark43.com lists 1785
   // departments and each configuration page measured 3.4MB, so an unfiltered sweep would
   // pull roughly 6GB and hammer the host. Filter, then limit.
+  // COMMA-SEPARATED, ANY-MATCH. A single substring was enough for our own fleet (all
+  // `usx-*`) but the tenants that actually need verifying are the FOUNDATION ones --
+  // Newark, Miami Springs, North Miami, Homestead, Balcones Heights, HDLE, Mariposa,
+  // Albany County, Aurora, Lafayette, Anzini -- and those share no common prefix. They
+  // are also the ones IMPORT_LEDGER.md section B maintains BY HAND ("the capture tool
+  // can't reach them"), so they are the whole point of doing this at all.
   function filterRecords(recs, opts) {
     opts = opts || {};
-    const sub = (opts.subdomainMatch || '').trim().toLowerCase();
-    const st  = (opts.statusMatch || '').trim().toLowerCase();
+    const toks = (opts.subdomainMatch || '').toLowerCase().split(',')
+                   .map(s => s.trim()).filter(s => s.length > 0);
+    const st = (opts.statusMatch || '').trim().toLowerCase();
     return (recs || []).filter(r => {
-      if (sub && !((r.subdomain || '') + ' ' + (r.analyticsAlias || '') + ' ' + (r.cadSubdomain || '')).toLowerCase().includes(sub)) return false;
-      if (st  && !((r.status || '').toLowerCase().includes(st))) return false;
+      const hay = ((r.subdomain || '') + ' ' + (r.analyticsAlias || '') + ' ' + (r.cadSubdomain || '')).toLowerCase();
+      if (toks.length && !toks.some(t => hay.includes(t))) return false;
+      if (st && !((r.status || '').toLowerCase().includes(st))) return false;
       return true;
     });
   }

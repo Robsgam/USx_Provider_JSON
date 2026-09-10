@@ -224,8 +224,11 @@
       const rowSub = el('div', 'display:flex;gap:4px;align-items:center;margin:4px 0');
       rowSub.appendChild(el('span', 'font-size:11px;color:#999', 'subdomain has:'));
       const subIn = el('input', 'flex:1;min-width:0;padding:4px;background:#222;color:#eee;border:1px solid #555;border-radius:4px');
-      subIn.type = 'text'; subIn.value = 'usx'; subIn.id = 'usx-admin-sub';
-      subIn.placeholder = 'blank = all 1785';
+      subIn.type = 'text'; subIn.id = 'usx-admin-sub';
+      // Default covers our own fleet AND the Foundation/LIVE tenants that IMPORT_LEDGER
+      // section B maintains by hand -- those are the ones worth verifying.
+      subIn.value = 'usx,newark,miami,homestead,balcones,hdle,mariposa,lafayette,albany,aurora,anzini';
+      subIn.placeholder = 'comma-separated; blank = all 1785';
       rowSub.appendChild(subIn);
       p.appendChild(rowSub);
 
