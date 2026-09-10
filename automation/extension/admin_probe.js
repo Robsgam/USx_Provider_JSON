@@ -101,21 +101,74 @@
     return out;
   }
 
-  // Department ids from any /configurations/<id> href anywhere in the document.
-  // Independent of table shape, so it still works if the markup changes.
-  function extractDeptIds(root) {
-    const ids = [];
+  // ── DEPARTMENT RECORDS ────────────────────────────────────────────────────────────
+  // ⚠️ v3 (2026-09-10): v2 read ids ONLY from /configurations/<id> hrefs and found ZERO,
+  // so the sweep had nothing to loop over and Rob reported "its not rally working yet".
+  // The parse was fine -- the real departments table came back with 1785 rows and headers
+  // [ID, Subdomain, Analytics Alias, Status, CAD Subdomain, SSO Connection Id] -- but the
+  // ID is PLAIN TEXT IN A CELL, not a link. So: read the ID COLUMN, and keep the href path
+  // only as a fallback for pages that do link.
+  //
+  // This is also where the answer to Rob's actual question lives: `Subdomain` identifies
+  // the tenant and `Status` says whether it is active. That is "a list of active tenants"
+  // without fetching anything further.
+  const normHdr = (s) => (s || '').replace(/[^\x20-\x7E]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+
+  function extractDeptRecords(root) {
+    const recs = [];
     const seen = {};
+    const tables = extractTables(root);
+
+    tables.forEach(t => {
+      const hdrs = (t.headers || []).map(normHdr);
+      const idIdx = hdrs.indexOf('id');
+      if (idIdx < 0) return;                       // not the departments table
+      const col = (name) => hdrs.indexOf(name);
+      const iSub = col('subdomain'), iAlias = col('analytics alias'),
+            iStat = col('status'), iCad = col('cad subdomain'), iSso = col('sso connection id');
+      t.rows.forEach(r => {
+        const cells = r.cells || [];
+        const id = (cells[idIdx] || '').trim();
+        if (!/^\d+$/.test(id) || seen[id]) return;
+        seen[id] = true;
+        recs.push({
+          deptId: id,
+          subdomain:      iSub   >= 0 ? (cells[iSub]   || '') : '',
+          analyticsAlias: iAlias >= 0 ? (cells[iAlias] || '') : '',
+          status:         iStat  >= 0 ? (cells[iStat]  || '') : '',
+          cadSubdomain:   iCad   >= 0 ? (cells[iCad]   || '') : '',
+          ssoConnectionId:iSso   >= 0 ? (cells[iSso]   || '') : '',
+          source: 'id-column'
+        });
+      });
+    });
+
+    // Fallback / supplement: any explicit configurations link.
     Array.from(root.querySelectorAll('a[href]')).forEach(a => {
       const m = (a.getAttribute('href') || '').match(/configurations\/(\d+)/);
-      if (m && !seen[m[1]]) {
-        seen[m[1]] = true;
-        // The row this link sits in usually carries the tenant name.
-        const tr = a.closest('tr');
-        ids.push({ deptId: m[1], linkText: txt(a), rowText: tr ? txt(tr) : '' });
-      }
+      if (!m || seen[m[1]]) return;
+      seen[m[1]] = true;
+      const tr = a.closest('tr');
+      recs.push({ deptId: m[1], subdomain: txt(a), status: '', rowText: tr ? txt(tr) : '', source: 'href' });
     });
-    return ids;
+    return recs;
+  }
+
+  // Kept as a thin alias so nothing that referenced the old name breaks.
+  function extractDeptIds(root) { return extractDeptRecords(root); }
+
+  // Filtering is MANDATORY in practice, not a nicety: demo.mark43.com lists 1785
+  // departments and each configuration page measured 3.4MB, so an unfiltered sweep would
+  // pull roughly 6GB and hammer the host. Filter, then limit.
+  function filterRecords(recs, opts) {
+    opts = opts || {};
+    const sub = (opts.subdomainMatch || '').trim().toLowerCase();
+    const st  = (opts.statusMatch || '').trim().toLowerCase();
+    return (recs || []).filter(r => {
+      if (sub && !((r.subdomain || '') + ' ' + (r.analyticsAlias || '') + ' ' + (r.cadSubdomain || '')).toLowerCase().includes(sub)) return false;
+      if (st  && !((r.status || '').toLowerCase().includes(st))) return false;
+      return true;
+    });
   }
 
   // ---- fetch: report the response, extract WITHOUT truncating first -------
@@ -222,18 +275,28 @@
     return o;
   }
 
-  // ONE CLICK = LIST + SWEEP. The operator should not be navigating per tenant;
-  // the loop is the probe's job.
+  // ONE CLICK = LIST + FILTER + SWEEP. The operator should not be navigating per tenant;
+  // the loop is the probe's job. But the loop MUST be filtered first -- see filterRecords.
   async function runScan(opts) {
     opts = opts || {};
     const listing = await listDepartments();
-    const ids = listing.deptIds || [];
-    const o = await scanConfigurations(ids, opts);
+    const all = listing.deptIds || [];
+    const matched = filterRecords(all, opts);
+    const o = await scanConfigurations(matched, opts);
     o.listing = {
       deptIdCount: listing.deptIdCount,
+      matchedCount: matched.length,
+      subdomainMatch: opts.subdomainMatch || '(none)',
+      statusMatch: opts.statusMatch || '(none)',
       tableSummary: listing.tableSummary,
+      // Keep the MATCHED records -- v2 dropped every row and left the output unusable
+      // even though 1785 had been extracted.
+      matchedRecords: matched,
       notes: listing.notes
     };
+    if (all.length && !matched.length) {
+      o.notes.push('FILTER MATCHED NOTHING: ' + all.length + ' departments listed but 0 matched subdomain="' + (opts.subdomainMatch || '') + '" status="' + (opts.statusMatch || '') + '". Widen the filter -- this is not evidence of absence.');
+    }
     dl('usx_admin_bundles_' + location.hostname + '_' + nowStamp() + '.json', o);
     return o;
   }
@@ -264,6 +327,7 @@
     return o;
   }
 
-  window.__usxAdminProbe = { runList, runScan, runOne, listDepartments, scanConfigurations, extractTables, extractDeptIds, ADMIN_BASE };
-  console.log('[USx-ADMIN] admin_probe v2 loaded -- HTML/DOM table extraction (v1 truncated at 20KB and lost the table). READ-ONLY, GET only. BUILD 2026-09-10b.');
+  window.__usxAdminProbe = { runList, runScan, runOne, listDepartments, scanConfigurations,
+                             extractTables, extractDeptRecords, extractDeptIds, filterRecords, ADMIN_BASE };
+  console.log('[USx-ADMIN] admin_probe v3 loaded -- reads the ID COLUMN (v2 looked only for configurations/<id> links and found 0 of 1785). Subdomain + Status come straight off the departments table, so "which tenants are active" needs no per-tenant fetch. READ-ONLY, GET only. BUILD 2026-09-10c.');
 })();

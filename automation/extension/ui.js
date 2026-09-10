@@ -217,6 +217,26 @@
       // 3. Bounded bundle sweep. BOUNDED ON PURPOSE: a demo host may carry hundreds of
       // departments, and an unbounded per-department loop is the one thing here that could
       // look like hammering. Default deliberately small; the operator raises it knowingly.
+      // FILTER FIRST. demo.mark43.com lists 1785 departments and each configuration page
+      // measured 3.4MB -- an unfiltered sweep is ~6GB and would hammer the host. Default
+      // 'usx' because that is the prefix of our own provider tenants, which is what the
+      // import-ledger question is actually about.
+      const rowSub = el('div', 'display:flex;gap:4px;align-items:center;margin:4px 0');
+      rowSub.appendChild(el('span', 'font-size:11px;color:#999', 'subdomain has:'));
+      const subIn = el('input', 'flex:1;min-width:0;padding:4px;background:#222;color:#eee;border:1px solid #555;border-radius:4px');
+      subIn.type = 'text'; subIn.value = 'usx'; subIn.id = 'usx-admin-sub';
+      subIn.placeholder = 'blank = all 1785';
+      rowSub.appendChild(subIn);
+      p.appendChild(rowSub);
+
+      const rowSt = el('div', 'display:flex;gap:4px;align-items:center;margin:4px 0');
+      rowSt.appendChild(el('span', 'font-size:11px;color:#999', 'status has:'));
+      const stIn = el('input', 'flex:1;min-width:0;padding:4px;background:#222;color:#eee;border:1px solid #555;border-radius:4px');
+      stIn.type = 'text'; stIn.value = ''; stIn.id = 'usx-admin-status';
+      stIn.placeholder = 'e.g. active (blank = any)';
+      rowSt.appendChild(stIn);
+      p.appendChild(rowSt);
+
       const rowLim = el('div', 'display:flex;gap:4px;align-items:center;margin:4px 0');
       rowLim.appendChild(el('span', 'font-size:11px;color:#999', 'how many:'));
       const limIn = el('input', 'width:56px;padding:4px;background:#222;color:#eee;border:1px solid #555;border-radius:4px');
@@ -227,12 +247,18 @@
       const scan = el('button', BTN + ';' + BLU, '③ Scan bundles for that many tenants');
       scan.onclick = async () => {
         const lim = parseInt(document.getElementById('usx-admin-lim').value, 10) || 5;
-        scan.disabled = true; aStatus.style.color = '#fa0'; aStatus.textContent = 'scanning ' + lim + ' department(s)…';
+        const sub = document.getElementById('usx-admin-sub').value;
+        const st  = document.getElementById('usx-admin-status').value;
+        scan.disabled = true; aStatus.style.color = '#fa0'; aStatus.textContent = 'listing, filtering, then scanning up to ' + lim + '…';
         try {
-          const o = await window.__usxAdminProbe.runScan({ limit: lim });
+          const o = await window.__usxAdminProbe.runScan({ limit: lim, subdomainMatch: sub, statusMatch: st });
           const withCfg = (o.results || []).filter(r => r.meta && r.meta.ok).length;
-          aStatus.style.color = '#7c7';
-          aStatus.textContent = '✔ ' + withCfg + '/' + (o.results || []).length + ' returned a config · saved to Downloads';
+          const listed = (o.listing && o.listing.deptIdCount) || 0;
+          const matched = (o.listing && o.listing.matchedCount) || 0;
+          // Report the WHOLE funnel. "5/5 returned a config" hides whether the filter
+          // matched 5 of 1785 or 5 of 5 -- and the denominator is the finding.
+          aStatus.style.color = (matched > 0 && withCfg > 0) ? '#7c7' : '#f77';
+          aStatus.textContent = '✔ listed ' + listed + ' · matched ' + matched + ' · read ' + withCfg + '/' + (o.results || []).length + ' · saved to Downloads';
         } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
         finally { scan.disabled = false; }
       };
