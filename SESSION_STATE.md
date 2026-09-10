@@ -17,7 +17,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | AZ_AZDPS | v3.12 | ALL-PASS (53 logs) |
 | CA_CLETS | v2.27 | ALL-PASS (99 logs) |
 | CA_CLETS_OCATS | v2.12 | ALL-PASS (62 logs) |
-| CA_eSUN | v3.2 | NEVER-TESTED -- 74 test(s) owed |
+| CA_eSUN | v3.3 | NEVER-TESTED -- 74 test(s) owed |
 | FL_FCIC | v7.24 | ALL-PASS (104 logs) |
 | HI_HCJDC_OFML | v4.20 | ALL-PASS (48 logs) |
 | IL_LEADS_OFML | v2.8 | ALL-PASS (43 logs) |
@@ -49,7 +49,7 @@ exception: BLOCKED on Rob's JAWS call. ⚠️ **THE OTHER FOUR ARE ALREADY SWEEP
 2026-09-09 -- NOTHING WAS OWED:** pre-flight CLEAR on all four (254 tests / 1024 fills / 0
 unfireable), plans byte-identical. PENDING_UPDATES live-blocking lines = 0 on all 6 -- every
 `[FLAG:]` there is `#`-COMMENTED. Only residual: CA_VENTURA's hollow toggle, blocked on picklist
-capture -> import. **SDSO LIVE runs eSUN v1.0 vs repo v3.2** -- a LIVE bump is Rob's call.
+capture -> import. **SDSO LIVE runs eSUN v1.0 vs repo v3.3** -- a LIVE bump is Rob's call.
 
 **OFFICER GUIDES 20/20 CURRENT** (473 rows); checker `_probes/audit_guide_completeness.ps1`. **Handover guide for a new owner: `USX_PROJECT_GUIDE.pdf`** (repo root). **`audit_extension_syntax.ps1`** (in `doctor`) parses the browser scripts -- nothing did until a 1-char break killed driver+capture for 5 days. **ANY PRIOR JSON IS ONE COMMAND: `get_provider_version.ps1 -Provider <P> -Version <X.Y> [-IncludeLegacy]`** -- 671 artifacts, byte-exact from git, hash-verified, to gitignored `_versions\`. It is RETRIEVAL: re-running an old build script does NOT reproduce an old version.
 
@@ -67,21 +67,22 @@ capture -> import. **SDSO LIVE runs eSUN v1.0 vs repo v3.2** -- a LIVE bump is R
 - **LIMITATION #41** (HOME state routes a local plate to NLETS) -- paused pending CommSys. 5 providers owe the picklist capture. **NCIC hit blocks CONFIG-PRESENT, NOT RENDERING-VERIFIED** on HI and TN.
 - **RESWEEP 2026-09-08: 20/20 ENFORCED 0F/0W, no defect in any provider JSON.** Fidelity 426 branches / 4 UNDER / 4 OVER / 0 NEVER-COMPARED -- all 4+4 are CA_CONTRA_COSTA's (Rob's JAWS call).
 
-## NEXT PHYSICAL ACTION -- IMPORT CA_eSUN **v3.2**, THEN SWEEP (Rob drives)
+## NEXT PHYSICAL ACTION -- IMPORT CA_eSUN **v3.3**, THEN RE-SWEEP FROM T1 (Rob drives)
 
-⚠️ **v3.0 AND v3.1 WERE UN-IMPORTABLE AND EVERY GATE READ GREEN.** Rob's import of v3.1 returned
-`Cannot deserialize ArrayList<Combination$Condition> from Object value` -- an unguarded 1-element
-PowerShell return made `conditions` a JSON OBJECT in 6 combos. v3.2 fixes it (serialization only:
-the whole diff is 6 brackets + the version string). Only eSUN was affected, of 20. **No gate owned
-"is this JSON deserializable by the platform" -- that gap is the follow-up work, not the fix.**
-74 tests / 309 fills / 0 unfireable, versions aligned. **A REBOOT KILLS TWO PROCESSES THAT MUST BE
-RESTARTED** -- `serve_plans.ps1` (browser fetches the plan from `127.0.0.1:8477`) and
-`watch_captures.ps1` (ingests captures). Also **RELOAD the extension** (0.5.9 / `BUILD 2026-09-09e`
--- manifest changed) and **ARM it** on the tenant. ⚠️ Advisory gap: the picklist capture
-(2026-09-04, NEWER than the build) lacks category `YES_NO_UNKNOWN`, used by ONE control -- Firearm
-`relatedHitSearchIndicator` -- which **2 of 74 tests fill with `Y`**; low risk, re-scope to close.
-**WATCH THE RADIO PATH:** eSUN's `CaRequestPurposeCode` radio only became reachable when its
-default was removed, and the driver was BROKEN the five days after, so it is UNEXERCISED.
+⚠️ **v3.0/v3.1/v3.2 EACH SHIPPED A DEFECT NO GATE OWNS, AND BOTH ENTERED AT v3.0** (the
+"two-build-scripts collision" rebuild). (1) `conditions` emitted as a JSON OBJECT -> hard import
+reject `Cannot deserialize ArrayList<Combination$Condition>`; fixed v3.2. (2) DH
+`autoSelect=$false` -> the tenant renders the Driver History checkbox but never ACTIVATES it, so
+Send stays DISABLED and **13 of 13 DH tests could not send while all 17 non-DH tests did** (survived
+a re-run, so NOT the latency the driver suggests); fixed v3.3. autoSelect was True at v2.4-v2.6.
+**TWO GATE GAPS ARE OWED, NOT DONE:** nothing asks "can the platform DESERIALIZE this?" and nothing
+asks "can every built query actually be SELECTED?" -- 20 providers, 1 carried each.
+74 tests / 309 fills / 0 unfireable, versions aligned; expect **30/30 on Person**. **A REBOOT KILLS
+TWO PROCESSES** -- `serve_plans.ps1` (plan served on `127.0.0.1:8477`) and `watch_captures.ps1`;
+also RELOAD the extension (0.5.9 / `BUILD 2026-09-09e`) and ARM it. Advisory: the picklist capture
+lacks `YES_NO_UNKNOWN` (Firearm `relatedHitSearchIndicator`, 2 of 74 tests) -- low risk.
+**WATCH THE RADIO PATH:** `CaRequestPurposeCode` became reachable only when its default was
+removed, and the driver was broken the 5 days after, so it is UNEXERCISED.
 
 **RND-71625 -- ANSWERED, JIRA REPLY HELD.** Does NOT reproduce (all 3 surfaces show the icon);
 nothing owed. Evidence + narrower real findings: `FINDINGS_REGISTER.md`. Do NOT restate here.

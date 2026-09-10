@@ -2,6 +2,85 @@ CA_eSUN -- Build Notes
 ======================
 Provider: CA_eSUN
 State: California
+v3.3  2026-09-10  DRIVER HISTORY COULD NOT BE SENT AT ALL -- DH autoSelect was $false
+  CHANGED:
+    ONE PROPERTY. DriverHistoryQuery `autoSelect` $false -> $true. The mutual
+    `queriesToDeselect` pair is deliberately LEFT AS IS (see the safety check below).
+
+  REASON: Rob, driving the v3.2 sweep -- "dh is getting hung up with checkbox enabled
+    but nothing in the check box so it never transmits." That is the mechanism exactly.
+    With autoSelect=$false the platform RENDERS the Driver History query checkbox but
+    never ACTIVATES it, so no query is selected, Send stays DISABLED, and nothing is
+    sent. eSUN's OWN ACCEPTED_DIVERGENCES row for VehicleRegistrationQuery/NameAddressIn
+    already described this same mechanism from the v1.x sweep: "The tenant never
+    activates a query checkbox and Send stays DISABLED, so nothing is sent -- not a
+    validation failure, there is simply no query to run."
+
+  THE EVIDENCE IS CLEAN, AND IT IS NOT LATENCY. Driver console, v3.2:
+    - 17 of 17 NON-DH tests submitted. 13 of 13 DH tests did not:
+      T32 KQ.O · T33 L1.ODH · T34-T38 KQ.N · T39-T42 L1.NDH · T46/T47.
+    - "plan run complete: 30 test(s) driven, 17 SENT, 13 NOT sent."
+    - The SAME 13 failed again on a plain re-run.
+    The driver's own message says "MOST LIKELY LATENCY ... RE-RUN THIS TEST BEFORE
+    INVESTIGATING THE BUILD", and that advice is correct as a default (13 of 13 such
+    reports on 2026-08-03/04 were latency) -- but the re-run is what discharges it, and
+    here the failure SURVIVED it. The split is also 100% along the DH boundary, which
+    latency cannot explain.
+    The fills were never the problem: T33 filled PurposeCodeDH + OperatorLicenseNumberDH
+    with State blank, which satisfies L1.ODH set[PurposeCodeDH, OperatorLicenseNumberDH]
+    + cond[RegistrationStateDH NOT_EXISTS]. The combo matched; nothing was listening.
+
+  IT IS A REGRESSION, NOT A DESIGN CHOICE -- and this was measured, not inferred:
+    v2.4 True · v2.5 True · v2.6 True · v3.0 FALSE · v3.1 FALSE · v3.2 FALSE
+    (read from the emitted JSONs via tools\get_provider_version.ps1). It flipped at v3.0,
+    the SAME rebuild that shipped the object-shaped `conditions` import reject fixed in
+    v3.2 -- git attributes the change to the commit describing "the two-build-scripts
+    collision that silently deleted v3.0". No rationale for $false was ever recorded in
+    the build script, BUILD_NOTES or the registry, and the build script's own comment
+    block above the QIDM declares it implements Scenario A -- which per CLAUDE.md IS
+    "autoSelect=true + queriesToDeselect on each QIDM". The file contradicted itself.
+
+  WHY THE MUTUAL DESELECT STAYS -- the one thing that could have made this fix unsafe.
+    Turning autoSelect on ACTIVATES a deselect pair that was previously inert (DH never
+    self-selected, so it never deselected DL). A standing note warns that bidirectional
+    queriesToDeselect deadlocks with an error popup, which would have argued for cutting
+    it to one-directional in the same pass. MEASURED INSTEAD: 9 of 16 providers with a DH
+    QIDM run BIDIRECTIONAL, and 5 of those are tenant-verified ALL-PASS with
+    autoSelect=$true -- AZ_AZDPS, MD_METERS, OH_LEADS, TN_TIES, NM_NMLETS_OFML. The exact
+    combination this fix produces is therefore proven on five providers. Changing the
+    deselect direction as well would have been an unmeasured second change riding along
+    with a proven one.
+
+  PORTFOLIO CONTEXT (evidence about the portfolio, NOT authority over this provider):
+    DH autoSelect -- True on 15 of 16, False on CA_eSUN alone.
+    That is a reason to read eSUN's own authority, which is what the v2.x history and the
+    Scenario A declaration above supply. The conviction rests on those plus the live
+    tenant behaviour, not on the majority.
+
+  SCOPE: this provider only. No shared module touched, no other provider's files read
+    for anything but the read-only census above.
+
+  NOT CHANGED, AND EXPLICITLY CHECKED:
+    - RegistrationStateDH is NOT defective. The driver logged it as offering 1 option
+      ("NJ - New Jersey") against RegistrationState's 2, which looked like a code-source
+      mismatch. It is not: both controls are identical config (attributeTypeId STATE, no
+      codeTypeCategory/Source override), and the driver TYPES A FILTER before reading the
+      list -- so those counts are post-filter for two different test values (NJ vs GA).
+      I raised this as an anomaly before measuring it; it is not one.
+    - Every combination, condition and field is untouched. 22 combinations, all reachable;
+      26/26 metadata combinations form-reachable, 0 prefill-dead; fidelity 0 UNDER / 0 OVER.
+
+  STILL OPEN, carried forward unchanged from v3.2 (none caused by this fix):
+    - DriverHistoryQuery #4 +[Attention,PurposeCode] -> fires L1.ODH but `Attention` is in
+      no matching combo's set[]/any[] (PHASE 2q advisory, product call).
+    - Picklist capture lacks category YES_NO_UNKNOWN (Firearm relatedHitSearchIndicator).
+    - Supported-query extract still PROVISIONAL.
+
+  TEST PACKAGE: v3.2's package is archived by the bump. Nothing of value is lost -- v3.2
+    was never captured (Rob was told to stop before running __usxCaptureBatch, since the
+    17 pending Vehicle captures would have been archived on import anyway). The sweep
+    restarts at T1 for all entities. EXPECTED ON v3.3: 30 of 30 on Person.
+
 v3.2  2026-09-10  IMPORT REJECT FIXED -- `conditions` was a JSON OBJECT, not an ARRAY
   CHANGED:
     ONE LINE. The `Absent()` helper is now comma-guarded:

@@ -50,7 +50,7 @@
 #    ArticleSingleQuery       : QA -- metadata-exact, no split needed
 #  The officer guide resolves these BACK to the metadata keyRef, so a supervisor reading a
 #  state manual sees QV / DQ / BQ and not our bookkeeping.
-param([string]$Version = '3.2')
+param([string]$Version = '3.3')
 $ErrorActionPreference = 'Stop'
 
 $DIR  = Split-Path $PSScriptRoot -Parent
@@ -330,7 +330,23 @@ $dhQuery = [PSCustomObject]@{
     handlerFunction    = 'CommsysTransactionRequestHandler'
     name               = "${PROV}_DriverHistoryQuery"
     type               = 'QUERYINPUTDATAMAPPING'
-    autoSelect         = $false
+    # MUST BE $true -- Scenario A (declared in the comment block above) REQUIRES it, and
+    # $false is what made every Driver History query unsendable in the tenant.
+    # USx-tenant-proven 2026-09-10: 13 of 13 DH tests reported "NOT submitted (Send still
+    # DISABLED)" on v3.2 while ALL 17 non-DH tests sent, and the identical 13 failed again
+    # on a plain re-run -- so it is NOT the latency the driver's message suggests. With
+    # autoSelect=$false the platform never ACTIVATES the DH query checkbox, so no query is
+    # selected and Send stays disabled: eSUN's own ACCEPTED_DIVERGENCES row for
+    # NameAddressIn describes this same mechanism ("The tenant never activates a query
+    # checkbox and Send stays DISABLED ... there is simply no query to run").
+    # It was $true at v2.4/v2.5/v2.6 and regressed to $false at v3.0 -- the same rebuild
+    # that shipped the object-shaped `conditions` import reject. No rationale was ever
+    # recorded for the change.
+    # 15 of 16 providers with a DH QIDM use $true, and autoSelect=$true WITH a
+    # bidirectional deselect pair (as here) is tenant-verified ALL-PASS on AZ_AZDPS,
+    # MD_METERS, OH_LEADS, TN_TIES and NM_NMLETS_OFML -- so keeping the mutual
+    # queriesToDeselect is safe and does not reintroduce the deselect-deadlock class.
+    autoSelect         = $true
     queriesToDeselect  = @('DriverLicenseQuery')
     provider           = $PROV
     providerType       = 'Commsys'

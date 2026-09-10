@@ -2,9 +2,15 @@
 
 Auto-generated from `CA_eSUN_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v3.2** | Generated: 2026-09-10
+Current: **v3.3** | Generated: 2026-09-10
 
 ---
+
+## v3.3 -- 2026-09-10 -- DRIVER HISTORY COULD NOT BE SENT AT ALL -- DH autoSelect was $false
+
+**CHANGED:**
+  ONE PROPERTY. DriverHistoryQuery `autoSelect` $false -> $true. The mutual  
+  `queriesToDeselect` pair is deliberately LEFT AS IS (see the safety check below).  
 
 ## v3.2 -- 2026-09-10 -- IMPORT REJECT FIXED -- `conditions` was a JSON OBJECT, not an ARRAY
 
