@@ -346,6 +346,130 @@
     return out;
   }
 
+  // ── v6: EXERCISE THE EXPORT CONTROL (Rob: "i was hoping you could exercise the export
+  //     buttons yourself via the extnetion to pull cross reference and catalog") ────────
+  // Exporting a bundle yields the ACTUAL JSON, and our version lives inside it (the bundle
+  // description, "Provider configuration for <P> v<X.Y>"). That is the only route left to a
+  // real version-per-tenant catalogue: the table's Version column is a platform counter and
+  // there is no API endpoint to harvest (① found only CDN script tags).
+  //
+  // ⚠️ THIS PAGE IS AN ADMIN PAGE AND MAY CARRY DESTRUCTIVE CONTROLS. Blind-clicking
+  // anything here could delete a bundle or trigger an import. So the design is:
+  //   1. ENUMERATE every control and REPORT it -- no clicking at all on the first pass.
+  //   2. Click ONLY a control that matches the export allowlist AND matches nothing on the
+  //      destructive denylist. A control that is ambiguous is REPORTED, NOT CLICKED.
+  //   3. Never click more than one control per page, and never a form submit.
+  // The denylist is deliberately broader than the allowlist is narrow.
+  const EXPORT_OK   = /(export|download|view\s*json|show\s*json|json|copy|raw|inspect)/i;
+  const DESTRUCTIVE = /(delete|remove|destroy|drop|import|upload|replace|overwrite|reset|revert|rollback|deactivate|disable|enable|save|submit|apply|publish|promote|migrate|sync|clear|purge|archive|restore)/i;
+
+  function describeControl(el, idx) {
+    const attrs = {};
+    Array.from(el.attributes || []).forEach(a => { attrs[a.name] = (a.value || '').slice(0, 200); });
+    const label = (el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 120);
+    const rowText = (() => { const tr = el.closest && el.closest('tr'); return tr ? (tr.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 160) : ''; })();
+    const isExport = EXPORT_OK.test(label) || EXPORT_OK.test(attrs['href'] || '') || EXPORT_OK.test(attrs['id'] || '') || EXPORT_OK.test(attrs['class'] || '') || EXPORT_OK.test(attrs['download'] || '');
+    const isDestr  = DESTRUCTIVE.test(label) || DESTRUCTIVE.test(attrs['href'] || '') || DESTRUCTIVE.test(attrs['id'] || '') || DESTRUCTIVE.test(attrs['class'] || '') || DESTRUCTIVE.test(attrs['name'] || '');
+    return {
+      index: idx, tag: el.tagName, label: label, rowText: rowText, attrs: attrs,
+      looksExport: isExport, looksDestructive: isDestr,
+      // The verdict the clicker will act on, so it is auditable in the file.
+      clickable: (isExport && !isDestr)
+    };
+  }
+
+  function enumerateControls(doc) {
+    const els = Array.from(doc.querySelectorAll('a, button, input[type=submit], input[type=button], [role=button]'));
+    return els.slice(0, 400).map(describeControl);
+  }
+
+  // Direct-download links are better than a click: fetchable, no side effects at all.
+  function directJsonLinks(doc) {
+    return Array.from(doc.querySelectorAll('a[href]'))
+      .map(a => ({ href: a.getAttribute('href'), download: a.getAttribute('download') || null, text: (a.textContent || '').trim().slice(0, 80) }))
+      .filter(x => x.href && (/\.json(\?|$)/i.test(x.href) || x.download || /export|download/i.test(x.href)))
+      .filter(x => !DESTRUCTIVE.test(x.href));
+  }
+
+  async function probeExportControls(deptId, opts) {
+    opts = opts || {};
+    const url = ADMIN_BASE + '/configurations/' + encodeURIComponent(deptId);
+    const budget = opts.budgetMs || 12000;
+    const out = { probe: 'admin-export-controls', version: 6, deptId: String(deptId), url: url,
+                  capturedAt: new Date().toISOString(), host: location.hostname,
+                  clicked: null, notes: [] };
+
+    const fr = document.createElement('iframe');
+    fr.style.cssText = 'position:fixed;left:-10000px;top:0;width:1280px;height:900px;opacity:0;pointer-events:none';
+    document.body.appendChild(fr);
+    try {
+      await new Promise((res) => { fr.onload = () => setTimeout(res, 400); fr.onerror = () => setTimeout(res, 0); fr.src = url; setTimeout(res, budget); });
+      const doc = fr.contentDocument;
+      if (!doc) { out.notes.push('no contentDocument -- cannot enumerate'); return out; }
+
+      // Wait for the JS-populated table before enumerating, or the row controls will not exist yet.
+      const t0 = Date.now();
+      while (Date.now() - t0 < budget) {
+        if (doc.querySelectorAll('tbody tr').length > 0) break;
+        await new Promise(r => setTimeout(r, 250));
+      }
+
+      out.tables = extractTables(doc);
+      out.controls = enumerateControls(doc);
+      out.directJsonLinks = directJsonLinks(doc);
+      out.controlSummary = {
+        total: out.controls.length,
+        looksExport: out.controls.filter(c => c.looksExport).length,
+        looksDestructive: out.controls.filter(c => c.looksDestructive).length,
+        clickable: out.controls.filter(c => c.clickable).length
+      };
+      out.notes.push('ENUMERATION ONLY unless a control passed the export allowlist AND the destructive denylist.');
+
+      if (!opts.click) { out.notes.push('click=false -- nothing was clicked.'); return out; }
+
+      const cand = out.controls.filter(c => c.clickable);
+      if (!cand.length) {
+        out.notes.push('NO control passed both lists, so NOTHING was clicked. See controls[] and decide by hand.');
+        return out;
+      }
+
+      // Click exactly ONE, and record the before/after so the effect is evidence.
+      const target = cand[0];
+      const before = { html: doc.documentElement.outerHTML.length, tables: out.tables.length,
+                       pre: doc.querySelectorAll('pre,textarea,code').length };
+      const els = Array.from(doc.querySelectorAll('a, button, input[type=submit], input[type=button], [role=button]'));
+      const elToClick = els[target.index];
+      out.clicked = { control: target, before: before, after: null, newText: null };
+      if (!elToClick) { out.notes.push('candidate index no longer resolves -- DOM changed; nothing clicked.'); return out; }
+      elToClick.click();
+
+      // Watch for the effect: a modal/pre/textarea appearing, or the DOM growing.
+      const t1 = Date.now();
+      let after = null;
+      while (Date.now() - t1 < budget) {
+        await new Promise(r => setTimeout(r, 300));
+        after = { html: doc.documentElement.outerHTML.length, tables: extractTables(doc).length,
+                  pre: doc.querySelectorAll('pre,textarea,code').length };
+        if (after.pre > before.pre || after.html > before.html + 2000) break;
+      }
+      out.clicked.after = after;
+
+      // If JSON-looking text appeared, capture it -- that IS the bundle.
+      const blobs = Array.from(doc.querySelectorAll('pre,textarea,code'))
+        .map(n => (n.value || n.textContent || '').trim())
+        .filter(s => s.length > 200 && /^[\[{]/.test(s));
+      if (blobs.length) {
+        out.clicked.newText = blobs.map(s => s.slice(0, 400000));
+        out.notes.push('JSON-LOOKING TEXT APPEARED after the click -- captured (' + blobs.length + ' blob(s)).');
+      } else {
+        out.notes.push('No JSON text appeared in-page. If the click started a FILE DOWNLOAD it will be in Downloads; check there.');
+      }
+      return out;
+    } finally {
+      try { fr.remove(); } catch (e) {}
+    }
+  }
+
   // Pull the bundle rows out of whichever table carries [ID, Name, Version].
   // Proven shape from CA_eSUN's live DOM: tfas8xq|ENTITIES|590, w7p2cdq|CA_eSUN|48,
   // 0ydnyze|RMS|70 -- i.e. our mandated ENTITIES / <PROVIDER> / RMS trio.
@@ -464,6 +588,20 @@
     return o;
   }
 
+  // Two entry points, separate ON PURPOSE. The LOOK must be runnable with no chance of
+  // acting on an admin page; only the TRY clicks, and then at most one allowlisted,
+  // non-destructive control.
+  async function runExportLook(deptId) {
+    const o = await probeExportControls(deptId, { click: false });
+    dl('usx_admin_controls_' + deptId + '_' + nowStamp() + '.json', o);
+    return o;
+  }
+  async function runExportTry(deptId) {
+    const o = await probeExportControls(deptId, { click: true });
+    dl('usx_admin_export_' + deptId + '_' + nowStamp() + '.json', o);
+    return o;
+  }
+
   async function runOne(deptId) {
     const onThisPage = new RegExp('configurations/' + deptId + '$').test(location.pathname);
     let o;
@@ -495,7 +633,8 @@
     return o;
   }
 
-  window.__usxAdminProbe = { runList, runScan, runOne, listDepartments, scanConfigurations,
+  window.__usxAdminProbe = { runList, runScan, runOne, runExportLook, runExportTry,
+                             probeExportControls, enumerateControls, listDepartments, scanConfigurations,
                              extractTables, extractDeptRecords, extractDeptIds, filterRecords,
                              extractBundles, readViaIframe, ADMIN_BASE };
   console.log('[USx-ADMIN] admin_probe v5 loaded -- reads each configuration page in a HIDDEN IFRAME so its own scripts populate the bundle table. A FETCH returns it EMPTY (that produced 21 confident zeros); the iframe reproduces the live-DOM result for every department from one click. READ-ONLY, GET only. BUILD 2026-09-10e.');

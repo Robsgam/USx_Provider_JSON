@@ -283,9 +283,62 @@
       };
       p.appendChild(scan);
 
+      // ── EXPORT PROBE (Rob: "exercise the export buttons yourself via the extension") ──
+      // TWO buttons, and the split is the safety. ④ only LOOKS -- it enumerates every
+      // control on a tenant's configuration page and clicks nothing, so it is safe to run
+      // on an admin page whose controls are unknown. ⑤ clicks AT MOST ONE control, and only
+      // one that matches an export allowlist AND matches nothing on a destructive denylist
+      // (delete/import/upload/replace/reset/save/publish/...). An ambiguous control is
+      // reported, never clicked. This page is admin surface; a reflex click here could
+      // delete a bundle.
+      const expWrap = el('div', 'margin-top:8px;border-top:1px solid #333;padding-top:6px');
+      expWrap.appendChild(el('div', 'font-size:11px;color:#fc6', 'export probe (for the version catalogue)'));
+      const expIdRow = el('div', 'display:flex;gap:4px;align-items:center;margin:4px 0');
+      expIdRow.appendChild(el('span', 'font-size:11px;color:#999', 'dept id:'));
+      const expId = el('input', 'flex:1;min-width:0;padding:4px;background:#222;color:#eee;border:1px solid #555;border-radius:4px');
+      expId.type = 'text'; expId.id = 'usx-admin-expid';
+      expId.value = idFromUrl || '69510509021';   // this page's own id when we are on one
+      expIdRow.appendChild(expId);
+      expWrap.appendChild(expIdRow);
+
+      const look = el('button', BTN, '④ Look at the controls (clicks NOTHING)');
+      look.onclick = async () => {
+        const id = document.getElementById('usx-admin-expid').value.trim();
+        look.disabled = true; aStatus.style.color = '#fa0'; aStatus.textContent = 'enumerating controls on ' + id + '…';
+        try {
+          const o = await window.__usxAdminProbe.runExportLook(id);
+          const s = o.controlSummary || {};
+          aStatus.style.color = '#7c7';
+          aStatus.textContent = '✔ ' + (s.total || 0) + ' control(s) · ' + (s.looksExport || 0) + ' export-ish · '
+            + (s.looksDestructive || 0) + ' destructive · ' + (s.clickable || 0) + ' safe to click · saved';
+        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
+        finally { look.disabled = false; }
+      };
+      expWrap.appendChild(look);
+
+      const tryExp = el('button', BTN + ';' + BLU, '⑤ Try the export (one safe control only)');
+      tryExp.onclick = async () => {
+        const id = document.getElementById('usx-admin-expid').value.trim();
+        tryExp.disabled = true; aStatus.style.color = '#fa0'; aStatus.textContent = 'trying export on ' + id + '…';
+        try {
+          const o = await window.__usxAdminProbe.runExportTry(id);
+          if (!o.clicked) {
+            aStatus.style.color = '#fa0';
+            aStatus.textContent = '— nothing was clicked (no control passed both lists). See the saved file.';
+          } else {
+            const got = o.clicked.newText ? (o.clicked.newText.length + ' JSON blob(s) captured') : 'no in-page JSON — check Downloads for a file';
+            aStatus.style.color = o.clicked.newText ? '#7c7' : '#fa0';
+            aStatus.textContent = '✔ clicked "' + (o.clicked.control.label || o.clicked.control.tag) + '" · ' + got;
+          }
+        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
+        finally { tryExp.disabled = false; }
+      };
+      expWrap.appendChild(tryExp);
+      p.appendChild(expWrap);
+
       p.appendChild(aStatus);
       p.appendChild(el('div', 'color:#999;font-size:11px;margin-top:4px',
-        'Files land in Downloads; I ingest them from there. Start with ① so the real response shape is known before any sweep.'));
+        'Files land in Downloads; I ingest them from there. ④ never clicks; ⑤ clicks one allowlisted control.'));
       return p;
     }
 
