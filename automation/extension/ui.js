@@ -240,10 +240,25 @@
       rowSt.appendChild(stIn);
       p.appendChild(rowSt);
 
+      // EXACT IDS beat the substring filter once the ids are known. Pre-filled with the
+      // IMPORT_LEDGER section-B tenants located in the 1785-row index, because those are
+      // the rows the ledger maintains BY HAND and therefore the whole point of this.
+      // When this box is non-empty the subdomain/status filter is IGNORED.
+      const rowIds = el('div', 'margin:4px 0');
+      rowIds.appendChild(el('div', 'font-size:11px;color:#999', 'dept ids (exact; overrides the filter):'));
+      const idsIn = el('textarea', 'width:100%;height:44px;box-sizing:border-box;padding:4px;background:#222;color:#eee;border:1px solid #555;border-radius:4px;font:10px ui-monospace,monospace');
+      idsIn.id = 'usx-admin-ids';
+      idsIn.placeholder = 'comma-separated department ids; blank = use the filter above';
+      // Ledger section B, located 2026-09-10. Albany County NY is deliberately absent --
+      // it was NOT found in this host's index and I will not invent an id for it.
+      idsIn.value = '68055618928,65003603844,68086125887,67633161477,69669966842,69189298576,54721427755,55074106416,57528255873,66323459475,20032392972';
+      rowIds.appendChild(idsIn);
+      p.appendChild(rowIds);
+
       const rowLim = el('div', 'display:flex;gap:4px;align-items:center;margin:4px 0');
       rowLim.appendChild(el('span', 'font-size:11px;color:#999', 'how many:'));
       const limIn = el('input', 'width:56px;padding:4px;background:#222;color:#eee;border:1px solid #555;border-radius:4px');
-      limIn.type = 'number'; limIn.min = '1'; limIn.max = '500'; limIn.value = '5'; limIn.id = 'usx-admin-lim';
+      limIn.type = 'number'; limIn.min = '1'; limIn.max = '500'; limIn.value = '40'; limIn.id = 'usx-admin-lim';   // 40 covers our 21 + the ledger's 11 without a second pass
       rowLim.appendChild(limIn);
       p.appendChild(rowLim);
 
@@ -254,7 +269,8 @@
         const st  = document.getElementById('usx-admin-status').value;
         scan.disabled = true; aStatus.style.color = '#fa0'; aStatus.textContent = 'listing, filtering, then scanning up to ' + lim + '…';
         try {
-          const o = await window.__usxAdminProbe.runScan({ limit: lim, subdomainMatch: sub, statusMatch: st });
+          const ids = document.getElementById('usx-admin-ids').value;
+          const o = await window.__usxAdminProbe.runScan({ limit: lim, subdomainMatch: sub, statusMatch: st, deptIds: ids });
           const withCfg = (o.results || []).filter(r => r.meta && r.meta.ok).length;
           const listed = (o.listing && o.listing.deptIdCount) || 0;
           const matched = (o.listing && o.listing.matchedCount) || 0;

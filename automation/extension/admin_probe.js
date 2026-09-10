@@ -427,7 +427,24 @@
     opts = opts || {};
     const listing = await listDepartments();
     const all = listing.deptIds || [];
-    const matched = filterRecords(all, opts);
+
+    // EXPLICIT ID LIST BEATS A SUBSTRING FILTER, and the first real attempt showed why:
+    // filtering on `usx,newark,miami,homestead,balcones,hdle,mariposa,lafayette,albany,
+    // aurora,anzini` matched 63 departments because "miami" also catches miami-dade,
+    // miamigardens and four migration rounds, "aurora" catches northaurorapd, and
+    // "lafayette" catches ten. With a `how many` cap the sweep then read the wrong five.
+    // Once the ids are known (they are, from the index), naming them is exact.
+    let matched;
+    const idList = (opts.deptIds || '').split(',').map(s => s.trim()).filter(s => /^\d+$/.test(s));
+    if (idList.length) {
+      const byId = {};
+      all.forEach(r => { byId[r.deptId] = r; });
+      // Keep an id even if it is NOT in the index -- reporting "requested but not listed"
+      // is information; silently dropping it would look like a clean result.
+      matched = idList.map(id => byId[id] || { deptId: id, subdomain: '(not in index)', status: '' });
+    } else {
+      matched = filterRecords(all, opts);
+    }
     const o = await scanConfigurations(matched, opts);
     o.listing = {
       deptIdCount: listing.deptIdCount,
