@@ -1,0 +1,74 @@
+﻿================================================================
+TEST LOG: CA_eSUN Firearm GunQuery
+Combo: QGB_af_GunMake (QGB_af_GunMake (auto))
+Date: 2026-09-10 11:53:22
+Result: PASS
+JSON Version: 3.3
+Entity Fingerprint: 27ad46e9bc0f1c79e5e06893de1d12f1358f8d924763951338d64bc29ccb0fcd
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"GunMake":"IMI","GunSerialNumber":"GUN12345","PurposeCode":"Criminal Justice"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M2605FAV9SVRSZ7V6300DM8H">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>GunQuery</MessageType>
+            <Id>01M2605FAV9SVRSZ7V6300DM8H</Id>
+            <GunSerialNumber>GUN12345</GunSerialNumber>
+            <GunMake>IMI</GunMake>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M2605FAV9SVRSZ7V6300DM8H
+  GunSerialNumber                GUN12345
+  GunMake                        IMI
+  CaRequestPurposeCode           C
+
+NOTES
+-----
+Automated capture (txId 01M2605FAV9SVRSZ7V6300DM8H). kind=any-field; anyField=GunMake; expectedKeyRef=QGB; firedMessageType=GunQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

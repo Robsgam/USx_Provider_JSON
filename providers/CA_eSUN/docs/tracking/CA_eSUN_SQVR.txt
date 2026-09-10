@@ -1,4 +1,4 @@
-CA_eSUN -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
+﻿CA_eSUN -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-09-10
@@ -16,7 +16,7 @@ That line's SQVR history is in git; this file tracks the MAINLINE only.
 ArticleSingleQuery -- Article Entity
 ================================================================================
 
-  QA -- ArticleSerialNumber [PENDING] -- 0 log(s) at v3.1
+  QA -- ArticleSerialNumber [CONFIRMED] -- 0 log(s) at v3.1
     keyReference: QA
     set[]: PurposeCode, ArticleSerialNumber
     any[]: ArticleBrand, ArticleCategory, ArticleTypeCode
@@ -25,25 +25,25 @@ ArticleSingleQuery -- Article Entity
 BoatQuery -- Boat Entity
 ================================================================================
 
-  BQ.H -- BoatHullIdNumber [PENDING] -- 0 log(s) at v3.1
+  BQ.H -- BoatHullIdNumber [CONFIRMED] -- 0 log(s) at v3.1
     keyReference: BQ.H
     set[]: PurposeCode, BoatHullIdNumber
     any[]: RegistrationState
     conditions: RegistrationState EXISTS
 
-  QB.H -- BoatHullIdNumber [PENDING] -- 0 log(s) at v3.1
+  QB.H -- BoatHullIdNumber [CONFIRMED] -- 0 log(s) at v3.1
     keyReference: QB.H
     set[]: PurposeCode, BoatHullIdNumber
     any[]: (none)
     conditions: RegistrationState NOT_EXISTS
 
-  BQ.R -- RegistrationNumber [PENDING] -- 0 log(s) at v3.1
+  BQ.R -- RegistrationNumber [CONFIRMED] -- 0 log(s) at v3.1
     keyReference: BQ.R
     set[]: PurposeCode, RegistrationNumber
     any[]: RegistrationState
     conditions: RegistrationState EXISTS & BoatHullIdNumber NOT_EXISTS
 
-  QB.R -- RegistrationNumber [PENDING] -- 0 log(s) at v3.1
+  QB.R -- RegistrationNumber [CONFIRMED] -- 0 log(s) at v3.1
     keyReference: QB.R
     set[]: PurposeCode, RegistrationNumber
     any[]: (none)
@@ -53,18 +53,18 @@ BoatQuery -- Boat Entity
 GunQuery -- Firearm Entity
 ================================================================================
 
-  QGB -- GunSerialNumber [PENDING] -- 0 log(s) at v3.1
+  QGB -- GunSerialNumber [CONFIRMED] -- 0 log(s) at v3.1
     keyReference: QGB
     set[]: PurposeCode, GunSerialNumber
     any[]: GunCaliber, GunMake, GunTypeCode, relatedHitSearchIndicator
 
-  QGH.B -- Name [PENDING] -- 0 log(s) at v3.1
+  QGH.B -- Name [CONFIRMED] -- 0 log(s) at v3.1
     keyReference: QGH.B
     set[]: PurposeCode, NameLast, NameFirst, BirthDate
     any[]: nameMiddle, nameSuffix
     conditions: GunSerialNumber NOT_EXISTS
 
-  QGH.A -- Name [PENDING] -- 0 log(s) at v3.1
+  QGH.A -- Name [CONFIRMED] -- 0 log(s) at v3.1
     keyReference: QGH.A
     set[]: PurposeCode, NameLast, NameFirst, Age
     any[]: nameMiddle, nameSuffix
@@ -74,25 +74,25 @@ GunQuery -- Firearm Entity
 DriverHistoryQuery -- Person Entity
 ================================================================================
 
-  KQ.O -- OperatorLicenseNumber [PENDING] -- 0 log(s) at v3.1
+  KQ.O -- OperatorLicenseNumber [CONFIRMED] -- 0 log(s) at v3.1
     keyReference: KQ.O
     set[]: PurposeCodeDH, OperatorLicenseNumberDH
     any[]: AttentionDH, RegistrationStateDH
     conditions: RegistrationStateDH EXISTS
 
-  L1.O -- OperatorLicenseNumber [PENDING] -- 0 log(s) at v3.1
+  L1.O -- OperatorLicenseNumber [CONFIRMED] -- 0 log(s) at v3.1
     keyReference: L1.O
     set[]: PurposeCodeDH, OperatorLicenseNumberDH
     any[]: (none)
     conditions: RegistrationStateDH NOT_EXISTS
 
-  KQ.N -- Name [PENDING] -- 0 log(s) at v3.1
+  KQ.N -- Name [CONFIRMED] -- 0 log(s) at v3.1
     keyReference: KQ.N
     set[]: PurposeCodeDH, NameLastDH, NameFirstDH, SexCodeDH, BirthDateDH
     any[]: AttentionDH, RegistrationStateDH, nameMiddleDH, nameSuffixDH
     conditions: OperatorLicenseNumberDH NOT_EXISTS
 
-  L1.N -- Name [PENDING] -- 0 log(s) at v3.1
+  L1.N -- Name [CONFIRMED] -- 0 log(s) at v3.1
     keyReference: L1.N
     set[]: PurposeCodeDH, NameLastDH, NameFirstDH
     any[]: nameMiddleDH, nameSuffixDH
@@ -102,7 +102,7 @@ DriverHistoryQuery -- Person Entity
 DriverLicenseQuery -- Person Entity
 ================================================================================
 
-  DQ.O -- OperatorLicenseNumber [PENDING] -- 0 log(s) at v3.1
+  DQ.O -- OperatorLicenseNumber [CONFIRMED] -- 0 log(s) at v3.1
     keyReference: DQ.O
     set[]: PurposeCode, OperatorLicenseNumber
     any[]: RegistrationState
@@ -114,13 +114,13 @@ DriverLicenseQuery -- Person Entity
     any[]: (none)
     conditions: RegistrationState NOT_EXISTS
 
-  DQ.N -- Name [PENDING] -- 0 log(s) at v3.1
+  DQ.N -- Name [CONFIRMED] -- 0 log(s) at v3.1
     keyReference: DQ.N
     set[]: PurposeCode, NameLast, NameFirst, SexCode, BirthDate
     any[]: RegistrationState, nameMiddle, nameSuffix
     conditions: OperatorLicenseNumber NOT_EXISTS
 
-  QW.N -- Name [PENDING] -- 0 log(s) at v3.1
+  QW.N -- Name [CONFIRMED] -- 0 log(s) at v3.1
     keyReference: QW.N
     set[]: PurposeCode, NameLast, NameFirst, BirthDate
     any[]: Age, SexCode, nameMiddle, nameSuffix
@@ -136,39 +136,38 @@ DriverLicenseQuery -- Person Entity
 VehicleRegistrationQuery -- Vehicle Entity
 ================================================================================
 
-  RQ.P -- LicensePlateNumber [PENDING] -- 0 log(s) at v3.1
+  RQ.P -- LicensePlateNumber [CONFIRMED] -- 0 log(s) at v3.1
     keyReference: RQ.P
     set[]: PurposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear
     any[]: RegistrationState
     conditions: RegistrationState EXISTS
 
-  4.P -- LicensePlateNumber [PENDING] -- 0 log(s) at v3.1
+  4.P -- LicensePlateNumber [CONFIRMED] -- 0 log(s) at v3.1
     keyReference: 4.P
     set[]: PurposeCode, LicensePlateNumber, LicensePlateTypeCode
     any[]: (none)
     conditions: RegistrationState NOT_EXISTS
 
-  QV.P -- LicensePlateNumber [PENDING] -- 0 log(s) at v3.1
+  QV.P -- LicensePlateNumber [CONFIRMED] -- 0 log(s) at v3.1
     keyReference: QV.P
     set[]: PurposeCode, LicensePlateNumber
     any[]: (none)
     conditions: RegistrationState NOT_EXISTS
 
-  RQ.V -- VehicleIdentificationNumber [PENDING] -- 0 log(s) at v3.1
+  RQ.V -- VehicleIdentificationNumber [CONFIRMED] -- 0 log(s) at v3.1
     keyReference: RQ.V
     set[]: PurposeCode, VehicleIdentificationNumber
     any[]: RegistrationState, VehicleMakeCode, vehicleYear
     conditions: RegistrationState EXISTS & LicensePlateNumber NOT_EXISTS
 
-  QV.V -- VehicleIdentificationNumber [PENDING] -- 0 log(s) at v3.1
+  QV.V -- VehicleIdentificationNumber [CONFIRMED] -- 0 log(s) at v3.1
     keyReference: QV.V
     set[]: PurposeCode, VehicleIdentificationNumber
     any[]: VehicleMakeCode, vehicleYear
     conditions: RegistrationState NOT_EXISTS & LicensePlateNumber NOT_EXISTS
 
-  VP.N -- Name [PENDING] -- 0 log(s) at v3.1
+  VP.N -- Name [CONFIRMED] -- 0 log(s) at v3.1
     keyReference: VP.N
     set[]: PurposeCode, NameLast, NameFirst
     any[]: AddressCity, AddressStreetNumber, nameMiddle, nameSuffix
     conditions: LicensePlateNumber NOT_EXISTS & VehicleIdentificationNumber NOT_EXISTS
-

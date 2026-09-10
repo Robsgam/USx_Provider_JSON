@@ -1,0 +1,72 @@
+﻿================================================================
+TEST LOG: CA_eSUN Person DriverHistoryQuery
+Combo: L1.NDH (L1.NDH (auto))
+Date: 2026-09-10 11:53:35
+Result: PASS
+JSON Version: 3.3
+Entity Fingerprint: 7390c0525b336b8ba6551a24f8623ae44ad76e7bc9aaccc88ee86cc9d640edfb
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"NameFirstDH":"JOHN","NameLastDH":"DOE","PurposeCodeDH":"Criminal Justice"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M25ZPNPE7PH58PPQQKQEGRC2">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverHistoryQuery</MessageType>
+            <Id>01M25ZPNPE7PH58PPQQKQEGRC2</Id>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+            <Name>DOE, JOHN</Name>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M25ZPNPE7PH58PPQQKQEGRC2
+  CaRequestPurposeCode           C
+  Name                           DOE, JOHN
+
+NOTES
+-----
+Automated capture (txId 01M25ZPNPE7PH58PPQQKQEGRC2). kind=combo; anyField=; expectedKeyRef=L1.NDH; firedMessageType=DriverHistoryQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

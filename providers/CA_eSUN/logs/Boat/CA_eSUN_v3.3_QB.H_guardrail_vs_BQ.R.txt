@@ -1,0 +1,72 @@
+﻿================================================================
+TEST LOG: CA_eSUN Boat BoatQuery
+Combo: QB.H_guardrail_vs_BQ.R (QB.H_guardrail_vs_BQ.R (auto))
+Date: 2026-09-10 11:53:01
+Result: PASS
+JSON Version: 3.3
+Entity Fingerprint: f5d3765e11d9ad850cf650213077795bb4b4948f54909ce0afeed2d833e2052d
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BoatHullIdNumber":"FL1234AB56H7","PurposeCode":"Criminal Justice","RegistrationNumber":"FL1234AB"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M2609RX3WYSY2MTAZNBGEKPV">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01M2609RX3WYSY2MTAZNBGEKPV</Id>
+            <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M2609RX3WYSY2MTAZNBGEKPV
+  BoatHullIdNumber               FL1234AB56H7
+  CaRequestPurposeCode           C
+
+NOTES
+-----
+Automated capture (txId 01M2609RX3WYSY2MTAZNBGEKPV). kind=guardrail; anyField=; expectedKeyRef=QB.H; firedMessageType=BoatQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

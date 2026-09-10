@@ -1,0 +1,86 @@
+﻿================================================================
+TEST LOG: CA_eSUN Firearm GunQuery
+Combo: QGH.B (QGH.B (auto))
+Date: 2026-09-10 11:53:17
+Result: PASS
+JSON Version: 3.3
+Entity Fingerprint: 27ad46e9bc0f1c79e5e06893de1d12f1358f8d924763951338d64bc29ccb0fcd
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BirthDate":"1990-01-15","NameFirst":"JOHN","NameLast":"DOE","PurposeCode":"Criminal Justice"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M260644FJW5D7CWYA85XZGTH">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>GunQuery</MessageType>
+            <Id>01M260644FJW5D7CWYA85XZGTH</Id>
+            <BirthDate>01151990</BirthDate>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+            <Name>DOE, JOHN</Name>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "lastName":  "DOE",
+                         "firstName":  "JOHN",
+                         "dateOfBirth":  "1990-01-15"
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M260644FJW5D7CWYA85XZGTH
+  BirthDate                      01151990
+  CaRequestPurposeCode           C
+  Name                           DOE, JOHN
+
+NOTES
+-----
+Automated capture (txId 01M260644FJW5D7CWYA85XZGTH). kind=combo; anyField=; expectedKeyRef=QGH.B; firedMessageType=GunQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

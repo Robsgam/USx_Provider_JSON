@@ -1,0 +1,74 @@
+﻿================================================================
+TEST LOG: CA_eSUN Vehicle VehicleRegistrationQuery
+Combo: VP.N_af_AddressCity (VP.N_af_AddressCity (auto))
+Date: 2026-09-10 11:54:02
+Result: PASS
+JSON Version: 3.3
+Entity Fingerprint: d86cf8a9b1a4274333959029a410cbff51ebe87097a95c06ea9490f6c8a485a4
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"AddressCity":"RENO","NameFirst":"JOHN","NameLast":"DOE","PurposeCode":"Criminal Justice"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M25ZF4KBJ65ZR793HHJS2BC2">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleRegistrationQuery</MessageType>
+            <Id>01M25ZF4KBJ65ZR793HHJS2BC2</Id>
+            <AddressCity>RENO</AddressCity>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+            <Name>DOE, JOHN</Name>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M25ZF4KBJ65ZR793HHJS2BC2
+  AddressCity                    RENO
+  CaRequestPurposeCode           C
+  Name                           DOE, JOHN
+
+NOTES
+-----
+Automated capture (txId 01M25ZF4KBJ65ZR793HHJS2BC2). kind=any-field; anyField=AddressCity; expectedKeyRef=VP.N; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
