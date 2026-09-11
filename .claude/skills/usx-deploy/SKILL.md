@@ -40,8 +40,10 @@ content == repo v4.20; both NY tenants label v4.24 / content == v4.26; `usx-or-l
 content == v2.6). Each would be a **no-op import that archives a test package and burns a full
 re-test cycle**.
 
-It names, per row, **which bundles would change** — imports are per-bundle, and "ENTITIES +
-PROVIDER" is different work from "PROVIDER only".
+It names, per row, **which bundles would change**. ⚠️ But the FL import on 2026-09-11 showed
+the import REPLACES the bundle set rather than merging: the tenant's CA_eSUN bundle was REMOVED,
+not left alongside. So a partial file would presumably delete whatever it omits. Treat the
+per-row bundle list as "what will differ afterwards", not as "only these will be touched".
 
 It will NOT queue a `NOT-OUR-BUILD` config. Overwriting a config we did not author is a
 different decision and needs a human.
@@ -72,13 +74,41 @@ Today: **by hand**, in the tenant's configuration UI. The three controls, by id:
 | `#import-from-file-btn` | Browse… | picks the file |
 | `#do-import` | **Import** | **executes** |
 
-⚠️ **UNRESOLVED AND IT GATES ALL AUTOMATION: how does the payload get in?** If `Browse…` opens a
-native OS file dialog, page JavaScript **cannot** drive it. If there is a hidden
-`<input type="file">`, `input.files = dataTransfer.files` works in Chrome. If the dialog has a
-textarea, that is the easiest and safest path. `enumerateControls` only queries
-`a, button, input[type=submit|button], [role=button]`, so **a file input or textarea is invisible
-to it** — the enumeration we have cannot answer this. Answer it by opening the dialog and
-looking, before designing any write path.
+### RESOLVED 2026-09-11 — the dialog was MEASURED, not guessed
+
+Captured with the panel's `Capture THIS page` button (live-DOM read, clicks nothing), file
+`usx_admin_dialog_*.json`:
+
+| element | id | container | state |
+|---|---|---|---|
+| **TEXTAREA** | **`#import-json`** | `#import-modal` | **visible, NOT readonly** — THE PAYLOAD FIELD |
+| INPUT file | `#import-file` | `#import-modal` | hidden, `accept=application/json,.json` |
+| TEXTAREA | `#export-json` | `#export-modal` | readonly — where Export JSON puts its content |
+| BUTTON | `#import-dept-btn` / `#import-from-file-btn` / `#do-import` | | open / browse / **execute** |
+
+**So automation is feasible, and by the easy route.** Set `#import-json`.value directly — no
+file picker, no `DataTransfer`, no OS dialog that page JS cannot drive. The hidden
+`#import-file` input is a workable fallback (a real file input *can* be populated via
+`DataTransfer`), but the textarea is strictly better: no file handling, and the payload can be
+inspected before submitting.
+
+⚠️ **ONE THING MEASURED-BUT-NOT-OBSERVED:** the capture caught `#import-json` with
+`valueLength=0` — the dialog was open but empty. So the field is confirmed to EXIST and be
+WRITABLE; it has not been *seen* receiving the file's contents. Rob's description ("it fills the
+window with the contents of the json") plus the id sitting beside `#import-file` in the same
+modal makes it near-certain. Confirm it by capturing once WITH the file loaded before writing
+code that depends on it.
+
+⚠️ Note why the existing tools could not answer this: `enumerateControls` queries only
+`a, button, input[type=submit|button], [role=button]`, so a file input or textarea is invisible
+to it — and button 4 reads a fresh hidden IFRAME, where the dialog is closed. The capture had to
+read the LIVE `document`.
+
+**Sketch of the write path, for when it is authorised:** set `#import-json`.value → dispatch
+`input`/`change` (this is Semantic UI / jQuery, so a plain value set may suffice, but dispatching
+costs nothing) → **verify the dept-id field equals the intended target** → click `#do-import`.
+That dept-id field is a gift: the import target is an explicit, readable value, so a pre-flight
+can assert it rather than trusting "whatever page we are on".
 
 ## Step 4 — Export again and PROVE it
 
