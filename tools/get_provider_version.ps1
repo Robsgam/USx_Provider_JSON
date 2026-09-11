@@ -96,130 +96,16 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 # --- the version index, straight from history -------------------------------
-# NOTE ON THE ENUMERATION: --diff-filter=A UNDER-REPORTS BADLY and must not be
-# used here. A version swap (delete v4.15 + write v4.16 in one commit) is
-# recorded by git as a RENAME, so filtering on additions found 40 versions
-# portfolio-wide when the true figure is 257 -- and reported HI as having 2 when
-# it has 18. Enumerate every path that ever appeared instead.
-function Get-VersionPaths([string]$prov) {
-    $rx = '^providers/' + [regex]::Escape($prov) + '/' + [regex]::Escape($prov) + '_v(\d+\.\d+)\.json$'
-    $spec = 'providers/' + $prov + '/' + $prov + '_v*.json'
-    $raw = @(& git -C $repo log --all --pretty=format: --name-only -- $spec 2>$null)
-    $seen = @{}
-    foreach ($line in $raw) {
-        $p = $line.Trim()
-        if ($p -match $rx) { $seen[$p] = $Matches[1] }
-    }
-    $out = @()
-    foreach ($k in $seen.Keys) {
-        $out += [pscustomobject]@{ Path = $k; Version = $seen[$k] }
-    }
-    # comma-guard: a single-element array unwraps to a scalar otherwise
-    return ,@($out | Sort-Object { [version]$_.Version })
-}
-
-# The newest commit whose tree still CONTAINS the path. The newest commit
-# TOUCHING it is often the deletion, where the blob no longer resolves -- so walk
-# newest-first and take the first commit where rev-parse succeeds.
-function Resolve-Blob([string]$path) {
-    $commits = @(& git -C $repo log --all --format=%H -- $path 2>$null)
-    foreach ($c in $commits) {
-        $sha = & git -C $repo rev-parse --quiet --verify ($c + ':' + $path) 2>$null
-        if ($LASTEXITCODE -eq 0 -and $sha) {
-            $meta = (& git -C $repo show -s --format='%ad|%s' --date=short $c) -join ''
-            $parts = $meta.Split('|', 2)
-            return [pscustomobject]@{
-                Commit  = $c
-                Blob    = $sha.Trim()
-                Date    = $parts[0]
-                Subject = if ($parts.Count -gt 1) { $parts[1] } else { '' }
-            }
-        }
-    }
-    return $null
-}
-
-# --- the pre-versioned era ---------------------------------------------------
-# Legacy names carry no version, so read it out of the bundle description inside
-# the blob. `git grep` against <commit>:<path> avoids capturing ~900KB per blob.
-# Dedupe by BLOB, not by version: a same-version rebuild committed twice is one
-# artifact, while two DIFFERENT blobs claiming one version are both real and
-# must both stay listed (that is what -Commit disambiguates).
-function Get-LegacyEntries([string]$prov) {
-    $variants = @(
-        @{ File = ($prov + '.json');       Variant = 'legacy' },
-        @{ File = ($prov + '_MC.json');    Variant = 'MC' },
-        @{ File = ($prov + '_BASE.json');  Variant = 'BASE' }
-    )
-    $out = @()
-    $seenBlob = @{}
-    foreach ($v in $variants) {
-        $path = 'providers/' + $prov + '/' + $v.File
-        $commits = @(& git -C $repo log --all --format=%H -- $path 2>$null)
-        foreach ($c in $commits) {
-            $sha = & git -C $repo rev-parse --quiet --verify ($c + ':' + $path) 2>$null
-            if ($LASTEXITCODE -ne 0 -or -not $sha) { continue }
-            $sha = $sha.Trim()
-            if ($seenBlob.ContainsKey($sha)) { continue }
-            $seenBlob[$sha] = $true
-            $hit = @(& git -C $repo grep -h -m1 -e 'Provider configuration for' $c -- $path 2>$null)
-            $ver = ''
-            foreach ($line in $hit) {
-                if ($line -match ('Provider configuration for\s+' + [regex]::Escape($prov) + '\s+v([\d]+\.[\d]+)')) {
-                    $ver = $Matches[1]; break
-                }
-            }
-            if (-not $ver) { continue }   # cannot name it -> do not list it as a version
-            $meta = (& git -C $repo show -s --format='%ad|%s' --date=short $c) -join ''
-            $parts = $meta.Split('|', 2)
-            $subj = ''
-            if ($parts.Count -gt 1) { $subj = $parts[1] }
-            $out += [pscustomobject]@{
-                Version = $ver
-                Path    = $path
-                Variant = $v.Variant
-                Commit  = $c
-                Blob    = $sha
-                Date    = $parts[0]
-                Subject = $subj
-                Era     = 'legacy'
-            }
-        }
-    }
-    return ,@($out | Sort-Object { [version]$_.Version }, Variant)
-}
-
-# Unified index: versioned era (blob-resolved on demand) + optional legacy era.
-function Get-Index([string]$prov, [bool]$withLegacy) {
-    $entries = @()
-    foreach ($v in (Get-VersionPaths $prov)) {
-        $b = Resolve-Blob $v.Path
-        if ($null -eq $b) {
-            $entries += [pscustomobject]@{
-                Version = $v.Version; Path = $v.Path; Variant = ''; Commit = ''
-                Blob = ''; Date = ''; Subject = '[UNRESOLVED -- path in history but no reachable blob]'
-                Era = 'versioned'
-            }
-        } else {
-            $entries += [pscustomobject]@{
-                Version = $v.Version; Path = $v.Path; Variant = ''; Commit = $b.Commit
-                Blob = $b.Blob; Date = $b.Date; Subject = $b.Subject; Era = 'versioned'
-            }
-        }
-    }
-    if ($withLegacy) { $entries += (Get-LegacyEntries $prov) }
-    return ,@($entries | Sort-Object { [version]$_.Version }, Variant)
-}
-
-function Get-ProvidersInHistory {
-    $raw = @(& git -C $repo log --all --pretty=format: --name-only -- 'providers/*/*_v*.json' 2>$null)
-    $seen = @{}
-    foreach ($line in $raw) {
-        $p = $line.Trim()
-        if ($p -match '^providers/([^/]+)/\1_v\d+\.\d+\.json$') { $seen[$Matches[1]] = $true }
-    }
-    return ,@($seen.Keys | Sort-Object)
-}
+# ⚠️ THE ENUMERATION MOVED OUT ON 2026-09-11 -- it is now shared, not private.
+# audit_tenant_provenance.ps1 needs the identical walk to identify a TENANT's bundles by
+# CONTENT against every historical build, and ENGINEERING_STANDARD 4.4 forbids re-deriving a
+# parser that already exists (five were written wrong in one session that way). The functions
+# moved VERBATIM into tools/_resolve_version_history.ps1, including the two warnings that make
+# them correct: --diff-filter=A under-reports a version SWAP (recorded by git as a RENAME, so
+# additions-only found 40 of 257 and reported HI as 2 of 18), and the newest commit touching a
+# path is usually its DELETION, where the blob no longer resolves.
+# Verified by diffing -List output for AZ/HI/NJ/OR and -All -IncludeLegacy before and after.
+. "$PSScriptRoot\_resolve_version_history.ps1"
 
 # --- -All: the census -------------------------------------------------------
 if ($All) {

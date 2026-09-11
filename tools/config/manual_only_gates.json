@@ -16,6 +16,10 @@
       "gate": "audit_xml_consistency.ps1",
       "reason": "It diffs the working tree's wire XML against a git BASELINE REF and exits 1 on any change. During ordinary work -- rebuilds, mutation testing, regenerated reports -- 'changed' is the normal state, so as a scheduled gate it is a noise generator that would train people to ignore it (LAW 2b). It is the right tool to run DELIBERATELY when asking 'did this refactor change any wire?', with a baseline chosen for that question.",
       "who_runs_it": "human, with an explicit -BaselineRef"
+    },
+    {
+      "gate": "audit_tenant_provenance.ps1",
+      "reason": "Requires tenant configuration exports pulled from a logged-in browser session (extension button 6b -> ingest_tenant_configs.ps1), which no repo-side orchestrator can obtain: a repo-side GET of the admin surface returns 303 -> /rms/login/. Running it inside enforce would either FAIL on every machine without a fresh pull or, worse, pass vacuously on an empty tenant dir. It also builds a ~10-minute git-history index on first run. MANUAL, on demand, after a config pull."
     }
   ],
   "harnesses": [

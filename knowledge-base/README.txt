@@ -743,6 +743,80 @@ TOOLS
     Button 6 saves every 3 tenants so partial files OVERLAP -- rows are keyed by deptId and the
     LAST-WRITTEN file wins, or an early partial would outvote the finished run.
     Proven able to fail: on the 11-tenant sweep it reports 8 agreeing, 3 behind repo, and the
+  tools/_resolve_version_history.ps1   [SHARED MODULE]
+    THE GIT-HISTORY WALK, extracted out of get_provider_version.ps1 on 2026-09-11 when a second
+    consumer appeared (audit_tenant_provenance.ps1, which identifies a TENANT's bundles by
+    CONTENT against every historical build). ENGINEERING_STANDARD 4.4 -- NEVER RE-IMPLEMENT AN
+    EXISTING PARSER -- so it moved VERBATIM rather than being written a second time.
+    Exports: Get-VersionPaths / Resolve-Blob / Get-LegacyEntries / Get-Index /
+    Get-ProvidersInHistory / Get-BlobText (reads a blob's text via `git cat-file`, so an index
+    over 671 artifacts never extracts ~540MB to disk).
+    !! IT CARRIES THE TWO WARNINGS THAT MAKE IT CORRECT, and both are easy to re-introduce:
+       (1) --diff-filter=A UNDER-REPORTS. A version swap (delete v4.15 + write v4.16 in ONE
+           commit) is recorded by git as a RENAME, so additions-only found 40 versions
+           portfolio-wide against a true 257, and reported HI_HCJDC_OFML as 2 when it has 18.
+       (2) THE NEWEST COMMIT TOUCHING A PATH IS USUALLY ITS DELETION, where the blob no longer
+           resolves. Resolve-Blob walks newest-first and takes the first commit whose tree
+           still CONTAINS the path.
+    !! ITS `return ,@(...)` COMMA-GUARD IS LOAD-BEARING AND MUST NOT BE DOUBLE-WRAPPED. The
+    guard stops a single result unwrapping to a scalar; a caller writing
+    @(Get-ProvidersInHistory) gets a NESTED array instead. That happened on the first run of
+    audit_tenant_provenance: the loop ran ONCE with the entire provider list bound to $prov,
+    stringified it into one bogus provider name, and printed "artifacts in history: 0" -- which
+    reads as an empty repo, not a broken call, because .Count was 1 so the zero-guard held.
+    Assign bare (`$x = Get-ProvidersInHistory`) and PowerShell unrolls the guard correctly.
+    Refactor safety: proven by diffing -List output for AZ/HI/NJ/OR and -All -IncludeLegacy
+    before and after the extraction -- all five identical -- plus a hash-verified -Version
+    retrieval.
+
+  tools/audit_tenant_provenance.ps1
+    WHICH BUILD IS THIS BUNDLE, ACTUALLY? Answered by CONTENT against every version in git.
+    Rob, 2026-09-11: "we have all the curren tjsons in our repo so figuring out what the
+    combination of versions shouldn't be hard" -> "do that  that should be part of the ability
+    to generate any version of the json like we worked on earlier."
+    THE DEFECT IT REPLACES. Our version rides in the DESCRIPTION of up to three bundles
+    (ENTITIES / <PROVIDER> / RMS) and IMPORTS ARE PER-BUNDLE, so a description can be stale
+    while the content is current, or the reverse. Reading a description and calling it "the
+    version" was wrong in BOTH directions and silent in both:
+      usx-az-azdps        RMS labelled AZ_AZDPS v3.4, content byte-identical to v3.12's RMS.
+                          Reported as a mixed install. NOTHING was wrong.
+      usx-hi-hcjdc-ofml   ENTITIES v4.19 / PROVIDER v4.20, ENTITIES content identical across
+                          both builds. Reported BEHIND. It is CURRENT.
+      practice-bertanzini ENTITIES v4.9 / PROVIDER v4.8. Reported CLEAN, because the stale
+                          label happened to MATCH the ledger. That is the dangerous direction.
+    !! THE HASH EXCLUDES THE DESCRIPTION AND NORMALIZES PLATFORM-ADDED NULLS, and both are
+    mandatory. The description is the one field guaranteed to differ between two otherwise
+    identical builds, so including it makes every bundle unique and the comparison vacuous.
+    And THE PLATFORM EMITS EXPLICIT NULLS WHERE OUR BUILD OMITS THE PROPERTY --
+    "conditions":null,"defaults":null, +324 bytes on a single AZ bundle. Before that
+    normalization BOTH current provider bundles on ALL-PASS tenants read "matches no known
+    build", which is implausible on its face and is what exposed it. THIS IS ALSO WHY AN IMPORT
+    CAN NEVER BE VERIFIED BY A BYTE COMPARE.
+    !! A BUNDLE MATCHING MANY BUILDS IS THE NORMAL CASE AND IS ITSELF THE ANSWER. The RMS
+    bundle is built from KB specs and is identical across versions (and across providers
+    sharing flags), so it matches dozens of builds -- which is how "stale RMS label" was shown
+    to be HARMLESS rather than a mixed install.
+    !! THREE REFUSALS, EACH EARNED ON ITS FIRST RUNS:
+       - an EMPTY index FAILs rather than reporting all 64 tenants as unmatched (it fired when
+         `powershell -File` stringified -Providers into one literal name);
+       - PROVIDER NOT INDEXED is distinguished from MATCHES NO KNOWN BUILD. usx-la-lems read
+         unmatched only because LA_LETTS_OFML exists SOLELY in the pre-versioned era and
+         Get-ProvidersInHistory globs providers/*/*_v*.json; it resolves perfectly under
+         -Providers LA_LETTS_OFML -IncludeLegacy. Reporting an un-indexed provider as
+         "deployed and unaccounted for" is the same conflation the census tools refuse;
+       - a malformed provider list FAILs loudly instead of iterating a nested array.
+    Index is blob-keyed and cached at _versions/bundle_hash_index.json (GITIGNORED, ~560KB):
+    259 artifacts / 21 providers / 385 distinct bundle contents, ~10 min to build once, then
+    instant. MANUAL-ONLY (tools/config/manual_only_gates.json) because it needs tenant exports
+    pulled from a logged-in browser -- a repo-side GET of the admin surface returns 303 to
+    /rms/login/, so wiring it into enforce would FAIL everywhere or pass vacuously on an empty
+    tenant dir.
+    BASELINE 2026-09-11: 0 bundles whose LABEL names a build their CONTENT is not. 79 bundles
+    match no build at all -- those are the 32 not-ours configs, now confirmed foreign by
+    content rather than merely by a missing label.
+    Usage: .\tools\audit_tenant_provenance.ps1 [-Providers <list>] [-Rebuild] [-IncludeLegacy]
+           [-TenantDir <dir>] [-OutFile <report>] [-Quiet]
+
   tools/ingest_tenant_configs.ps1
     THE BASELINE -- and the BEFORE that makes an import verifiable at all. Rob, 2026-09-11,
     stating the intent behind the whole exercise: "i want you to scan and pull all the jsons so
