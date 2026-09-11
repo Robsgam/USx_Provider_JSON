@@ -1,0 +1,38 @@
+
+====================================================================================
+  PER-BUNDLE VERSIONS ON EVERY TENANT -- a tenant has up to THREE, not one
+====================================================================================
+  source: C:\Users\RobSgambellone\.local\bin\USx_Provider_JSON\_versions\tenant_exports   configs: 65
+  tenants with a stamped PROVIDER bundle (ours): 33 of 65
+
+  ---- BUNDLES IMPORTED AT DIFFERENT TIMES (the actual finding) -------------------
+  tenant                     provider             ENTITIES  PROVIDER  RMS       repo
+  ------------------------------------------------------------------------------------------------
+  practice-bertanzini        NJ_NJCJIS            v4.9      v4.8      (none)    v4.17
+  usx-az-azdps               AZ_AZDPS             (none)    v3.12     v3.4      v3.12
+  usx-hi-hcjdc-ofml          HI_HCJDC_OFML        v4.19     v4.20     (none)    v4.20
+  usx-tn-ties                TN_TIES              (none)    v2.6      v3.4      v2.6
+
+  DISAGREEING 4 of 33 stamped tenants
+
+  ---- WHERE A FIRST-MATCH READ LIES (document order puts ENTITIES first) ---------
+  practice-bertanzini        first-match read v4.9     but the PROVIDER bundle is v4.8     -- OVERSTATES
+  usx-hi-hcjdc-ofml          first-match read v4.19    but the PROVIDER bundle is v4.20    -- UNDERSTATES
+  => 2 tenant(s) where our reported version was NOT the provider bundle version.
+
+  ---- BEHIND REPO, judged on the PROVIDER bundle (the authoritative one) ---------
+  amyblair                   FL_FCIC              tenant v7.18     repo v7.24
+  hawaii-dle                 HI_HCJDC_OFML        tenant v4.15     repo v4.20
+  hdle-foundation            HI_HCJDC_OFML        tenant v4.15     repo v4.20
+  onscene                    HI_HCJDC_OFML        tenant v4.15     repo v4.20
+  newarkpd-foundation        NJ_NJCJIS            tenant v4.16     repo v4.17
+  practice-bertanzini        NJ_NJCJIS            tenant v4.8      repo v4.17
+  ny-nycapss-foundation      NY_NYSPIN_EJUSTICE   tenant v4.24     repo v4.26
+  usx-ny-nyspin-ejustice     NY_NYSPIN_EJUSTICE   tenant v4.24     repo v4.26
+  usx-or-leds                OR_LEDS              tenant v2.5      repo v2.6
+
+  NOTE: a generic description ("Entity form configurations" / "Provider configuration for
+        RMS") is NOT-STAMPED and shown as (none). Absence of a stamp is not agreement --
+        those bundles carry no version evidence either way.
+====================================================================================
+
