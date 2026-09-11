@@ -702,6 +702,66 @@ TOOLS
     Carries `_unlocated` for the REVERSE gap (a ledger row matching no tenant), which a
     tenant-first sweep structurally cannot see: today that is "Albany County NY Foundation".
     64 tenants: 16 usx-fleet / 12 ledger-foundation / 36 discovered 2026-09-10.
+  tools/_tenant_scope.ps1   [SHARED MODULE]
+    IS THIS TENANT IN SCOPE, AND IF NOT, WHY NOT. Rob, 2026-09-11: "amyblair and onscene as well
+    as a bunch of the others will be excluded at some point so we likely won't need to account
+    for them or only account for them seperatlye". Without this, every report re-surfaces
+    tenants already decided against and the real queue drowns in them.
+    !! EXCLUSION IS NOT DELETION, AND THAT IS THE WHOLE DESIGN. An excluded tenant is reported
+    in its OWN section with its reason, and every count prints IN-SCOPE and EXCLUDED side by
+    side. A filtered report that does not say what it filtered is how a finding disappears
+    without anyone deciding it should -- the same failure shape as an ACCEPTED_DIVERGENCES row
+    that silences a gate while reading like a completed adjudication, and the same reason the
+    census tools refuse to conflate "unresolved" with "empty".
+    !! NOTHING IS EXCLUDED UNTIL IT IS IN `excluded`. tenant_scope.json ships with an EMPTY
+    exclusion list; its `_candidates` block is explicitly a PROPOSAL, derived from measurement,
+    with no effect. A tenant is excluded because ROB decided it, never because a tool inferred
+    it -- and the proposal records WHY each group would be excluded, because the reason decides
+    whether it is settled or revisitable.
+    !! A MISSING SCOPE FILE FAILS OPEN AND SAYS SO. Absent config means NOTHING is excluded, with
+    a [WARN]; it must never mean "exclude everything" or "proceed with an unknown scope".
+    !! $env:USX_TENANT_SCOPE OVERRIDES THE PATH so the mechanism can be tested against a REPLICA
+    instead of by editing the committed config. Proven both directions 2026-09-11: a replica
+    excluding amyblair + onscene moved the import queue 6 -> 4 and IN SCOPE 65 -> 63 with both
+    exclusions listed by reason, while the real file stayed at 0 excluded.
+    Exports: Get-TenantScope / Test-TenantExcluded / Get-TenantExclusion /
+    Split-TenantsByScope (returns BOTH halves -- a function returning only the in-scope half
+    would deny the caller its denominator, which is what this module exists to prevent) /
+    Get-ScopeFooterLines (the denominator line, centralised so no report can omit it).
+
+  tools/report_import_plan.ps1
+    WHAT WOULD AN IMPORT ACTUALLY CHANGE? Read-only, content-based. Rob, 2026-09-11: "then we
+    need to have you generate json import plan either mass or single  i will drive that moving
+    forward adn then have it automated at the sinlge click." Step 4 of the roadmap; it names the
+    work and CONTAINS NO WRITE PATH, because `Import JSON` is on the extension's DESTRUCTIVE
+    denylist by design and automating it is a separate decision (step 5).
+    !! IT PLANS ON CONTENT, NOT ON LABELS, AND THAT CHANGES THE ANSWER. Our version rides in the
+    DESCRIPTION of up to three bundles and imports are PER-BUNDLE, so a tenant routinely carries
+    a stale label over current content. Planning off labels would have queued FOUR tenants that
+    need nothing: usx-hi-hcjdc-ofml (label v4.19, content == repo v4.20 -- the ENTITIES label was
+    read first), usx-ny-nyspin-ejustice and ny-nycapss-foundation (label v4.24, content == v4.26,
+    BOTH bundles), usx-or-leds (label v2.5, content == v2.6). Each would have been a NO-OP import
+    that archives a test package and burns a full re-test cycle.
+    !! THE COMPARISON NORMALIZES WHAT THE PLATFORM ADDS. It re-serializes on export, emitting
+    "conditions":null / "defaults":null where our build omits the property, so a RAW byte compare
+    reports a difference on EVERY tenant including perfectly current ones. All hashing goes
+    through _bundle_identity.ps1, and ANY FUTURE IMPORT-VERIFY STEP MUST USE THE SAME MODULE or
+    it will report failure on a successful import.
+    !! THREE REFUSALS: it never queues a NOT-OUR-BUILD config (overwriting a config we did not
+    author is a DIFFERENT decision and needs a human, not a queue entry); it never queues on a
+    label difference alone; and 0 tenant configs FAILS, because an empty plan must not read as
+    "nothing to do".
+    Honours tenant_scope.json and prints the denominator. Filters DEACTIVATED by default
+    (-IncludeDeactivated to see them). Emits a 3-step ACCEPTANCE TEST per row and names which
+    step actually proves the import landed: the label check alone passes on a label-only change,
+    so the CONTENT HASH is the one that matters.
+    BASELINE 2026-09-11: CURRENT 26 | QUEUE 6 | not our build 32 | no repo build 1. Four of the
+    six queued rows already carry an explicit ledger decision (two HDLE tenants HELD at v4.15,
+    practice-bertanzini frozen on purpose, Newark known) -- so the genuinely unexplained queue is
+    amyblair and onscene, both unrecorded discoveries and both candidates for exclusion.
+    Usage: .\tools\report_import_plan.ps1 [-Provider <name>] [-TenantDir <dir>]
+           [-IncludeDeactivated] [-OutFile <report>] [-Quiet]
+
   tools/ingest_tenant_roster.ps1
     WHAT CHANGED ON THE PLATFORM SINCE THE LAST BASELINE -- new tenants, renames, status
     changes -- from ONE page load. Rob, 2026-09-11, describing the standing process behind the

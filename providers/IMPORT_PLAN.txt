@@ -1,0 +1,79 @@
+
+====================================================================================
+  IMPORT PLAN -- READ-ONLY. What an import would actually change, judged by CONTENT.
+====================================================================================
+  repo builds resolved: 20 provider(s), 60 bundle hash(es)
+  tenant configs on disk: 65
+
+  CURRENT 26 | *** IMPORT QUEUE 6 *** | not our build 32 | no repo build 1
+
+  ---- THE QUEUE: content differs from the repo build ------------------------------
+  TENANT                       PROVIDER             LABEL    TARGET   BUNDLES THAT WOULD CHANGE
+  ------------------------------------------------------------------------------------------------------------
+  amyblair                     FL_FCIC              v7.18    v7.24    ENTITIES, FL_FCIC
+  hawaii-dle                   HI_HCJDC_OFML        v4.15    v4.20    ENTITIES, HI_HCJDC_OFML  [LIVE]
+       ledger: HDLE LIVE claims v4.15
+  hdle-foundation              HI_HCJDC_OFML        v4.15    v4.20    ENTITIES, HI_HCJDC_OFML
+       ledger: HDLE Foundation claims v4.15
+  onscene                      HI_HCJDC_OFML        v4.15    v4.20    ENTITIES, HI_HCJDC_OFML
+  newarkpd-foundation          NJ_NJCJIS            v4.16    v4.17    ENTITIES, NJ_NJCJIS
+       ledger: Newark Foundation claims v4.17
+  practice-bertanzini          NJ_NJCJIS            v4.8     v4.17    ENTITIES, NJ_NJCJIS
+       ledger: Bert Anzini USx test tenant claims v4.9
+
+  ACCEPTANCE TEST for each row, once an import is actually performed:
+    1. re-export the tenant (button 6b with only that deptId) and re-ingest;
+    2. the PROVIDER bundle description must then read "v<TARGET>"; and
+    3. its CONTENT HASH must equal the repo build (_bundle_identity.ps1).
+  Step 3 is the one that matters: step 2 alone passes on a label-only change, and a
+  RAW byte compare FAILS on a correct import because the platform re-serializes.
+
+  ---- NOT OUR BUILD -- deliberately NOT queued ------------------------------------
+  No "Provider configuration for <P> vX.Y" description, and content matching no build
+  of ours. Overwriting a config we did not author is a DIFFERENT decision from updating
+  one we did, so these need a human, not a queue entry.
+     1836                         bundle FL_FCIC
+     abbey-demo                   bundle LA_LEMS
+     cbp-demo                     bundle LA_LEMS
+     ccpd                         bundle RecordsArchive
+     ccpd-jms-migration-round-1   bundle RecordsArchive
+     dark-demo                    bundle LA_LEMS
+     dea-demo                     bundle LA_LEMS
+     demo                         bundle LA_LEMS
+     demo-boston-cad2025          bundle LA_LEMS
+     demo-ny-se                   bundle LA_LEMS
+     erich-demo1                  bundle LA_LEMS
+     fullwooddemo                 bundle CA_eSUN
+     gordo                        bundle HI_HCJDC
+     jeffco-demo                  bundle LA_LEMS
+     justin-demo                  bundle LA_LEMS
+     kris-demo                    bundle LA_LEMS
+     kyle-demo                    bundle LA_LEMS
+     lafayettela-sherifftraining  bundle LA_LEMS
+     lafayettesheriff-la          bundle LA_LEMS
+     lam-demo                     bundle LA_LEMS
+     louisville-demo              bundle LA_LEMS
+     lyle-demo                    bundle LA_LEMS
+     mint                         bundle LA_LEMS
+     neworleanspd                 bundle LA_LEMS
+     neworleanspd-foundation      bundle LA_LEMS
+     practice-robsgambellone      bundle CA_eSUN
+     reno-nv-demo                 bundle LA_LEMS
+     sandiegoharborpd-foundation  bundle CA_eSUN
+     sandiegoso-foundation        bundle CA_eSUN
+     sdso                         bundle CA_eSUN
+     shelby-demo                  bundle LA_LEMS
+     usx-fl-fcic                  bundle CA_eSUN
+
+  ---- LABELLED AS OURS BUT NO CURRENT REPO BUILD ----------------------------------
+     usx-la-lems                  LA_LETTS_OFML v2.0
+  (e.g. a pre-rename provider name -- usx-la-lems carries LA_LETTS_OFML, retired.)
+
+  IN SCOPE 65 | EXCLUDED 0
+  Nothing is excluded. tenant_scope.json `excluded` is empty -- its `_candidates`
+  block is a PROPOSAL and deliberately has no effect until Rob moves entries in.
+
+  READ-ONLY: this tool names the work and contains no import path. `Import JSON` is on the
+  extension DESTRUCTIVE denylist by design; automating it is a separate decision (step 5).
+====================================================================================
+

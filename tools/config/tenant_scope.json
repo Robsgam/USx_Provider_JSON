@@ -1,0 +1,64 @@
+{
+  "_what": "WHICH TENANTS ARE IN SCOPE for import/audit reporting, and which are deliberately excluded -- with a reason, per tenant.",
+  "_why": [
+    "Rob, 2026-09-11: 'amyblair and onscene as well as a bunch of the others will be excluded at some point so we likely won't need to account for them or only account for them seperatlye'",
+    "Without this, every report re-surfaces tenants we have already decided not to care about, and the real queue is buried in noise. With it, the queue is short and the exclusions are auditable."
+  ],
+  "_rules": [
+    "EXCLUSION IS NOT DELETION. An excluded tenant is reported in its OWN section with its reason, never silently dropped. Every count prints IN-SCOPE and EXCLUDED side by side, because a number with a hidden denominator is how a finding disappears without anyone deciding it should.",
+    "EVERY EXCLUSION CARRIES A REASON AND A DATE. A reason-less exclusion is indistinguishable from a mistake, and this repo already learned that from registry rows that suppressed findings while reading like completed adjudications.",
+    "deptId IS THE KEY. Subdomains get renamed; the subdomain field here is a convenience label for humans and is NOT what matching uses.",
+    "`revisit: true` means the decision is expected to change (a tenant being migrated, a hold that will lift). `revisit: false` means it is settled (a demo tenant nobody supports). Both stay listed.",
+    "NOTHING IS EXCLUDED UNTIL ROB SAYS SO. The candidates below are a PROPOSAL derived from measurement; they are NOT applied and must not be treated as decisions."
+  ],
+  "generated": "2026-09-11",
+  "source": "tools/config/tenant_scope.json -- hand-maintained, consumed by the import-plan and audit reports",
+  "excluded": [],
+  "_candidates": {
+    "_status": "PROPOSAL ONLY -- NOT APPLIED. Nothing in this block affects any report. Move an entry into `excluded` to apply it.",
+    "_how_derived": "From the 2026-09-11 content measurement of all 64 carrier tenants plus the 1785-row roster. Grouped by the REASON they would be excluded, because the reason decides whether it is settled or revisitable.",
+    "not_our_build": {
+      "_what": "Carries a provider bundle with NO 'Provider configuration for <P> vX.Y' description -- confirmed by CONTENT to match no build in our history. We did not build these and do not version them.",
+      "count": 32,
+      "note": "Includes the 24-tenant LA_LEMS demo family (4 byte-identical configs copied across many tenants), Lafayette Parish (ledger already records it as hand-built by engineering), sdso/sandiegoso-foundation, gordo, ccpd, and usx-fl-fcic (Rob ruled that an unrelated test on 2026-09-10).",
+      "revisit": false
+    },
+    "third_party_or_unowned": {
+      "_what": "Runs OUR build but is not a tenant we track or support. These are the two Rob named.",
+      "tenants": [
+        { "subdomain": "amyblair", "deptId": "33641477034", "runs": "FL_FCIC v7.18", "repo": "v7.24" },
+        { "subdomain": "onscene", "deptId": "54300680862", "runs": "HI_HCJDC_OFML v4.15", "repo": "v4.20" }
+      ],
+      "revisit": false
+    },
+    "qa_and_practice": {
+      "_what": "QA / practice / demo tenants that run our build but are not deployments anyone is accountable for.",
+      "tenants": [
+        { "subdomain": "qa-amyblair-test", "deptId": "72270142625", "runs": "IL_LEADS_OFML v2.8 (current)" },
+        { "subdomain": "qa-amyb-test", "deptId": "72362435981", "runs": "IL_LEADS_OFML v2.8 (current)" },
+        { "subdomain": "practice-robsgambellone", "deptId": "68908334972", "runs": "not our build" }
+      ],
+      "revisit": false
+    },
+    "held_by_decision": {
+      "_what": "Genuinely behind, and DELIBERATELY so -- the ledger already records the decision. These should be reported separately rather than excluded, so the hold stays visible and does not quietly become a forgotten gap.",
+      "tenants": [
+        { "subdomain": "hawaii-dle", "deptId": "58443422576", "runs": "HI v4.15", "repo": "v4.20", "ledger": "HELD at v4.15 by decision", "status": "LIVE" },
+        { "subdomain": "hdle-foundation", "deptId": "54721427755", "runs": "HI v4.15", "repo": "v4.20", "ledger": "HELD at v4.15 by decision" },
+        { "subdomain": "practice-bertanzini", "deptId": "65003603844", "runs": "NJ v4.8", "repo": "v4.17", "ledger": "frozen on purpose (CAD-config test)" }
+      ],
+      "revisit": true,
+      "recommendation": "HOLD, do not EXCLUDE. A hold that stops being reported is how a stale LIVE tenant becomes invisible -- and hawaii-dle is LIVE."
+    },
+    "deactivated": {
+      "_what": "Status DEACTIVATED in the department index -- cannot serve queries. Rob: 'we can filter out deavtivated tenants'.",
+      "count": 225,
+      "note": "This is a STATUS filter, not a per-tenant decision, so it belongs in the tools as a switch rather than as 225 rows here. All 64 known carriers are non-deactivated, so filtering costs nothing in coverage.",
+      "revisit": true
+    }
+  },
+  "_needsRobsDecision": [
+    "Which of the _candidates groups to apply, and whether `held_by_decision` should be EXCLUDED or merely reported separately (my recommendation: reported separately -- hawaii-dle is LIVE and a hold that stops being reported is a hold nobody remembers making).",
+    "Whether newarkpd-foundation (NJ v4.16 vs ledger v4.17) stays in scope. It is the one genuinely-behind tenant with no recorded decision either way."
+  ]
+}
