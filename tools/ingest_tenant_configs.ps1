@@ -113,10 +113,26 @@ foreach ($f in $files) {
     # The config arrives as a JSON *string*. Write it verbatim, then parse a copy for hashing;
     # a config we cannot parse is reported, never silently inventoried as clean (refusal 3).
     $cfg = $o.config
-    $hash = $null; $parsed = $null; $note = ''
+    $hash = $null; $parsed = $null; $note = ''; $archived = $null
     if ([string]::IsNullOrWhiteSpace($cfg)) {
         $note = 'NO CONFIG CONTENT in the wrapper'
     } else {
+        # ⚠️ ARCHIVE A CHANGED PRIOR CONFIG BEFORE OVERWRITING IT. Added 2026-09-11 for the
+        # import-verify loop: the destination path is keyed on tenant, so re-ingesting after an
+        # import would OVERWRITE the very BEFORE snapshot the proof depends on. Rob's goal is
+        # "import, then run an export, then compare the 2" -- and without this, the 2nd export
+        # destroys the 1st. Only archived when the content actually DIFFERS, so a routine
+        # re-pull does not accumulate identical copies.
+        if (Test-Path $dest) {
+            $prior = [System.IO.File]::ReadAllText($dest)
+            if ($prior -ne $cfg) {
+                $arcDir = Join-Path $outDir '_before'
+                if (-not (Test-Path $arcDir)) { New-Item -ItemType Directory -Path $arcDir -Force | Out-Null }
+                $stampf = (Get-Item $dest).LastWriteTime.ToString('yyyyMMdd-HHmmss')
+                $archived = Join-Path $arcDir ("{0}_{1}_{2}.json" -f $tag, $id, $stampf)
+                if (-not (Test-Path $archived)) { Move-Item -Path $dest -Destination $archived }
+            }
+        }
         [System.IO.File]::WriteAllText($dest, $cfg, (New-Object System.Text.UTF8Encoding($false)))
         $bytesTotal += $cfg.Length
         try {
@@ -152,6 +168,7 @@ foreach ($f in $files) {
         configSha256    = $hash
         exportPath      = "_versions/tenant_exports/$tag`_$id.json"
         capturedAt      = "$($o.capturedAt)"
+        priorArchived   = $archived
         note            = $note
     }
 }

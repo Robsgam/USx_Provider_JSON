@@ -729,6 +729,44 @@ TOOLS
     would deny the caller its denominator, which is what this module exists to prevent) /
     Get-ScopeFooterLines (the denominator line, centralised so no report can omit it).
 
+  tools/verify_tenant_import.ps1
+    DID THE IMPORT ACTUALLY LAND? Proof, per bundle, from content hashes. Rob, 2026-09-11:
+    "so maybe a skill that imports and runs the export o check what the actual cversion is with
+    proof", and earlier "the idea is for the tool to eventually execute the imports, then run an
+    export, then compare the 2 to confirm the json update takes place."
+    THIS IS THE VERIFY HALF AND IT IS DELIBERATELY SEPARATE FROM ANY WRITE PATH. It works
+    identically whether the import was performed BY HAND in the tenant UI or by a future
+    deployment tool -- which is the sequencing argument: IF IT CANNOT PROVE A MANUAL IMPORT
+    LANDED, IT CERTAINLY CANNOT VERIFY AN AUTOMATED ONE. Automating the write first means
+    debugging two unproven halves at once, and the half that matters for safety is the one that
+    says "this worked".
+    Compares THREE things per bundle: BEFORE (archived pre-import, from
+    _versions/tenant_exports/_before/) / AFTER (the fresh pull) / REPO (the build we intended).
+    !! FOUR REFUSALS, EACH EXERCISED AGAINST REPLICA FIXTURES VIA -TenantDir (never by mutating
+    the live export directory -- usx-tooling Step 5c):
+       1. UNPROVEN when no BEFORE was archived, and it deliberately REFUSES to fall back on
+          "AFTER matches REPO, therefore the import worked" -- A TENANT ALREADY AT THE TARGET
+          VERSION SATISFIES THAT WITH NO IMPORT HAVING HAPPENED AT ALL.
+       2. "THE IMPORT DID NOT LAND" when every bundle is byte-identical to BEFORE, WHATEVER THE
+          LABEL NOW SAYS. This is the failure a label check misses completely.
+       3. LABEL-ONLY CHANGE (description moved, content did not) counted as a FAILURE.
+       4. FAIL when content changed but does not match the repo build -- worse than unchanged,
+          because it LOOKS like success.
+    Exits 1 on all four so it can be chained without reading the prose; 0 only on a real PASS.
+    !! THE VERDICT IS CONTENT, NEVER A VERSION STRING, and both naive checks are wrong: a LABEL
+    check passes on a no-op (four tenants carried stale labels over current content on
+    2026-09-11), and a RAW BYTE COMPARE FAILS ON A CORRECT IMPORT because the platform
+    re-serializes on export, emitting "conditions":null where our build omits the property.
+    Both avoided via _bundle_identity.ps1 -- and ANY future deployment tool must use that same
+    module or it will report failure on success.
+    PAIRED WITH ingest_tenant_configs.ps1, which archives a CHANGED prior config to
+    _versions/tenant_exports/_before/ before overwriting. Without that the SECOND export
+    destroys the FIRST, and "compare the 2" has nothing to compare. Archived only when the
+    content actually differs, so a routine re-pull does not accumulate copies.
+    Procedure, safeguards and the first-subject reasoning live in the usx-deploy SKILL.
+    Usage: .\tools\verify_tenant_import.ps1 -Tenant <subdomain|deptId> [-ExpectedProvider <P>]
+           [-ExpectedVersion <X.Y>] [-TenantDir <replica>] [-OutFile <report>] [-Quiet]
+
   tools/report_import_plan.ps1
     WHAT WOULD AN IMPORT ACTUALLY CHANGE? Read-only, content-based. Rob, 2026-09-11: "then we
     need to have you generate json import plan either mass or single  i will drive that moving
