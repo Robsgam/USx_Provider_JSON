@@ -271,6 +271,38 @@ denominator was measured first. **Truncation ruled out:** `probeExportControls` 
 blobs that read fine reach 332,297. **Mechanism proven working:** `usx-nj-njcjis` reads
 **v4.17 = repo v4.17**. So a tenant reading OLDER than the repo is a real measurement.
 
+## CONFIRMED BY A SECOND INDEPENDENT SWEEP (2026-09-11 00:14)
+
+A second full 64-tenant pass was run (it had been started concurrently and was still in flight when
+the first completed). Diffed against run 1 on verdict + provider + version + blob size + counters:
+**IDENTICAL 64 of 64, 0 differ, 0 missing either side.** Same output file size to the byte.
+
+| tenant | run 1 | run 2 |
+|---|---|---|
+| `usx-ny-nyspin-ejustice` | v4.24 / 258,341 B | v4.24 / 258,341 B |
+| `usx-hi-hcjdc-ofml` | v4.19 / 251,988 B | v4.19 / 251,988 B |
+| `usx-or-leds` | v2.5 / 192,225 B | v2.5 / 192,225 B |
+| `usx-nj-njcjis` (control) | v4.17 / 205,514 B | v4.17 / 205,514 B |
+
+WARNING -- REPRODUCIBILITY IS NOT EXPLANATION. This pair of runs CANNOT settle the question below.
+Both passes run the SAME regex, which stops at the first non-RMS `Provider configuration for ... v`
+match, so a tenant carrying TWO description strings would be misread IDENTICALLY by both. What the
+second run does establish is that the measurement is stable and not a transient iframe/timing
+artifact -- which was the other candidate explanation, and is now eliminated. The discriminating
+test (one export with the full blob retained, counting distinct version strings) is STILL OWED.
+
+WARNING -- A CONCURRENT SECOND SWEEP IS NOT FREE. Run 1 took ~50 min; run 2, overlapping it, took
+~2h23m for the same 64 tenants -- roughly 134s each against a ~24s worst case in the code. Two sets
+of hidden iframes contend for the same page loads. Run ONE sweep at a time.
+
+WARNING -- THE PROBE THAT COMPARED THE TWO RUNS WAS WRONG ON ITS FIRST ATTEMPT AND REPORTED A FALSE
+"IDENTICAL". PowerShell variables are case-insensitive, so `$A=@{}` silently destroyed `$a` (the
+run-1 object); the comparison then ran over a single empty key and printed
+`IDENTICAL 1 | DIFFER 0`, which reads exactly like a clean result. It was caught only because the
+per-tenant version column printed BLANK for `usx-nj-njcjis`, a tenant known to read v4.17.
+PRINT THE DENOMINATOR -- the corrected probe emits `keys compared: run1=64 run2=64` on every run
+for precisely this reason, so a collapsed comparison can never again look like agreement.
+
 ## 🔴 THREE PROVIDER TENANTS ARE BEHIND THEIR OWN COMMITTED LOGS — NEEDS A RULING
 
 | Provider tenant | Tenant exports | Repo | Committed logs stamped | Logs |
