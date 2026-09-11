@@ -526,7 +526,72 @@
       censusWrap.appendChild(stopC);
       censusWrap.appendChild(el('div', 'color:#999;font-size:11px;margin-top:2px',
         'Saves one file per chunk, so a failure costs one chunk. Stopping is safe — finished chunks are already saved.'));
+      // ── DEPLOY (the ONLY write path in the extension) ────────────────────────────────
+      // Rob, 2026-09-11: "i thought we were automating this". Correct -- the mechanism existed
+      // in deploy_probe.js but had no control surface, so the operator was still clicking
+      // through the dialog by hand. This is that surface.
+      //
+      // Payload comes from serve_plans.ps1 GET /build/<PROVIDER>, so it is the repo artifact
+      // byte-for-byte -- not a file anyone picked. DRY RUN is a separate button from EXECUTE,
+      // and execute confirms with the tenant id spelled out, because the one unrecoverable
+      // mistake available here is importing the right build into the wrong tenant.
+      const depWrap = el('div', 'margin-top:8px;border-top:1px solid #f66;padding-top:6px');
+      depWrap.appendChild(el('div', 'font-size:11px;color:#f66', 'DEPLOY \u2014 the only write path. Dry run first, always.'));
+      const depRow = el('div', 'display:flex;gap:4px;align-items:center;margin:4px 0');
+      depRow.appendChild(el('span', 'font-size:11px;color:#999', 'provider:'));
+      const depProv = el('input', 'flex:1;min-width:0;padding:4px;background:#222;color:#eee;border:1px solid #555;border-radius:4px');
+      depProv.type = 'text'; depProv.id = 'usx-deploy-prov'; depProv.placeholder = 'e.g. FL_FCIC';
+      depRow.appendChild(depProv);
+      depWrap.appendChild(depRow);
+      const depStat = el('div', 'font:11px ui-monospace,monospace;color:#7cf;margin:3px 0;min-height:28px');
+      depWrap.appendChild(depStat);
+
+      function depReport(o) {
+        const v = o.verdict;
+        depStat.style.color = (v === 'REFUSED' || v === 'ABORTED-BEFORE-CLICK') ? '#f77'
+                            : (v === 'CLICKED') ? '#7c7' : '#fa0';
+        let t = v;
+        if (o.payloadProvider) { t += ' \u00b7 ' + o.payloadProvider + ' v' + o.payloadVersion + ' (' + o.payloadBytes + ' bytes)'; }
+        if (o.modalTargetShown) { t += ' \u00b7 modal target ' + o.modalTargetShown; }
+        if (o.guardsFailed && o.guardsFailed.length) { t += ' \u00b7 ' + o.guardsFailed.length + ' guard(s) failed: ' + o.guardsFailed[0]; }
+        depStat.textContent = t;
+      }
+
+      const depDry = el('button', BTN, 'DRY RUN \u2014 fetch the build, open the dialog, run every guard, click NOTHING');
+      depDry.onclick = async () => {
+        const prov = document.getElementById('usx-deploy-prov').value.trim();
+        if (!prov) { depStat.style.color = '#f77'; depStat.textContent = '\u2716 enter a provider'; return; }
+        depDry.disabled = true; depStat.style.color = '#fa0'; depStat.textContent = 'fetching build + opening dialog\u2026';
+        try { depReport(await window.__usxDeploy.deployFromRepo({ provider: prov, execute: false })); }
+        catch (e) { depStat.style.color = '#f77'; depStat.textContent = '\u2716 ' + e.message; }
+        finally { depDry.disabled = false; }
+      };
+      depWrap.appendChild(depDry);
+
+      const depGo = el('button', BTN + ';' + RED, 'EXECUTE THE IMPORT (writes to this tenant)');
+      depGo.onclick = async () => {
+        const prov = document.getElementById('usx-deploy-prov').value.trim();
+        if (!prov) { depStat.style.color = '#f77'; depStat.textContent = '\u2716 enter a provider'; return; }
+        const did = (location.pathname.match(/configurations\/(\d+)/) || [])[1] || '(unknown)';
+        // Spell out BOTH the build and the target. A confirm that says "are you sure?" trains
+        // people to click yes; one that names what is about to be overwritten does not.
+        if (!confirm('IMPORT ' + prov + ' into department ' + did + '?\n\n'
+          + '\u00b7 this REPLACES the tenant configuration bundle set\n'
+          + '\u00b7 the import removes any bundle the payload does not contain\n'
+          + '\u00b7 run the DRY RUN first if you have not\n'
+          + '\u00b7 afterwards: pull with 6b and verify -- "import complete" is not proof')) return;
+        depGo.disabled = true; depDry.disabled = true;
+        depStat.style.color = '#fa0'; depStat.textContent = 'importing\u2026';
+        try { depReport(await window.__usxDeploy.deployFromRepo({ provider: prov, execute: true })); }
+        catch (e) { depStat.style.color = '#f77'; depStat.textContent = '\u2716 ' + e.message; }
+        finally { depGo.disabled = false; depDry.disabled = false; }
+      };
+      depWrap.appendChild(depGo);
+      depWrap.appendChild(el('div', 'color:#999;font-size:11px;margin-top:2px',
+        'Needs serve_plans.ps1 running (it serves /build/<PROVIDER>). Target is this page\u2019s department id, checked against the dialog\u2019s own field.'));
+
       p.appendChild(censusWrap);
+      p.appendChild(depWrap);
       p.appendChild(expWrap);
       diagWrap.insertBefore(el('div', 'font-size:11px;color:#888;margin-bottom:4px',
         'Reconnaissance that has served its purpose, kept rather than deleted. ' +
@@ -959,5 +1024,5 @@
 
   window.__usxUiTimer = setInterval(tick, 1000);
   tick();
-  console.log('%c[USx-UI]', 'color:#fa0;font-weight:bold', 'control panel injected. BUILD 2026-09-11c (adds the Capture-this-page form-element button -- read-only live-DOM capture for measuring the import dialog before automating it. STEP 3 CLEANUP: the admin panel now shows only the standing workflow -- 2 list tenants, 6b pull the configs, 7 census. Buttons 1/3/4/5/6 are HIDDEN behind a collapsed diagnostics toggle, not deleted: their handlers read inputs that would throw if removed, and a deleted code path is how the driver died for five days).');
+  console.log('%c[USx-UI]', 'color:#fa0;font-weight:bold', 'control panel injected. BUILD 2026-09-11e (adds the DEPLOY section -- dry-run and execute buttons over deploy_probe.js, the only write path; payload fetched from serve_plans /build/<PROVIDER> so it is the repo artifact byte-for-byte. Adds the Capture-this-page form-element button -- read-only live-DOM capture for measuring the import dialog before automating it. STEP 3 CLEANUP: the admin panel now shows only the standing workflow -- 2 list tenants, 6b pull the configs, 7 census. Buttons 1/3/4/5/6 are HIDDEN behind a collapsed diagnostics toggle, not deleted: their handlers read inputs that would throw if removed, and a deleted code path is how the driver died for five days).');
 })();

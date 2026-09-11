@@ -211,9 +211,54 @@
     return t;
   }
 
+  // Open the import modal and wait for it to render. Clicking #import-dept-btn only OPENS a
+  // dialog -- the destructive control is #do-import, which nothing but deployOne touches, and
+  // only with execute:true after every guard has passed. Kept separate from deployOne so the
+  // act of opening is never a side effect of a call that might also write.
+  async function openImportModal(budgetMs) {
+    const budget = budgetMs || 8000;
+    let modal = document.querySelector(MODAL);
+    if (modal && modal.querySelector(TEXTAREA)) { return { opened: false, already: true, modal: modal }; }
+    const btn = document.querySelector(OPEN_BTN);
+    if (!btn) { throw new Error('cannot find ' + OPEN_BTN + ' -- is this a configuration page?'); }
+    btn.click();
+    const t0 = Date.now();
+    while (Date.now() - t0 < budget) {
+      await new Promise(r => setTimeout(r, 150));
+      modal = document.querySelector(MODAL);
+      if (modal && modal.querySelector(TEXTAREA)) { return { opened: true, already: false, modal: modal }; }
+    }
+    throw new Error('the import modal did not render within ' + budget + 'ms');
+  }
+
+  // THE WHOLE LOOP, one call: fetch the repo build -> open the modal -> guard -> (maybe) write.
+  // Still ONE TENANT, still dry-run unless execute:true. This is the automation; deployOne
+  // remains callable on its own for a payload that did not come from the repo.
+  async function deployFromRepo(opts) {
+    opts = opts || {};
+    if (!opts.provider) { throw new Error('provider is required (e.g. FL_FCIC)'); }
+    const deptId = opts.deptId || deptIdFromUrl();
+    if (!deptId) { throw new Error('no deptId given and none in the URL'); }
+    const payload = await fetchBuild(opts.provider, opts.port);
+    // Read the version out of the payload rather than making the caller assert it twice --
+    // but still pass it as expectVersion so the guard compares the payload against itself and
+    // a malformed build cannot slip through by simply not stating a version.
+    const m = payload.match(/Provider configuration for ([A-Za-z0-9_]+) v([0-9]+\.[0-9]+)/);
+    await openImportModal(opts.modalBudgetMs);
+    return await deployOne({
+      deptId: String(deptId),
+      payload: payload,
+      expectProvider: opts.provider,
+      expectVersion: m ? m[2] : null,
+      tenantStatus: opts.tenantStatus || null,
+      liveConfirmed: opts.liveConfirmed === true,
+      execute: opts.execute === true
+    });
+  }
+
   window.__usxDeployAbort = false;
-  window.__usxDeploy = { deployOne, fetchBuild, runGuards, findTargetField,
-                         MODAL, TEXTAREA, DO_IMPORT, OPEN_BTN };
+  window.__usxDeploy = { deployOne, deployFromRepo, openImportModal, fetchBuild, runGuards,
+                         findTargetField, MODAL, TEXTAREA, DO_IMPORT, OPEN_BTN };
   console.log('%c[USx-DEPLOY]', 'color:#f66;font-weight:bold',
     'deploy_probe loaded -- THE ONLY WRITE PATH. Dry-run by default; execute:true required. ' +
     'One tenant per call, no batch, no all. Guards: explicit deptId matching BOTH the URL and the ' +
