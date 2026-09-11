@@ -247,12 +247,43 @@
     return !!(f && String(f.value || '').trim().length > 0);
   }
 
+  // ⚠️ PRESENCE IS NOT OPENNESS, and this is the bug behind BOTH refusals.
+  //
+  // The import modal lives in the DOM PERMANENTLY -- Semantic UI hides it with display:none
+  // rather than removing it. The live capture proves it: #export-modal's children are recorded
+  // `"visible": false, "display": "none"` while that dialog is closed, and #import-modal is the
+  // same construction. So "modal element exists AND contains the textarea" was TRUE for a CLOSED
+  // dialog. openImportModal concluded `already: true`, NEVER CLICKED "Import JSON", and then read
+  // a dept-id field the page had no reason to have populated.
+  //
+  // That is the whole story of both errors the operator saw: first
+  // "could not identify the modal target field unambiguously" (the old heuristic found zero
+  // numeric inputs, because the field was empty, and reported that as ambiguity), then
+  // "#import-dept-id-input never populated within 8000ms" (the wait was right, but we were
+  // waiting on a dialog nobody had opened). The wait did its job -- it turned a silent wrong
+  // answer into a specific one.
+  //
+  // Test OPENNESS, not existence. A hidden element has no offsetParent and no layout box.
+  function isShown(el) {
+    if (!el) { return false; }
+    if (el.offsetParent === null) {
+      // position:fixed elements legitimately report a null offsetParent, so do not trust that
+      // alone -- a fixed, VISIBLE modal would read as closed.
+      const cs = window.getComputedStyle(el);
+      if (cs.position !== 'fixed') { return false; }
+      if (cs.display === 'none' || cs.visibility === 'hidden') { return false; }
+    }
+    const r = el.getBoundingClientRect();
+    return r.width > 0 && r.height > 0;
+  }
+
+  function modalIsOpen(modal) { return !!(modal && modal.querySelector(TEXTAREA) && isShown(modal)); }
+
   async function openImportModal(budgetMs) {
     const budget = budgetMs || 8000;
     const t0 = Date.now();
-    const rendered = m => m && m.querySelector(TEXTAREA);
     let modal = document.querySelector(MODAL);
-    const already = !!rendered(modal);
+    const already = modalIsOpen(modal);
     if (!already) {
       const btn = document.querySelector(OPEN_BTN);
       if (!btn) { throw new Error('cannot find ' + OPEN_BTN + ' -- is this a configuration page?'); }
@@ -260,16 +291,22 @@
     }
     while (Date.now() - t0 < budget) {
       modal = document.querySelector(MODAL);
-      if (rendered(modal) && targetReady(modal)) {
+      if (modalIsOpen(modal) && targetReady(modal)) {
         return { opened: !already, already: already, modal: modal,
                  waitedMs: Date.now() - t0, targetShown: findTargetField(modal).value };
       }
       await new Promise(r => setTimeout(r, 150));
     }
+    // THREE distinguishable failures. Reporting any of them as another is what cost two rounds.
     modal = document.querySelector(MODAL);
-    if (!rendered(modal)) { throw new Error('the import modal did not render within ' + budget + 'ms'); }
-    // Distinguish the two failures rather than reporting the second as the first.
-    throw new Error('the modal rendered but ' + TARGET_FIELD + ' never populated within ' + budget +
+    if (!modal || !modal.querySelector(TEXTAREA)) {
+      throw new Error('the import modal (' + MODAL + ') never appeared within ' + budget + 'ms');
+    }
+    if (!isShown(modal)) {
+      throw new Error('the import modal is present but NOT VISIBLE after clicking ' + OPEN_BTN +
+                      ' -- the dialog did not open (it exists in the DOM even when closed)');
+    }
+    throw new Error('the modal is open but ' + TARGET_FIELD + ' never populated within ' + budget +
                     'ms -- refusing to read the target before the page has written it');
   }
 
@@ -335,12 +372,12 @@
   }
 
   window.__usxDeployAbort = false;
-  window.__usxDeploy = { deployOne, deployFromRepo, openImportModal, fetchBuild, runGuards, resolveTarget, targetReady,
+  window.__usxDeploy = { deployOne, deployFromRepo, openImportModal, fetchBuild, runGuards, resolveTarget, targetReady, isShown, modalIsOpen,
                          findTargetField, MODAL, TEXTAREA, DO_IMPORT, OPEN_BTN };
   console.log('%c[USx-DEPLOY]', 'color:#f66;font-weight:bold',
     'deploy_probe loaded -- THE ONLY WRITE PATH. Dry-run by default; execute:true required. ' +
     'One tenant per call, no batch, no all. Guards: explicit deptId matching BOTH the URL and the ' +
     'modal target field, modal+textarea+button present, payload parseable and version-stamped with ' +
     'ENTITIES plus exactly one provider bundle, LIVE needs liveConfirmed, and an abort flag. ' +
-    'A CLICKED verdict is NOT proof -- verify_tenant_import.ps1 is. BUILD 2026-09-11e -- findTargetField resolves the MEASURED id #import-dept-id-input, and openImportModal now WAITS for that field to be populated: the page fills it a beat after the modal renders, which is what really produced "could not identify the modal target field unambiguously". deployFromRepo resolves the provider AND the LIVE status from the repo record instead of from the caller.');
+    'A CLICKED verdict is NOT proof -- verify_tenant_import.ps1 is. BUILD 2026-09-11f -- PRESENCE IS NOT OPENNESS: the import modal exists in the DOM while CLOSED (display:none), so the old "modal + textarea present" check read a shut dialog as already-open, never clicked Import JSON, and then read an empty dept-id. That single cause produced BOTH operator errors -- the bogus "ambiguous target field" and then "never populated within 8000ms". openImportModal now tests VISIBILITY, waits for the dept-id to populate, and reports never-appeared / not-visible / never-populated as three distinct failures. findTargetField resolves the measured id #import-dept-id-input. deployFromRepo resolves the provider AND the LIVE status from the repo record, not from the caller.');
 })();

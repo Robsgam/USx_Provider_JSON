@@ -214,6 +214,18 @@ $html = @"
   assert('id renamed AND a second numeric field: REFUSE, never guess', D.findTargetField(M), null);
   M.removeChild(decoy); DF.id = keep;
 
+  // ── PRESENCE IS NOT OPENNESS ───────────────────────────────────────────────────────────
+  // The defect this missed twice: #import-modal exists in the DOM even when CLOSED (Semantic UI
+  // hides with display:none), so "element present AND contains the textarea" read as OPEN, the
+  // "Import JSON" button was never clicked, and we waited on a dialog nobody had opened.
+  // The harness DOM had no hidden state at all, so it could not express the bug.
+  assert('an OPEN modal reads as open', D.modalIsOpen(M), true);
+  M.style.display = 'none';
+  assert('a display:none modal is NOT open (it still exists)', D.modalIsOpen(M), false);
+  assert('isShown says hidden', D.isShown(M), false);
+  M.style.display = '';
+  assert('restored modal reads as open again', D.modalIsOpen(M), true);
+
   check('operator abort',         function(){ window.__usxDeployAbort = true; }, true);
   window.__usxDeployAbort = false;
   line('CASES ' + CASES);

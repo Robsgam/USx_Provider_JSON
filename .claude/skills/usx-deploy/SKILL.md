@@ -118,6 +118,30 @@ scored 20/20 while the real page refused. `audit_deploy_guards.ps1` now builds t
 `usx_admin_dialog_*.json` and asserts the resolver's **own return value** rather than driving it
 through `runGuards` (where a null field and a mismatched field both produce a refusal, so broken and
 fixed score identically). Verified by reverting the heuristic: **2 BROKEN / 27**.
+### ⚠️ THE MODAL EXISTS IN THE DOM WHILE CLOSED. Presence is not openness.
+
+This cost two rounds of wrong diagnosis, and the same root cause produced both errors:
+
+| what the operator saw | what I concluded | what was true |
+|---|---|---|
+| `could not identify the modal target field unambiguously` | a second numeric input in the modal | the dept-id was **empty** — the old heuristic reported "found zero" as ambiguity |
+| `#import-dept-id-input never populated within 8000ms` | the page fills it a beat late | **the dialog was never opened**, so nothing was going to fill it |
+
+Semantic UI hides a modal with `display:none` rather than removing it — the live capture records
+`#export-modal`'s children as `"visible": false, "display": "none"` while closed, and `#import-modal`
+is the same construction. So `modal && modal.querySelector('#import-json')` was **true for a closed
+dialog**: `openImportModal` concluded `already: true`, never clicked `#import-dept-btn`, and read a
+field the page had no reason to have populated.
+
+`modalIsOpen()` now tests **openness** (`isShown`: an offsetParent or a `position:fixed` computed
+style, plus a non-zero layout box), and the three failures are reported distinctly — *never appeared*
+vs *present but not visible* vs *open but dept-id never populated*. The wait was still worth adding:
+it converted a silently wrong answer into a specific one, which is how the real cause surfaced.
+
+**The harness could not express this bug** — its DOM had no hidden state, so a closed modal was
+unrepresentable. Four assertions added; reverting `modalIsOpen` to the presence-only test now reports
+**1 BROKEN / 31**.
+
 ## Step 4 — Export again and PROVE it
 
 ```
