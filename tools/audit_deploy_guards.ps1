@@ -82,11 +82,21 @@ $validJs = $validPayload -replace '\\', '\\\\' -replace '"', '\"' -replace "`r?`
 $html = @"
 <!doctype html><html><body>
 <div id="import-modal">
-  <input type="text" value="69510828830">
-  <textarea id="import-json"></textarea>
+  <!-- ⚠️ THIS DOM IS THE MEASURED ONE, and it was not before. The first version of this harness
+       held a single anonymous <input type="text" value="69510828830">, which is exactly the shape
+       the old findTargetField heuristic (scan every non-file input for /^\d{3,}$/, require EXACTLY
+       one) was written against. It reported 20/20 while the guard REFUSED a legitimate dry run on
+       the real page with "could not identify the modal target field unambiguously" -- because the
+       real modal also carries #import-file-name, a second text input.
+       A fixture I invented cannot test code I wrote to match it. Element order, ids and types below
+       are copied from usx_admin_dialog_*.json, captured off the live dialog. -->
+  <input type="text" id="import-dept-id-input" value="69510828830">
+  <input type="text" id="import-file-name" placeholder="Choose a .json file">
+  <button id="import-from-file-btn">Browse</button>
   <input type="file" id="import-file">
+  <textarea id="import-json"></textarea>
+  <button id="do-import">Import</button>
 </div>
-<button id="do-import">Import</button>
 <pre id="results"></pre>
 <script src="usx_lib_stub.js"></script>
 <script src="deploy_probe.js"></script>
@@ -161,6 +171,49 @@ $html = @"
   check('payload wrong version',  function(o){ o.expectVersion = '9.99'; }, true);
   check('LIVE without consent',   function(o){ o.tenantStatus = 'LiveLIVE'; }, true);
   check('LIVE with consent',      function(o){ o.tenantStatus = 'LiveLIVE'; o.liveConfirmed = true; }, false);
+
+  // ── THE RESOLVER AND THE RACE, against the MEASURED DOM ────────────────────────────────
+  // Every case above hands runGuards a hand-made {value:...} stub, so NONE of them touch
+  // findTargetField -- which is exactly how the broken version passed 20/20 while refusing the
+  // real page. These use the DOM and assert the resolver's OWN return value.
+  //
+  // ⚠️ The first attempt at these cases ALSO failed to discriminate: it drove them through
+  // runGuards, and since a null targetField and a mismatched one both produce a refusal, the old
+  // and new resolvers scored identically. A test that cannot tell the fixed code from the broken
+  // code is not a test. These assert the resolver directly.
+  function assert(name, got, want){
+    CASES++;
+    var ok = (got === want);
+    line((ok ? 'OK   ' : 'BROKEN ') + name + ' :: got ' + JSON.stringify(got) + ' want ' + JSON.stringify(want));
+  }
+  var M = document.querySelector('#import-modal');
+  var DF = document.querySelector('#import-dept-id-input');
+
+  // THE ACTUAL DEFECT: the page populates dept-id a moment after the modal renders, so at the
+  // instant we looked the field was EMPTY. The resolver must still FIND it (so the caller can
+  // wait for it and say what is really wrong), and targetReady must say NOT YET.
+  DF.value = '';
+  assert('empty dept-id: resolver still FINDS the field', D.findTargetField(M) === DF, true);
+  assert('empty dept-id: targetReady is false (wait, do not read)', D.targetReady(M), false);
+
+  // Populated: found, and ready.
+  DF.value = '69510828830';
+  assert('populated: resolver finds #import-dept-id-input', D.findTargetField(M) === DF, true);
+  assert('populated: targetReady is true', D.targetReady(M), true);
+
+  // The sibling filename box must never be mistaken for the target, even holding digits.
+  document.querySelector('#import-file-name').value = '20260911';
+  assert('numeric filename box is not mistaken for the target', D.findTargetField(M) === DF, true);
+  document.querySelector('#import-file-name').value = '';
+
+  // A UI change that renames the id must REFUSE, not fall back onto some other numeric field.
+  var keep = DF.id; DF.id = 'renamed-by-a-ui-change';
+  assert('id renamed: fallback finds the one numeric field', D.findTargetField(M) === DF, true);
+  var decoy = document.createElement('input');
+  decoy.type = 'text'; decoy.value = '12345678901'; M.appendChild(decoy);
+  assert('id renamed AND a second numeric field: REFUSE, never guess', D.findTargetField(M), null);
+  M.removeChild(decoy); DF.id = keep;
+
   check('operator abort',         function(){ window.__usxDeployAbort = true; }, true);
   window.__usxDeployAbort = false;
   line('CASES ' + CASES);

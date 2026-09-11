@@ -531,20 +531,49 @@
       // in deploy_probe.js but had no control surface, so the operator was still clicking
       // through the dialog by hand. This is that surface.
       //
-      // Payload comes from serve_plans.ps1 GET /build/<PROVIDER>, so it is the repo artifact
-      // byte-for-byte -- not a file anyone picked. DRY RUN is a separate button from EXECUTE,
-      // and execute confirms with the tenant id spelled out, because the one unrecoverable
-      // mistake available here is importing the right build into the wrong tenant.
+      // THERE IS NO PROVIDER BOX ANY MORE, and that is the point. Rob, same day:
+      //   "typing fcic in tath window is not right you should already know what the tenatn is
+      //    supposed to be based on my direct input intitally since you ahve not deployed any on
+      //    your own"
+      // The box was a real hazard, not just friction: a typo there imports the WRONG PROVIDER and
+      // every guard downstream still passes -- valid build, right deptId, matching modal field.
+      // The provider now comes from serve_plans GET /target/<deptId>, which reads the recorded
+      // intent (tenant_map.json, or the usx-<slug> subdomain that encodes it) and REFUSES for a
+      // tenant with neither. Payload still comes from GET /build/<PROVIDER>, so it is the repo
+      // artifact byte-for-byte. DRY RUN is a separate button from EXECUTE.
       const depWrap = el('div', 'margin-top:8px;border-top:1px solid #f66;padding-top:6px');
       depWrap.appendChild(el('div', 'font-size:11px;color:#f66', 'DEPLOY \u2014 the only write path. Dry run first, always.'));
-      const depRow = el('div', 'display:flex;gap:4px;align-items:center;margin:4px 0');
-      depRow.appendChild(el('span', 'font-size:11px;color:#999', 'provider:'));
-      const depProv = el('input', 'flex:1;min-width:0;padding:4px;background:#222;color:#eee;border:1px solid #555;border-radius:4px');
-      depProv.type = 'text'; depProv.id = 'usx-deploy-prov'; depProv.placeholder = 'e.g. FL_FCIC';
-      depRow.appendChild(depProv);
-      depWrap.appendChild(depRow);
+      const depTgt = el('div', 'font:11px ui-monospace,monospace;color:#999;margin:4px 0;min-height:28px', 'resolving target\u2026');
+      depWrap.appendChild(depTgt);
       const depStat = el('div', 'font:11px ui-monospace,monospace;color:#7cf;margin:3px 0;min-height:28px');
       depWrap.appendChild(depStat);
+
+      let depTarget = null;
+      const depDry = el('button', BTN, 'DRY RUN \u2014 resolve the target, fetch the build, open the dialog, run every guard, click NOTHING');
+      const depGo = el('button', BTN + ';' + RED, 'EXECUTE THE IMPORT (writes to this tenant)');
+
+      // Resolve on injection so the panel STATES the target before anyone clicks anything, and so
+      // an unrecorded tenant is refused while the buttons are still cold rather than mid-import.
+      async function depResolve() {
+        const did = (location.pathname.match(/configurations\/(\d+)/) || [])[1];
+        if (!did) { depTgt.style.color = '#f77'; depTgt.textContent = '\u2716 no department id in this URL -- open a tenant configuration page'; depDry.disabled = true; depGo.disabled = true; return; }
+        try {
+          depTarget = await window.__usxDeploy.resolveTarget(did);
+          const ex = depTarget.scopeExcluded;
+          depTgt.style.color = ex ? '#f77' : '#7c7';
+          depTgt.textContent = (ex ? '\u2716 EXCLUDED: ' + ex + ' \u00b7 ' : '')
+            + depTarget.subdomain + ' (' + did + ') \u2192 ' + depTarget.provider
+            + ' [' + depTarget.source + ']'
+            + (depTarget.status ? ' \u00b7 ' + depTarget.status : '')
+            + (depTarget.installedBundles ? ' \u00b7 installed: ' + depTarget.installedBundles : '');
+          depDry.disabled = !!ex; depGo.disabled = !!ex;
+        } catch (e) {
+          depTarget = null;
+          depTgt.style.color = '#f77';
+          depTgt.textContent = '\u2716 ' + e.message;
+          depDry.disabled = true; depGo.disabled = true;
+        }
+      }
 
       function depReport(o) {
         const v = o.verdict;
@@ -553,42 +582,40 @@
         let t = v;
         if (o.payloadProvider) { t += ' \u00b7 ' + o.payloadProvider + ' v' + o.payloadVersion + ' (' + o.payloadBytes + ' bytes)'; }
         if (o.modalTargetShown) { t += ' \u00b7 modal target ' + o.modalTargetShown; }
-        if (o.guardsFailed && o.guardsFailed.length) { t += ' \u00b7 ' + o.guardsFailed.length + ' guard(s) failed: ' + o.guardsFailed[0]; }
+        if (o.guardsFailed && o.guardsFailed.length) { t += ' \u00b7 ' + o.guardsFailed.length + ' guard(s) failed: ' + o.guardsFailed.join(' | '); }
         depStat.textContent = t;
       }
 
-      const depDry = el('button', BTN, 'DRY RUN \u2014 fetch the build, open the dialog, run every guard, click NOTHING');
       depDry.onclick = async () => {
-        const prov = document.getElementById('usx-deploy-prov').value.trim();
-        if (!prov) { depStat.style.color = '#f77'; depStat.textContent = '\u2716 enter a provider'; return; }
-        depDry.disabled = true; depStat.style.color = '#fa0'; depStat.textContent = 'fetching build + opening dialog\u2026';
-        try { depReport(await window.__usxDeploy.deployFromRepo({ provider: prov, execute: false })); }
+        depDry.disabled = true; depStat.style.color = '#fa0'; depStat.textContent = 'resolving target + fetching build, opening dialog\u2026';
+        try { depReport(await window.__usxDeploy.deployFromRepo({ execute: false })); }
         catch (e) { depStat.style.color = '#f77'; depStat.textContent = '\u2716 ' + e.message; }
         finally { depDry.disabled = false; }
       };
       depWrap.appendChild(depDry);
 
-      const depGo = el('button', BTN + ';' + RED, 'EXECUTE THE IMPORT (writes to this tenant)');
       depGo.onclick = async () => {
-        const prov = document.getElementById('usx-deploy-prov').value.trim();
-        if (!prov) { depStat.style.color = '#f77'; depStat.textContent = '\u2716 enter a provider'; return; }
         const did = (location.pathname.match(/configurations\/(\d+)/) || [])[1] || '(unknown)';
+        if (!depTarget) { depStat.style.color = '#f77'; depStat.textContent = '\u2716 target not resolved -- run the DRY RUN first'; return; }
         // Spell out BOTH the build and the target. A confirm that says "are you sure?" trains
         // people to click yes; one that names what is about to be overwritten does not.
-        if (!confirm('IMPORT ' + prov + ' into department ' + did + '?\n\n'
+        if (!confirm('IMPORT ' + depTarget.provider + ' into ' + depTarget.subdomain + ' (department ' + did + ')?\n\n'
+          + '\u00b7 provider resolved from the repo record (' + depTarget.source + '), not typed\n'
           + '\u00b7 this REPLACES the tenant configuration bundle set\n'
           + '\u00b7 the import removes any bundle the payload does not contain\n'
           + '\u00b7 run the DRY RUN first if you have not\n'
           + '\u00b7 afterwards: pull with 6b and verify -- "import complete" is not proof')) return;
         depGo.disabled = true; depDry.disabled = true;
         depStat.style.color = '#fa0'; depStat.textContent = 'importing\u2026';
-        try { depReport(await window.__usxDeploy.deployFromRepo({ provider: prov, execute: true })); }
+        try { depReport(await window.__usxDeploy.deployFromRepo({ execute: true, liveConfirmed: false })); }
         catch (e) { depStat.style.color = '#f77'; depStat.textContent = '\u2716 ' + e.message; }
         finally { depGo.disabled = false; depDry.disabled = false; }
       };
       depWrap.appendChild(depGo);
       depWrap.appendChild(el('div', 'color:#999;font-size:11px;margin-top:2px',
-        'Needs serve_plans.ps1 running (it serves /build/<PROVIDER>). Target is this page\u2019s department id, checked against the dialog\u2019s own field.'));
+        'Needs serve_plans.ps1 running (/target/<deptId> for the intent, /build/<PROVIDER> for the payload). '
+        + 'The provider is NOT typed -- it comes from the repo record, and an unrecorded tenant is refused.'));
+      depResolve();
 
       p.appendChild(censusWrap);
       p.appendChild(depWrap);
@@ -1024,5 +1051,5 @@
 
   window.__usxUiTimer = setInterval(tick, 1000);
   tick();
-  console.log('%c[USx-UI]', 'color:#fa0;font-weight:bold', 'control panel injected. BUILD 2026-09-11e (adds the DEPLOY section -- dry-run and execute buttons over deploy_probe.js, the only write path; payload fetched from serve_plans /build/<PROVIDER> so it is the repo artifact byte-for-byte. Adds the Capture-this-page form-element button -- read-only live-DOM capture for measuring the import dialog before automating it. STEP 3 CLEANUP: the admin panel now shows only the standing workflow -- 2 list tenants, 6b pull the configs, 7 census. Buttons 1/3/4/5/6 are HIDDEN behind a collapsed diagnostics toggle, not deleted: their handlers read inputs that would throw if removed, and a deleted code path is how the driver died for five days).');
+  console.log('%c[USx-UI]', 'color:#fa0;font-weight:bold', 'control panel injected. BUILD 2026-09-11f (DEPLOY has NO PROVIDER BOX: the provider comes from serve_plans /target/<deptId> -- the recorded intent, not something typed, because a typo there imports the wrong provider and every guard still passes. The panel STATES the resolved target before anything is clicked, and refuses an unrecorded or scope-excluded tenant while the buttons are still cold. Earlier: the DEPLOY section -- dry-run and execute buttons over deploy_probe.js, the only write path; payload fetched from serve_plans /build/<PROVIDER> so it is the repo artifact byte-for-byte. Adds the Capture-this-page form-element button -- read-only live-DOM capture for measuring the import dialog before automating it. STEP 3 CLEANUP: the admin panel now shows only the standing workflow -- 2 list tenants, 6b pull the configs, 7 census. Buttons 1/3/4/5/6 are HIDDEN behind a collapsed diagnostics toggle, not deleted: their handlers read inputs that would throw if removed, and a deleted code path is how the driver died for five days).');
 })();

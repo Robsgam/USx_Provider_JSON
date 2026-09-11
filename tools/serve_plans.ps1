@@ -7,6 +7,7 @@
     GET /plan/<PROVIDER>    -> newest providers/<P>/logs/<P>_TEST_PLAN_v*.json
     GET /scope/<PROVIDER>   -> providers/<P>/logs/<P>_PICKLIST_SCOPE.json
     GET /build/<PROVIDER>   -> providers/<P>/<P>_v*.json  (the CURRENT build, for the deploy path)
+    GET /target/<deptId>    -> which PROVIDER that tenant is SUPPOSED to run (intent, not install)
 
   TcpListener on 127.0.0.1:8477 (no admin/urlacl needed, unlike HttpListener).
   http://localhost is exempt from mixed-content blocking, so the https tenant page can
@@ -22,7 +23,10 @@ try { $listener.Start() } catch { Write-Error "Port $Port busy? $_"; exit 1 }
 Write-Host "[SERVE] plan server on http://localhost:$Port  (/plan/<PROVIDER>, /scope/<PROVIDER>)" -ForegroundColor Cyan
 
 function Send-Http($stream, [int]$code, [string]$body, [string]$ctype = 'application/json') {
-    $codeText = @{200 = 'OK'; 404 = 'Not Found'; 400 = 'Bad Request'}[$code]
+    # 409 was sent by three code paths while absent from this table, so every refusal went out as
+    # "HTTP/1.1 409 " with an EMPTY reason phrase -- legal, but it reads as a malformed response in
+    # devtools and hid which refusal fired.
+    $codeText = @{200 = 'OK'; 400 = 'Bad Request'; 404 = 'Not Found'; 409 = 'Conflict'}[$code]
     $bytes = [System.Text.Encoding]::UTF8.GetBytes($body)
     $hdr = "HTTP/1.1 $code $codeText`r`nContent-Type: $ctype; charset=utf-8`r`nAccess-Control-Allow-Origin: *`r`nContent-Length: $($bytes.Length)`r`nConnection: close`r`n`r`n"
     $hb = [System.Text.Encoding]::ASCII.GetBytes($hdr)
@@ -142,6 +146,83 @@ while ($true) {
                 Write-Host "[SERVE] $($cands.Count) root JSONs for ${prov} -- refusing to pick one: $names" -ForegroundColor Red
                 Send-Http $stream 409 ('{"error":"multiple root JSONs for ' + $prov + ' -- ONE-JSON-IN-ROOT violated","candidates":"' + $names + '"}')
             }
+        }
+        elseif ($urlPath -match '^/target/([0-9]+)/?$') {
+            # /target/<deptId> -- WHICH PROVIDER IS THIS TENANT SUPPOSED TO RUN.
+            #
+            # WHY THIS EXISTS. Rob, 2026-09-11, on being asked to type FL_FCIC into the deploy box:
+            #   "typing fcic in tath window is not right you should already know what the tenatn is
+            #    supposed to be based on my direct input intitally since you ahve not deployed any
+            #    on your own"
+            # He is right, and it is a SAFETY point rather than a convenience one: a typo in that box
+            # imports the WRONG PROVIDER into a real tenant, and every guard downstream would pass --
+            # the payload would be a valid version-stamped build, the deptId would match the page, the
+            # modal target field would agree. Nothing in the chain compares the payload's provider to
+            # the tenant's intended one, because until now nothing KNEW the intended one.
+            #
+            # AUTHORITY ORDER, and each answer says which one it used:
+            #   1. `intendedProvider` recorded on the tenant's row in tenant_map.json  -> "explicit-map"
+            #   2. the `usx-<slug>` subdomain, which encodes it by construction        -> "usx-subdomain"
+            #   3. nothing                                                             -> REFUSE (409)
+            #
+            # ⚠️ THE INSTALLED BUNDLE IS NOT AN AUTHORITY and is returned for CONTEXT ONLY. usx-fl-fcic
+            # is the proof: it was carrying a CA_eSUN bundle, so "what is installed" would have named
+            # exactly the wrong provider on the one tenant we deployed to first. Intent comes from the
+            # record; the install is what we are correcting.
+            $deptId = $Matches[1]
+            $mapPath = Join-Path $PSScriptRoot 'config\tenant_map.json'
+            if (-not (Test-Path $mapPath)) {
+                Send-Http $stream 404 '{"error":"tenant_map.json not found"}'
+                continue
+            }
+            # Re-read per request on purpose: a stale in-memory copy is exactly how a server started
+            # yesterday served pre-change data for a day (the /build endpoint, 2026-09-11).
+            $map = Get-Content $mapPath -Raw | ConvertFrom-Json
+            $row = @($map.tenants | Where-Object { $_.deptId -eq $deptId })
+            if ($row.Count -ne 1) {
+                Write-Host "[SERVE] /target/$deptId -> $($row.Count) matching tenant rows; refusing" -ForegroundColor Red
+                Send-Http $stream 404 ('{"error":"deptId ' + $deptId + ' is not in tenant_map.json (' + $row.Count + ' rows matched) -- it cannot be a deploy target until it is recorded"}')
+                continue
+            }
+            $t = $row[0]
+            $sub = [string]$t.subdomain
+            $intended = $null; $src = $null
+            if ($t.PSObject.Properties.Name -contains 'intendedProvider' -and $t.intendedProvider) {
+                $intended = [string]$t.intendedProvider; $src = 'explicit-map'
+            }
+            elseif ($sub -like 'usx-*') {
+                $derived = ($sub -replace '^usx-', '') -replace '-', '_'
+                # CANONICALISE THE CASING OFF DISK. The derived string is upper-case, so CA_eSUN comes
+                # out "CA_ESUN" -- which Test-Path happily accepts on Windows and which would then be
+                # compared, character by character, against the "CA_eSUN" written inside the bundles.
+                # A case-insensitive filesystem hides this until something does a string compare.
+                $dirs = @(Get-ChildItem $providersDir -Directory -ErrorAction SilentlyContinue)
+                $hit = @($dirs | Where-Object { $_.Name -eq $derived })
+                if ($hit.Count -ne 1) { $hit = @($dirs | Where-Object { $_.Name -like "${derived}_*" -and (Test-Path (Join-Path $_.FullName 'scripts')) }) }
+                if ($hit.Count -eq 1) { $intended = $hit[0].Name; $src = 'usx-subdomain' }
+                elseif ($hit.Count -gt 1) {
+                    $names = ($hit | ForEach-Object { $_.Name }) -join ', '
+                    Send-Http $stream 409 ('{"error":"subdomain ' + $sub + ' is ambiguous","candidates":"' + $names + '"}')
+                    continue
+                }
+            }
+            if (-not $intended) {
+                Write-Host "[SERVE] /target/$deptId ($sub) -> NO RECORDED INTENT; refusing" -ForegroundColor Red
+                Send-Http $stream 409 ('{"error":"no recorded intended provider for ' + $sub + ' (' + $deptId + ')","fix":"record intendedProvider on its tenant_map.json row -- the deploy target is a decision, not something to type at the keyboard"}')
+                continue
+            }
+            $installed = @($t.bundles | ForEach-Object { $_.name }) -join ','
+            $excl = ''
+            try {
+                . (Join-Path $PSScriptRoot '_tenant_scope.ps1')
+                $e = Get-TenantExclusion $deptId
+                if ($e) { $excl = [string]$e.reason }
+            } catch { }
+            Write-Host "[SERVE] /target/$deptId ($sub) -> $intended [$src]" -ForegroundColor Cyan
+            $body = '{"deptId":"' + $deptId + '","subdomain":"' + $sub + '","provider":"' + $intended +
+                    '","source":"' + $src + '","class":"' + [string]$t.class + '","status":"' + [string]$t.status +
+                    '","installedBundles":"' + $installed + '","scopeExcluded":"' + ($excl -replace '"', "'") + '"}'
+            Send-Http $stream 200 $body
         }
         else { Send-Http $stream 404 '{"error":"unknown path"}' }
     } catch { Write-Host "[SERVE] request error: $_" -ForegroundColor DarkYellow }

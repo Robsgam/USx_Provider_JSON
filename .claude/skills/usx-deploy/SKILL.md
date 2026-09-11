@@ -66,50 +66,58 @@ and after. Pull first.
 
 ## Step 3 — Import
 
-Today: **by hand**, in the tenant's configuration UI. The three controls, by id:
+**AUTOMATED as of 2026-09-11.** Panel section `DEPLOY`, two buttons: `DRY RUN` then
+`EXECUTE THE IMPORT`. Needs `serve_plans.ps1` running.
+
+**THERE IS NO PROVIDER BOX. Do not add one back.** Rob: *"typing fcic in tath window is not right
+you should already know what the tenatn is supposed to be based on my direct input intitally since
+you ahve not deployed any on your own."* It was a hazard, not friction — a typo there imports the
+WRONG PROVIDER and **every guard still passes**: valid version-stamped build, right deptId, matching
+modal field. Nothing compared the payload's provider to the tenant's intended one because nothing
+knew it. Now `GET /target/<deptId>` answers that from the repo record, in a stated authority order:
+
+| source | means |
+|---|---|
+| `explicit-map` | `intendedProvider` on the tenant's `tenant_map.json` row |
+| `usx-subdomain` | the `usx-<slug>` subdomain, which encodes it by construction |
+| *(neither)* | **409 REFUSED** — an unrecorded tenant is not a deploy target |
+
+⚠️ **The INSTALLED bundle is never the authority**, only context. `usx-fl-fcic` is the proof: it was
+carrying a **CA_eSUN** bundle, so "what is installed" names exactly the wrong provider on the one
+tenant we deployed to first. Intent comes from the record; the install is what we are correcting.
+
+Two consequences worth knowing: a supplied provider is treated as an **assertion to check** (mismatch
+→ refuse, so a typo becomes a refusal), and `tenantStatus` now comes from the record — it used to be
+a caller-supplied field, which meant the LIVE guard was armed only by an operator who volunteered the
+status, i.e. **disarmed by default on exactly the tenants it protects** (`hawaii-dle` is LIVE).
+
+The three controls, by id:
 
 | id | label | |
 |---|---|---|
 | `#import-dept-btn` | Import JSON | opens the dialog |
-| `#import-from-file-btn` | Browse… | picks the file |
+| `#import-from-file-btn` | Browse… | picks the file (unused — we set the textarea) |
 | `#do-import` | **Import** | **executes** |
 
-### RESOLVED 2026-09-11 — the dialog was MEASURED, not guessed
+### ⚠️ THE DEPT-ID FIELD IS POPULATED *AFTER* THE MODAL RENDERS. Wait for it.
 
-Captured with the panel's `Capture THIS page` button (live-DOM read, clicks nothing), file
-`usx_admin_dialog_*.json`:
+The first dry run refused with `could not identify the modal target field unambiguously`, and that
+message was **wrong about its own cause**. The measured modal holds only three inputs
+(`#import-dept-id-input`, `#import-file-name`, `#import-file`), so the original heuristic — scan
+non-file inputs for a `/^\d{3,}$/` value, require exactly one — had no competing candidate and
+should have matched. It found **zero**: the page's own jQuery (`fsRequest` → `loadDepartmentBundles`)
+fills that field a beat after the modal appears, and we opened and read in the same breath.
 
-| element | id | container | state |
-|---|---|---|---|
-| **TEXTAREA** | **`#import-json`** | `#import-modal` | **visible, NOT readonly** — THE PAYLOAD FIELD |
-| INPUT file | `#import-file` | `#import-modal` | hidden, `accept=application/json,.json` |
-| TEXTAREA | `#export-json` | `#export-modal` | readonly — where Export JSON puts its content |
-| BUTTON | `#import-dept-btn` / `#import-from-file-btn` / `#do-import` | | open / browse / **execute** |
+Resolving by id alone would have fixed only the wording — an empty field still fails the
+target-agreement guard. `openImportModal` now waits on `targetReady()` (field present **and**
+non-empty) and distinguishes "modal never rendered" from "modal rendered, dept-id never populated".
 
-**So automation is feasible, and by the easy route.** Set `#import-json`.value directly — no
-file picker, no `DataTransfer`, no OS dialog that page JS cannot drive. The hidden
-`#import-file` input is a workable fallback (a real file input *can* be populated via
-`DataTransfer`), but the textarea is strictly better: no file handling, and the payload can be
-inspected before submitting.
-
-⚠️ **ONE THING MEASURED-BUT-NOT-OBSERVED:** the capture caught `#import-json` with
-`valueLength=0` — the dialog was open but empty. So the field is confirmed to EXIST and be
-WRITABLE; it has not been *seen* receiving the file's contents. Rob's description ("it fills the
-window with the contents of the json") plus the id sitting beside `#import-file` in the same
-modal makes it near-certain. Confirm it by capturing once WITH the file loaded before writing
-code that depends on it.
-
-⚠️ Note why the existing tools could not answer this: `enumerateControls` queries only
-`a, button, input[type=submit|button], [role=button]`, so a file input or textarea is invisible
-to it — and button 4 reads a fresh hidden IFRAME, where the dialog is closed. The capture had to
-read the LIVE `document`.
-
-**Sketch of the write path, for when it is authorised:** set `#import-json`.value → dispatch
-`input`/`change` (this is Semantic UI / jQuery, so a plain value set may suffice, but dispatching
-costs nothing) → **verify the dept-id field equals the intended target** → click `#do-import`.
-That dept-id field is a gift: the import target is an explicit, readable value, so a pre-flight
-can assert it rather than trusting "whatever page we are on".
-
+**The harness missed this because its fixture was invented, not measured** — one anonymous
+`<input type="text" value="69510828830">`, i.e. exactly the shape the heuristic was written for. It
+scored 20/20 while the real page refused. `audit_deploy_guards.ps1` now builds the DOM from
+`usx_admin_dialog_*.json` and asserts the resolver's **own return value** rather than driving it
+through `runGuards` (where a null field and a mismatched field both produce a refusal, so broken and
+fixed score identically). Verified by reverting the heuristic: **2 BROKEN / 27**.
 ## Step 4 — Export again and PROVE it
 
 ```
