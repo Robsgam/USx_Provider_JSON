@@ -282,7 +282,15 @@
       idsIn.placeholder = 'comma-separated department ids; blank = use the filter above';
       // Ledger section B, located 2026-09-10. Albany County NY is deliberately absent --
       // it was NOT found in this host's index and I will not invent an id for it.
-      idsIn.value = '68055618928,65003603844,68086125887,67633161477,69669966842,69189298576,54721427755,55074106416,57528255873,66323459475,20032392972';
+      // ⚠️ DEFAULTS TO EMPTY, DELIBERATELY. It used to ship pre-filled with the 11
+      // IMPORT_LEDGER section-B dept ids, from when this panel was a ledger-verification tool.
+      // That default is HOSTILE to the single-tenant deploy workflow: a page reload silently
+      // restores it, so on 2026-09-11 a "pull just usx-fl-fcic" turned into an 11-tenant sweep
+      // and the AFTER snapshot the import proof needed was never captured. One reload between
+      // typing an id and clicking the button was enough. An empty box makes 6/6b refuse with a
+      // clear message instead of quietly doing something much larger than asked.
+      // (The 11 ledger ids live in tools/config/tenant_map.json, which is where they belong.)
+      idsIn.value = '';
       rowIds.appendChild(idsIn);
       p.appendChild(rowIds);
 
@@ -412,7 +420,8 @@
           + '· CUSTOMER CONFIGURATION -- gitignored on ingest, never committed\n'
           + '· READ-ONLY: clicks only Export JSON, never Import\n'
           + '· up to ~' + Math.max(1, Math.round(n * 25 / 60)) + ' min. Do not start a second sweep.')) return;
-        pull.disabled = true; sweep.disabled = true; aStatus.style.color = '#fa0';
+        window.__usxAdminAbort = false;
+        pull.disabled = true; sweep.disabled = true; stopPull.style.display = 'block'; aStatus.style.color = '#fa0';
         aStatus.textContent = 'pulling ' + n + ' config(s)…';
         try {
           const o = await window.__usxAdminProbe.runExportSweepDl({ deptIds: ids, pullConfigs: true });
@@ -423,9 +432,18 @@
             + ' failed · ' + got + '/' + (o.results || []).length + ' version(s) read'
             + (mixed ? ' · ' + mixed + ' tenant(s) carry MIXED versions' : '');
         } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
-        finally { pull.disabled = false; sweep.disabled = false; }
+        finally { pull.disabled = false; sweep.disabled = false; stopPull.style.display = 'none'; stopPull.textContent = 'Stop the pull (finishes the current tenant)'; }
       };
       expWrap.appendChild(pull);
+
+      // The pull loop ALREADY honours window.__usxAdminAbort between tenants (admin_probe.js
+      // checks it every iteration) -- there was just no control wired to it outside the census
+      // section, so a 25-minute sweep started by accident could not be stopped. Rob, 2026-09-11:
+      // "no stop button so re ran it with just the one dept id".
+      const stopPull = el('button', BTN + ';' + RED, 'Stop the pull (finishes the current tenant)');
+      stopPull.style.display = 'none';
+      stopPull.onclick = () => { window.__usxAdminAbort = true; stopPull.textContent = 'stopping after this tenant...'; };
+      expWrap.appendChild(stopPull);
 
       // ── BUTTON 7 -- THE FULL CENSUS: every department, not just the ones we know about ──────────
       // Rob: "scan the entire departments page and visit each configuration page to
