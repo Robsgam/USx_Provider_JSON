@@ -179,6 +179,35 @@
       p.appendChild(el('div', 'color:#999;font-size:11px;margin:2px 0',
         'Read-only. Sends GET only — never imports.'));
 
+      // ── STEP 3 CLEANUP (2026-09-11) ──────────────────────────────────────────────────
+      // Rob: "we will need to clean up the extension and remove all diagnostics hooks.
+      // maybe not completely but remove the buttons for now."
+      //
+      // HIDDEN, NOT DELETED, and that distinction is deliberate. A one-character break in
+      // these scripts once killed the driver AND capture tools for FIVE DAYS, found only when
+      // the operator opened a console -- so wholesale removal of working code paths is exactly
+      // how that recurs. Every diagnostic button, handler and INPUT still exists in the DOM;
+      // the container is display:none. That also matters functionally: button 3 reads
+      // #usx-admin-sub / #usx-admin-status / #usx-admin-lim and buttons 4-5 read
+      // #usx-admin-expid, so REMOVING those inputs would throw rather than degrade.
+      //
+      // THE STANDING WORKFLOW is what stays visible:
+      //   2.  List all tenants          -> roster diff (ingest_tenant_roster.ps1) -- 1 page load
+      //   6b. PULL THE CONFIGS          -> the baseline/BEFORE (ingest_tenant_configs.ps1)
+      //   7.  Scan ALL departments      -> census, for NEW tenants only
+      // Everything else was reconnaissance that has served its purpose: 1 (single read),
+      // 3 (bounded bundle sweep, superseded by the census), 4/5 (the look-then-click safety
+      // split that established the export control was safe), and 6 (versions only -- 6b is a
+      // strict superset, writing the same aggregate index PLUS the configs).
+      const diagWrap = el('div', 'display:none;margin-top:6px;border-top:1px dashed #444;padding-top:6px');
+      const diagToggle = el('div', 'font-size:11px;color:#777;cursor:pointer;margin-top:8px;user-select:none',
+        '▸ diagnostics (' + 'reconnaissance tools, not needed for the standing workflow)');
+      diagToggle.onclick = () => {
+        const on = diagWrap.style.display === 'none';
+        diagWrap.style.display = on ? 'block' : 'none';
+        diagToggle.textContent = (on ? '▾' : '▸') + ' diagnostics (reconnaissance tools, not needed for the standing workflow)';
+      };
+
       // 1. This page's own department (the id is in the URL, so nothing is guessed).
       const idFromUrl = (location.pathname.match(/configurations\/(\d+)/) || [])[1] || '';
       if (idFromUrl) {
@@ -195,7 +224,7 @@
           } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
           finally { one.disabled = false; }
         };
-        p.appendChild(one);
+        diagWrap.appendChild(one);
       }
 
       // 2. The tenant list.
@@ -213,6 +242,8 @@
         finally { lst.disabled = false; }
       };
       p.appendChild(lst);
+      p.appendChild(el('div', 'color:#7c7;font-size:11px;margin-top:4px',
+        'STANDING WORKFLOW: 2 list tenants (roster diff) -- 6b pull the configs -- 7 census, for NEW tenants only.'));
 
       // 3. Bounded bundle sweep. BOUNDED ON PURPOSE: a demo host may carry hundreds of
       // departments, and an unbounded per-department loop is the one thing here that could
@@ -230,7 +261,7 @@
       subIn.value = 'usx,newark,miami,homestead,balcones,hdle,mariposa,lafayette,albany,aurora,anzini';
       subIn.placeholder = 'comma-separated; blank = all 1785';
       rowSub.appendChild(subIn);
-      p.appendChild(rowSub);
+      diagWrap.appendChild(rowSub);
 
       const rowSt = el('div', 'display:flex;gap:4px;align-items:center;margin:4px 0');
       rowSt.appendChild(el('span', 'font-size:11px;color:#999', 'status has:'));
@@ -238,7 +269,7 @@
       stIn.type = 'text'; stIn.value = ''; stIn.id = 'usx-admin-status';
       stIn.placeholder = 'e.g. active (blank = any)';
       rowSt.appendChild(stIn);
-      p.appendChild(rowSt);
+      diagWrap.appendChild(rowSt);
 
       // EXACT IDS beat the substring filter once the ids are known. Pre-filled with the
       // IMPORT_LEDGER section-B tenants located in the 1785-row index, because those are
@@ -260,7 +291,7 @@
       const limIn = el('input', 'width:56px;padding:4px;background:#222;color:#eee;border:1px solid #555;border-radius:4px');
       limIn.type = 'number'; limIn.min = '1'; limIn.max = '500'; limIn.value = '40'; limIn.id = 'usx-admin-lim';   // 40 covers our 21 + the ledger's 11 without a second pass
       rowLim.appendChild(limIn);
-      p.appendChild(rowLim);
+      diagWrap.appendChild(rowLim);
 
       const scan = el('button', BTN + ';' + BLU, '3. Scan bundles for that many tenants');
       scan.onclick = async () => {
@@ -281,7 +312,7 @@
         } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
         finally { scan.disabled = false; }
       };
-      p.appendChild(scan);
+      diagWrap.appendChild(scan);
 
       // ── EXPORT PROBE (Rob: "exercise the export buttons yourself via the extension") ──
       // TWO buttons, and the split is the safety. Button 4 only LOOKS -- it enumerates every
@@ -292,14 +323,14 @@
       // reported, never clicked. This page is admin surface; a reflex click here could
       // delete a bundle.
       const expWrap = el('div', 'margin-top:8px;border-top:1px solid #333;padding-top:6px');
-      expWrap.appendChild(el('div', 'font-size:11px;color:#fc6', 'export probe (for the version catalogue)'));
+      expWrap.appendChild(el('div', 'font-size:11px;color:#fc6', 'pull the configs -- the baseline / the BEFORE for any import'));
       const expIdRow = el('div', 'display:flex;gap:4px;align-items:center;margin:4px 0');
       expIdRow.appendChild(el('span', 'font-size:11px;color:#999', 'dept id:'));
       const expId = el('input', 'flex:1;min-width:0;padding:4px;background:#222;color:#eee;border:1px solid #555;border-radius:4px');
       expId.type = 'text'; expId.id = 'usx-admin-expid';
       expId.value = idFromUrl || '69510509021';   // this page's own id when we are on one
       expIdRow.appendChild(expId);
-      expWrap.appendChild(expIdRow);
+      diagWrap.appendChild(expIdRow);
 
       const look = el('button', BTN, '4. Look at the controls (clicks NOTHING)');
       look.onclick = async () => {
@@ -314,7 +345,7 @@
         } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
         finally { look.disabled = false; }
       };
-      expWrap.appendChild(look);
+      diagWrap.appendChild(look);
 
       const tryExp = el('button', BTN + ';' + BLU, '5. Try the export (one safe control only)');
       tryExp.onclick = async () => {
@@ -333,7 +364,7 @@
         } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
         finally { tryExp.disabled = false; }
       };
-      expWrap.appendChild(tryExp);
+      diagWrap.appendChild(tryExp);
 
       // BUTTON 6 -- THE CATALOGUE. Uses the dept-ids box above, so it sweeps exactly the tenants
       // named there -- our fleet and/or the ledger's Foundation rows. One click, N tenants,
@@ -362,7 +393,7 @@
         } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
         finally { sweep.disabled = false; }
       };
-      expWrap.appendChild(sweep);
+      diagWrap.appendChild(sweep);
 
       // ── THE INVENTORY PULL: same sweep, but KEEP THE CONFIGS ────────────────────────
       // Rob 2026-09-11: "i want you to scan and pull all the jsons so we have an actual record
@@ -455,6 +486,14 @@
         'Saves one file per chunk, so a failure costs one chunk. Stopping is safe — finished chunks are already saved.'));
       p.appendChild(censusWrap);
       p.appendChild(expWrap);
+      diagWrap.insertBefore(el('div', 'font-size:11px;color:#888;margin-bottom:4px',
+        'Reconnaissance that has served its purpose, kept rather than deleted. ' +
+        '1 single-read | 3 bounded bundle sweep (superseded by 7) | 4 look-only + 5 click-one ' +
+        '(the safety split that proved the export control safe) | 6 versions only (6b is a superset). ' +
+        'The inputs in here are still read by those handlers, so removing them would throw, not degrade.'),
+        diagWrap.firstChild);
+      p.appendChild(diagToggle);
+      p.appendChild(diagWrap);
 
       p.appendChild(aStatus);
       p.appendChild(el('div', 'color:#999;font-size:11px;margin-top:4px',
@@ -878,5 +917,5 @@
 
   window.__usxUiTimer = setInterval(tick, 1000);
   tick();
-  console.log('%c[USx-UI]', 'color:#fa0;font-weight:bold', 'control panel injected. BUILD 2026-09-11a (button 6b PULL THE CONFIGS; circled digits replaced with plain numbers -- they did not render for the operator; button 6 no longer claims ~2s per tenant, which was wrong by an order of magnitude).');
+  console.log('%c[USx-UI]', 'color:#fa0;font-weight:bold', 'control panel injected. BUILD 2026-09-11b (STEP 3 CLEANUP: the admin panel now shows only the standing workflow -- 2 list tenants, 6b pull the configs, 7 census. Buttons 1/3/4/5/6 are HIDDEN behind a collapsed diagnostics toggle, not deleted: their handlers read inputs that would throw if removed, and a deleted code path is how the driver died for five days).');
 })();

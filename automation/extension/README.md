@@ -359,13 +359,38 @@ and that is the whole reason `tick()` needed changing: those URLs
 `!want` branch REMOVES the panel. The buttons would have been invisible on the only pages they
 work on. Caught by reading `tick()` before shipping, not by discovering it on the tenant.
 
-Three buttons, in order, on the admin pages:
+### The admin panel after the STEP 3 CLEANUP (BUILD 2026-09-11b)
 
-| Button | Does |
+Rob, 2026-09-11: *"we will need to clean up the extension and remove all diagnostics hooks.
+maybe not completely but remove the buttons for now."*
+
+**Three buttons are visible — the standing workflow, and nothing else:**
+
+| Button | Does | Feeds |
+|---|---|---|
+| **2. List all tenants + department ids** | GETs `/departments` — **ONE page load** for all 1,785 | `ingest_tenant_roster.ps1` → new tenants / renames / status changes |
+| **6b. PULL THE CONFIGS for the dept ids above** | clicks each tenant's own **Export JSON**, **one file per tenant** | `ingest_tenant_configs.ps1` → the baseline, and the BEFORE for any import |
+| **7. Scan ALL departments** (+ Stop) | reads the bundle table for every department, chunked and abortable | `ingest_tenant_scan.ps1` → presence census, for **new** tenants only |
+
+**Five buttons are HIDDEN behind a collapsed `▸ diagnostics` toggle — hidden, NOT deleted:**
+
+| Button | Why it is no longer part of the workflow |
 |---|---|
-| **① Read this department (`<id>`)** | GETs the configuration for the department id already in the URL — nothing guessed |
-| **② List all tenants + department ids** | GETs `/departments` |
-| **③ Scan bundles for that many tenants** | GETs `/configurations/<id>` per department, **bounded** by the `how many:` box (default 5, max 500, 250ms apart) |
+| **1. Read this department** | single-page read; the census and the pull both supersede it |
+| **3. Scan bundles for that many tenants** | bounded sweep, superseded by 7 (which covers all 1,785 with coverage accounting) |
+| **4. Look at the controls** / **5. Try the export** | the look-then-click safety split that ESTABLISHED the export control was safe to click. Its job is done; it is how we knew 6b would not delete a bundle |
+| **6. Version catalogue** | versions only — **6b is a strict superset**, writing the same aggregate index PLUS the configs |
+
+⚠️ **WHY HIDDEN AND NOT REMOVED — two independent reasons.**
+1. A one-character break in these scripts once killed the driver AND capture tools for **five
+   days**, found only when the operator opened a console. Deleting working code paths is exactly
+   how that recurs, and `audit_extension_syntax.ps1` exists because of it.
+2. **It would throw, not degrade.** Button 3's handler reads `#usx-admin-sub`,
+   `#usx-admin-status` and `#usx-admin-lim`; buttons 4 and 5 read `#usx-admin-expid`. Those
+   inputs live inside the hidden container, so they still exist in the DOM. Remove the inputs
+   and the handlers fail on a null dereference the moment anyone re-enables them.
+
+The dept-ids textarea stays **visible** because 6b reads it.
 
 Each writes a JSON to Downloads (`usx_admin_departments_*`, `usx_admin_bundles_*`,
 `usx_admin_one_*`) which is then ingested repo-side for cross-checking.
