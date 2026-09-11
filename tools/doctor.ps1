@@ -206,6 +206,26 @@ try {
     Emit "  [WARN] audit_extension_syntax.ps1 failed: $($_.Exception.Message)"
 }
 
+Emit ""
+Emit "--- DEPLOY GUARD EFFICACY (the only write path must refuse; audit_deploy_guards.ps1) ---"
+# deploy_probe.js is the ONLY file in this project that can change someone's tenant, and its
+# entire safety claim is "every guard can refuse". LAW 2 says a gate that cannot fail is not a
+# gate -- so this EXECUTES runGuards against a real DOM with 19 planted faults plus one VALID
+# control, and fails if any fault is allowed OR the control is refused. The control matters as
+# much as the faults: a guard set that refuses everything would score perfectly on refusals
+# while blocking every real deploy.
+# Wired into doctor rather than enforce for the same reason as the syntax gate above: it ships
+# no provider JSON so it blocks nothing -- but the write path is exactly the thing that must
+# never be running unchecked, and a gate nobody runs is not a gate.
+try {
+    $dg = & powershell -NoProfile -ExecutionPolicy Bypass -File "$tool\audit_deploy_guards.ps1" *>&1 | Out-String
+    ($dg.TrimEnd() -split "`n") |
+        Where-Object { $_ -notmatch '^=+$' -and $_ -notmatch 'DEPLOY GUARD EFFICACY --' -and $_ -notmatch 'ERROR:components' } |
+        ForEach-Object { Emit $_ }
+} catch {
+    Emit "  [WARN] audit_deploy_guards.ps1 failed: $($_.Exception.Message)"
+}
+
 # --- 6. Repo-scope advisories that nothing else ran ------------------------------
 # These three were ORPHANS: real gates, kept current, referenced by no orchestrator -- so their
 # findings only ever surfaced when someone ran them by hand. They are advisory or repo-scope

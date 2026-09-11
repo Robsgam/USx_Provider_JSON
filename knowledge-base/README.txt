@@ -2382,6 +2382,36 @@ AUTHORITATIVE SOURCE FILES (read-only)
     blocking six tenant-verified providers over it would be disproportionate.
     Cleaned per provider at its own rebuild (one provider at a time).
 
+  tools/audit_deploy_guards.ps1
+    PROVE THE WRITE PATH REFUSES. LAW 2 applied to deploy_probe.js -- the ONLY file in this
+    project that can change someone's tenant. Its entire safety claim is "every guard can
+    refuse", and a guard that cannot refuse is decoration, so this EXECUTES the exported
+    runGuards against a real DOM with planted faults and asserts each one is caught.
+    HOW IT RUNS: a harness page builds a real #import-modal / #import-json / #do-import DOM,
+    loads deploy_probe.js via <script src>, runs 20 cases, and writes verdicts into the DOM;
+    headless Edge renders it with --dump-dom and the verdicts are read back.
+    !! IT CARRIES ITS OWN CONTROL -- one case is a DELIBERATELY VALID request that must be
+    ALLOWED. A guard set that refused EVERYTHING would score 100% on the faults while being
+    useless, and would block every real deploy. The control is what distinguishes "safe" from
+    "broken shut".
+    !! IT ASSERTS ITS OWN DENOMINATOR. The harness emits `CASES <n>`; if fewer verdicts are
+    parsed than cases declared, it FAILS. That is not theoretical: --dump-dom emits the first
+    line of a <pre> GLUED to the tag, so an anchored ^(OK|BROKEN) match silently DROPPED the
+    control case -- 19 lines reported for 20 cases, and the missing one was the single case
+    whose absence mattered most. Tags are now stripped per line before matching.
+    !! IT DETECTS AN INERT TEST. Each case snapshots its inputs before and after mutation and
+    reports BROKEN if nothing changed. Earned: the 'payload unstamped' case targeted `v7.24",`
+    while the JSON holds `v7.24"}`, so the replace was a NO-OP, the payload stayed valid, and
+    the case reported the GUARD as broken when the guard had never been exercised. A silently
+    inert test is worse than a missing one -- it occupies the slot where coverage is assumed.
+    !! Start-Process -RedirectStandardOutput, never pipeline capture: Edge DETACHES when spawned
+    from powershell.exe and `& $browser` returns ZERO characters (audit_extension_syntax proved
+    that on a one-line page, so it is not size or timing).
+    Composed into doctor.ps1 -- it ships no provider JSON so it blocks nothing in enforce, but
+    the write path is exactly the thing that must never run unchecked.
+    BASELINE 2026-09-11: 20 declared / 20 parsed / 20 correct / 0 broken.
+    Usage: .\tools\audit_deploy_guards.ps1 [-OutFile <report>] [-Quiet]
+
   tools/audit_extension_syntax.ps1
     EXTENSION JS SYNTAX GATE -- the twin of audit_ps51_parse.ps1 for the browser
     scripts in automation/extension/. Composed into doctor.ps1; blocks nothing,

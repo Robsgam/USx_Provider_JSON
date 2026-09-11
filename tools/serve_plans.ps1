@@ -6,6 +6,7 @@
     GET /ping               -> {"ok":true}
     GET /plan/<PROVIDER>    -> newest providers/<P>/logs/<P>_TEST_PLAN_v*.json
     GET /scope/<PROVIDER>   -> providers/<P>/logs/<P>_PICKLIST_SCOPE.json
+    GET /build/<PROVIDER>   -> providers/<P>/<P>_v*.json  (the CURRENT build, for the deploy path)
 
   TcpListener on 127.0.0.1:8477 (no admin/urlacl needed, unlike HttpListener).
   http://localhost is exempt from mixed-content blocking, so the https tenant page can
@@ -105,6 +106,42 @@ while ($true) {
             }
             if ($file) { Send-Http $stream 200 (Get-Content $file.FullName -Raw) }
             else { Send-Http $stream 404 ('{"error":"no ' + $kind + ' for ' + $prov + '"}') }
+        }
+        elseif ($urlPath -match '^/build/([A-Za-z0-9_]+)/?$') {
+            # /build/<PROVIDER> -- the CURRENT versioned root JSON, for the deploy path.
+            # WHY THIS ENDPOINT EXISTS: the import payload must be the repo build BYTE-FOR-BYTE.
+            # A file the operator hand-picks can be stale, renamed, or from _versions/ -- and the
+            # whole point of verify_tenant_import is comparing against the repo build, so if the
+            # payload came from somewhere else the verification would compare a tenant to a build
+            # it was never given. Serving it from here removes the question.
+            #
+            # ⚠️ READ-ONLY, like every other endpoint. Handing out a file is not importing it;
+            # the write happens in the browser, gated in deploy_probe.js.
+            $prov = $Matches[1]
+            if (-not (Test-Path (Join-Path $providersDir $prov))) {
+                $pfx = @(Get-ChildItem $providersDir -Directory -ErrorAction SilentlyContinue |
+                         Where-Object { $_.Name -like "${prov}_*" -and (Test-Path (Join-Path $_.FullName 'scripts')) })
+                if ($pfx.Count -eq 1) { $prov = $pfx[0].Name }
+                elseif ($pfx.Count -gt 1) {
+                    $names = ($pfx | ForEach-Object { $_.Name }) -join ', '
+                    Send-Http $stream 409 ('{"error":"ambiguous provider ' + $prov + '","candidates":"' + $names + '"}')
+                    continue
+                }
+            }
+            $pdir = Join-Path $providersDir $prov
+            # ONE-JSON-IN-ROOT is the repo rule, so more than one is a repo defect, not a choice
+            # to make here. Refuse rather than serve an arbitrary sibling as "the build".
+            $cands = @(Get-ChildItem $pdir -Filter "${prov}_v*.json" -File -ErrorAction SilentlyContinue)
+            if ($cands.Count -eq 1) {
+                Write-Host "[SERVE] /build/$prov -> $($cands[0].Name) ($('{0:N0}' -f $cands[0].Length) bytes)" -ForegroundColor Cyan
+                Send-Http $stream 200 (Get-Content $cands[0].FullName -Raw)
+            }
+            elseif ($cands.Count -eq 0) { Send-Http $stream 404 ('{"error":"no versioned root JSON for ' + $prov + '"}') }
+            else {
+                $names = ($cands | ForEach-Object { $_.Name }) -join ', '
+                Write-Host "[SERVE] $($cands.Count) root JSONs for ${prov} -- refusing to pick one: $names" -ForegroundColor Red
+                Send-Http $stream 409 ('{"error":"multiple root JSONs for ' + $prov + ' -- ONE-JSON-IN-ROOT violated","candidates":"' + $names + '"}')
+            }
         }
         else { Send-Http $stream 404 '{"error":"unknown path"}' }
     } catch { Write-Host "[SERVE] request error: $_" -ForegroundColor DarkYellow }
