@@ -72,7 +72,7 @@ if (-not $src -or -not (Test-Path $src)) {
     exit 1
 }
 
-$idx = Get-Content $src -Raw | ConvertFrom-Json
+$idx = Get-Content $src -Raw -Encoding UTF8 | ConvertFrom-Json
 $rows = @($idx.deptIds)
 Say ("  index file : {0}" -f (Split-Path -Leaf $src))
 Say ("  captured   : {0}   host: {1}" -f $idx.capturedAt, $idx.host)
@@ -87,9 +87,12 @@ $now = @{}
 foreach ($r in $rows) {
     $id = "$($r.deptId)"
     if (-not $id) { continue }
+    # The index prints an em-dash for an empty cell. Storing that glyph means every consumer
+    # has to know it means "blank", and a BOM-less read under 5.1 mangles it. Normalize here.
+    $blankish = { param($v) $t = "$v".Trim(); if ($t -eq '' -or $t -eq [char]0x2014 -or $t -eq '-') { '' } else { $t } }
     $now[$id] = [ordered]@{
-        deptId = $id; subdomain = "$($r.subdomain)"; status = "$($r.status)"
-        analyticsAlias = "$($r.analyticsAlias)"; cadSubdomain = "$($r.cadSubdomain)"
+        deptId = $id; subdomain = (& $blankish $r.subdomain); status = (& $blankish $r.status)
+        analyticsAlias = (& $blankish $r.analyticsAlias); cadSubdomain = (& $blankish $r.cadSubdomain)
     }
 }
 Say ("  distinct deptIds: {0}" -f $now.Count)
@@ -98,7 +101,7 @@ Say ("  distinct deptIds: {0}" -f $now.Count)
 $bootstrap = -not (Test-Path $rosterPath)
 $base = @{}; $baseMeta = $null
 if (-not $bootstrap) {
-    $rj = Get-Content $rosterPath -Raw | ConvertFrom-Json
+    $rj = Get-Content $rosterPath -Raw -Encoding UTF8 | ConvertFrom-Json
     $baseMeta = $rj
     foreach ($t in @($rj.tenants)) { $base["$($t.deptId)"] = $t }
     Say ("  baseline   : {0} tenant(s), captured {1}" -f $base.Count, $rj.capturedAt)
@@ -216,7 +219,11 @@ if ($Update) {
         counts     = [ordered]@{ tenants = $out.Count }
         tenants    = $out
     }
-    ($doc | ConvertTo-Json -Depth 6) | Set-Content -Path $rosterPath -Encoding UTF8
+    # ⚠️ UTF-8 WITHOUT BOM, EXPLICITLY. `Set-Content -Encoding UTF8` ADDS a BOM under PS 5.1
+    # and OMITS it under pwsh 7, so this committed file's encoding depended on which engine
+    # last wrote it -- and a BOM-less non-ASCII file read back by 5.1 decodes as cp1252, which
+    # is exactly how a CAD subdomain came back as "â€”" instead of an em-dash.
+    [System.IO.File]::WriteAllText($rosterPath, ($doc | ConvertTo-Json -Depth 6), (New-Object System.Text.UTF8Encoding($false)))
     Say ''
     Say ("  baseline UPDATED: tools\config\tenant_roster.json ({0} tenants)" -f $out.Count)
 } else {

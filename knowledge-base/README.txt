@@ -810,6 +810,52 @@ TOOLS
     before and after the extraction -- all five identical -- plus a hash-verified -Version
     retrieval.
 
+  tools/_bundle_identity.ps1   [SHARED MODULE]
+    WHAT IS THIS BUNDLE, independent of what it calls itself. Extracted out of
+    audit_tenant_provenance.ps1 on 2026-09-11 when audit_tenant.ps1 needed the IDENTICAL hash
+    (ENGINEERING_STANDARD 4.4). Copying a hash primitive is worse than copying most code: two
+    copies that drift give two different answers to "is this the same bundle" and neither is
+    obviously wrong. Refactor proven inert -- provenance output byte-identical, 419 lines both
+    sides.
+    Exports: Remove-NullProperties / Get-BundleList / Get-BundleContentHash /
+    Get-BundleLabelVersion. Requires _json_canonical.ps1 dot-sourced by the caller.
+    !! THE TWO NORMALIZATIONS ARE NOT OPTIONAL AND BOTH WERE PAID FOR:
+       1. THE DESCRIPTION IS EXCLUDED. It is the one field guaranteed to differ between two
+          builds whose content is otherwise identical (it carries "... vX.Y"), so including it
+          makes every bundle unique and the comparison vacuous. Excluding it is what turns
+          "these labels disagree" into "these bundles are the same file".
+       2. PLATFORM-ADDED NULLS ARE STRIPPED. The platform emits "conditions":null,
+          "defaults":null where our build omits the property entirely (+324 bytes on one AZ
+          bundle). Before this, BOTH current provider bundles on ALL-PASS tenants reported
+          "matches no known build" -- implausible on its face, which is what forced the
+          investigation. validate.ps1 requires `conditions` to be an ARRAY when present, so a
+          null IS the platform's spelling of absent.
+    !! THIS IS WHY AN IMPORT CANNOT BE VERIFIED BY A BYTE COMPARE, and any future
+    import-verify step MUST use this module rather than its own comparison.
+
+  tools/audit_tenant.ps1
+    ONE TENANT, EVERYTHING WE KNOW, ON DEMAND. Rob, 2026-09-11: "be able to audit the tenants
+    on demand". The roster diff covers "what is new"; this covers "what about this one".
+    Takes a SUBDOMAIN or a deptId, because a human knows one and the data is keyed on the other,
+    and assembles five sources it CONSULTS rather than re-derives: tenant_roster.json
+    (identity/status/firstSeen), tenant_map.json (the ledger claim), _versions/tenant_exports/
+    (the deployed config -- the BEFORE for any import), bundle_hash_index.json (content
+    provenance: which BUILD each bundle IS), and providers/<P>/ (repo current).
+    !! FOUR REFUSALS:
+       1. "NEVER PULLED" IS NOT "NO PROVIDER". A tenant with no config on disk has not been
+          shown to be empty -- nobody looked. It prints the deptId to paste into button 6b and
+          the ingest command, so the gap is closable rather than merely noted.
+       2. A LABEL IS NEVER REPORTED AS A VERSION. Label and content appear side by side PER
+          BUNDLE and are never collapsed into one "tenant version" -- that field is the bug
+          that made usx-hi-hcjdc-ofml read BEHIND when it is CURRENT and practice-bertanzini
+          read CLEAN when its provider bundle is older than the ledger claims.
+       3. NO VERSION STRING MEANS NOT OUR BUILD -- positive evidence, not missing data (how
+          Lafayette was confirmed as the hand-built engineering JSON).
+       4. AN UNRESOLVED TENANT FAILS rather than printing an empty dossier as a healthy one.
+    MANUAL-ONLY: no orchestrator knows which tenant is being asked about, and it correctly
+    exits 0 on a never-pulled tenant, which would be vacuous as a scheduled gate.
+    Usage: .\tools\audit_tenant.ps1 -Tenant <subdomain|deptId> [-OutFile <report>] [-Quiet]
+
   tools/audit_tenant_provenance.ps1
     WHICH BUILD IS THIS BUNDLE, ACTUALLY? Answered by CONTENT against every version in git.
     Rob, 2026-09-11: "we have all the curren tjsons in our repo so figuring out what the

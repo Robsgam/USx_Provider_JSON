@@ -255,6 +255,46 @@ never-imported rows from the platform side, which is the first time that has bee
 
 ---
 
+# ⚠️ READ THIS BEFORE CITING ANY "BEHIND" CLAIM ABOVE -- 2026-09-11, CONTENT MEASUREMENT
+
+Content hashing (description excluded, platform-added nulls normalized) was run against every
+tenant bundle and every repo current build. IT RETRACTS FOUR OF MY OWN FINDINGS FROM EARLIER
+THE SAME DAY. Every one of them came from reading a bundle DESCRIPTION; every one dissolved
+once the BYTES were compared.
+
+| my earlier claim | measured reality |
+|---|---|
+| `usx-hi-hcjdc-ofml` behind (v4.19 vs v4.20 logs) | **CURRENT.** ENTITIES label v4.19 was read first; the PROVIDER bundle is v4.20 |
+| `usx-ny-nyspin-ejustice` genuinely behind (v4.24 vs v4.26) | **CONTENT-IDENTICAL TO REPO v4.26**, both ENTITIES and PROVIDER. Stale label only |
+| `usx-or-leds` genuinely behind (v2.5 vs v2.6) | **CONTENT-IDENTICAL TO REPO v2.6**, both bundles. Stale label only |
+| `practice-bertanzini` provider bundle "matches NO build in our history" | **MATCHES NJ v4.8 AND v4.9** (identical between them). My earlier check lacked the null normalization |
+
+⚠️ **THE LOGS-VS-TENANT CONTRADICTION IS ALSO WITHDRAWN.** I hypothesised a GATE GAP -- that a
+log's version stamp might come from the REPO rather than from what the tenant served, which
+would have meant no log anywhere proves which build produced its wire. It is not needed: NY's
+tenant content IS v4.26, so 65 logs stamped v4.26 are consistent with what is installed.
+CLAUDE.md's premise -- a provider tenant's newest logs are proof of what is installed there --
+STANDS. Do not re-raise the gap on this evidence.
+
+## THE ACTUAL STATE, BY CONTENT: 26 CURRENT / 6 GENUINELY BEHIND
+
+| tenant | provider | label | repo | why |
+|---|---|---|---|---|
+| `amyblair` | FL_FCIC | v7.18 | v7.24 | unrecorded tenant, genuinely behind |
+| `hawaii-dle` **(LIVE)** | HI_HCJDC_OFML | v4.15 | v4.20 | ledger: HELD at v4.15 by decision |
+| `hdle-foundation` | HI_HCJDC_OFML | v4.15 | v4.20 | ledger: HELD at v4.15 by decision |
+| `onscene` | HI_HCJDC_OFML | v4.15 | v4.20 | unrecorded tenant |
+| `newarkpd-foundation` | NJ_NJCJIS | v4.16 | v4.17 | known; Rob's call |
+| `practice-bertanzini` | NJ_NJCJIS | v4.8 | v4.17 | ledger: frozen on purpose (CAD-config test) |
+
+Everything else -- all 26 -- is **content-identical to the repo's current build**. Four of those
+six are already accounted for by an explicit decision in the ledger, which means the genuine
+unexplained gap is TWO tenants (`amyblair`, `onscene`), both of them unrecorded discoveries.
+
+⚠️ **A STALE LABEL WITH CURRENT CONTENT IS THE COMMON CASE, NOT THE EXCEPTION.** It happens
+because IMPORTS ARE PER-BUNDLE and a bundle whose content did not change between two versions
+keeps whichever description it was imported with. Any future import-verify step must compare
+CONTENT; comparing the label would report success on a no-op and failure on a success.
 # PHASE 2 — EVERY TENANT'S ACTUAL VERSION, READ FROM ITS OWN EXPORT (2026-09-11)
 
 Rob: *"i thought you were supposed to export every json you find."* All **64** carrier tenants

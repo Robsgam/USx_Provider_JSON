@@ -20,6 +20,11 @@
     {
       "gate": "audit_tenant_provenance.ps1",
       "reason": "Requires tenant configuration exports pulled from a logged-in browser session (extension button 6b -> ingest_tenant_configs.ps1), which no repo-side orchestrator can obtain: a repo-side GET of the admin surface returns 303 -> /rms/login/. Running it inside enforce would either FAIL on every machine without a fresh pull or, worse, pass vacuously on an empty tenant dir. It also builds a ~10-minute git-history index on first run. MANUAL, on demand, after a config pull."
+    },
+    {
+      "gate": "audit_tenant.ps1",
+      "reason": "An on-demand single-tenant dossier: it takes -Tenant (a subdomain or deptId chosen by a human asking about one tenant) and reads configs pulled from a logged-in browser session. No orchestrator knows which tenant is being asked about, and a repo-side GET of the admin surface returns 303 -> /rms/login/, so a scheduled run would either have nothing to report or report \"NEVER PULLED\" for all 1785. It also exits 0 when a tenant has no config on disk -- correct for a dossier, vacuous as a gate.",
+      "who_runs_it": "human, on demand, when asking about one tenant"
     }
   ],
   "harnesses": [

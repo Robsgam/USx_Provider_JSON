@@ -69,47 +69,16 @@ function Say([string]$s) { $script:lines += $s; if (-not $Quiet) { Write-Host $s
 $tenantDir = if ($TenantDir) { $TenantDir } else { Join-Path $repoRoot '_versions\tenant_exports' }
 $cachePath = Join-Path $repoRoot '_versions\bundle_hash_index.json'
 
-# ⚠️ THE PLATFORM ADDS EXPLICIT NULLS WHERE OUR BUILD OMITS THE PROPERTY. Measured 2026-09-11
-# on usx-az-azdps, and it is THE reason a naive export-vs-repo comparison can never succeed:
-#     REPO   "requirements":{"any":["dexStateUserId"],"set":["ORI","Mnemonic"]}
-#     TENANT "requirements":{"any":[...],"conditions":null,"defaults":null,"set":[...]}
-# Same meaning, +324 bytes on that one bundle. Before this normalization BOTH provider bundles
-# (AZ v3.12 and TN v2.6 -- current versions, on ALL-PASS tenants) reported "matches no known
-# build", which is implausible on its face and is what prompted the check. ENTITIES and RMS
-# matched, so the difference is not uniform and could not have been guessed.
-# `null` and `absent` mean the same thing here: validate.ps1 requires `conditions` to be an
-# ARRAY when present, so a null IS the platform spelling of absent.
-function Remove-NullProperties($o) {
-    if ($null -eq $o) { return $null }
-    if ($o -is [string] -or $o -is [bool] -or $o -is [int] -or $o -is [long] -or $o -is [double] -or $o -is [decimal]) { return $o }
-    if ($o -is [System.Collections.IEnumerable]) {
-        $out = @()
-        foreach ($i in $o) { $out += ,(Remove-NullProperties $i) }
-        return ,$out
-    }
-    if ($o.PSObject.Properties.Count -gt 0) {
-        $h = [ordered]@{}
-        foreach ($p in ($o.PSObject.Properties | Sort-Object Name)) {
-            if ($null -eq $p.Value) { continue }          # platform-added null == our omission
-            $h[$p.Name] = Remove-NullProperties $p.Value
-        }
-        return [pscustomobject]$h
-    }
-    return $o
-}
-
-# Hash one bundle with description removed and platform-added nulls normalized away.
-# This is THE primitive the whole audit rests on.
-function Get-BundleContentHash($bundle) {
-    $c = $bundle | ConvertTo-Json -Depth 60 | ConvertFrom-Json
-    $c.PSObject.Properties.Remove('description')
-    return (Get-Sha256Hex (ConvertTo-Canonical (Remove-NullProperties $c)))
-}
-
-function Get-BundleList($parsed) {
-    if ($parsed.departmentBundle) { return @($parsed.departmentBundle.bundles) }   # tenant export
-    return @($parsed.bundles)                                                       # repo JSON
-}
+# ⚠️ THE BUNDLE-IDENTITY PRIMITIVE MOVED OUT ON 2026-09-11 -- it is now shared, not private.
+# audit_tenant.ps1 (the on-demand single-tenant dossier) needs the IDENTICAL hash, and two
+# copies of a hash primitive that drift give two different answers to "is this the same
+# bundle" with neither obviously wrong. ENGINEERING_STANDARD 4.4.
+# The module carries the reasoning for both normalizations that make it correct: the
+# description is EXCLUDED (it is the one field guaranteed to differ between otherwise
+# identical builds) and PLATFORM-ADDED NULLS are stripped ("conditions":null,"defaults":null
+# where our build omits the property -- +324 bytes on one AZ bundle, and the reason both
+# current provider bundles on ALL-PASS tenants first read "matches no known build").
+. "$PSScriptRoot\_bundle_identity.ps1"
 
 Say ''
 Say '===================================================================================='
