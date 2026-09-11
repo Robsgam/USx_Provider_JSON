@@ -100,6 +100,48 @@ if ($files.Count -eq 0) {
 # -- ingest, newest-per-deptId wins (a re-pull supersedes) --------------------------
 $inv = @{}
 $parseFail = @(); $bytesTotal = 0
+
+# ⚠️ ONE FILE PER TENANT -- THE NEWEST. Do NOT process every pull in the folder.
+#
+# THE DEFECT THIS FIXES, found 2026-09-11 while verifying the first automated import. Downloads
+# held FOUR pulls for usx-fl-fcic (14:55, 15:23, 16:52, 19:28). The loop below walks files in
+# time order and archives the prior extract whenever the content differs -- so a single run
+# REPLAYED the tenant's entire history and wrote a fresh archive for every historical transition.
+# The last archive written was therefore a mid-history state, not the state the tenant was in
+# before the import.
+#
+# verify_tenant_import then compared AFTER against that archive and reported
+#     *** THE IMPORT DID NOT LAND. *** Every bundle is byte-identical to the BEFORE.
+# on an import that HAD landed (CA_eSUN v3.3 -> FL_FCIC v7.24, all three bundles == REPO). The
+# proof mechanism was destroying the evidence it depends on -- the exact failure the archive was
+# added to prevent, reintroduced from the other end.
+#
+# It was also NON-IDEMPOTENT: the identical archive pair appears at 17:38/17:39 and again at
+# 19:28/19:29, one pair per ingest run, because every run replays the same history.
+#
+# A tenant's CURRENT config is its NEWEST pull. Older pulls for the same tenant are superseded and
+# processing them can only rewrite history. They are REPORTED, never silently dropped -- a count
+# with a hidden denominator is how a finding disappears without anyone deciding it should.
+$byDept = @{}
+$superseded = @()
+foreach ($f in $files) {
+    $probe = $null
+    try { $probe = Get-Content $f.FullName -Raw -Encoding UTF8 | ConvertFrom-Json } catch { continue }
+    if (-not $probe.deptId) { continue }
+    $k = "$($probe.deptId)"
+    if ($byDept.ContainsKey($k)) { $superseded += $byDept[$k].Name }   # $files is time-ASCENDING, so the later one wins
+    $byDept[$k] = $f
+}
+if ($byDept.Count -gt 0) {
+    $kept = @($files | Where-Object { $byDept.Values -contains $_ })
+    if ($superseded.Count -gt 0) {
+        Say ("  {0} file(s) superseded by a newer pull of the same tenant -- NOT processed:" -f $superseded.Count)
+        foreach ($s in ($superseded | Select-Object -First 8)) { Say ("     {0}" -f $s) }
+        if ($superseded.Count -gt 8) { Say ("     ... and {0} more" -f ($superseded.Count - 8)) }
+    }
+    Say ("  processing {0} file(s) -- one per tenant, newest ({1} found in total)" -f $kept.Count, $files.Count)
+    $files = $kept
+}
 foreach ($f in $files) {
     $o = $null
     try { $o = Get-Content $f.FullName -Raw -Encoding UTF8 | ConvertFrom-Json }
