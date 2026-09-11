@@ -443,7 +443,7 @@ Three layout variants per QIF: `default`, `CAD_DISPATCH`, `FIRST_RESPONDER`.
 
 ---
 
-## Tools (108 scripts + 18 shared modules in `tools/`, + `tools/_probes/` (8 graduated ad-hoc probes) + `tools/config/` (7 JSON reference tables, incl. `tenant_map.json` -- the canonical subdomain <-> deptId <-> ledger-name join) + 3 archived tools in `tools/_archive/`)
+## Tools (108 scripts + 18 shared modules in `tools/`, + `tools/_probes/` (9 graduated ad-hoc probes, incl. `reconcile_ledger_vs_reality.ps1` -- the records-vs-deployed table, asked for twice) + `tools/config/` (7 JSON reference tables, incl. `tenant_map.json` -- the canonical subdomain <-> deptId <-> ledger-name join) + 3 archived tools in `tools/_archive/`)
 
 All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (consumed by verify_build.ps1).
 
