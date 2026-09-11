@@ -226,6 +226,33 @@ $html = @"
   M.style.display = '';
   assert('restored modal reads as open again', D.modalIsOpen(M), true);
 
+
+  // ── THE READ-BACK CHECK (the write block, which NOTHING covered until now) ──────────────
+  // The first real EXECUTE aborted on a GOOD write: the DOM normalises CRLF to LF on
+  // textarea.value, our JSON ships with Windows line endings, and the guard compared the raw
+  // string against the normalised read-back. Deficit 10,929 == the file's exact CR count.
+  // The guard was right to refuse something it could not explain; the comparison was one that
+  // could NEVER succeed on any provider build.
+  //
+  // ⚠️ VALID is stored as a SINGLE LINE (newlines are stripped so it can live in a PS here-string),
+  // so a CRLF case built from it would be a string compared with itself -- my first attempt was
+  // exactly that, and the "not a no-op" control below is what caught it. Pretty-print first so the
+  // payload genuinely contains newlines.
+  var PRETTY = JSON.stringify(JSON.parse(VALID), null, 2);   // real '\n's
+  var CRLF   = PRETTY.split('\n').join('\r\n');              // as it comes off disk on Windows
+  var LF     = CRLF.split('\r\n').join('\n');                // what a textarea will hold
+  assert('the CRLF fixture is not a no-op (control for the two cases below)', CRLF.length > LF.length, true);
+  assert('normalised write vs LF read-back is ACCEPTED (the abort that stopped a good import)',
+         D.verifyReadBack(LF, LF), null);
+  assert('UN-normalised write vs LF read-back is REFUSED (why deployOne must normalise FIRST)',
+         D.verifyReadBack(CRLF, LF) === null, false);
+  assert('a TRUNCATED read-back is still refused',
+         D.verifyReadBack(LF, LF.slice(0, LF.length - 50)) === null, false);
+  assert('a same-LENGTH corruption is refused (a byte count alone would pass it)',
+         D.verifyReadBack(LF, LF.split('FL_FCIC').join('XX_XXXX')) === null, false);
+  assert('a non-JSON read-back is refused',
+         D.verifyReadBack(LF, 'x'.repeat(LF.length)) === null, false);
+
   check('operator abort',         function(){ window.__usxDeployAbort = true; }, true);
   window.__usxDeployAbort = false;
   line('CASES ' + CASES);

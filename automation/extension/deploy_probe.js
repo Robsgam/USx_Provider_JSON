@@ -143,6 +143,52 @@
     return bad;
   }
 
+  // DID THE FIELD ACTUALLY TAKE THE PAYLOAD? -- and the answer is NOT a byte count.
+  //
+  // ⚠️ THE DOM NORMALISES CRLF TO LF ON `textarea.value`. That is spec, not a quirk, and it made
+  // the first real EXECUTE abort on a perfectly good write:
+  //     read-back is 1250943 bytes but 1261872 were written
+  // The deficit was 10,929 -- and `tr -cd '\r' < FL_FCIC_v7.24.json | wc -c` is 10,929 EXACTLY.
+  // Our JSON is written with Windows line endings and served byte-for-byte, so every CRLF became
+  // an LF and the raw-length comparison could never succeed on any provider build.
+  //
+  // The guard was RIGHT to refuse -- it saw a difference it could not explain and did not click.
+  // But the comparison was the wrong one, so it could only ever fail. Normalise before writing,
+  // compare against what we actually wrote, and then check something that MEANS something:
+  // a length match alone would pass on a same-length corruption.
+  //
+  // Safe for the platform: line endings between JSON tokens are insignificant whitespace, and the
+  // 5,152 `\r` sequences inside string literals are two-character ESCAPES, not raw CR bytes, so
+  // normalisation cannot touch them.
+  function bundleNamesOf(o) {
+    const bs = (o && (o.bundles || (o.departmentBundle && o.departmentBundle.bundles))) || [];
+    return bs.map(x => x && x.name).join(',');
+  }
+  function stampOf(o) {
+    const bs = (o && (o.bundles || (o.departmentBundle && o.departmentBundle.bundles))) || [];
+    for (const b of bs) {
+      const m = String((b && b.description) || '').match(/Provider configuration for ([A-Za-z0-9_]+) v([0-9]+\.[0-9]+)/);
+      if (m && b.name !== 'ENTITIES' && b.name !== 'RMS') { return m[1] + ' v' + m[2]; }
+    }
+    return '';
+  }
+  function verifyReadBack(written, readBack) {
+    if (readBack.length !== written.length) {
+      return 'read-back is ' + readBack.length + ' bytes but ' + written.length +
+             ' were written (after CRLF->LF normalisation) -- the field did not take the payload';
+    }
+    let a = null, b = null;
+    try { a = JSON.parse(written); } catch (e) { return 'the payload we were about to submit is not parseable JSON: ' + e.message; }
+    try { b = JSON.parse(readBack); } catch (e) { return 'the field does not hold parseable JSON after the write: ' + e.message; }
+    if (bundleNamesOf(a) !== bundleNamesOf(b)) {
+      return 'bundles differ after the write: wrote [' + bundleNamesOf(a) + '] but the field holds [' + bundleNamesOf(b) + ']';
+    }
+    if (stampOf(a) !== stampOf(b)) {
+      return 'the version stamp differs after the write: wrote "' + stampOf(a) + '" but the field holds "' + stampOf(b) + '"';
+    }
+    return null;
+  }
+
   async function deployOne(opts) {
     opts = opts || {};
     const out = {
@@ -215,19 +261,29 @@
     }
 
     // ── THE WRITE. Everything above this line is refusable; this is the only action. ──
-    ctx.textarea.value = opts.payload;
+    // Normalised FIRST so that what we intend to write is what the DOM can actually hold --
+    // see verifyReadBack above for why the raw string could never survive the round trip.
+    const toWrite = String(opts.payload).replace(/\r\n/g, '\n');
+    out.payloadNormalizedBytes = toWrite.length;
+    if (toWrite.length !== opts.payload.length) {
+      out.notes.push('normalised CRLF -> LF before writing: ' + opts.payload.length + ' -> ' +
+                     toWrite.length + ' bytes (' + (opts.payload.length - toWrite.length) +
+                     ' CR characters removed; JSON whitespace, no content change)');
+    }
+    ctx.textarea.value = toWrite;
     // Dispatch both: Semantic UI/jQuery may read .value directly, but a framework that mirrors
     // into its own state would otherwise submit an EMPTY field while the box looks full.
     ctx.textarea.dispatchEvent(new Event('input', { bubbles: true }));
     ctx.textarea.dispatchEvent(new Event('change', { bubbles: true }));
     out.notes.push('payload written to ' + TEXTAREA + '; input+change dispatched');
 
-    // Re-read the field. If the UI rejected or transformed the write, do NOT click.
+    // Re-read the field. If the UI rejected, truncated or transformed the write, do NOT click.
     const readBack = String(ctx.textarea.value || '');
     out.readBackBytes = readBack.length;
-    if (readBack.length !== opts.payload.length) {
+    const problem = verifyReadBack(toWrite, readBack);
+    if (problem) {
       out.verdict = 'ABORTED-BEFORE-CLICK';
-      out.notes.push('read-back is ' + readBack.length + ' bytes but ' + opts.payload.length + ' were written -- the field did not take the payload, so ' + DO_IMPORT + ' was NOT clicked.');
+      out.notes.push(problem + ', so ' + DO_IMPORT + ' was NOT clicked.');
     // ⚠️ SAY IT WHERE IT CAN BE SEEN. The verdict used to go ONLY to the panel's status line and a
     // downloaded file -- and the import modal covers the panel, so the operator's report of a clean
     // DRY-RUN-OK was "window popped up but nothing happened after that". A result nobody can read is
@@ -421,12 +477,12 @@
   }
 
   window.__usxDeployAbort = false;
-  window.__usxDeploy = { deployOne, deployFromRepo, openImportModal, fetchBuild, runGuards, resolveTarget, targetReady, isShown, modalIsOpen,
+  window.__usxDeploy = { deployOne, deployFromRepo, openImportModal, fetchBuild, runGuards, resolveTarget, targetReady, isShown, modalIsOpen, verifyReadBack,
                          findTargetField, MODAL, TEXTAREA, DO_IMPORT, OPEN_BTN };
   console.log('%c[USx-DEPLOY]', 'color:#f66;font-weight:bold',
     'deploy_probe loaded -- THE ONLY WRITE PATH. Dry-run by default; execute:true required. ' +
     'One tenant per call, no batch, no all. Guards: explicit deptId matching BOTH the URL and the ' +
     'modal target field, modal+textarea+button present, payload parseable and version-stamped with ' +
     'ENTITIES plus exactly one provider bundle, LIVE needs liveConfirmed, and an abort flag. ' +
-    'A CLICKED verdict is NOT proof -- verify_tenant_import.ps1 is. BUILD 2026-09-11f -- PRESENCE IS NOT OPENNESS: the import modal exists in the DOM while CLOSED (display:none), so the old "modal + textarea present" check read a shut dialog as already-open, never clicked Import JSON, and then read an empty dept-id. That single cause produced BOTH operator errors -- the bogus "ambiguous target field" and then "never populated within 8000ms". openImportModal now tests VISIBILITY, waits for the dept-id to populate, and reports never-appeared / not-visible / never-populated as three distinct failures. findTargetField resolves the measured id #import-dept-id-input. deployFromRepo resolves the provider AND the LIVE status from the repo record, not from the caller.');
+    'A CLICKED verdict is NOT proof -- verify_tenant_import.ps1 is. BUILD 2026-09-11g -- the read-back check now NORMALISES CRLF to LF before comparing (the DOM does that to textarea.value by spec, so the raw-length compare aborted a perfectly good import: deficit 10,929 == the build's exact CR count) and verifies bundle names + version stamp rather than a byte count. Earlier: PRESENCE IS NOT OPENNESS: the import modal exists in the DOM while CLOSED (display:none), so the old "modal + textarea present" check read a shut dialog as already-open, never clicked Import JSON, and then read an empty dept-id. That single cause produced BOTH operator errors -- the bogus "ambiguous target field" and then "never populated within 8000ms". openImportModal now tests VISIBILITY, waits for the dept-id to populate, and reports never-appeared / not-visible / never-populated as three distinct failures. findTargetField resolves the measured id #import-dept-id-input. deployFromRepo resolves the provider AND the LIVE status from the repo record, not from the caller.');
 })();
