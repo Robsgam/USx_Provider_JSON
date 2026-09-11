@@ -445,6 +445,30 @@
       stopPull.onclick = () => { window.__usxAdminAbort = true; stopPull.textContent = 'stopping after this tenant...'; };
       expWrap.appendChild(stopPull);
 
+      // ── CAPTURE THE OPEN DIALOG (read-only) ──────────────────────────────────────────
+      // Rob, 2026-09-11: "add the button to capture the dialog elements". This is the
+      // measurement that has to precede any import automation. The import dialog only exists
+      // in the operator's OWN tab after he clicks Import JSON, so this reads the LIVE document
+      // -- button 4 cannot help, it loads a fresh hidden iframe where the dialog is closed.
+      // And it enumerates input/textarea/select, which enumerateControls does NOT query at all.
+      // CLICKS NOTHING. Captures NO field values (a value here can be a ~1.2MB config).
+      const capDlg = el('button', BTN, 'Capture THIS page\u0027s form elements (clicks NOTHING)');
+      capDlg.onclick = async () => {
+        capDlg.disabled = true; aStatus.style.color = '#fa0';
+        aStatus.textContent = 'reading the live DOM\u2026';
+        try {
+          const o = await window.__usxAdminProbe.runCaptureDialogDl();
+          const fi = (o.fileInputs || []).length, pc = (o.payloadCandidates || []).length;
+          aStatus.style.color = (pc > 0 || fi > 0) ? '#7c7' : '#fa0';
+          aStatus.textContent = '\u2714 ' + o.total + ' element(s) \u00b7 ' + fi + ' file input(s) \u00b7 '
+            + pc + ' payload candidate(s) \u00b7 saved';
+        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '\u2716 ' + e.message; }
+        finally { capDlg.disabled = false; }
+      };
+      expWrap.appendChild(capDlg);
+      expWrap.appendChild(el('div', 'color:#999;font-size:11px;margin-top:2px',
+        'Open the Import JSON dialog FIRST, then click this \u2014 it reads whatever is on screen right now.'));
+
       // ── BUTTON 7 -- THE FULL CENSUS: every department, not just the ones we know about ──────────
       // Rob: "scan the entire departments page and visit each configuration page to
       // 1 determine if it has a usx provider installed and download to compare what version".
@@ -935,5 +959,5 @@
 
   window.__usxUiTimer = setInterval(tick, 1000);
   tick();
-  console.log('%c[USx-UI]', 'color:#fa0;font-weight:bold', 'control panel injected. BUILD 2026-09-11b (STEP 3 CLEANUP: the admin panel now shows only the standing workflow -- 2 list tenants, 6b pull the configs, 7 census. Buttons 1/3/4/5/6 are HIDDEN behind a collapsed diagnostics toggle, not deleted: their handlers read inputs that would throw if removed, and a deleted code path is how the driver died for five days).');
+  console.log('%c[USx-UI]', 'color:#fa0;font-weight:bold', 'control panel injected. BUILD 2026-09-11c (adds the Capture-this-page form-element button -- read-only live-DOM capture for measuring the import dialog before automating it. STEP 3 CLEANUP: the admin panel now shows only the standing workflow -- 2 list tenants, 6b pull the configs, 7 census. Buttons 1/3/4/5/6 are HIDDEN behind a collapsed diagnostics toggle, not deleted: their handlers read inputs that would throw if removed, and a deleted code path is how the driver died for five days).');
 })();

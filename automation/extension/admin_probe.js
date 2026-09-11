@@ -383,6 +383,92 @@
     return els.slice(0, 400).map(describeControl);
   }
 
+  // ── LIVE-PAGE FORM ELEMENT CAPTURE (v10, 2026-09-11) ────────────────────────────────
+  // Rob asked for this after the first manual import: "add the button to capture the dialog
+  // elements". It answers the one question that gates automating an import.
+  //
+  // WHY THE EXISTING ENUMERATOR CANNOT: `enumerateControls` queries only
+  // a / button / input[type=submit|button] / [role=button] -- so an <input type="file">, a
+  // <textarea> or a <select> is INVISIBLE to it. That is exactly what we need to see.
+  //
+  // AND WHY IT MUST READ THE LIVE `document`, NOT AN IFRAME: button 4 loads the page in a
+  // fresh hidden iframe, where the import dialog is CLOSED. The dialog only exists in the
+  // operator's own tab, after he clicks Import JSON. So this reads `document` directly.
+  //
+  // ⚠️ IT NEVER CAPTURES A FIELD'S VALUE. Rob reported that selecting a file "fills the window
+  // with the contents of the json" -- so a value here can be a ~1.2MB provider config, and on
+  // some other tenant it could be customer configuration. Recording it would bloat the file for
+  // no benefit and put payload where only metadata belongs. We record LENGTH and a one-character
+  // shape hint ({ or [), which is all that is needed to identify which field holds the payload.
+  //
+  // CLICKS NOTHING. Pure DOM read.
+  function captureLiveFormElements() {
+    const SEL = 'input, textarea, select, button, a[href], [role=button], [contenteditable=true]';
+    const els = Array.from(document.querySelectorAll(SEL));
+    const out = {
+      probe: 'admin-live-form-elements', version: 1,
+      capturedAt: new Date().toISOString(), host: location.hostname, url: location.href,
+      notes: [
+        'READ-ONLY: pure DOM read of the LIVE page. Nothing was clicked.',
+        'Field VALUES are never captured -- only length and a { or [ shape hint. A value here can be a ~1.2MB config.',
+        'Includes input/textarea/select, which enumerateControls cannot see.'
+      ],
+      total: els.length, elements: []
+    };
+    els.slice(0, 600).forEach((el, i) => {
+      const cs = window.getComputedStyle(el);
+      const r  = el.getBoundingClientRect();
+      let vLen = null, vShape = null;
+      try {
+        const v = ('value' in el) ? String(el.value == null ? '' : el.value) : '';
+        vLen = v.length;
+        if (v.length) { vShape = v.trim().charAt(0); }
+      } catch (e) { /* some elements throw on .value */ }
+      const rec = {
+        index: i,
+        tag: el.tagName,
+        type: el.getAttribute('type') || null,
+        id: el.id || null,
+        name: el.getAttribute('name') || null,
+        cls: el.className && typeof el.className === 'string' ? el.className.slice(0, 120) : null,
+        placeholder: el.getAttribute('placeholder') || null,
+        accept: el.getAttribute('accept') || null,           // file inputs declare this
+        multiple: el.hasAttribute('multiple') || null,
+        disabled: el.disabled === true ? true : null,
+        readOnly: el.readOnly === true ? true : null,
+        valueLength: vLen,
+        valueStartsWith: vShape,                              // '{' or '[' == this holds the JSON
+        label: (el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 80) || null,
+        visible: !(cs.display === 'none' || cs.visibility === 'hidden' || (r.width === 0 && r.height === 0)),
+        display: cs.display,
+        // the nearest id'd ancestor -- identifies WHICH dialog/modal an element belongs to,
+        // so a future write path can scope to the import modal rather than the whole page
+        nearestIdAncestor: (function () {
+          let n = el.parentElement;
+          for (let h = 0; h < 8 && n; h++) { if (n.id) { return n.id; } n = n.parentElement; }
+          return null;
+        })()
+      };
+      out.elements.push(rec);
+    });
+    // The interesting subset, pre-filtered so the answer is not buried in 600 rows.
+    out.payloadCandidates = out.elements.filter(function (e) {
+      return e.tag === 'TEXTAREA' || (e.tag === 'INPUT' && e.type === 'file') ||
+             e.tag === 'INPUT' && (e.valueLength || 0) > 500 ||
+             e.valueStartsWith === '{' || e.valueStartsWith === '[' ||
+             e.cls && /CodeMirror|ace_|monaco/i.test(e.cls);
+    });
+    out.fileInputs = out.elements.filter(function (e) { return e.tag === 'INPUT' && e.type === 'file'; });
+    out.notes.push('payloadCandidates: ' + out.payloadCandidates.length + ' | fileInputs: ' + out.fileInputs.length);
+    return out;
+  }
+
+  function runCaptureDialogDl() {
+    const o = captureLiveFormElements();
+    dl('usx_admin_dialog_' + location.hostname + '_' + nowStamp() + '.json', o);
+    return o;
+  }
+
   // Direct-download links are better than a click: fetchable, no side effects at all.
   function directJsonLinks(doc) {
     return Array.from(doc.querySelectorAll('a[href]'))
@@ -916,6 +1002,7 @@
   }
 
   window.__usxAdminProbe = { runList, runScan, runOne, runExportLook, runExportTry,
+                             captureLiveFormElements, runCaptureDialogDl,
                              runExportSweep, runExportSweepDl, runFullScan,
                              probeExportControls, enumerateControls, listDepartments, scanConfigurations,
                              extractTables, extractDeptRecords, extractDeptIds, filterRecords,
@@ -927,5 +1014,5 @@
   console.log('[USx-ADMIN] admin_probe v8 -- READ-ONLY (GET only, no import path). '
     + 'Hidden-iframe read (a fetch returns the JS-populated bundle table EMPTY -- that produced 21 confident zeros). '
     + 'Export click is allowlist+denylist gated (Import JSON is refused). '
-    + 'Full census is chunked/abortable and saves per chunk. BUILD 2026-09-11a -- v9 CONFIG PULL: button 6b saves one config file per tenant, and versionStrings now lists EVERY version string found (not just the first).');
+    + 'Full census is chunked/abortable and saves per chunk. BUILD 2026-09-11c -- v10 adds runCaptureDialogDl (LIVE-page form-element capture: input/textarea/select, which enumerateControls cannot see; reads document not an iframe, because the import dialog only exists in the operator tab; captures NO field values). v9 CONFIG PULL: button 6b saves one config file per tenant, and versionStrings now lists EVERY version string found (not just the first).');
 })();
