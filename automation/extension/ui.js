@@ -583,6 +583,9 @@
         if (o.payloadProvider) { t += ' \u00b7 ' + o.payloadProvider + ' v' + o.payloadVersion + ' (' + o.payloadBytes + ' bytes)'; }
         if (o.modalTargetShown) { t += ' \u00b7 modal target ' + o.modalTargetShown; }
         if (o.guardsFailed && o.guardsFailed.length) { t += ' \u00b7 ' + o.guardsFailed.length + ' guard(s) failed: ' + o.guardsFailed.join(' | '); }
+        // The modal covers the panel, so a clean verdict read as "nothing happened". Say it in the
+        // console too -- deploy_probe logs every verdict there now.
+        if (o.verdict === 'DRY-RUN-OK') { t += ' -- nothing clicked; dialog still open, close it by hand'; }
         depStat.textContent = t;
       }
 

@@ -172,6 +172,17 @@
       out.guardsFailed = bad;
       out.verdict = 'REFUSED';
       out.notes.push('No write was attempted. Every guard must pass; ' + bad.length + ' failed.');
+    // ⚠️ SAY IT WHERE IT CAN BE SEEN. The verdict used to go ONLY to the panel's status line and a
+    // downloaded file -- and the import modal covers the panel, so the operator's report of a clean
+    // DRY-RUN-OK was "window popped up but nothing happened after that". A result nobody can read is
+    // indistinguishable from a hang, and it cost a round of diagnosis on working code.
+    console.log('%c[USx-DEPLOY] ' + out.verdict,
+      'color:' + (out.verdict === 'REFUSED' || out.verdict === 'ABORTED-BEFORE-CLICK' ? '#f66'
+                : out.verdict === 'CLICKED' ? '#6c6' : '#fa0') + ';font-weight:bold',
+      out.verdict === 'REFUSED' ? out.guardsFailed
+        : (out.payloadProvider + ' v' + out.payloadVersion + ' (' + out.payloadBytes +
+           ' bytes) -> dept ' + out.deptId + '; modal target ' + out.modalTargetShown),
+      out);
       dl('usx_deploy_' + (opts.deptId || 'unknown') + '_' + nowStamp() + '_REFUSED.json', out);
       return out;
     }
@@ -183,6 +194,22 @@
       out.verdict = 'DRY-RUN-OK';
       out.notes.push('DRY RUN -- nothing was clicked. Re-call with execute:true to perform it.');
       out.notes.push('WOULD set ' + TEXTAREA + ' (' + out.payloadBytes + ' bytes) and click ' + DO_IMPORT + '.');
+      // The dialog is LEFT OPEN on purpose. A dry run clicks nothing, and the live capture shows
+      // the modal contains exactly two buttons -- Browse and Import -- so there is no MEASURED close
+      // control to use. Guessing at one (Escape, a dimmer click, an unmeasured icon) is the same
+      // class of mistake as the heuristic that started this. Close it by hand.
+      out.notes.push('The import dialog is still open -- a dry run clicks nothing, including any close control. Close it yourself before the next step.');
+    // ⚠️ SAY IT WHERE IT CAN BE SEEN. The verdict used to go ONLY to the panel's status line and a
+    // downloaded file -- and the import modal covers the panel, so the operator's report of a clean
+    // DRY-RUN-OK was "window popped up but nothing happened after that". A result nobody can read is
+    // indistinguishable from a hang, and it cost a round of diagnosis on working code.
+    console.log('%c[USx-DEPLOY] ' + out.verdict,
+      'color:' + (out.verdict === 'REFUSED' || out.verdict === 'ABORTED-BEFORE-CLICK' ? '#f66'
+                : out.verdict === 'CLICKED' ? '#6c6' : '#fa0') + ';font-weight:bold',
+      out.verdict === 'REFUSED' ? out.guardsFailed
+        : (out.payloadProvider + ' v' + out.payloadVersion + ' (' + out.payloadBytes +
+           ' bytes) -> dept ' + out.deptId + '; modal target ' + out.modalTargetShown),
+      out);
       dl('usx_deploy_' + opts.deptId + '_' + nowStamp() + '_DRYRUN.json', out);
       return out;
     }
@@ -201,6 +228,17 @@
     if (readBack.length !== opts.payload.length) {
       out.verdict = 'ABORTED-BEFORE-CLICK';
       out.notes.push('read-back is ' + readBack.length + ' bytes but ' + opts.payload.length + ' were written -- the field did not take the payload, so ' + DO_IMPORT + ' was NOT clicked.');
+    // ⚠️ SAY IT WHERE IT CAN BE SEEN. The verdict used to go ONLY to the panel's status line and a
+    // downloaded file -- and the import modal covers the panel, so the operator's report of a clean
+    // DRY-RUN-OK was "window popped up but nothing happened after that". A result nobody can read is
+    // indistinguishable from a hang, and it cost a round of diagnosis on working code.
+    console.log('%c[USx-DEPLOY] ' + out.verdict,
+      'color:' + (out.verdict === 'REFUSED' || out.verdict === 'ABORTED-BEFORE-CLICK' ? '#f66'
+                : out.verdict === 'CLICKED' ? '#6c6' : '#fa0') + ';font-weight:bold',
+      out.verdict === 'REFUSED' ? out.guardsFailed
+        : (out.payloadProvider + ' v' + out.payloadVersion + ' (' + out.payloadBytes +
+           ' bytes) -> dept ' + out.deptId + '; modal target ' + out.modalTargetShown),
+      out);
       dl('usx_deploy_' + opts.deptId + '_' + nowStamp() + '_ABORTED.json', out);
       return out;
     }
@@ -209,6 +247,17 @@
     out.clicked = true;
     out.verdict = 'CLICKED';
     out.notes.push('clicked ' + DO_IMPORT + '. THIS IS NOT PROOF OF SUCCESS -- re-export the tenant and run tools\\verify_tenant_import.ps1. The dialog saying "import complete" says the platform accepted the payload, not which build ended up installed.');
+    // ⚠️ SAY IT WHERE IT CAN BE SEEN. The verdict used to go ONLY to the panel's status line and a
+    // downloaded file -- and the import modal covers the panel, so the operator's report of a clean
+    // DRY-RUN-OK was "window popped up but nothing happened after that". A result nobody can read is
+    // indistinguishable from a hang, and it cost a round of diagnosis on working code.
+    console.log('%c[USx-DEPLOY] ' + out.verdict,
+      'color:' + (out.verdict === 'REFUSED' || out.verdict === 'ABORTED-BEFORE-CLICK' ? '#f66'
+                : out.verdict === 'CLICKED' ? '#6c6' : '#fa0') + ';font-weight:bold',
+      out.verdict === 'REFUSED' ? out.guardsFailed
+        : (out.payloadProvider + ' v' + out.payloadVersion + ' (' + out.payloadBytes +
+           ' bytes) -> dept ' + out.deptId + '; modal target ' + out.modalTargetShown),
+      out);
     dl('usx_deploy_' + opts.deptId + '_' + nowStamp() + '_CLICKED.json', out);
     return out;
   }
