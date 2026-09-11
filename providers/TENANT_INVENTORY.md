@@ -271,6 +271,78 @@ denominator was measured first. **Truncation ruled out:** `probeExportControls` 
 blobs that read fine reach 332,297. **Mechanism proven working:** `usx-nj-njcjis` reads
 **v4.17 = repo v4.17**. So a tenant reading OLDER than the repo is a real measurement.
 
+## CORRECTED 2026-09-11 -- ONE THIRD OF THE "THREE TENANTS BEHIND" FINDING WAS MY REGEX
+
+The discriminating test ran. `versionStrings` now collects EVERY `Provider configuration for
+<P> vX.Y` match instead of breaking at the first non-RMS hit, and it splits the finding:
+
+| tenant | every version string it carries | verdict |
+|---|---|---|
+| `usx-ny-nyspin-ejustice` | NY_NYSPIN_EJUSTICE **v4.24** only | **REAL -- genuinely behind its v4.26 logs** |
+| `usx-or-leds` | OR_LEDS **v2.5** only | **REAL -- genuinely behind its v2.6 logs** |
+| `usx-hi-hcjdc-ofml` | HI_HCJDC_OFML **v4.19 + v4.20** | **REFUTED -- v4.20 IS there; I read the first of two** |
+
+So HI was never behind. It carries a stale v4.19 bundle ALONGSIDE the current v4.20, and the
+first-match-wins regex reported v4.19 as "the" version. NY and OR carry exactly one string
+each, so for those two the remaining explanation -- a genuinely stale install -- stands.
+
+**Both candidate explanations were real, on different tenants.** That is why re-running could
+not settle it: two passes of the same regex agreed 64/64 precisely because they made the same
+choice identically. Agreement between two instances of one possible mistake was never evidence
+against the mistake, and the second sweep's value was killing the *transient* explanation, not
+this one.
+
+## A CLASS NOBODY KNEW EXISTED: TENANTS CARRYING TWO VERSIONS OF THE SAME PROVIDER
+
+| tenant | bundles | why it was invisible |
+|---|---|---|
+| `usx-az-azdps` | AZ_AZDPS **v3.12 + v3.4** | read v3.12 = repo current, so it looked PERFECTLY CLEAN |
+| `practice-bertanzini` | NJ_NJCJIS **v4.9 + v4.8** | read v4.9, which is exactly what the ledger claims |
+| `usx-hi-hcjdc-ofml` | HI_HCJDC_OFML **v4.19 + v4.20** | read v4.19, so it looked BEHIND instead of mixed |
+
+⚠️ **A SINGLE-VERSION READ CANNOT SEE THIS, AND IT HID BOTH DIRECTIONS** -- one tenant looked
+clean when it was not, another looked stale when it was not. Every version claim made from a
+first-match read on these three was wrong.
+
+⚠️ **OPEN QUESTION, NOT A CLAIM: which bundle does the platform actually USE?** A stale sibling
+may be inert, or it may be what the ENTITIES bundle resolves against. This is unanswered and it
+matters directly for the import-automation goal -- "import, export, compare" has no meaning on a
+tenant where two versions of the same provider coexist and we cannot say which is live.
+STATUS: HYPOTHESIS. Discriminating test: read the bundle IDs and whether any QIF references the
+older bundle, then confirm against a live query on that tenant.
+
+## IDENTICAL CONFIGS -- now CONTENT-verified by canonical hash, not inferred from byte counts
+
+The earlier "24 tenants / 4 byte-identical groups" was a size fingerprint. These are hashes of
+the canonicalized configs, so they are the real thing:
+
+| n | hash | what |
+|---|---|---|
+| 8 | `cded7b9224f0` | NOT OURS -- shelby/kris/jeffco/louisville/lyle/kyle/dark/abbey-demo |
+| 4 | `a3e781d4bfed` | **IL_LEADS_OFML v2.8** -- aurorapd-il-foundation, qa-amyb-test, qa-amyblair-test, usx-il-leads-ofml |
+| 4 | `de1d98c95224` | NOT OURS -- reno-nv-demo, lam-demo, mint, erich-demo1 |
+| 3 | `941a1df14358` | **CA_CLETS v2.27** -- mariposacso, mariposacso-foundation, usx-ca-clets |
+| 3 | `1d4bec65ac13` | NOT OURS -- cbp-demo, dea-demo, justin-demo |
+| 3 | `a715ef7f8313` | **FL_FCIC v7.24** -- homestead, miamisprings, northmiami |
+| 2 | `68a9b9326cda` | **NY v4.24** -- usx-ny-nyspin-ejustice + ny-nycapss-foundation |
+| 2 | `7e4aded8d996` | **OH_LEADS v2.11** -- usx-oh-leads + lakewoodoh-foundation |
+| 2 | `61728413ba43` | **HI v4.15** -- hawaii-dle + hdle-foundation |
+| 2 | `fbd554650f95` | **TX_TLETS v4.22** -- balconesheightspd-foundation + usx-tx-tlets |
+| 2 | `c0898f3f1904` | NOT OURS -- sdso + sandiegoso-foundation |
+| 2 | `1dbfe19af51f` | NOT OURS -- lafayettesheriff-la + lafayettela-sherifftraining |
+| 2 | `c7de85322bd4` | NOT OURS -- neworleanspd + neworleanspd-foundation |
+| 2 | `4e354d973261` | NOT OURS -- ccpd + ccpd-jms-migration-round-1 |
+| 2 | `7e290507a9cf` | NOT OURS -- usx-fl-fcic + practice-robsgambellone |
+| 2 | `27aaeca1c4cd` | NOT OURS -- demo-ny-se + demo-boston-cad2025 |
+
+`ny-nycapss-foundation` being HASH-identical to our own NY test tenant is now measured, not
+inferred from a matching byte count. It still does NOT identify what NY CAPSS is, and must not
+close the ledger's unlocated Albany row.
+
+**Baseline: 64 of 64 configs pulled, 0 failed, ~14MB in the gitignored `_versions/tenant_exports/`.**
+Committed record is METADATA ONLY: `providers/TENANT_CONFIG_INVENTORY.json` (63KB, 0 rows carry
+config content, verified before commit).
+
 ## CONFIRMED BY A SECOND INDEPENDENT SWEEP (2026-09-11 00:14)
 
 A second full 64-tenant pass was run (it had been started concurrently and was still in flight when

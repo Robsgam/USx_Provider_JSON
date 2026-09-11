@@ -1,0 +1,56 @@
+
+====================================================================================
+  TENANT CONFIG INGEST -- the baseline record of what is deployed where
+====================================================================================
+  source: C:\Users\RobSgambellone\Downloads
+  config files found: 64   payload dir (gitignored): _versions\tenant_exports
+  distinct tenants ingested: 64   config bytes extracted: 13,992,468
+
+  OURS 32 | PROVIDER-NOT-OURS 32 | UNKNOWN 0
+  (a provider bundle with no "Provider configuration for <P> vX.Y" description is a config
+   we did NOT build -- that absence is positive evidence, not a gap.)
+
+  ---- MIXED-VERSION TENANTS (the discriminating test, now answerable from data) ----
+  practice-bertanzini          NJ_NJCJIS v4.9 + NJ_NJCJIS v4.8
+  usx-az-azdps                 AZ_AZDPS v3.12 + AZ_AZDPS v3.4
+  usx-hi-hcjdc-ofml            HI_HCJDC_OFML v4.19 + HI_HCJDC_OFML v4.20
+  => these tenants carry MORE THAN ONE version string; the single `version` field on
+     such a row is whichever came first and must NOT be cited as "the" version.
+
+  ---- IDENTICAL CONFIGS (same canonical hash = one config copied, not N installs) ----
+   8 tenants share hash cded7b9224f0..  [NOT OURS]
+     shelby-demo, kris-demo, jeffco-demo, louisville-demo, lyle-demo, kyle-demo, dark-demo, abbey-demo
+   4 tenants share hash a3e781d4bfed..  [IL_LEADS_OFML v2.8]
+     aurorapd-il-foundation, qa-amyb-test, usx-il-leads-ofml, qa-amyblair-test
+   4 tenants share hash de1d98c95224..  [NOT OURS]
+     reno-nv-demo, lam-demo, mint, erich-demo1
+   3 tenants share hash 941a1df14358..  [CA_CLETS v2.27]
+     mariposacso-foundation, usx-ca-clets, mariposacso
+   3 tenants share hash 1d4bec65ac13..  [NOT OURS]
+     cbp-demo, dea-demo, justin-demo
+   3 tenants share hash a715ef7f8313..  [FL_FCIC v7.24]
+     homesteadpd-fl-foundation, miamispringspd-foundation, northmiami-foundation
+   2 tenants share hash c0898f3f1904..  [NOT OURS]
+     sdso, sandiegoso-foundation
+   2 tenants share hash 68a9b9326cda..  [NY_NYSPIN_EJUSTICE v4.24]
+     usx-ny-nyspin-ejustice, ny-nycapss-foundation
+   2 tenants share hash 7e4aded8d996..  [OH_LEADS v2.11]
+     usx-oh-leads, lakewoodoh-foundation
+   2 tenants share hash 4e354d973261..  [NOT OURS]
+     ccpd-jms-migration-round-1, ccpd
+   2 tenants share hash 1dbfe19af51f..  [NOT OURS]
+     lafayettela-sherifftraining, lafayettesheriff-la
+   2 tenants share hash 61728413ba43..  [HI_HCJDC_OFML v4.15]
+     hawaii-dle, hdle-foundation
+   2 tenants share hash c7de85322bd4..  [NOT OURS]
+     neworleanspd, neworleanspd-foundation
+   2 tenants share hash 7e290507a9cf..  [NOT OURS]
+     usx-fl-fcic, practice-robsgambellone
+   2 tenants share hash fbd554650f95..  [TX_TLETS v4.22]
+     balconesheightspd-foundation, usx-tx-tlets
+   2 tenants share hash 27aaeca1c4cd..  [NOT OURS]
+     demo-ny-se, demo-boston-cad2025
+
+  inventory written: providers\TENANT_CONFIG_INVENTORY.json  (64 tenants, metadata only)
+====================================================================================
+

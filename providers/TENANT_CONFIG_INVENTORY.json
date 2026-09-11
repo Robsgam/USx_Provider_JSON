@@ -1,0 +1,1177 @@
+﻿{
+    "_what":  "Baseline record of which provider configuration is deployed on which tenant.",
+    "_rules":  [
+                   "METADATA ONLY. Config payloads live in the gitignored _versions/tenant_exports/ and are NEVER committed.",
+                   "deptId is the only stable join key -- subdomains get renamed and the ledger uses prose names.",
+                   "THREE classes: OURS / PROVIDER-NOT-OURS / UNKNOWN. Two would lose the not-ours configs.",
+                   "configSha256 is a CANONICAL hash for before/after import comparison. A raw byte compare cannot work: the platform re-serializes.",
+                   "This file is DERIVED. It does not amend IMPORT_LEDGER.md, which is hand-authored."
+               ],
+    "generated":  "2026-09-11T10:18:21",
+    "source":  "tools/ingest_tenant_configs.ps1 \u003c- extension button 6b",
+    "counts":  {
+                   "tenants":  64,
+                   "ours":  32,
+                   "providerNotOurs":  32,
+                   "unknown":  0,
+                   "mixedVersions":  3
+               },
+    "tenants":  [
+                    {
+                        "deptId":  "19930015536",
+                        "subdomain":  "1836",
+                        "status":  "TrainingTRAINING",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "",
+                        "configBytes":  33151,
+                        "configSha256":  "07c8f483211746d66d05ca43c4e3b23107999292bbd5d95408a1184de3f7a563",
+                        "exportPath":  "_versions/tenant_exports/1836_19930015536.json",
+                        "capturedAt":  "2026-09-11T14:02:54.513Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "67531517395",
+                        "subdomain":  "abbey-demo",
+                        "status":  "TrainingTRAINING",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "LA_LEMS/20 ENTITIES/99 RMS/8",
+                        "configBytes":  165447,
+                        "configSha256":  "cded7b9224f056da6f395956521242a2080e5b7a025b4bc6a6b3d7ac032ff224",
+                        "exportPath":  "_versions/tenant_exports/abbey-demo_67531517395.json",
+                        "capturedAt":  "2026-09-11T14:03:07.891Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "33641477034",
+                        "subdomain":  "amyblair",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "FL_FCIC",
+                        "version":  "7.18",
+                        "versionStrings":  [
+                                               "FL_FCIC v7.18"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/539 FL_FCIC/111 RMS/70",
+                        "configBytes":  318038,
+                        "configSha256":  "781a1eca19d79a4c9ef0a24125989f9b90de53dbdfa33b134c8cdcf544293327",
+                        "exportPath":  "_versions/tenant_exports/amyblair_33641477034.json",
+                        "capturedAt":  "2026-09-11T14:03:21.263Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "66323459475",
+                        "subdomain":  "aurorapd-il-foundation",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "IL_LEADS_OFML",
+                        "version":  "2.8",
+                        "versionStrings":  [
+                                               "IL_LEADS_OFML v2.8"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/565 IL_LEADS_OFML/3 RMS/71",
+                        "configBytes":  220052,
+                        "configSha256":  "a3e781d4bfed75660f5b5601bbfb70c4420bb95e9feac38d4014f68b1468dd85",
+                        "exportPath":  "_versions/tenant_exports/aurorapd-il-foundation_66323459475.json",
+                        "capturedAt":  "2026-09-11T14:03:34.589Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "69189298576",
+                        "subdomain":  "balconesheightspd-foundation",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "TX_TLETS",
+                        "version":  "4.22",
+                        "versionStrings":  [
+                                               "TX_TLETS v4.22"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/566 TX_TLETS/34 RMS/71",
+                        "configBytes":  291595,
+                        "configSha256":  "fbd554650f95084aa7db02efe8597ecfd14c79e486b452a9c279fbe75128c1b6",
+                        "exportPath":  "_versions/tenant_exports/balconesheightspd-foundation_69189298576.json",
+                        "capturedAt":  "2026-09-11T14:03:47.899Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "65505627848",
+                        "subdomain":  "cbp-demo",
+                        "status":  "TrainingTRAINING",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "LA_LEMS/15 ENTITIES/25 RMS/8",
+                        "configBytes":  165523,
+                        "configSha256":  "1d4bec65ac136f24736223a5bbf122b98d9d5e3e486707dfa7a755d890868cf7",
+                        "exportPath":  "_versions/tenant_exports/cbp-demo_65505627848.json",
+                        "capturedAt":  "2026-09-11T14:04:01.183Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "1001142",
+                        "subdomain":  "ccpd",
+                        "status":  "LiveLIVE",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/4 RecordsArchive/5",
+                        "configBytes":  86748,
+                        "configSha256":  "4e354d97326160dc8f81bae7b20fb5d7842c508ccc069db5958d83f767d8cb74",
+                        "exportPath":  "_versions/tenant_exports/ccpd_1001142.json",
+                        "capturedAt":  "2026-09-11T14:04:14.572Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "63333802057",
+                        "subdomain":  "ccpd-jms-migration-round-1",
+                        "status":  "MigratedMIGRATED",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/4 RecordsArchive/4",
+                        "configBytes":  86748,
+                        "configSha256":  "4e354d97326160dc8f81bae7b20fb5d7842c508ccc069db5958d83f767d8cb74",
+                        "exportPath":  "_versions/tenant_exports/ccpd-jms-migration-round-1_63333802057.json",
+                        "capturedAt":  "2026-09-11T14:04:27.960Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "1870685224",
+                        "subdomain":  "dark-demo",
+                        "status":  "TestTEST",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "LA_LEMS/20 ENTITIES/99 RMS/8",
+                        "configBytes":  165447,
+                        "configSha256":  "cded7b9224f056da6f395956521242a2080e5b7a025b4bc6a6b3d7ac032ff224",
+                        "exportPath":  "_versions/tenant_exports/dark-demo_1870685224.json",
+                        "capturedAt":  "2026-09-11T14:04:41.253Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "67404108343",
+                        "subdomain":  "dea-demo",
+                        "status":  "TrainingTRAINING",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "LA_LEMS/15 ENTITIES/25 RMS/8",
+                        "configBytes":  165523,
+                        "configSha256":  "1d4bec65ac136f24736223a5bbf122b98d9d5e3e486707dfa7a755d890868cf7",
+                        "exportPath":  "_versions/tenant_exports/dea-demo_67404108343.json",
+                        "capturedAt":  "2026-09-11T14:04:54.442Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "510605240",
+                        "subdomain":  "demo",
+                        "status":  "TrainingTRAINING",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "LA_LEMS/20 ENTITIES/238 RMS/8",
+                        "configBytes":  218229,
+                        "configSha256":  "8b697e1efb09310615a52b5ae7b4dab0c795939b3d1150ac8dc44c044f76221c",
+                        "exportPath":  "_versions/tenant_exports/demo_510605240.json",
+                        "capturedAt":  "2026-09-11T14:05:07.776Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "62638109121",
+                        "subdomain":  "demo-boston-cad2025",
+                        "status":  "TestTEST",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "LA_LEMS/20 ENTITIES/480 RMS/8",
+                        "configBytes":  165447,
+                        "configSha256":  "27aaeca1c4cd4183e2d61cc4dd6e0919e828ac89dcc931829c0358a9ebea933b",
+                        "exportPath":  "_versions/tenant_exports/demo-boston-cad2025_62638109121.json",
+                        "capturedAt":  "2026-09-11T14:05:21.117Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "71875989157",
+                        "subdomain":  "demo-ny-se",
+                        "status":  "TestTEST",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "LA_LEMS/20 ENTITIES/480 RMS/8",
+                        "configBytes":  165447,
+                        "configSha256":  "27aaeca1c4cd4183e2d61cc4dd6e0919e828ac89dcc931829c0358a9ebea933b",
+                        "exportPath":  "_versions/tenant_exports/demo-ny-se_71875989157.json",
+                        "capturedAt":  "2026-09-11T14:05:34.319Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "67996979499",
+                        "subdomain":  "erich-demo1",
+                        "status":  "TrainingTRAINING",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "LA_LEMS/20 ENTITIES/470 RMS/8",
+                        "configBytes":  165447,
+                        "configSha256":  "de1d98c952243b9b9f141645eac57c1ab11122134e9a9f128c1de32d53463e8f",
+                        "exportPath":  "_versions/tenant_exports/erich-demo1_67996979499.json",
+                        "capturedAt":  "2026-09-11T14:05:47.627Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "35013420755",
+                        "subdomain":  "fullwooddemo",
+                        "status":  "TrainingTRAINING",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/31 CA_eSUN/30",
+                        "configBytes":  215204,
+                        "configSha256":  "9e93dccb5cdb2138130f6b3ed2bc5f14e1a7782fefae6a7c25a25ac691a4016f",
+                        "exportPath":  "_versions/tenant_exports/fullwooddemo_35013420755.json",
+                        "capturedAt":  "2026-09-11T14:06:00.887Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "30578897692",
+                        "subdomain":  "gordo",
+                        "status":  "TestTEST",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "HI_HCJDC/20 ENTITIES/106 RMS/15",
+                        "configBytes":  224680,
+                        "configSha256":  "68ff9ed30248132cfeacd298a745b4a692e339cb55a0525dc807e5b32a1513f4",
+                        "exportPath":  "_versions/tenant_exports/gordo_30578897692.json",
+                        "capturedAt":  "2026-09-11T14:06:14.162Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "58443422576",
+                        "subdomain":  "hawaii-dle",
+                        "status":  "LiveLIVE",
+                        "class":  "OURS",
+                        "provider":  "HI_HCJDC_OFML",
+                        "version":  "4.15",
+                        "versionStrings":  [
+                                               "HI_HCJDC_OFML v4.15"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/545 HI_HCJDC_OFML/32 RMS/70",
+                        "configBytes":  246536,
+                        "configSha256":  "61728413ba43192a32d8f1141a3cb4465ce91339b06d24cdaaaea6d21d47a8fb",
+                        "exportPath":  "_versions/tenant_exports/hawaii-dle_58443422576.json",
+                        "capturedAt":  "2026-09-11T14:06:27.492Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "54721427755",
+                        "subdomain":  "hdle-foundation",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "HI_HCJDC_OFML",
+                        "version":  "4.15",
+                        "versionStrings":  [
+                                               "HI_HCJDC_OFML v4.15"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/545 HI_HCJDC_OFML/32 RMS/70",
+                        "configBytes":  246536,
+                        "configSha256":  "61728413ba43192a32d8f1141a3cb4465ce91339b06d24cdaaaea6d21d47a8fb",
+                        "exportPath":  "_versions/tenant_exports/hdle-foundation_54721427755.json",
+                        "capturedAt":  "2026-09-11T14:06:40.833Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "69669966842",
+                        "subdomain":  "homesteadpd-fl-foundation",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "FL_FCIC",
+                        "version":  "7.24",
+                        "versionStrings":  [
+                                               "FL_FCIC v7.24"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/564 FL_FCIC/114 RMS/70",
+                        "configBytes":  327770,
+                        "configSha256":  "a715ef7f8313b2c0cc614d8f52722cdd26c3153571a6aa0ae017c3efcc347c09",
+                        "exportPath":  "_versions/tenant_exports/homesteadpd-fl-foundation_69669966842.json",
+                        "capturedAt":  "2026-09-11T14:06:54.102Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "68397625745",
+                        "subdomain":  "jeffco-demo",
+                        "status":  "TrainingTRAINING",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "LA_LEMS/20 ENTITIES/99 RMS/8",
+                        "configBytes":  165447,
+                        "configSha256":  "cded7b9224f056da6f395956521242a2080e5b7a025b4bc6a6b3d7ac032ff224",
+                        "exportPath":  "_versions/tenant_exports/jeffco-demo_68397625745.json",
+                        "capturedAt":  "2026-09-11T14:07:07.533Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "64985141433",
+                        "subdomain":  "justin-demo",
+                        "status":  "TrainingTRAINING",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "LA_LEMS/15 ENTITIES/25 RMS/8",
+                        "configBytes":  165523,
+                        "configSha256":  "1d4bec65ac136f24736223a5bbf122b98d9d5e3e486707dfa7a755d890868cf7",
+                        "exportPath":  "_versions/tenant_exports/justin-demo_64985141433.json",
+                        "capturedAt":  "2026-09-11T14:07:20.770Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "65456869021",
+                        "subdomain":  "kris-demo",
+                        "status":  "TrainingTRAINING",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "LA_LEMS/20 ENTITIES/99 RMS/8",
+                        "configBytes":  165447,
+                        "configSha256":  "cded7b9224f056da6f395956521242a2080e5b7a025b4bc6a6b3d7ac032ff224",
+                        "exportPath":  "_versions/tenant_exports/kris-demo_65456869021.json",
+                        "capturedAt":  "2026-09-11T14:07:34.022Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "54589578643",
+                        "subdomain":  "kyle-demo",
+                        "status":  "TrainingTRAINING",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "LA_LEMS/20 ENTITIES/99 RMS/8",
+                        "configBytes":  165447,
+                        "configSha256":  "cded7b9224f056da6f395956521242a2080e5b7a025b4bc6a6b3d7ac032ff224",
+                        "exportPath":  "_versions/tenant_exports/kyle-demo_54589578643.json",
+                        "capturedAt":  "2026-09-11T14:07:47.051Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "5107052982",
+                        "subdomain":  "lafayettela-sherifftraining",
+                        "status":  "TrainingTRAINING",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "LA_LEMS/22 ENTITIES/358 RMS/10",
+                        "configBytes":  163687,
+                        "configSha256":  "1dbfe19af51fed940873e3f89b8cb5798f99fda675480878a00892bc449759c1",
+                        "exportPath":  "_versions/tenant_exports/lafayettela-sherifftraining_5107052982.json",
+                        "capturedAt":  "2026-09-11T14:08:00.181Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "20032392972",
+                        "subdomain":  "lafayettesheriff-la",
+                        "status":  "LiveLIVE",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "LA_LEMS/22 ENTITIES/358 RMS/10",
+                        "configBytes":  163687,
+                        "configSha256":  "1dbfe19af51fed940873e3f89b8cb5798f99fda675480878a00892bc449759c1",
+                        "exportPath":  "_versions/tenant_exports/lafayettesheriff-la_20032392972.json",
+                        "capturedAt":  "2026-09-11T14:08:13.287Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "67753954395",
+                        "subdomain":  "lakewoodoh-foundation",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "OH_LEADS",
+                        "version":  "2.11",
+                        "versionStrings":  [
+                                               "OH_LEADS v2.11"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/570 OH_LEADS/4 RMS/70",
+                        "configBytes":  272960,
+                        "configSha256":  "7e4aded8d996b15435faba8de5a3b1ee06175bd052742f530c671df1b2ec46cb",
+                        "exportPath":  "_versions/tenant_exports/lakewoodoh-foundation_67753954395.json",
+                        "capturedAt":  "2026-09-11T14:08:26.576Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "56475148757",
+                        "subdomain":  "lam-demo",
+                        "status":  "TestTEST",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "LA_LEMS/20 ENTITIES/470 RMS/8",
+                        "configBytes":  165447,
+                        "configSha256":  "de1d98c952243b9b9f141645eac57c1ab11122134e9a9f128c1de32d53463e8f",
+                        "exportPath":  "_versions/tenant_exports/lam-demo_56475148757.json",
+                        "capturedAt":  "2026-09-11T14:08:39.948Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "25763508631",
+                        "subdomain":  "louisville-demo",
+                        "status":  "TrainingTRAINING",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "LA_LEMS/20 ENTITIES/99 RMS/8",
+                        "configBytes":  165447,
+                        "configSha256":  "cded7b9224f056da6f395956521242a2080e5b7a025b4bc6a6b3d7ac032ff224",
+                        "exportPath":  "_versions/tenant_exports/louisville-demo_25763508631.json",
+                        "capturedAt":  "2026-09-11T14:08:53.192Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "56768145752",
+                        "subdomain":  "lyle-demo",
+                        "status":  "TestTEST",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "LA_LEMS/20 ENTITIES/99 RMS/8",
+                        "configBytes":  165447,
+                        "configSha256":  "cded7b9224f056da6f395956521242a2080e5b7a025b4bc6a6b3d7ac032ff224",
+                        "exportPath":  "_versions/tenant_exports/lyle-demo_56768145752.json",
+                        "capturedAt":  "2026-09-11T14:09:06.252Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "57528255873",
+                        "subdomain":  "mariposacso",
+                        "status":  "LiveLIVE",
+                        "class":  "OURS",
+                        "provider":  "CA_CLETS",
+                        "version":  "2.27",
+                        "versionStrings":  [
+                                               "CA_CLETS v2.27"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/562 CA_CLETS/24 RMS/70",
+                        "configBytes":  332297,
+                        "configSha256":  "941a1df1435851df762e78fcbabedf47f1806e5b2934fe8a085c45e434836a3f",
+                        "exportPath":  "_versions/tenant_exports/mariposacso_57528255873.json",
+                        "capturedAt":  "2026-09-11T14:09:19.413Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "55074106416",
+                        "subdomain":  "mariposacso-foundation",
+                        "status":  "TrainingTRAINING",
+                        "class":  "OURS",
+                        "provider":  "CA_CLETS",
+                        "version":  "2.27",
+                        "versionStrings":  [
+                                               "CA_CLETS v2.27"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/562 CA_CLETS/24 RMS/70",
+                        "configBytes":  332297,
+                        "configSha256":  "941a1df1435851df762e78fcbabedf47f1806e5b2934fe8a085c45e434836a3f",
+                        "exportPath":  "_versions/tenant_exports/mariposacso-foundation_55074106416.json",
+                        "capturedAt":  "2026-09-11T14:09:32.559Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "68086125887",
+                        "subdomain":  "miamispringspd-foundation",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "FL_FCIC",
+                        "version":  "7.24",
+                        "versionStrings":  [
+                                               "FL_FCIC v7.24"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/564 FL_FCIC/114 RMS/70",
+                        "configBytes":  327770,
+                        "configSha256":  "a715ef7f8313b2c0cc614d8f52722cdd26c3153571a6aa0ae017c3efcc347c09",
+                        "exportPath":  "_versions/tenant_exports/miamispringspd-foundation_68086125887.json",
+                        "capturedAt":  "2026-09-11T14:09:45.776Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "36568869640",
+                        "subdomain":  "mint",
+                        "status":  "TrainingTRAINING",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "LA_LEMS/20 ENTITIES/470 RMS/8",
+                        "configBytes":  165447,
+                        "configSha256":  "de1d98c952243b9b9f141645eac57c1ab11122134e9a9f128c1de32d53463e8f",
+                        "exportPath":  "_versions/tenant_exports/mint_36568869640.json",
+                        "capturedAt":  "2026-09-11T14:09:59.073Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "68055618928",
+                        "subdomain":  "newarkpd-foundation",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "NJ_NJCJIS",
+                        "version":  "4.16",
+                        "versionStrings":  [
+                                               "NJ_NJCJIS v4.16"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/558 NJ_NJCJIS/77 RMS/70",
+                        "configBytes":  201627,
+                        "configSha256":  "564a53b80d3eb68e525f71c339d58432d5c9f7dfd7734211082d40a99618df21",
+                        "exportPath":  "_versions/tenant_exports/newarkpd-foundation_68055618928.json",
+                        "capturedAt":  "2026-09-11T14:10:12.362Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "66397342490",
+                        "subdomain":  "neworleanspd",
+                        "status":  "LiveLIVE",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "LA_LEMS/14 ENTITIES/22 RMS/7",
+                        "configBytes":  163602,
+                        "configSha256":  "c7de85322bd49163c3484d3aaadf3fea7c0186239d7c0041112a4af79ed69e06",
+                        "exportPath":  "_versions/tenant_exports/neworleanspd_66397342490.json",
+                        "capturedAt":  "2026-09-11T14:10:25.563Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "57501651030",
+                        "subdomain":  "neworleanspd-foundation",
+                        "status":  "TestTEST",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "LA_LEMS/14 ENTITIES/22 RMS/7",
+                        "configBytes":  163602,
+                        "configSha256":  "c7de85322bd49163c3484d3aaadf3fea7c0186239d7c0041112a4af79ed69e06",
+                        "exportPath":  "_versions/tenant_exports/neworleanspd-foundation_57501651030.json",
+                        "capturedAt":  "2026-09-11T14:10:38.714Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "67633161477",
+                        "subdomain":  "northmiami-foundation",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "FL_FCIC",
+                        "version":  "7.24",
+                        "versionStrings":  [
+                                               "FL_FCIC v7.24"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/564 FL_FCIC/114 RMS/70",
+                        "configBytes":  327770,
+                        "configSha256":  "a715ef7f8313b2c0cc614d8f52722cdd26c3153571a6aa0ae017c3efcc347c09",
+                        "exportPath":  "_versions/tenant_exports/northmiami-foundation_67633161477.json",
+                        "capturedAt":  "2026-09-11T14:10:52.043Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "47169169464",
+                        "subdomain":  "ny-nycapss-foundation",
+                        "status":  "TrainingTRAINING",
+                        "class":  "OURS",
+                        "provider":  "NY_NYSPIN_EJUSTICE",
+                        "version":  "4.24",
+                        "versionStrings":  [
+                                               "NY_NYSPIN_EJUSTICE v4.24"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/574 NY_NYSPIN_EJUSTICE/46 RMS/70",
+                        "configBytes":  258341,
+                        "configSha256":  "68a9b9326cda72abc9af97361687097c0360b80a7e75199fa03ac9b622b4fbef",
+                        "exportPath":  "_versions/tenant_exports/ny-nycapss-foundation_47169169464.json",
+                        "capturedAt":  "2026-09-11T14:11:05.193Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "54300680862",
+                        "subdomain":  "onscene",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "HI_HCJDC_OFML",
+                        "version":  "4.15",
+                        "versionStrings":  [
+                                               "HI_HCJDC_OFML v4.15"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/545 HI_HCJDC_OFML/32 RMS/70",
+                        "configBytes":  314553,
+                        "configSha256":  "79322fd8d036c7b8048db359c422c0650df7f1fbf4e286af01d5a3f6ad9d7a18",
+                        "exportPath":  "_versions/tenant_exports/onscene_54300680862.json",
+                        "capturedAt":  "2026-09-11T14:11:18.511Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "65003603844",
+                        "subdomain":  "practice-bertanzini",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "NJ_NJCJIS",
+                        "version":  "4.9",
+                        "versionStrings":  [
+                                               "NJ_NJCJIS v4.9",
+                                               "NJ_NJCJIS v4.8"
+                                           ],
+                        "mixedVersions":  true,
+                        "bundleCounters":  "ENTITIES/500 NJ_NJCJIS/74 RMS/70",
+                        "configBytes":  209354,
+                        "configSha256":  "e6b732b4aede9975a76f2a2db61af6afb397ce02ff99b51a633a7005276a6cbc",
+                        "exportPath":  "_versions/tenant_exports/practice-bertanzini_65003603844.json",
+                        "capturedAt":  "2026-09-11T14:11:31.643Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "68908334972",
+                        "subdomain":  "practice-robsgambellone",
+                        "status":  "TestTEST",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/588 CA_eSUN/41",
+                        "configBytes":  245253,
+                        "configSha256":  "7e290507a9cfe0e85ae506aac762c6d390f677dc57e9e3216521cdbef239df2f",
+                        "exportPath":  "_versions/tenant_exports/practice-robsgambellone_68908334972.json",
+                        "capturedAt":  "2026-09-11T14:11:44.966Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "72270142625",
+                        "subdomain":  "qa-amyblair-test",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "IL_LEADS_OFML",
+                        "version":  "2.8",
+                        "versionStrings":  [
+                                               "IL_LEADS_OFML v2.8"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/565 IL_LEADS_OFML/3 RMS/71",
+                        "configBytes":  220052,
+                        "configSha256":  "a3e781d4bfed75660f5b5601bbfb70c4420bb95e9feac38d4014f68b1468dd85",
+                        "exportPath":  "_versions/tenant_exports/qa-amyblair-test_72270142625.json",
+                        "capturedAt":  "2026-09-11T14:12:11.443Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "72362435981",
+                        "subdomain":  "qa-amyb-test",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "IL_LEADS_OFML",
+                        "version":  "2.8",
+                        "versionStrings":  [
+                                               "IL_LEADS_OFML v2.8"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/565 IL_LEADS_OFML/3 RMS/71",
+                        "configBytes":  220052,
+                        "configSha256":  "a3e781d4bfed75660f5b5601bbfb70c4420bb95e9feac38d4014f68b1468dd85",
+                        "exportPath":  "_versions/tenant_exports/qa-amyb-test_72362435981.json",
+                        "capturedAt":  "2026-09-11T14:11:58.152Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "29967674360",
+                        "subdomain":  "reno-nv-demo",
+                        "status":  "TrainingTRAINING",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "LA_LEMS/20 ENTITIES/470 RMS/8",
+                        "configBytes":  165447,
+                        "configSha256":  "de1d98c952243b9b9f141645eac57c1ab11122134e9a9f128c1de32d53463e8f",
+                        "exportPath":  "_versions/tenant_exports/reno-nv-demo_29967674360.json",
+                        "capturedAt":  "2026-09-11T14:12:24.616Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "63160611189",
+                        "subdomain":  "sandiegoharborpd-foundation",
+                        "status":  "TestTEST",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/31 CA_eSUN/18",
+                        "configBytes":  230960,
+                        "configSha256":  "dab4a61a2b7fb24a46673549f0f8393ab3b71db605aa4acf2bf399bf37f34fb9",
+                        "exportPath":  "_versions/tenant_exports/sandiegoharborpd-foundation_63160611189.json",
+                        "capturedAt":  "2026-09-11T14:12:38.073Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "59872925305",
+                        "subdomain":  "sandiegoso-foundation",
+                        "status":  "TrainingTRAINING",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/315 CA_eSUN/42",
+                        "configBytes":  244743,
+                        "configSha256":  "c0898f3f19048911922aab53eebcf76170e6dcc373d44b445b56dc0eb40648cf",
+                        "exportPath":  "_versions/tenant_exports/sandiegoso-foundation_59872925305.json",
+                        "capturedAt":  "2026-09-11T14:12:51.319Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "71459778290",
+                        "subdomain":  "sdso",
+                        "status":  "LiveLIVE",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/315 CA_eSUN/42",
+                        "configBytes":  244743,
+                        "configSha256":  "c0898f3f19048911922aab53eebcf76170e6dcc373d44b445b56dc0eb40648cf",
+                        "exportPath":  "_versions/tenant_exports/sdso_71459778290.json",
+                        "capturedAt":  "2026-09-11T14:13:05.262Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "64975047986",
+                        "subdomain":  "shelby-demo",
+                        "status":  "TrainingTRAINING",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "LA_LEMS/20 ENTITIES/99 RMS/8",
+                        "configBytes":  165447,
+                        "configSha256":  "cded7b9224f056da6f395956521242a2080e5b7a025b4bc6a6b3d7ac032ff224",
+                        "exportPath":  "_versions/tenant_exports/shelby-demo_64975047986.json",
+                        "capturedAt":  "2026-09-11T14:13:18.450Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "69585917479",
+                        "subdomain":  "usx-az-azdps",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "AZ_AZDPS",
+                        "version":  "3.12",
+                        "versionStrings":  [
+                                               "AZ_AZDPS v3.12",
+                                               "AZ_AZDPS v3.4"
+                                           ],
+                        "mixedVersions":  true,
+                        "bundleCounters":  "ENTITIES/577 AZ_AZDPS/18 RMS/72",
+                        "configBytes":  274769,
+                        "configSha256":  "1b23db0d313ba3b5cbce2d43fd96dfc6a93b7656bfc48d2992f46a3fb21a7e3c",
+                        "exportPath":  "_versions/tenant_exports/usx-az-azdps_69585917479.json",
+                        "capturedAt":  "2026-09-11T14:13:31.631Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "69586234535",
+                        "subdomain":  "usx-ca-clets",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "CA_CLETS",
+                        "version":  "2.27",
+                        "versionStrings":  [
+                                               "CA_CLETS v2.27"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/562 CA_CLETS/24 RMS/70",
+                        "configBytes":  332297,
+                        "configSha256":  "941a1df1435851df762e78fcbabedf47f1806e5b2934fe8a085c45e434836a3f",
+                        "exportPath":  "_versions/tenant_exports/usx-ca-clets_69586234535.json",
+                        "capturedAt":  "2026-09-11T14:13:44.927Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "72322272044",
+                        "subdomain":  "usx-ca-clets-ocats",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "CA_CLETS_OCATS",
+                        "version":  "2.12",
+                        "versionStrings":  [
+                                               "CA_CLETS_OCATS v2.12"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/584 CA_CLETS_OCATS/2 RMS/70",
+                        "configBytes":  255862,
+                        "configSha256":  "05a55a5da665fadf79dd813fc525bf20c795f90388a8c1b0fa0409ed167151f4",
+                        "exportPath":  "_versions/tenant_exports/usx-ca-clets-ocats_72322272044.json",
+                        "capturedAt":  "2026-09-11T14:13:58.389Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "69510509021",
+                        "subdomain":  "usx-ca-esun",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "CA_eSUN",
+                        "version":  "3.3",
+                        "versionStrings":  [
+                                               "CA_eSUN v3.3"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/590 CA_eSUN/48 RMS/70",
+                        "configBytes":  294107,
+                        "configSha256":  "9021c8d77fc94bdc49b8f037c5f880d05ebd24c2c3a58671a8735d3f0495c4e8",
+                        "exportPath":  "_versions/tenant_exports/usx-ca-esun_69510509021.json",
+                        "capturedAt":  "2026-09-11T14:14:11.549Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "69510828830",
+                        "subdomain":  "usx-fl-fcic",
+                        "status":  "TestTEST",
+                        "class":  "PROVIDER-NOT-OURS",
+                        "provider":  "",
+                        "version":  "",
+                        "versionStrings":  [
+
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/588 CA_eSUN/41",
+                        "configBytes":  245253,
+                        "configSha256":  "7e290507a9cfe0e85ae506aac762c6d390f677dc57e9e3216521cdbef239df2f",
+                        "exportPath":  "_versions/tenant_exports/usx-fl-fcic_69510828830.json",
+                        "capturedAt":  "2026-09-11T14:14:24.956Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "69510710914",
+                        "subdomain":  "usx-hi-hcjdc-ofml",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "HI_HCJDC_OFML",
+                        "version":  "4.19",
+                        "versionStrings":  [
+                                               "HI_HCJDC_OFML v4.19",
+                                               "HI_HCJDC_OFML v4.20"
+                                           ],
+                        "mixedVersions":  true,
+                        "bundleCounters":  "ENTITIES/563 HI_HCJDC_OFML/36 RMS/70",
+                        "configBytes":  251988,
+                        "configSha256":  "d3f1e833847ed0286c4aa0755fa2ca3c6ad61fe45c1b652a1b3217490bad8b9e",
+                        "exportPath":  "_versions/tenant_exports/usx-hi-hcjdc-ofml_69510710914.json",
+                        "capturedAt":  "2026-09-11T14:14:38.166Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "69510394285",
+                        "subdomain":  "usx-il-leads-ofml",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "IL_LEADS_OFML",
+                        "version":  "2.8",
+                        "versionStrings":  [
+                                               "IL_LEADS_OFML v2.8"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/565 IL_LEADS_OFML/3 RMS/71",
+                        "configBytes":  220052,
+                        "configSha256":  "a3e781d4bfed75660f5b5601bbfb70c4420bb95e9feac38d4014f68b1468dd85",
+                        "exportPath":  "_versions/tenant_exports/usx-il-leads-ofml_69510394285.json",
+                        "capturedAt":  "2026-09-11T14:14:51.528Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "69510242248",
+                        "subdomain":  "usx-la-lems",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "LA_LETTS_OFML",
+                        "version":  "2.0",
+                        "versionStrings":  [
+                                               "LA_LETTS_OFML v2.0"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/365 LA_LETTS_OFML/1 RMS/59",
+                        "configBytes":  203861,
+                        "configSha256":  "07695d477be4910f44bf46f4348c5c4ac4a3c832adba377e4088db80ab1830f5",
+                        "exportPath":  "_versions/tenant_exports/usx-la-lems_69510242248.json",
+                        "capturedAt":  "2026-09-11T14:15:04.852Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "69509976793",
+                        "subdomain":  "usx-md-meters",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "MD_METERS",
+                        "version":  "2.4",
+                        "versionStrings":  [
+                                               "MD_METERS v2.4"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/582 MD_METERS/2 RMS/71",
+                        "configBytes":  229028,
+                        "configSha256":  "f61ae37db28ac64a3f66d4217ded96d2ef5cd3dd724ca81cfa6744d58431c7ae",
+                        "exportPath":  "_versions/tenant_exports/usx-md-meters_69509976793.json",
+                        "capturedAt":  "2026-09-11T14:15:18.238Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "69509881306",
+                        "subdomain":  "usx-nj-njcjis",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "NJ_NJCJIS",
+                        "version":  "4.17",
+                        "versionStrings":  [
+                                               "NJ_NJCJIS v4.17"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/573 NJ_NJCJIS/78 RMS/70",
+                        "configBytes":  205514,
+                        "configSha256":  "ee9e4eda6b825c46be422fa0510ebfb8372e349e7cbf09808833976821ea461e",
+                        "exportPath":  "_versions/tenant_exports/usx-nj-njcjis_69509881306.json",
+                        "capturedAt":  "2026-09-11T14:15:31.424Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "69586413893",
+                        "subdomain":  "usx-nm-nmlets",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "NM_NMLETS_OFML",
+                        "version":  "2.7",
+                        "versionStrings":  [
+                                               "NM_NMLETS_OFML v2.7"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/576 NM_NMLETS_OFML/5 RMS/70",
+                        "configBytes":  234717,
+                        "configSha256":  "81ac3d5afc2656a27a2a4ad3448f18474b3bee65db8841e7944675bbfa9c33bc",
+                        "exportPath":  "_versions/tenant_exports/usx-nm-nmlets_69586413893.json",
+                        "capturedAt":  "2026-09-11T14:15:44.919Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "69509789559",
+                        "subdomain":  "usx-ny-nyspin-ejustice",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "NY_NYSPIN_EJUSTICE",
+                        "version":  "4.24",
+                        "versionStrings":  [
+                                               "NY_NYSPIN_EJUSTICE v4.24"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/574 NY_NYSPIN_EJUSTICE/46 RMS/70",
+                        "configBytes":  258341,
+                        "configSha256":  "68a9b9326cda72abc9af97361687097c0360b80a7e75199fa03ac9b622b4fbef",
+                        "exportPath":  "_versions/tenant_exports/usx-ny-nyspin-ejustice_69509789559.json",
+                        "capturedAt":  "2026-09-11T14:15:58.328Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "69509682080",
+                        "subdomain":  "usx-oh-leads",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "OH_LEADS",
+                        "version":  "2.11",
+                        "versionStrings":  [
+                                               "OH_LEADS v2.11"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/570 OH_LEADS/4 RMS/70",
+                        "configBytes":  272960,
+                        "configSha256":  "7e4aded8d996b15435faba8de5a3b1ee06175bd052742f530c671df1b2ec46cb",
+                        "exportPath":  "_versions/tenant_exports/usx-oh-leads_69509682080.json",
+                        "capturedAt":  "2026-09-11T14:16:11.574Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "69586491910",
+                        "subdomain":  "usx-or-leds",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "OR_LEDS",
+                        "version":  "2.5",
+                        "versionStrings":  [
+                                               "OR_LEDS v2.5"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/581 OR_LEDS/1 RMS/70",
+                        "configBytes":  192225,
+                        "configSha256":  "595b4ec02b09bfb12dbdffb32f9a0c9cde7a961e6232bae9ac1a2564c299ff53",
+                        "exportPath":  "_versions/tenant_exports/usx-or-leds_69586491910.json",
+                        "capturedAt":  "2026-09-11T14:16:24.776Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "69586333849",
+                        "subdomain":  "usx-tn-ties",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "TN_TIES",
+                        "version":  "2.6",
+                        "versionStrings":  [
+                                               "TN_TIES v2.6",
+                                               "AZ_AZDPS v3.4"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/579 TN_TIES/4 RMS/72",
+                        "configBytes":  264435,
+                        "configSha256":  "820057d0ec6df6a79193439e1b4f623b4a9f6b8c1b65f59f6b0393a216d52ed0",
+                        "exportPath":  "_versions/tenant_exports/usx-tn-ties_69586333849.json",
+                        "capturedAt":  "2026-09-11T14:16:38.815Z",
+                        "note":  ""
+                    },
+                    {
+                        "deptId":  "69509542782",
+                        "subdomain":  "usx-tx-tlets",
+                        "status":  "TestTEST",
+                        "class":  "OURS",
+                        "provider":  "TX_TLETS",
+                        "version":  "4.22",
+                        "versionStrings":  [
+                                               "TX_TLETS v4.22"
+                                           ],
+                        "mixedVersions":  false,
+                        "bundleCounters":  "ENTITIES/566 TX_TLETS/34 RMS/71",
+                        "configBytes":  291595,
+                        "configSha256":  "fbd554650f95084aa7db02efe8597ecfd14c79e486b452a9c279fbe75128c1b6",
+                        "exportPath":  "_versions/tenant_exports/usx-tx-tlets_69509542782.json",
+                        "capturedAt":  "2026-09-11T14:16:52.178Z",
+                        "note":  ""
+                    }
+                ]
+}
