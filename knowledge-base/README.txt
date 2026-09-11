@@ -702,6 +702,47 @@ TOOLS
     Carries `_unlocated` for the REVERSE gap (a ledger row matching no tenant), which a
     tenant-first sweep structurally cannot see: today that is "Albany County NY Foundation".
     64 tenants: 16 usx-fleet / 12 ledger-foundation / 36 discovered 2026-09-10.
+  tools/ingest_tenant_roster.ps1
+    WHAT CHANGED ON THE PLATFORM SINCE THE LAST BASELINE -- new tenants, renames, status
+    changes -- from ONE page load. Rob, 2026-09-11, describing the standing process behind the
+    one-time scan: "the intial scan and inventory will be a one time thing. moving forward we
+    need to figure out how to extract 'new' tenants on a regular basis and be able to audit the
+    tenants on demand".
+    WHY IT DIFFS THE INDEX AND NOT THE CENSUS. The full census visits all 1,785 configuration
+    pages and costs 20-25 minutes. The DEPARTMENT INDEX is a SINGLE page load and already
+    carries deptId / subdomain / analyticsAlias / status / cadSubdomain / ssoConnectionId for
+    every tenant. So the recurring audit is: pull the index (1 load) -> diff -> census ONLY
+    what changed. That is a monthly job measured in seconds instead of hours, and it is the
+    whole difference between a one-time snapshot and a standing process.
+    Baseline: tools/config/tenant_roster.json -- COMMITTED, metadata only, never any
+    configuration content. Tracks firstSeen/lastSeen per deptId.
+    !! deptId IS THE JOIN KEY AND THAT IS WHY THIS TOOL EXISTS. Rob, 2026-09-10: "the tenant
+    naming conventions are not intuative so we will need to keep them correlated when
+    possible." A subdomain change on an EXISTING deptId is a RENAME, not a new tenant.
+    Reporting it as new would manufacture a discovery -- the same failure that once reported
+    `hawaii-dle`, a LIVE production tenant, as an unknown find because nothing in the ledger
+    name "HDLE LIVE" implies that subdomain.
+    !! FOUR REFUSALS, EVERY ONE PROVEN TO FIRE:
+       1. A BOOTSTRAP IS NOT 1,785 DISCOVERIES. With no baseline every tenant reads as new, so
+          a bootstrap run says BOOTSTRAP, reports NO findings, and requires -Update to write
+          the first roster.
+       2. A RENAME IS NOT A NEW TENANT (same deptId, different subdomain) -- reported in its
+          own section, with a note that anything keyed on subdomain is now stale.
+       3. A MISSING ROW IS NOT A DELETED TENANT. A truncated capture and a mass deletion are
+          INDISTINGUISHABLE here, so a shrink beyond -MaxShrinkPct (default 10) suppresses
+          departures ENTIRELY while still reporting new/renamed/status -- those are evidence of
+          PRESENCE, which truncation cannot fabricate. Verified real rather than inert: the
+          same 1400-of-1785 input reports 385 departures when run with -MaxShrinkPct 50.
+       4. A READ-ONLY RUN DOES NOT MOVE THE BASELINE. -Update is required, so a diff can be
+          inspected before being absorbed -- otherwise a change would be reported once and
+          then silently stop being reported.
+    Emits a paste-ready dept-id list of the new NON-DEACTIVATED tenants to census next
+    (Rob: "we can filter out deavtivated tenants" -- 1785 -> 1560, and all 64 known carriers
+    survive that filter).
+    0 rows FAILs rather than diffing against nothing.
+    Usage: .\tools\ingest_tenant_roster.ps1 [-Path <file>] [-Update] [-MaxShrinkPct <n>]
+           [-OutFile <report>] [-Quiet]
+
   tools/ingest_tenant_scan.ps1
     WHICH TENANTS HAVE A PROVIDER JSON WE DO NOT KNOW ABOUT? Rob 2026-09-10: "the goal is to
     uncover any json imports that we do not know about" -- and, added straight after,
