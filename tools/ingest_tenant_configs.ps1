@@ -224,6 +224,24 @@ foreach ($g in $groups) {
 }
 
 # -- write the committed METADATA inventory (never the payloads) --------------------
+# ⚠️ MERGE, DO NOT REPLACE. Found 2026-09-11 by doing it wrong: ingesting a SINGLE tenant's
+# pull (the deploy loop's before/after step) rewrote this committed inventory with ONE row and
+# clobbered the other 64. Restored from git. It would have recurred on EVERY single-tenant pull
+# -- which is exactly the workflow usx-deploy prescribes, so the bug was aimed squarely at the
+# procedure I had just written down. A partial ingest is now ADDITIVE: existing rows survive,
+# re-ingested rows are superseded by deptId.
+$merged = [ordered]@{}
+if (Test-Path $invPath) {
+    try {
+        $prev = Get-Content $invPath -Raw -Encoding UTF8 | ConvertFrom-Json
+        foreach ($t in @($prev.tenants)) { $merged["$($t.deptId)"] = $t }
+    } catch { Say '  [WARN] existing inventory unreadable -- writing a fresh one rather than merging.' }
+}
+$carriedOver = $merged.Count
+foreach ($k in $inv.Keys) { $merged[$k] = $inv[$k] }
+Say ("  inventory merge: {0} carried over + {1} from this run = {2} total" -f `
+     $carriedOver, $inv.Count, $merged.Count)
+
 $doc = [ordered]@{
     _what   = 'Baseline record of which provider configuration is deployed on which tenant.'
     _rules  = @(
@@ -235,12 +253,12 @@ $doc = [ordered]@{
     )
     generated = (Get-Date).ToString('s')
     source    = 'tools/ingest_tenant_configs.ps1 <- extension button 6b'
-    counts    = [ordered]@{ tenants = $inv.Count; ours = $ours.Count; providerNotOurs = $notOur.Count; unknown = $unk.Count; mixedVersions = $mixed.Count }
-    tenants   = @($inv.Values | Sort-Object { $_.subdomain })
+    counts    = [ordered]@{ tenants = $merged.Count; ours = $ours.Count; providerNotOurs = $notOur.Count; unknown = $unk.Count; mixedVersions = $mixed.Count }
+    tenants   = @($merged.Values | Sort-Object { $_.subdomain })
 }
 $doc | ConvertTo-Json -Depth 6 | Set-Content -Path $invPath -Encoding UTF8
 Say ''
-Say ("  inventory written: providers\TENANT_CONFIG_INVENTORY.json  ({0} tenants, metadata only)" -f $inv.Count)
+Say ("  inventory written: providers\TENANT_CONFIG_INVENTORY.json  ({0} tenants total, metadata only)" -f $merged.Count)
 Say '===================================================================================='
 Say ''
 
