@@ -1,0 +1,82 @@
+
+====================================================================================
+  TENANT VERSION CROSS-CHECK -- measured vs ledger vs repo
+====================================================================================
+  files: 2   distinct tenants: 64   repo versions known for 20 provider(s)
+
+  VERSION READ 32 | NOT-OUR-BUILD (exported, no version string) 32 | UNRESOLVED 0
+
+  tenant                           provider             MEASURED  LEDGER    REPO      verdict
+  --------------------------------------------------------------------------------------------------------------------------
+  1836                             -                    -         --        --        NOT OUR BUILD (no version string)
+  abbey-demo                       -                    -         --        --        NOT OUR BUILD (no version string)
+  amyblair                         FL_FCIC              v7.18     --        v7.24     NO LEDGER ROW / behind repo
+  aurorapd-il-foundation           IL_LEADS_OFML        v2.8      v2.8      v2.8      ledger OK / repo OK
+  balconesheightspd-foundation     TX_TLETS             v4.22     v4.22     v4.22     ledger OK / repo OK
+  cbp-demo                         -                    -         --        --        NOT OUR BUILD (no version string)
+  ccpd                             -                    -         --        --        NOT OUR BUILD (no version string)
+  ccpd-jms-migration-round-1       -                    -         --        --        NOT OUR BUILD (no version string)
+  dark-demo                        -                    -         --        --        NOT OUR BUILD (no version string)
+  dea-demo                         -                    -         --        --        NOT OUR BUILD (no version string)
+  demo                             -                    -         --        --        NOT OUR BUILD (no version string)
+  demo-boston-cad2025              -                    -         --        --        NOT OUR BUILD (no version string)
+  demo-ny-se                       -                    -         --        --        NOT OUR BUILD (no version string)
+  erich-demo1                      -                    -         --        --        NOT OUR BUILD (no version string)
+  fullwooddemo                     -                    -         --        --        NOT OUR BUILD (no version string)
+  gordo                            -                    -         --        --        NOT OUR BUILD (no version string)
+  hawaii-dle                       HI_HCJDC_OFML        v4.15     v4.15     v4.20     ledger OK / behind repo
+  hdle-foundation                  HI_HCJDC_OFML        v4.15     v4.15     v4.20     ledger OK / behind repo
+  homesteadpd-fl-foundation        FL_FCIC              v7.24     v7.24     v7.24     ledger OK / repo OK
+  jeffco-demo                      -                    -         --        --        NOT OUR BUILD (no version string)
+  justin-demo                      -                    -         --        --        NOT OUR BUILD (no version string)
+  kris-demo                        -                    -         --        --        NOT OUR BUILD (no version string)
+  kyle-demo                        -                    -         --        --        NOT OUR BUILD (no version string)
+  lafayettela-sherifftraining      -                    -         --        --        NOT OUR BUILD (no version string)
+  lafayettesheriff-la              -                    -         (not ours) --        CONFIRMS ledger: not our build
+  lakewoodoh-foundation            OH_LEADS             v2.11     --        v2.11     NO LEDGER ROW / repo OK
+  lam-demo                         -                    -         --        --        NOT OUR BUILD (no version string)
+  louisville-demo                  -                    -         --        --        NOT OUR BUILD (no version string)
+  lyle-demo                        -                    -         --        --        NOT OUR BUILD (no version string)
+  mariposacso                      CA_CLETS             v2.27     v2.27     v2.27     ledger OK / repo OK
+  mariposacso-foundation           CA_CLETS             v2.27     v2.27     v2.27     ledger OK / repo OK
+  miamispringspd-foundation        FL_FCIC              v7.24     v7.24     v7.24     ledger OK / repo OK
+  mint                             -                    -         --        --        NOT OUR BUILD (no version string)
+  newarkpd-foundation              NJ_NJCJIS            v4.16     v4.17     v4.17     *** LEDGER SAYS v4.17 *** / behind repo
+  neworleanspd                     -                    -         --        --        NOT OUR BUILD (no version string)
+  neworleanspd-foundation          -                    -         --        --        NOT OUR BUILD (no version string)
+  northmiami-foundation            FL_FCIC              v7.24     v7.24     v7.24     ledger OK / repo OK
+  ny-nycapss-foundation            NY_NYSPIN_EJUSTICE   v4.24     --        v4.26     NO LEDGER ROW / behind repo
+  onscene                          HI_HCJDC_OFML        v4.15     --        v4.20     NO LEDGER ROW / behind repo
+  practice-bertanzini              NJ_NJCJIS            v4.9      v4.9      v4.17     ledger OK / behind repo
+  practice-robsgambellone          -                    -         --        --        NOT OUR BUILD (no version string)
+  qa-amyblair-test                 IL_LEADS_OFML        v2.8      --        v2.8      NO LEDGER ROW / repo OK
+  qa-amyb-test                     IL_LEADS_OFML        v2.8      --        v2.8      NO LEDGER ROW / repo OK
+  reno-nv-demo                     -                    -         --        --        NOT OUR BUILD (no version string)
+  sandiegoharborpd-foundation      -                    -         --        --        NOT OUR BUILD (no version string)
+  sandiegoso-foundation            -                    -         --        --        NOT OUR BUILD (no version string)
+  sdso                             -                    -         --        --        NOT OUR BUILD (no version string)
+  shelby-demo                      -                    -         --        --        NOT OUR BUILD (no version string)
+  usx-az-azdps                     AZ_AZDPS             v3.12     --        v3.12     NO LEDGER ROW / repo OK
+  usx-ca-clets                     CA_CLETS             v2.27     --        v2.27     NO LEDGER ROW / repo OK
+  usx-ca-clets-ocats               CA_CLETS_OCATS       v2.12     --        v2.12     NO LEDGER ROW / repo OK
+  usx-ca-esun                      CA_eSUN              v3.3      --        v3.3      NO LEDGER ROW / repo OK
+  usx-fl-fcic                      -                    -         --        --        NOT OUR BUILD (no version string)
+  usx-hi-hcjdc-ofml                HI_HCJDC_OFML        v4.19     --        v4.20     NO LEDGER ROW / behind repo
+  usx-il-leads-ofml                IL_LEADS_OFML        v2.8      --        v2.8      NO LEDGER ROW / repo OK
+  usx-la-lems                      LA_LETTS_OFML        v2.0      --        --        NO LEDGER ROW
+  usx-md-meters                    MD_METERS            v2.4      --        v2.4      NO LEDGER ROW / repo OK
+  usx-nj-njcjis                    NJ_NJCJIS            v4.17     --        v4.17     NO LEDGER ROW / repo OK
+  usx-nm-nmlets                    NM_NMLETS_OFML       v2.7      --        v2.7      NO LEDGER ROW / repo OK
+  usx-ny-nyspin-ejustice           NY_NYSPIN_EJUSTICE   v4.24     --        v4.26     NO LEDGER ROW / behind repo
+  usx-oh-leads                     OH_LEADS             v2.11     --        v2.11     NO LEDGER ROW / repo OK
+  usx-or-leds                      OR_LEDS              v2.5      --        v2.6      NO LEDGER ROW / behind repo
+  usx-tn-ties                      TN_TIES              v2.6      --        v2.6      NO LEDGER ROW / repo OK
+  usx-tx-tlets                     TX_TLETS             v4.22     --        v4.22     NO LEDGER ROW / repo OK
+
+  fully agreeing 8 | LEDGER DRIFT 1 | behind repo 10 | measured but NO ledger row 21
+
+  A "behind repo" row is not automatically a defect -- a Foundation tenant is expected to
+  lag until someone imports. A LEDGER DRIFT row is: the record and the tenant disagree.
+  No platform counter is printed here; it is corroboration, never a version.
+====================================================================================
+

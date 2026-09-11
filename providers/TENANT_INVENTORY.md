@@ -252,3 +252,102 @@ bundle** — and those are exactly three of the providers this repo lists as NEV
 imported → nothing to import → no bundle. Independent confirmation of the ledger's
 never-imported rows from the platform side, which is the first time that has been possible.
 `usx-sc-sled` is empty too and has no provider here at all.
+
+---
+
+# PHASE 2 — EVERY TENANT'S ACTUAL VERSION, READ FROM ITS OWN EXPORT (2026-09-11)
+
+Rob: *"i thought you were supposed to export every json you find."* All **64** carrier tenants
+swept via the Export JSON control. **0 UNRESOLVED** — every one reached a verdict. Full table:
+`providers/TENANT_VERSION_REPORT.txt`, regenerate with `tools\ingest_tenant_versions.ps1`.
+
+**32 VERSION-READ · 32 EXPORTED-BUT-NO-VERSION-STRING · 0 unresolved.**
+
+## The probe was checked before the findings were believed
+
+32 of 64 reading "not our build" is the shape that usually means a broken probe, so the
+denominator was measured first. **Truncation ruled out:** `probeExportControls` caps a blob at
+400,000 chars and *nothing reached it* — the no-version blobs top out at 245,253 bytes while
+blobs that read fine reach 332,297. **Mechanism proven working:** `usx-nj-njcjis` reads
+**v4.17 = repo v4.17**. So a tenant reading OLDER than the repo is a real measurement.
+
+## 🔴 THREE PROVIDER TENANTS ARE BEHIND THEIR OWN COMMITTED LOGS — NEEDS A RULING
+
+| Provider tenant | Tenant exports | Repo | Committed logs stamped | Logs |
+|---|---|---|---|---|
+| `usx-ny-nyspin-ejustice` | **v4.24** | v4.26 | **v4.26** | 65 |
+| `usx-hi-hcjdc-ofml` | **v4.19** | v4.20 | **v4.20** | 48 |
+| `usx-or-leds` | **v2.5** | v2.6 | **v2.6** | 27 |
+
+`.test_version` reads the repo version on all three, and `reset_test_package` archives prior
+logs on a bump — so current-version logs exist for a version the tenant does not appear to be
+running. CLAUDE.md treats a provider tenant's newest non-archived `logs/` as *"proof of what's
+installed there, self-verifying"*. **On these three that premise is contradicted.**
+
+TWO CANDIDATE EXPLANATIONS, NEITHER CONFIRMED — do not act on one without the test below:
+1. The log header's version stamp is written from the **repo** version at ingest time, not from
+   what the tenant actually ran. If so, no log anywhere proves which build produced its wire,
+   and that is a gate gap, not a provider defect.
+2. A partial/failed re-import left the PROVIDER bundle at the older build.
+
+DISCRIMINATING TEST (cheap, one tenant): re-export `usx-ny-nyspin-ejustice` retaining the full
+blob and count how many distinct `Provider configuration for … v…` strings it holds. The sweep
+regex stops at the FIRST non-RMS match, so a tenant carrying both v4.24 and v4.26 descriptions
+would report v4.24 and my read would be the artifact. `keepFull` was not set on this run, so the
+blob is gone — this cannot be settled from the saved file.
+
+## The hand-built LA_LEMS is on ~24 tenants, not one
+
+The ledger records ONE hand-built LA_LEMS (`lafayettesheriff-la`). The sweep finds the same
+no-version-string LA_LEMS lineage across **24 tenants**, in exactly **4 byte-identical groups**:
+
+| fullBytes | tenants | what |
+|---|---|---|
+| 165,447 | 13 `*-demo` tenants | one seeded demo config |
+| 165,523 | `justin-demo`, `cbp-demo`, `dea-demo` | a second seeded config |
+| 163,687 | `lafayettesheriff-la`, `lafayettela-sherifftraining` | the ledger's hand-built pair |
+| 163,602 | `neworleanspd`, `neworleanspd-foundation` | New Orleans LIVE + foundation |
+
+Identical byte counts = one config copied, not 24 installs. This is what the earlier
+"LA_LEMS 1 → 22" reconciliation was actually counting. **None carry our version string**, so
+our `LA_LEMS` v3.2 is still on no tenant anywhere — the ledger is right.
+
+## Newly measured, absent from the ledger (our build, real version)
+
+| Tenant | Provider | Tenant | Repo | |
+|---|---|---|---|---|
+| `ny-nycapss-foundation` | NY_NYSPIN_EJUSTICE | v4.24 | v4.26 | byte-identical to `usx-ny-nyspin-ejustice` (258,341 / ENTITIES-574 NY-46 RMS-70) |
+| `onscene` | HI_HCJDC_OFML | v4.15 | v4.20 | |
+| `lakewoodoh-foundation` | OH_LEADS | v2.11 | v2.11 | current |
+| `amyblair` | FL_FCIC | v7.18 | v7.24 | |
+| `qa-amyblair-test`, `qa-amyb-test` | IL_LEADS_OFML | v2.8 | v2.8 | current |
+
+⚠️ `ny-nycapss-foundation` being byte-identical to our NY test tenant does **NOT** identify what
+NY CAPSS is, and must **NOT** be used to close the ledger's unlocated "Albany County NY
+Foundation" row. That remains `_needsHumanInput` in `tools/config/tenant_map.json`.
+
+## SDSO: the "eSUN v1.0" claim is NOT corroborated by the tenant
+
+`sdso` and `sandiegoso-foundation` are byte-identical (244,743 / `ENTITIES/315 CA_eSUN/42`) and
+carry **no version string at all**. SESSION_STATE says *"SDSO LIVE runs eSUN v1.0 vs repo v3.3"*.
+This read cannot confirm v1.0 — it can only say the installed config is **not one of our builds**.
+Whatever "v1.0" came from, it did not come from the tenant. Same for `sandiegoharborpd-foundation`
+(`CA_eSUN/18`) and `fullwooddemo` (`CA_eSUN/30`).
+
+## Already-adjudicated, NOT re-raised
+
+- `usx-fl-fcic` carries `ENTITIES/588 CA_eSUN/41` and no FL_FCIC bundle. **Rob ruled this an
+  unrelated test on 2026-09-10 and the finding was retracted.** Recorded here only so the next
+  sweep does not rediscover it as an alarm. `practice-robsgambellone` is byte-identical to it.
+- `newarkpd-foundation` v4.16 vs ledger v4.17 — confirmed again; Rob's call, unchanged.
+- `lafayettesheriff-la` — no version string, CONFIRMS the ledger's "not ours".
+- `gordo` carries `HI_HCJDC` (not `HI_HCJDC_OFML`) and `ccpd`/`ccpd-jms-migration-round-1` carry
+  `RecordsArchive` — bundle names that are not ours, no version string.
+
+## Cost note for the next sweep
+
+The panel says "~2s each". **It is up to ~24s each** — `probeExportControls` runs two 12-second
+budgets back to back (wait-for-table, then watch-after-click), and the second exits early only if
+a `<pre>`/`<textarea>` appears or the page grows 2000+ chars. 64 tenants took ~50 minutes. The
+`Refused to set unsafe header "Cookie"` console lines are the department page's own jQuery
+(`fsRequest` → `loadDepartmentBundles`) and cost nothing — they are not the slowness.
