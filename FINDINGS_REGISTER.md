@@ -1135,6 +1135,55 @@ normally enabled — worth doing if cheap, no longer blocking.
 providers) is **untouched and unverified** — and note this evidence does not support it: RMS *does*
 block here, which is the opposite of what that hypothesis predicts.
 
+### RND-71625 CONFIG UNIFORMITY CONFIRMED 2026-09-11 -- 20/20, against CA_CLETS as the reference
+
+Rob: *"confirm that all jsons are sonfigured the same in terms of the issues described in that
+jira ... i gave screenshot and ran tests on the ca clets usx test tenant so whatever is thier
+currently should be the standard."*
+
+**Reference chosen as he specified: CA_CLETS, not a literal I would have typed.** Comparing to a
+hand-written expectation compares to my belief; comparing to CA_CLETS compares to the artifact he
+actually validated, and the expectation moves if CA_CLETS does.
+
+**CA_CLETS's two AUTHENTICATION configs:**
+
+| handler | deviceRegistrationOptional | providerType | signInRequired |
+|---|---|---|---|
+| `CommsysOriAuthenticationHandler` | **false** | Commsys | **false** |
+| `RestAuthenticationHandler` | **true** | *(absent)* | *(absent)* |
+
+**RESULT: 20 of 20 providers match EXACTLY on every compared property, both handlers.** Zero
+differences. `tools/_probes/audit_auth_uniformity.ps1`, report at
+`providers/RND71625_AUTH_UNIFORMITY.txt`.
+
+**AND THE TENANT AGREES WITH THE REPO.** He tested the tenant, so the tenant is the standard --
+`usx-ca-clets`'s deployed AUTH configs were compared against repo v2.27 property by property:
+**0 differences on both handlers.** So "what is on the tenant" and "what the repo builds" and
+"what all 20 providers carry" are one and the same value.
+
+⚠️ **THIS IS BROADER THAN THE EARLIER CHECK AND THAT MATTERS.** The 2026-09-09 round measured
+`deviceRegistrationOptional` ALONE and found 20/20 -- true, and NOT an answer to "are they
+configured the same", because a difference in `signInRequired`, `providerType`, `handlerFunction`
+or an extra/missing property would have passed unseen. This compares every property of every
+AUTHENTICATION configuration, and reports ABSENT as MISSING/EXTRA rather than treating it as
+equal to a value (which matters here: the RMS handler legitimately carries NO `providerType` and
+NO `signInRequired`).
+
+⚠️ **THE PROBE'S SELF-TEST CAUGHT A REAL BUG IN THE PROBE BEFORE IT PRODUCED A VERDICT.** The
+comparison function ended `return ,@($bad)` -- and that comma-guard, correct for a function whose
+single result must not unwrap to a scalar, makes an EMPTY result a 1-element array containing an
+empty array. `.Count` was 1 with ZERO differences, so every verdict was meaningless in both
+directions. The self-test asserts a flipped value AND a dropped property are detected AND that an
+identical pair reports clean; that third assertion is the one that failed. Without it the probe
+would have printed "UNIFORM" off a broken comparison -- the exact shape of a vacuous pass.
+
+**Adjudication unchanged: NO CHANGE OWED at the configuration level.** Cringer's suggestion is
+satisfied everywhere, uniformly, and now demonstrably across the whole AUTH config rather than one
+flag. The two defensible findings from 2026-09-09 remain UI-level and unaffected by any JSON: the
+*information* glyph where a *warning* glyph is expected, and the message existing only in a hover
+tooltip with no `aria-label`/`title` (so a screen-reader user gets nothing). Neither is fixable in
+a provider JSON. **Jira reply still HELD.**
+
 ### RND-71625 follow-up 2026-09-09: Cringer's suggested fix is ALREADY IN PLACE, portfolio-wide
 
 **His comment (812334, 2026-09-07):** *"In the configuration under type AUTHENTICATION, set

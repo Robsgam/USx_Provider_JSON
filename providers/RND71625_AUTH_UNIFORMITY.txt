@@ -1,0 +1,29 @@
+
+====================================================================================
+  AUTHENTICATION CONFIG UNIFORMITY -- RND-71625 surface, reference = CA_CLETS
+====================================================================================
+  providers: 20
+  distinct AUTHENTICATION handlers across the portfolio: 2 -- CommsysOriAuthenticationHandler, RestAuthenticationHandler
+  [PASS] self-test: a flipped value AND a dropped property are both detected, and an
+         identical pair reports clean. This probe can fail, so its verdict means something.
+
+  ---- handler: CommsysOriAuthenticationHandler ----------------------------------------------------------
+  reference (CA_CLETS) carries: deviceRegistrationOptional=False  handlerFunction=CommsysOriAuthenticationHandler  providerType=Commsys  signInRequired=False  type=AUTHENTICATION
+  providers carrying this handler: 20 of 20
+  OK -- all 20 provider(s) carrying this handler match CA_CLETS EXACTLY on every compared property.
+
+  ---- handler: RestAuthenticationHandler ----------------------------------------------------------
+  reference (CA_CLETS) carries: deviceRegistrationOptional=True  handlerFunction=RestAuthenticationHandler  type=AUTHENTICATION
+  providers carrying this handler: 20 of 20
+  OK -- all 20 provider(s) carrying this handler match CA_CLETS EXACTLY on every compared property.
+
+  ---- VERDICT ---------------------------------------------------------------------
+  UNIFORM. Every provider's AUTHENTICATION configs match CA_CLETS on every compared
+  property, and no provider is missing a handler the reference has.
+  => Nothing to change for RND-71625 at the configuration level.
+
+  Compared: every property of every AUTHENTICATION configuration EXCEPT description/name/
+  provider, which carry the provider name by design. ABSENT is reported as MISSING or
+  EXTRA, never treated as equal to a value.
+====================================================================================
+
