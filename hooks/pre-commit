@@ -1,0 +1,33 @@
+#!/bin/sh
+# BLOCK A COMMIT THAT BREAKS THE BROWSER EXTENSION.
+#
+# WHY THIS EXISTS. On 2026-09-04 a single apostrophe inside a single-quoted console.log in
+# usx_lib.js closed the string early; the file never parsed, window.__usxLib never existed, and the
+# driver + capture tools were DEAD FOR FIVE DAYS -- found only when the operator opened a console.
+# audit_extension_syntax.ps1 was built to catch exactly that.
+#
+# On 2026-09-11 I did it AGAIN -- wrote "the build's" inside a single-quoted string in
+# deploy_probe.js -- and the gate DID catch it, reporting `[FAIL] deploy_probe.js -- missing )
+# after argument list`. I committed and pushed anyway, because I had chained the commit behind a
+# `grep` that matched the output whether it said PASS or FAIL. Reading a verdict next to a commit
+# is not branching on it.
+#
+# So the gate was never the weak point; the habit was. This makes the check unbypassable by habit.
+# (--no-verify still works, deliberately -- a hook that cannot be overridden in an emergency gets
+# uninstalled instead of respected.)
+#
+# Install: tools\install_git_hooks.ps1   (hooks live outside .git so they are version-controlled)
+
+if git diff --cached --name-only --diff-filter=ACM | grep -q '^automation/extension/.*\.js$'; then
+    echo "[pre-commit] extension JS staged -- running audit_extension_syntax.ps1"
+    powershell -NoProfile -ExecutionPolicy Bypass -File tools/audit_extension_syntax.ps1 -Quiet
+    if [ $? -ne 0 ]; then
+        echo ""
+        echo "[pre-commit] BLOCKED: an extension script does not parse."
+        echo "             A syntax error is TOTAL -- the file never executes and every global it"
+        echo "             defines is absent, which presents as an unrelated failure elsewhere."
+        echo "             Fix it, or commit with --no-verify if you know why you are doing that."
+        exit 1
+    fi
+fi
+exit 0
