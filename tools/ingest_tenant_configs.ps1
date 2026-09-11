@@ -253,7 +253,20 @@ $doc = [ordered]@{
     )
     generated = (Get-Date).ToString('s')
     source    = 'tools/ingest_tenant_configs.ps1 <- extension button 6b'
-    counts    = [ordered]@{ tenants = $merged.Count; ours = $ours.Count; providerNotOurs = $notOur.Count; unknown = $unk.Count; mixedVersions = $mixed.Count }
+    # ⚠️ EVERY COUNT HERE MUST BE OVER $merged, NOT $inv. I fixed `tenants` to the merged total
+    # and left the four beside it reading from THIS RUN -- so a single-tenant ingest wrote
+    # "tenants: 64, ours: 0, providerNotOurs: 1", an internally contradictory record that a
+    # later reader would have had no way to spot as an artifact. Fixing the headline number and
+    # not the ones next to it is the third instance of this shape today; the others were
+    # reporting a run count as an inventory size, and the probe that printed IDENTICAL 1.
+    counts    = [ordered]@{
+        tenants         = $merged.Count
+        ours            = @($merged.Values | Where-Object { $_.class -eq 'OURS' }).Count
+        providerNotOurs = @($merged.Values | Where-Object { $_.class -eq 'PROVIDER-NOT-OURS' }).Count
+        unknown         = @($merged.Values | Where-Object { $_.class -eq 'UNKNOWN' }).Count
+        mixedVersions   = @($merged.Values | Where-Object { $_.mixedVersions }).Count
+        _note           = 'Counts describe the WHOLE inventory, not the most recent ingest run.'
+    }
     tenants   = @($merged.Values | Sort-Object { $_.subdomain })
 }
 $doc | ConvertTo-Json -Depth 6 | Set-Content -Path $invPath -Encoding UTF8
