@@ -647,17 +647,41 @@
           } catch (e) {}
         }
         if (full) {
-          // OUR version string -- the bundle description. Prefer a non-RMS provider.
+          // OUR version string -- the bundle description.
+          //
+          // v9: COLLECT EVERY MATCH, do not break at the first. The old loop stopped at the
+          // first non-RMS hit, which made an important question UNANSWERABLE from the saved
+          // file: on 2026-09-11 three of our own provider tenants read OLDER than the version
+          // their committed logs claim (usx-ny-nyspin-ejustice v4.24 vs 65 logs stamped v4.26,
+          // usx-hi-hcjdc-ofml v4.19 vs v4.20, usx-or-leds v2.5 vs v2.6). Two explanations fit:
+          // a stale PROVIDER bundle, or a tenant carrying TWO descriptions where we read the
+          // first. Re-running could not discriminate -- both passes make the same choice
+          // identically, and 64/64 agreement between two instances of one possible mistake is
+          // not evidence against it. `versionStrings` settles it in the data: more than one
+          // DISTINCT (provider, version) pair for the same provider IS the second explanation.
           const rx = /Provider configuration for ([A-Za-z0-9_]+) v([0-9]+\.[0-9]+)/g;
           let m, first = null;
+          const seen = {};
+          rec.versionStrings = [];
           while ((m = rx.exec(full)) !== null) {
+            const key = m[1] + ' v' + m[2];
+            if (!seen[key]) { seen[key] = true; rec.versionStrings.push(key); }
             if (!first) first = m;
-            if (m[1] !== 'RMS') { rec.provider = m[1]; rec.version = m[2]; break; }
+            if (m[1] !== 'RMS' && !rec.provider) { rec.provider = m[1]; rec.version = m[2]; }
           }
           if (!rec.provider && first) { rec.provider = first[1]; rec.version = first[2]; }
+          // A provider named more than once at DIFFERENT versions = mixed bundles on one tenant.
+          const nonRms = rec.versionStrings.filter(function (s) { return s.indexOf('RMS ') !== 0; });
+          const provs = {};
+          nonRms.forEach(function (s) { const p = s.split(' v')[0]; provs[p] = (provs[p] || 0) + 1; });
+          rec.mixedVersions = Object.keys(provs).some(function (p) { return provs[p] > 1; });
           rec.fullBytes = full.length;
           if (opts.keepFull) rec.full = full;
           rec.verdict = rec.version ? 'VERSION-READ' : 'EXPORTED-BUT-NO-VERSION-STRING';
+          // Hand the CONTENT to the caller immediately, per tenant. Never accumulated: 64
+          // configs is ~15MB, and one 15MB base64 data: URL is a download that fails as a
+          // unit -- the same all-or-nothing shape that made a merely-slow sweep look dead.
+          if (opts.onFull) { try { opts.onFull(rec, full); } catch (e) { rec.saveError = String(e && e.message || e); } }
         } else if (!r.clicked) {
           rec.verdict = 'NO-SAFE-CONTROL';   // nothing passed both lists
         } else {
@@ -692,19 +716,63 @@
   // Downloads stayed empty. Each tenant costs a page load plus a click plus a wait (up to ~24s
   // worst case), so ten tenants is minutes, not seconds. The same lesson as ⑦'s per-chunk
   // files, which I had already learned and then failed to apply here.
+  // ⚠️ `pullConfigs` IS THE INVENTORY MODE (v9). Rob 2026-09-11: "i want you to scan and pull
+  // all the jsons so we have an actual record of what is where." The first 64-tenant sweep read
+  // every config, extracted the version string, and DISCARDED all 64 blobs -- ~3 hours of page
+  // loads spent to keep a version number and a byte count. The content is the whole point for
+  // the 32 tenants carrying a provider bundle that is NOT one of our builds (Lafayette, sdso,
+  // gordo, 24 byte-identical LA_LEMS demo copies): a matching byte count is a fingerprint, not
+  // an answer to "what is actually deployed there".
+  //
+  // ONE FILE PER TENANT, written the moment that tenant is read. NOT accumulated, for two
+  // independent reasons: 64 configs is ~15MB, and `triggerDownload` base64-encodes into a
+  // `data:` URL -- one 20MB URL is a download that fails as a unit. The aggregate index file
+  // deliberately carries NO blobs, so it stays small enough to be read and diffed.
+  //
+  // Safe to run at scale: downloads go through the background service worker
+  // (chrome.downloads.download), which is immune to Chrome's "automatic multiple downloads"
+  // gate -- the gate that used to silently drop every capture after the first in a burst.
   async function runExportSweepDl(opts) {
     opts = opts || {};
     const every = Math.max(1, parseInt(opts.saveEvery, 10) || 3);
     const stamp = nowStamp();
-    let partNo = 0;
+    let partNo = 0, saved = 0, saveFailed = 0;
     const wrapped = Object.assign({}, opts, {
       onBatch: (partial) => {
         partNo++;
         dl('usx_admin_versions_' + location.hostname + '_' + stamp + '_part' + String(partNo).padStart(2, '0') + '.json', partial);
       },
-      saveEvery: every
+      saveEvery: every,
+      keepFull: false,          // never embed a blob in the aggregate -- onFull owns the content
+      onFull: opts.pullConfigs ? function (rec, full) {
+        const tag = String(rec.subdomain || ('dept' + rec.deptId)).replace(/[^A-Za-z0-9_.-]/g, '_');
+        try {
+          // ⚠️ `schema`, NOT `version`. The first cut used `version: 1` for the record shape
+          // AND `version: rec.version` for the provider version in the same object literal.
+          // JavaScript does not error on a duplicate key -- it silently keeps the LAST -- so
+          // the schema number vanished and `version` became ambiguous to every reader. Caught
+          // by PowerShell, which DOES reject a duplicate hash key, while building the ingest
+          // tool's test fixture. The stricter language found the looser language's bug.
+          dl('usx_tenant_config_' + tag + '_' + rec.deptId + '_' + stamp + '.json', {
+            probe: 'tenant-config', schema: 1,
+            deptId: rec.deptId, subdomain: rec.subdomain, status: rec.status,
+            host: location.hostname, capturedAt: new Date().toISOString(),
+            provider: rec.provider, version: rec.version,
+            versionStrings: rec.versionStrings || [], mixedVersions: !!rec.mixedVersions,
+            counters: rec.counters, configBytes: full.length,
+            note: 'CUSTOMER CONFIGURATION. Gitignored on ingest (_versions/). Never commit.',
+            config: full
+          });
+          saved++;
+        } catch (e) { saveFailed++; throw e; }
+      } : null
     });
     const o = await runExportSweep(wrapped);
+    if (opts.pullConfigs) {
+      o.configsSaved = saved; o.configsFailed = saveFailed;
+      o.notes.push('CONFIG PULL: ' + saved + ' saved, ' + saveFailed + ' failed. One file per tenant.');
+      if (saveFailed > 0) { o.notes.push('!! a config that failed to save is NOT inventoried -- re-run those deptIds.'); }
+    }
     dl('usx_admin_versions_' + location.hostname + '_' + stamp + '_FINAL.json', o);
     return o;
   }
@@ -859,5 +927,5 @@
   console.log('[USx-ADMIN] admin_probe v8 -- READ-ONLY (GET only, no import path). '
     + 'Hidden-iframe read (a fetch returns the JS-populated bundle table EMPTY -- that produced 21 confident zeros). '
     + 'Export click is allowlist+denylist gated (Import JSON is refused). '
-    + 'Full census is chunked/abortable and saves per chunk. BUILD 2026-09-10h.');
+    + 'Full census is chunked/abortable and saves per chunk. BUILD 2026-09-11a -- v9 CONFIG PULL: button 6b saves one config file per tenant, and versionStrings now lists EVERY version string found (not just the first).');
 })();

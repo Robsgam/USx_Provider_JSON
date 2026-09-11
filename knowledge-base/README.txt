@@ -743,6 +743,51 @@ TOOLS
     Button 6 saves every 3 tenants so partial files OVERLAP -- rows are keyed by deptId and the
     LAST-WRITTEN file wins, or an early partial would outvote the finished run.
     Proven able to fail: on the 11-tenant sweep it reports 8 agreeing, 3 behind repo, and the
+  tools/ingest_tenant_configs.ps1
+    THE BASELINE -- and the BEFORE that makes an import verifiable at all. Rob, 2026-09-11,
+    stating the intent behind the whole exercise: "i want you to scan and pull all the jsons so
+    we have an actual record of what is where" and "the idea is for the tool to eventually
+    execute the imports, then run an export, then compare the 2 to confirm the json update takes
+    place."
+    THE GAP IT CLOSES: the first 64-tenant sweep opened every config, ran the version regex, and
+    THREW ALL 64 BLOBS AWAY -- ~3 hours of page loads spent to keep a version string and a byte
+    count. For the 32 tenants carrying a provider bundle that is NOT one of our builds the
+    content IS the finding; a matching byte count is a fingerprint, not an answer to "what is
+    actually deployed there".
+    Reads the extension's per-tenant usx_tenant_config_*.json (panel button 6b), writes each
+    payload into the GITIGNORED _versions\tenant_exports\, and emits a METADATA-ONLY inventory
+    at providers\TENANT_CONFIG_INVENTORY.json.
+    !! A BYTE COMPARE CANNOT VERIFY AN IMPORT. The platform re-serializes: a 246KB tenant export
+    and a 928KB repo JSON at the SAME version are expected to differ, and only equality would be
+    surprising. So it computes a CANONICAL SHA-256 (via _json_canonical.ps1) -- the primitive the
+    future import-verify step needs. Two-layer acceptance: (1) the version string in the bundle
+    description says whether the import LANDED; (2) the canonical hash catches "right version
+    string, wrong content", which (1) alone cannot see.
+    !! THREE CLASSES, NOT THE TWO THAT WERE ASKED FOR. Rob asked for "USx or NON-USx"; the data
+    does not support two. OURS (version string readable) / PROVIDER-NOT-OURS (bundle present, NO
+    version string -- Lafayette, sdso, gordo, 24 byte-identical LA_LEMS demo copies) / UNKNOWN.
+    Folding the middle class into OURS claims ownership of 32 configs we did not author; folding
+    it into NON-USx hides the support exposure. It is half of everything found.
+    !! REFUSES to extract into a tracked path -- it consults `git check-ignore` and stops if
+    _versions/ is not ignored. One tenant export reached pushed history once and removing it
+    required a force-push.
+    !! DOES NOT TOUCH IMPORT_LEDGER.md. That file is hand-authored and is the source of truth;
+    Rob: "i will help align them with our ledger as needed." This tool REPORTS deltas.
+    Also reports MIXED-VERSION tenants (one provider named at two versions), which is the
+    discriminating test for the 2026-09-11 finding that three provider tenants read OLDER than
+    their own committed logs -- a question two identical sweeps structurally could not answer,
+    because both ran the same first-match-wins regex.
+    0 files FAILs rather than passing quietly.
+    PROVEN ABLE TO FAIL, and its fixture caught THREE real bugs before first use: a duplicate
+    `version` key in the extension's object literal (JavaScript silently keeps the last, so the
+    schema number vanished -- PowerShell's stricter hash literal found the JS bug); a backtick
+    continuation carrying an inline $(if ...) inside a -f list, which parses under pwsh 7 and
+    DIES under the 5.1 that actually runs these; and Group-Object on ordered hashtables, which
+    resolves -Property through the PSObject adapter (Keys/Values/Count, NOT the entries) and so
+    reported a FALSE "4 tenants share hash" with an EMPTY hash -- a false finding in the exact
+    shape that section exists to detect, while Where-Object on the same rows worked fine.
+    Usage: .\tools\ingest_tenant_configs.ps1 [-Path <dir>] [-OutFile <report>] [-Quiet]
+
     single LEDGER DRIFT (Newark measured v4.16 against a claimed v4.17).
   tools/ingest_tenant_export.ps1
     WHICH VERSION IS ACTUALLY INSTALLED ON A TENANT -- read from the platform, not inferred.

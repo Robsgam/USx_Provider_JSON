@@ -182,7 +182,7 @@
       // 1. This page's own department (the id is in the URL, so nothing is guessed).
       const idFromUrl = (location.pathname.match(/configurations\/(\d+)/) || [])[1] || '';
       if (idFromUrl) {
-        const one = el('button', BTN, '① Read this department (' + idFromUrl + ')');
+        const one = el('button', BTN, '1. Read this department (' + idFromUrl + ')');
         one.onclick = async () => {
           one.disabled = true; aStatus.style.color = '#fa0'; aStatus.textContent = 'reading department ' + idFromUrl + '…';
           try {
@@ -199,7 +199,7 @@
       }
 
       // 2. The tenant list.
-      const lst = el('button', BTN + ';' + BLU, '② List all tenants + department ids');
+      const lst = el('button', BTN + ';' + BLU, '2. List all tenants + department ids');
       lst.onclick = async () => {
         lst.disabled = true; aStatus.style.color = '#fa0'; aStatus.textContent = 'reading department list…';
         try {
@@ -262,7 +262,7 @@
       rowLim.appendChild(limIn);
       p.appendChild(rowLim);
 
-      const scan = el('button', BTN + ';' + BLU, '③ Scan bundles for that many tenants');
+      const scan = el('button', BTN + ';' + BLU, '3. Scan bundles for that many tenants');
       scan.onclick = async () => {
         const lim = parseInt(document.getElementById('usx-admin-lim').value, 10) || 5;
         const sub = document.getElementById('usx-admin-sub').value;
@@ -284,9 +284,9 @@
       p.appendChild(scan);
 
       // ── EXPORT PROBE (Rob: "exercise the export buttons yourself via the extension") ──
-      // TWO buttons, and the split is the safety. ④ only LOOKS -- it enumerates every
+      // TWO buttons, and the split is the safety. Button 4 only LOOKS -- it enumerates every
       // control on a tenant's configuration page and clicks nothing, so it is safe to run
-      // on an admin page whose controls are unknown. ⑤ clicks AT MOST ONE control, and only
+      // on an admin page whose controls are unknown. Button 5 clicks AT MOST ONE control, and only
       // one that matches an export allowlist AND matches nothing on a destructive denylist
       // (delete/import/upload/replace/reset/save/publish/...). An ambiguous control is
       // reported, never clicked. This page is admin surface; a reflex click here could
@@ -301,7 +301,7 @@
       expIdRow.appendChild(expId);
       expWrap.appendChild(expIdRow);
 
-      const look = el('button', BTN, '④ Look at the controls (clicks NOTHING)');
+      const look = el('button', BTN, '4. Look at the controls (clicks NOTHING)');
       look.onclick = async () => {
         const id = document.getElementById('usx-admin-expid').value.trim();
         look.disabled = true; aStatus.style.color = '#fa0'; aStatus.textContent = 'enumerating controls on ' + id + '…';
@@ -316,7 +316,7 @@
       };
       expWrap.appendChild(look);
 
-      const tryExp = el('button', BTN + ';' + BLU, '⑤ Try the export (one safe control only)');
+      const tryExp = el('button', BTN + ';' + BLU, '5. Try the export (one safe control only)');
       tryExp.onclick = async () => {
         const id = document.getElementById('usx-admin-expid').value.trim();
         tryExp.disabled = true; aStatus.style.color = '#fa0'; aStatus.textContent = 'trying export on ' + id + '…';
@@ -335,17 +335,25 @@
       };
       expWrap.appendChild(tryExp);
 
-      // ⑥ THE CATALOGUE. Uses the dept-ids box above, so it sweeps exactly the tenants
+      // BUTTON 6 -- THE CATALOGUE. Uses the dept-ids box above, so it sweeps exactly the tenants
       // named there -- our fleet and/or the ledger's Foundation rows. One click, N tenants,
       // one file. Proven on a single tenant FIRST (eSUN v3.3 == repo v3.3); a sweep built
       // before the single case worked is how the fetch-based bundle sweep produced 21
       // confident zeros.
-      const sweep = el('button', BTN + ';' + BLU, '⑥ Version catalogue for the dept ids above');
+      const sweep = el('button', BTN + ';' + BLU, '6. Version catalogue for the dept ids above');
       sweep.onclick = async () => {
         const ids = document.getElementById('usx-admin-ids').value;
         const n = ids.split(',').filter(s => /^\s*\d+\s*$/.test(s)).length;
         sweep.disabled = true; aStatus.style.color = '#fa0';
-        aStatus.textContent = 'reading versions for ' + n + ' tenant(s)… (~2s each)';
+        // ⚠️ THIS LINE SAID "~2s each" AND THAT WAS WRONG BY AN ORDER OF MAGNITUDE.
+        // probeExportControls runs TWO 12-second budgets back to back (wait-for-table, then
+        // watch-after-click), and the second exits early only if a <pre>/<textarea> appears or
+        // the page grows 2000+ chars. Measured 2026-09-11: 64 tenants took ~50 min alone, and
+        // ~2h23m when a second sweep overlapped it (~134s each). The operator reasonably
+        // suspected the console errors were the cause and they were not -- he was reading this
+        // status line. A status string is documentation; a wrong one costs real trust.
+        const mins = Math.max(1, Math.round(n * 25 / 60));
+        aStatus.textContent = 'reading versions for ' + n + ' tenant(s)… up to ~' + mins + ' min. Do NOT start a second sweep.';
         try {
           const o = await window.__usxAdminProbe.runExportSweepDl({ deptIds: ids });
           const got = (o.results || []).filter(r => r.verdict === 'VERSION-READ').length;
@@ -356,7 +364,39 @@
       };
       expWrap.appendChild(sweep);
 
-      // ── ⑦ THE FULL CENSUS: every department, not just the ones we know about ──────────
+      // ── THE INVENTORY PULL: same sweep, but KEEP THE CONFIGS ────────────────────────
+      // Rob 2026-09-11: "i want you to scan and pull all the jsons so we have an actual record
+      // of what is where." Button 6 reads each config and throws it away; this one writes one
+      // file per tenant. It is the baseline for the whole import-automation goal -- you cannot
+      // confirm an import changed anything without a BEFORE.
+      const pull = el('button', BTN + ';' + BLU, '6b. PULL THE CONFIGS for the dept ids above (one file each)');
+      pull.onclick = async () => {
+        const ids = document.getElementById('usx-admin-ids').value;
+        const n = ids.split(',').filter(s => /^\s*\d+\s*$/.test(s)).length;
+        if (!n) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ no dept ids in the box above'; return; }
+        // ~250KB each. Say the real number BEFORE writing 15MB of customer config to his disk.
+        const mb = Math.round(n * 0.25);
+        if (!confirm('Pull and SAVE the full configuration JSON for ' + n + ' tenant(s)?\n\n'
+          + '· one file per tenant, ~' + mb + 'MB total into Downloads\n'
+          + '· CUSTOMER CONFIGURATION -- gitignored on ingest, never committed\n'
+          + '· READ-ONLY: clicks only Export JSON, never Import\n'
+          + '· up to ~' + Math.max(1, Math.round(n * 25 / 60)) + ' min. Do not start a second sweep.')) return;
+        pull.disabled = true; sweep.disabled = true; aStatus.style.color = '#fa0';
+        aStatus.textContent = 'pulling ' + n + ' config(s)…';
+        try {
+          const o = await window.__usxAdminProbe.runExportSweepDl({ deptIds: ids, pullConfigs: true });
+          const got = (o.results || []).filter(r => r.verdict === 'VERSION-READ').length;
+          const mixed = (o.results || []).filter(r => r.mixedVersions).length;
+          aStatus.style.color = (o.configsFailed ? '#f77' : '#7c7');
+          aStatus.textContent = '✔ ' + (o.configsSaved || 0) + ' config(s) saved, ' + (o.configsFailed || 0)
+            + ' failed · ' + got + '/' + (o.results || []).length + ' version(s) read'
+            + (mixed ? ' · ' + mixed + ' tenant(s) carry MIXED versions' : '');
+        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
+        finally { pull.disabled = false; sweep.disabled = false; }
+      };
+      expWrap.appendChild(pull);
+
+      // ── BUTTON 7 -- THE FULL CENSUS: every department, not just the ones we know about ──────────
       // Rob: "scan the entire departments page and visit each configuration page to
       // 1 determine if it has a usx provider installed and download to compare what version".
       // PHASE 1 only -- reads the bundle table for all 1785. Phase 2 (the version, via the
@@ -380,7 +420,7 @@
       const cProg = el('div', 'font:11px ui-monospace,monospace;color:#7cf;margin:3px 0;min-height:28px');
       censusWrap.appendChild(cProg);
 
-      const census = el('button', BTN, '⑦ Scan ALL departments (~20-25 min)');
+      const census = el('button', BTN, '7. Scan ALL departments (~20-25 min)');
       const stopC = el('button', BTN + ';' + RED, '⏹ Stop the census');
       stopC.style.display = 'none';
 
@@ -418,7 +458,7 @@
 
       p.appendChild(aStatus);
       p.appendChild(el('div', 'color:#999;font-size:11px;margin-top:4px',
-        'Files land in Downloads; I ingest them from there. ④ never clicks; ⑤ clicks one allowlisted control.'));
+        'Files land in Downloads; I ingest them from there. Button 4 never clicks; button 5 clicks one allowlisted control.'));
       return p;
     }
 
@@ -838,5 +878,5 @@
 
   window.__usxUiTimer = setInterval(tick, 1000);
   tick();
-  console.log('%c[USx-UI]', 'color:#fa0;font-weight:bold', 'control panel injected. BUILD 2026-09-02a (Reset queue button on the dex panel -- clears a stale or cross-version Run Plan queue from the GUI, enabled only when the queue is non-empty, confirms before dropping).');
+  console.log('%c[USx-UI]', 'color:#fa0;font-weight:bold', 'control panel injected. BUILD 2026-09-11a (button 6b PULL THE CONFIGS; circled digits replaced with plain numbers -- they did not render for the operator; button 6 no longer claims ~2s per tenant, which was wrong by an order of magnitude).');
 })();
