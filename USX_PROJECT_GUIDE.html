@@ -48,6 +48,7 @@ silently returns nothing &mdash; or returns the wrong record.
 7. The tools, by job<br>
 8. What &ldquo;done&rdquo; means<br>
 9. How testing actually happens<br>
+9b. Deploying a JSON to a tenant &mdash; and proving it landed<br>
 10. Traps that have cost real time<br>
 11. Your first week<br>
 12. Glossary<br>
@@ -261,6 +262,74 @@ switch itself unusable.</div>
 <div class="key"><strong>A rebuild invalidates all testing.</strong> Changing the config means the old
 evidence describes a file that no longer ships. Logs are archived automatically and the test matrix restarts.
 This is deliberate: re-test cost is never a reason to skip a fix.</div>
+
+<h2 class="pb">9b. Deploying a JSON to a tenant &mdash; and proving it landed</h2>
+<p>Everything above gets a configuration <em>correct</em>. This section is how it gets <em>installed</em>,
+and how you know it actually did. Built 2026&#8209;09&#8209;11/12; before that, imports were done by hand
+and recorded from memory.</p>
+
+<div class="key"><strong>The decision is a file, not a button press.</strong> The operator used to assemble
+the decision at the keyboard &mdash; open a tenant, read a panel, judge a dry run, press a red button.
+Decision and execution were one act, so there was nothing to review beforehand and nothing to diff
+afterwards. Now <code>emit_import_job.ps1</code> writes
+<code>providers\IMPORT_JOB.json</code>, a human reads it, and the panel button executes only
+what it says.</div>
+
+<p><strong>The loop, end to end:</strong></p>
+<ol>
+<li><code>tools\emit_import_job.ps1 -Provider FL_FCIC</code> (or <code>-DeptId</code>,
+or <code>-All</code>) &mdash; queues a tenant only when a bundle <strong>hash</strong> differs
+from the repo build. Never on a label.</li>
+<li><strong>Read the job.</strong> It states from&#8209;version, to&#8209;version, the exact bundles that will
+change, tenant status, and whether an override was used.</li>
+<li>Open the target URL &rarr; USx panel &rarr; DEPLOY &rarr; <strong>RUN THE JOB FOR THIS TENANT</strong>.
+No provider is typed: it comes from the repo record via <code>GET /target/&lt;deptId&gt;</code>,
+and the payload from <code>GET /build/&lt;PROVIDER&gt;</code> byte&#8209;for&#8209;byte.</li>
+<li>The panel re&#8209;exports the tenant automatically once the import is clicked.</li>
+<li><code>tools\watch_imports.ps1 -Once</code> &mdash; ingests that export and runs
+<code>verify_tenant_import.ps1</code>: <strong>PASS</strong> /
+<strong>THE IMPORT DID NOT LAND</strong> / <strong>LABEL&#8209;ONLY CHANGE</strong> /
+<strong>UNPROVEN</strong> / <strong>FAIL</strong>.</li>
+<li><code>tools\propose_ledger_patch.ps1</code> &mdash; proposes ledger corrections with line
+numbers and evidence. It <strong>never writes</strong> <code>IMPORT_LEDGER.md</code>.</li>
+</ol>
+
+<div class="warn"><strong>An import REPLACES the bundle set. It does not merge.</strong> Proven on
+<code>usx-fl-fcic</code>: the tenant&rsquo;s CA_eSUN bundle was <em>removed</em> by an FL_FCIC
+import, not left alongside. A partial payload therefore deletes whatever it omits &mdash; which is why the
+guards insist on a complete, parseable, version&#8209;stamped build with ENTITIES and exactly one provider
+bundle.</div>
+
+<div class="warn"><strong>Two checks that look right and are wrong.</strong> A <strong>label check passes on
+a no&#8209;op</strong> &mdash; the version rides in a bundle <em>description</em>, and four tenants carry stale
+descriptions over current content. A <strong>raw byte compare fails on a correct import</strong> &mdash; the
+platform re&#8209;serializes on export, emitting <code>"conditions":null</code> where our build
+omits the property. Both are avoided by <code>tools\_bundle_identity.ps1</code>; any new tool
+that compares tenant content <em>must</em> use it.</div>
+
+<div class="key"><strong>Only one file can write.</strong>
+<code>automation/extension/deploy_probe.js</code> &mdash; separate from the read&#8209;only
+<code>admin_probe.js</code> so &ldquo;is the read path still read&#8209;only?&rdquo; is answerable
+by reading one file. Dry&#8209;run by default; <code>execute:true</code> required; one tenant per
+call. Its guards are mutation&#8209;tested by <code>tools\audit_deploy_guards.ps1</code> (46 cases,
+including a valid CONTROL that must be <em>allowed</em> &mdash; a guard set that refused everything would
+score perfectly and block every deploy).</div>
+
+<div class="key"><strong>GUI only. Never a console command.</strong> The job runner shipped briefly as
+<code>__usxJob()</code> and was corrected within the hour. A mechanism becomes a
+<em>control</em>, never an instruction to type.</div>
+
+<p><strong>Scoping and grouping.</strong> <code>tools\config\tenant_scope.json</code> decides
+which tenants are in scope, with a reason and a date per exclusion. It ships <strong>empty</strong> and
+nothing is excluded until a human says so. <code>tools\report_tenant_groups.ps1</code> renders
+every discovered tenant as a PDF grouped ours / not&#8209;ours / real&#8209;looking / development, with the
+signal that placed each row, so the decision is made by looking rather than by trusting a heuristic.</p>
+
+<p><strong>Where the versions come from.</strong> Never from the admin table&rsquo;s
+<code>Version</code> column &mdash; that is a <em>platform counter</em>, not ours.
+<code>audit_tenant_provenance.ps1</code> identifies a bundle by content against every build in
+git history; <code>audit_tenant.ps1</code> gives the one&#8209;tenant dossier and prints label and
+content side by side, never collapsed into a single &ldquo;tenant version&rdquo;.</p>
 
 <h2>10. Traps that have cost real time</h2>
 <table>

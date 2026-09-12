@@ -771,6 +771,35 @@ TOOLS
     (a persistent watcher never notifies and gets killed -- watch_captures' lesson).
     Usage: .\tools\watch_imports.ps1 -Once [-DeptId <id[,id]>] [-TimeoutSec <n>] [-PollSec <n>]
 
+
+  tools/report_tenant_groups.ps1
+    EVERY TENANT WE FOUND, GROUPED FOR A HUMAN TO DECIDE ON -- HTML + PDF. Rob, 2026-09-12:
+    "i need the list of found tenants so i can group them. start by grouping the provider we
+    created adn the ones we did not   then with the ones we did not, there should be a few that
+    are obvious real tenants and the rest likley are just deleveopment and testing tenants
+    make a pdf."
+    WHY: scoping is the blocker -- tenant_scope.json ships EMPTY, so every report and every
+    import job still carries tenants already decided against, and nobody can make that decision
+    from a 64-row JSON.
+    IT SEPARATES MEASURED FROM GUESSED, ON THE PAGE. Ours / not-ours is MEASURED: the bundle
+    description carries our "Provider configuration for <P> vX.Y" stamp, corroborated by content
+    hash against the current repo build. Absence of that stamp is EVIDENCE, not a gap -- it is
+    how Lafayette was confirmed hand-built by engineering. The real-vs-development split is a
+    HEURISTIC and the only guessed thing in the document, so every row prints the SIGNAL that
+    placed it and nothing acts on the split.
+    A LIVE tenant is never filed as development on its name -- status outranks the name, because
+    a real deployment with an informal subdomain is exactly the row that must not be quietly
+    filed as a test system. The report also warns that a customer's TRAINING tenant is not a
+    sandbox: lafayettela-sherifftraining is Lafayette Parish, and excluding it would hide a
+    supported environment.
+    THE PDF IS VERIFIED BY WRITE TIME, NEVER Test-Path -- a leftover from a previous run
+    satisfies Test-Path, which is how a stale officer guide once shipped under a green success
+    line -- and the wait POLLS rather than sampling once.
+    Widening the 'demo' pattern was found by READING THE OUTPUT, not its counts: the first cut
+    required a separator around "demo", so erich-demo1 and fullwooddemo were filed as REAL
+    TENANTS. A count would never have shown it.
+    Usage: .\tools\report_tenant_groups.ps1 [-OutFile <html>] [-PdfFile <pdf>]
+                                            [-TenantDir <dir>] [-IncludeDeactivated]
   tools/propose_ledger_patch.ps1
     PROPOSE LEDGER CORRECTIONS. NEVER WRITE THEM. Rob: "i will help align them with our ledger
     as needed" -- so this reports the delta and he stays the author.

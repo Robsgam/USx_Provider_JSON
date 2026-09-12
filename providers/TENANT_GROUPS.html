@@ -1,0 +1,111 @@
+<!doctype html><html><head><meta charset="utf-8"><title>USx Tenant Groups</title><style>
+body{font:13px/1.45 "Segoe UI",system-ui,sans-serif;color:#111;margin:28px;max-width:1100px}
+h1{font-size:22px;margin:0 0 4px} h2{font-size:16px;margin:26px 0 6px;border-bottom:2px solid #333;padding-bottom:3px}
+h3{font-size:13px;margin:16px 0 4px;color:#444}
+.sub{color:#666;font-size:12px;margin:0 0 14px}
+table{border-collapse:collapse;width:100%;margin:6px 0 14px;font-size:12px}
+th,td{border:1px solid #ccc;padding:4px 6px;text-align:left;vertical-align:top}
+th{background:#eee;font-weight:600}
+tr:nth-child(even) td{background:#fafafa}
+.mono{font-family:Consolas,ui-monospace,monospace;font-size:11px}
+.ok{color:#0a6e2e;font-weight:600}.behind{color:#a15c00;font-weight:600}.live{color:#b00;font-weight:700}
+.note{background:#fff8e1;border-left:4px solid #e0a800;padding:8px 10px;margin:10px 0;font-size:12px}
+.warn{background:#fdecea;border-left:4px solid #c00;padding:8px 10px;margin:10px 0;font-size:12px}
+.decide{background:#e8f4ff;border-left:4px solid #2b7;padding:8px 10px;margin:10px 0;font-size:12px}
+@media print{h2{page-break-after:avoid}table{page-break-inside:auto}tr{page-break-inside:avoid}}
+</style></head><body>
+<h1>USx Tenant Groups</h1>
+<p class="sub">Generated 2026-09-12 09:03 by <span class="mono">tools\report_tenant_groups.ps1</span> from 64 pulled tenant configurations. Repo builds indexed: 20 providers.</p>
+<div class="decide"><b>What this document is for.</b> Scoping is the blocker: <span class="mono">tenant_scope.json</span> ships empty, so every report and every import job still carries tenants already decided against. Mark this up and the exclusions get applied with your reason and the date.</div>
+<div class="note"><b>What is measured and what is guessed.</b> <b>Ours / not ours is MEASURED</b> &mdash; a configuration of ours carries a <span class="mono">Provider configuration for &lt;P&gt; vX.Y</span> stamp in its bundle description, and where the content also hashes equal to the current repo build it is marked CURRENT. Absence of that stamp is <i>evidence</i>, not a gap: it is how Lafayette was confirmed hand-built by engineering. <b>The real-vs-development split in section B is a HEURISTIC</b> &mdash; the only guessed thing here. Each row prints the signal that placed it, so you can correct it by looking rather than by trusting the tool.</div>
+<h2>Summary</h2><table><tr><th>Group</th><th>Count</th><th>Basis</th></tr>
+<tr><td><b>A &mdash; our build</b></td><td>33</td><td>MEASURED: carries our version stamp</td></tr>
+<tr><td><b>B1 &mdash; not ours, looks like a real tenant</b></td><td>10</td><td>measured not-ours; no dev/test signal in the name</td></tr>
+<tr><td><b>B2 &mdash; not ours, looks like development / testing</b></td><td>21</td><td>measured not-ours; HEURISTIC on name + status</td></tr>
+<tr><td>deactivated (not listed)</td><td>0</td><td>platform status; cannot serve queries</td></tr>
+</table>
+<h2>A. Runs a configuration WE created</h2>
+<p class="sub">Measured from the bundle description, corroborated by content hash against the current repo build.</p>
+<table><tr><th>Tenant</th><th>Dept id</th><th>Status</th><th>Provider</th><th>Version</th><th>vs repo</th></tr>
+<tr><td class="mono">usx-az-azdps</td><td class="mono">69585917479</td><td>TEST</td><td class="mono">AZ_AZDPS</td><td class="mono">v3.12</td><td><span class="ok">CURRENT</span></td></tr>
+<tr><td class="mono">mariposacso</td><td class="mono">57528255873</td><td><span class="live">LIVE</span></td><td class="mono">CA_CLETS</td><td class="mono">v2.27</td><td><span class="ok">CURRENT</span></td></tr>
+<tr><td class="mono">mariposacso-foundation</td><td class="mono">55074106416</td><td>TRAINING</td><td class="mono">CA_CLETS</td><td class="mono">v2.27</td><td><span class="ok">CURRENT</span></td></tr>
+<tr><td class="mono">usx-ca-clets</td><td class="mono">69586234535</td><td>TEST</td><td class="mono">CA_CLETS</td><td class="mono">v2.27</td><td><span class="ok">CURRENT</span></td></tr>
+<tr><td class="mono">usx-ca-clets-ocats</td><td class="mono">72322272044</td><td>TEST</td><td class="mono">CA_CLETS_OCATS</td><td class="mono">v2.12</td><td><span class="ok">CURRENT</span></td></tr>
+<tr><td class="mono">usx-ca-esun</td><td class="mono">69510509021</td><td>TEST</td><td class="mono">CA_eSUN</td><td class="mono">v3.3</td><td><span class="ok">CURRENT</span></td></tr>
+<tr><td class="mono">amyblair</td><td class="mono">33641477034</td><td>TEST</td><td class="mono">FL_FCIC</td><td class="mono">v7.18</td><td><span class="behind">behind (repo v7.24)</span></td></tr>
+<tr><td class="mono">homesteadpd-fl-foundation</td><td class="mono">69669966842</td><td>TEST</td><td class="mono">FL_FCIC</td><td class="mono">v7.24</td><td><span class="ok">CURRENT</span></td></tr>
+<tr><td class="mono">miamispringspd-foundation</td><td class="mono">68086125887</td><td>TEST</td><td class="mono">FL_FCIC</td><td class="mono">v7.24</td><td><span class="ok">CURRENT</span></td></tr>
+<tr><td class="mono">northmiami-foundation</td><td class="mono">67633161477</td><td>TEST</td><td class="mono">FL_FCIC</td><td class="mono">v7.24</td><td><span class="ok">CURRENT</span></td></tr>
+<tr><td class="mono">usx-fl-fcic</td><td class="mono">69510828830</td><td>TEST</td><td class="mono">FL_FCIC</td><td class="mono">v7.24</td><td><span class="ok">CURRENT</span></td></tr>
+<tr><td class="mono">hawaii-dle</td><td class="mono">58443422576</td><td><span class="live">LIVE</span></td><td class="mono">HI_HCJDC_OFML</td><td class="mono">v4.15</td><td><span class="behind">behind (repo v4.20)</span></td></tr>
+<tr><td class="mono">hdle-foundation</td><td class="mono">54721427755</td><td>TEST</td><td class="mono">HI_HCJDC_OFML</td><td class="mono">v4.15</td><td><span class="behind">behind (repo v4.20)</span></td></tr>
+<tr><td class="mono">onscene</td><td class="mono">54300680862</td><td>TEST</td><td class="mono">HI_HCJDC_OFML</td><td class="mono">v4.15</td><td><span class="behind">behind (repo v4.20)</span></td></tr>
+<tr><td class="mono">usx-hi-hcjdc-ofml</td><td class="mono">69510710914</td><td>TEST</td><td class="mono">HI_HCJDC_OFML</td><td class="mono">v4.20</td><td><span class="ok">CURRENT</span></td></tr>
+<tr><td class="mono">aurorapd-il-foundation</td><td class="mono">66323459475</td><td>TEST</td><td class="mono">IL_LEADS_OFML</td><td class="mono">v2.8</td><td><span class="ok">CURRENT</span></td></tr>
+<tr><td class="mono">qa-amyblair-test</td><td class="mono">72270142625</td><td>TEST</td><td class="mono">IL_LEADS_OFML</td><td class="mono">v2.8</td><td><span class="ok">CURRENT</span></td></tr>
+<tr><td class="mono">qa-amyb-test</td><td class="mono">72362435981</td><td>TEST</td><td class="mono">IL_LEADS_OFML</td><td class="mono">v2.8</td><td><span class="ok">CURRENT</span></td></tr>
+<tr><td class="mono">usx-il-leads-ofml</td><td class="mono">69510394285</td><td>TEST</td><td class="mono">IL_LEADS_OFML</td><td class="mono">v2.8</td><td><span class="ok">CURRENT</span></td></tr>
+<tr><td class="mono">usx-la-lems</td><td class="mono">69510242248</td><td>TEST</td><td class="mono">LA_LETTS_OFML</td><td class="mono">v2.0</td><td><span class="behind">behind (repo v)</span></td></tr>
+<tr><td class="mono">usx-md-meters</td><td class="mono">69509976793</td><td>TEST</td><td class="mono">MD_METERS</td><td class="mono">v2.4</td><td><span class="ok">CURRENT</span></td></tr>
+<tr><td class="mono">newarkpd-foundation</td><td class="mono">68055618928</td><td>TEST</td><td class="mono">NJ_NJCJIS</td><td class="mono">v4.16</td><td><span class="behind">behind (repo v4.17)</span></td></tr>
+<tr><td class="mono">practice-bertanzini</td><td class="mono">65003603844</td><td>TEST</td><td class="mono">NJ_NJCJIS</td><td class="mono">v4.8</td><td><span class="behind">behind (repo v4.17)</span></td></tr>
+<tr><td class="mono">usx-nj-njcjis</td><td class="mono">69509881306</td><td>TEST</td><td class="mono">NJ_NJCJIS</td><td class="mono">v4.17</td><td><span class="ok">CURRENT</span></td></tr>
+<tr><td class="mono">usx-nm-nmlets</td><td class="mono">69586413893</td><td>TEST</td><td class="mono">NM_NMLETS_OFML</td><td class="mono">v2.7</td><td><span class="ok">CURRENT</span></td></tr>
+<tr><td class="mono">ny-nycapss-foundation</td><td class="mono">47169169464</td><td>TRAINING</td><td class="mono">NY_NYSPIN_EJUSTICE</td><td class="mono">v4.24</td><td><span class="ok">CURRENT</span></td></tr>
+<tr><td class="mono">usx-ny-nyspin-ejustice</td><td class="mono">69509789559</td><td>TEST</td><td class="mono">NY_NYSPIN_EJUSTICE</td><td class="mono">v4.24</td><td><span class="ok">CURRENT</span></td></tr>
+<tr><td class="mono">lakewoodoh-foundation</td><td class="mono">67753954395</td><td>TEST</td><td class="mono">OH_LEADS</td><td class="mono">v2.11</td><td><span class="ok">CURRENT</span></td></tr>
+<tr><td class="mono">usx-oh-leads</td><td class="mono">69509682080</td><td>TEST</td><td class="mono">OH_LEADS</td><td class="mono">v2.11</td><td><span class="ok">CURRENT</span></td></tr>
+<tr><td class="mono">usx-or-leds</td><td class="mono">69586491910</td><td>TEST</td><td class="mono">OR_LEDS</td><td class="mono">v2.5</td><td><span class="ok">CURRENT</span></td></tr>
+<tr><td class="mono">usx-tn-ties</td><td class="mono">69586333849</td><td>TEST</td><td class="mono">TN_TIES</td><td class="mono">v2.6</td><td><span class="ok">CURRENT</span></td></tr>
+<tr><td class="mono">balconesheightspd-foundation</td><td class="mono">69189298576</td><td>TEST</td><td class="mono">TX_TLETS</td><td class="mono">v4.22</td><td><span class="ok">CURRENT</span></td></tr>
+<tr><td class="mono">usx-tx-tlets</td><td class="mono">69509542782</td><td>TEST</td><td class="mono">TX_TLETS</td><td class="mono">v4.22</td><td><span class="ok">CURRENT</span></td></tr>
+</table>
+<h2>B. Runs a configuration we did NOT create</h2>
+<p class="sub">A provider bundle is present but carries no version stamp of ours &mdash; confirmed by content to match no build in our history. Overwriting one of these is a different decision and needs a human.</p>
+<h3>B1. Looks like a real tenant &mdash; 10</h3>
+<table><tr><th>Tenant</th><th>Dept id</th><th>Status</th><th>Provider bundle</th><th>Bundles present</th></tr>
+<tr><td class="mono">1836</td><td class="mono">19930015536</td><td>TRAINING</td><td class="mono">FL_FCIC</td><td class="mono">FL_FCIC</td></tr>
+<tr><td class="mono">ccpd</td><td class="mono">1001142</td><td><span class="live">LIVE</span></td><td class="mono">RecordsArchive</td><td class="mono">ENTITIES, RecordsArchive</td></tr>
+<tr><td class="mono">gordo</td><td class="mono">30578897692</td><td>TEST</td><td class="mono">HI_HCJDC</td><td class="mono">HI_HCJDC, ENTITIES, RMS</td></tr>
+<tr><td class="mono">lafayettesheriff-la</td><td class="mono">20032392972</td><td><span class="live">LIVE</span></td><td class="mono">LA_LEMS</td><td class="mono">LA_LEMS, ENTITIES, RMS</td></tr>
+<tr><td class="mono">mint</td><td class="mono">36568869640</td><td>TRAINING</td><td class="mono">LA_LEMS</td><td class="mono">LA_LEMS, ENTITIES, RMS</td></tr>
+<tr><td class="mono">neworleanspd</td><td class="mono">66397342490</td><td><span class="live">LIVE</span></td><td class="mono">LA_LEMS</td><td class="mono">LA_LEMS, ENTITIES, RMS</td></tr>
+<tr><td class="mono">neworleanspd-foundation</td><td class="mono">57501651030</td><td>TEST</td><td class="mono">LA_LEMS</td><td class="mono">LA_LEMS, ENTITIES, RMS</td></tr>
+<tr><td class="mono">sandiegoharborpd-foundation</td><td class="mono">63160611189</td><td>TEST</td><td class="mono">CA_eSUN</td><td class="mono">ENTITIES, CA_eSUN</td></tr>
+<tr><td class="mono">sandiegoso-foundation</td><td class="mono">59872925305</td><td>TRAINING</td><td class="mono">CA_eSUN</td><td class="mono">ENTITIES, CA_eSUN</td></tr>
+<tr><td class="mono">sdso</td><td class="mono">71459778290</td><td><span class="live">LIVE</span></td><td class="mono">CA_eSUN</td><td class="mono">ENTITIES, CA_eSUN</td></tr>
+</table>
+<h3>B2. Looks like development / testing &mdash; 21 <span style="font-weight:400;color:#a15c00">(heuristic &mdash; signal shown per row)</span></h3>
+<table><tr><th>Tenant</th><th>Dept id</th><th>Status</th><th>Provider bundle</th><th>Signal that placed it here</th></tr>
+<tr><td class="mono">abbey-demo</td><td class="mono">67531517395</td><td>TRAINING</td><td class="mono">LA_LEMS</td><td>name matches <b>demo</b></td></tr>
+<tr><td class="mono">cbp-demo</td><td class="mono">65505627848</td><td>TRAINING</td><td class="mono">LA_LEMS</td><td>name matches <b>demo</b></td></tr>
+<tr><td class="mono">dark-demo</td><td class="mono">1870685224</td><td>TEST</td><td class="mono">LA_LEMS</td><td>name matches <b>demo</b></td></tr>
+<tr><td class="mono">dea-demo</td><td class="mono">67404108343</td><td>TRAINING</td><td class="mono">LA_LEMS</td><td>name matches <b>demo</b></td></tr>
+<tr><td class="mono">demo</td><td class="mono">510605240</td><td>TRAINING</td><td class="mono">LA_LEMS</td><td>name matches <b>demo</b></td></tr>
+<tr><td class="mono">demo-boston-cad2025</td><td class="mono">62638109121</td><td>TEST</td><td class="mono">LA_LEMS</td><td>name matches <b>demo</b></td></tr>
+<tr><td class="mono">demo-ny-se</td><td class="mono">71875989157</td><td>TEST</td><td class="mono">LA_LEMS</td><td>name matches <b>demo</b></td></tr>
+<tr><td class="mono">erich-demo1</td><td class="mono">67996979499</td><td>TRAINING</td><td class="mono">LA_LEMS</td><td>name matches <b>demo</b></td></tr>
+<tr><td class="mono">fullwooddemo</td><td class="mono">35013420755</td><td>TRAINING</td><td class="mono">CA_eSUN</td><td>name matches <b>demo</b></td></tr>
+<tr><td class="mono">jeffco-demo</td><td class="mono">68397625745</td><td>TRAINING</td><td class="mono">LA_LEMS</td><td>name matches <b>demo</b></td></tr>
+<tr><td class="mono">justin-demo</td><td class="mono">64985141433</td><td>TRAINING</td><td class="mono">LA_LEMS</td><td>name matches <b>demo</b></td></tr>
+<tr><td class="mono">kris-demo</td><td class="mono">65456869021</td><td>TRAINING</td><td class="mono">LA_LEMS</td><td>name matches <b>demo</b></td></tr>
+<tr><td class="mono">kyle-demo</td><td class="mono">54589578643</td><td>TRAINING</td><td class="mono">LA_LEMS</td><td>name matches <b>demo</b></td></tr>
+<tr><td class="mono">lam-demo</td><td class="mono">56475148757</td><td>TEST</td><td class="mono">LA_LEMS</td><td>name matches <b>demo</b></td></tr>
+<tr><td class="mono">louisville-demo</td><td class="mono">25763508631</td><td>TRAINING</td><td class="mono">LA_LEMS</td><td>name matches <b>demo</b></td></tr>
+<tr><td class="mono">lyle-demo</td><td class="mono">56768145752</td><td>TEST</td><td class="mono">LA_LEMS</td><td>name matches <b>demo</b></td></tr>
+<tr><td class="mono">reno-nv-demo</td><td class="mono">29967674360</td><td>TRAINING</td><td class="mono">LA_LEMS</td><td>name matches <b>demo</b></td></tr>
+<tr><td class="mono">shelby-demo</td><td class="mono">64975047986</td><td>TRAINING</td><td class="mono">LA_LEMS</td><td>name matches <b>demo</b></td></tr>
+<tr><td class="mono">ccpd-jms-migration-round-1</td><td class="mono">63333802057</td><td>MigratedMIGRATED</td><td class="mono">RecordsArchive</td><td>name matches <b>migration</b></td></tr>
+<tr><td class="mono">practice-robsgambellone</td><td class="mono">68908334972</td><td>TEST</td><td class="mono">CA_eSUN</td><td>name matches <b>practice</b></td></tr>
+<tr><td class="mono">lafayettela-sherifftraining</td><td class="mono">5107052982</td><td>TRAINING</td><td class="mono">LA_LEMS</td><td>name matches <b>training</b></td></tr>
+</table>
+<div class="warn"><b>A LIVE tenant is never placed in B2 on its name.</b> Status outranks the name, because a real deployment with an informal subdomain is exactly the row that must not be quietly filed as a test system.</div>
+<div class="warn"><b>A customer&rsquo;s TRAINING tenant is not a development sandbox.</b> <span class="mono">lafayettela-sherifftraining</span> is placed in B2 by the word &ldquo;training&rdquo;, but it belongs to Lafayette Parish &mdash; a real agency whose LA_LEMS configuration the ledger already records as hand-built by engineering. Excluding it would hide a supported environment. Judge it with its sibling <span class="mono">lafayettesheriff-la</span> in B1, not with the demo tenants.</div>
+<h2>How to use this</h2><ol>
+<li>Mark the rows that should be <b>excluded</b> from import planning and reporting.</li>
+<li>They move into <span class="mono">tools\config\tenant_scope.json</span> under <span class="mono">excluded</span>, each with a reason and a date &mdash; never silently dropped: every count prints in-scope and excluded side by side.</li>
+<li>A tenant on a deliberate HOLD is reported separately rather than excluded, so the hold stays visible instead of quietly becoming a forgotten gap.</li>
+</ol>
+<p class="sub">Nothing here is applied. No tool writes <span class="mono">tenant_scope.json</span> or <span class="mono">IMPORT_LEDGER.md</span>.</p>
+</body></html>
