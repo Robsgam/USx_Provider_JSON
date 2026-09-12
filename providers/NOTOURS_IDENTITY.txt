@@ -1,0 +1,115 @@
+====================================================================================
+  NOT-OUR-BUILD CONFIGS -- which USx provider each one aligns with, BY CONTENT
+====================================================================================
+  reference: 20 repo provider build(s). Identity comes from the bundle ROUTING KEY;
+             query coverage is reported against our build for the same system.
+  subjects : 31 not-our-build tenant(s)  (1 skipped)
+
+====================================================================================
+  ALIGNS WITH: LA_LEMS   [Louisiana]   -- 22 tenant(s)
+  our current build: v3.2
+====================================================================================
+  FAMILY 1 -- ONE configuration on 15 tenants (provider bundle byte-identical)
+    content 9d7b62529773   routing key "LA_LEMS"   6 queries built, 6 shared with our build
+    ONE FIX COVERS ALL OF THESE; one defect is present on all of them:
+       abbey-demo                         dept 67531517395
+       dark-demo                          dept 1870685224
+       demo                               dept 510605240
+       demo-boston-cad2025                dept 62638109121
+       demo-ny-se                         dept 71875989157
+       erich-demo1                        dept 67996979499
+       jeffco-demo                        dept 68397625745
+       kris-demo                          dept 65456869021
+       kyle-demo                          dept 54589578643
+       lam-demo                           dept 56475148757
+       louisville-demo                    dept 25763508631
+       lyle-demo                          dept 56768145752
+       mint                               dept 36568869640
+       reno-nv-demo                       dept 29967674360
+       shelby-demo                        dept 64975047986
+
+  FAMILY 2 -- ONE configuration on 3 tenants (provider bundle byte-identical)
+    content bb2385c82a6e   routing key "LA_LEMS"   6 queries built, 6 shared with our build
+    ONE FIX COVERS ALL OF THESE; one defect is present on all of them:
+       cbp-demo                           dept 65505627848
+       dea-demo                           dept 67404108343
+       justin-demo                        dept 64985141433
+
+  FAMILY 3 -- ONE configuration on 2 tenants (provider bundle byte-identical)
+    content 86aeb973ab73   routing key "LA_LEMS"   6 queries built, 6 shared with our build
+    ONE FIX COVERS ALL OF THESE; one defect is present on all of them:
+       neworleanspd                       dept 66397342490
+       neworleanspd-foundation            dept 57501651030
+
+  FAMILY 4 -- ONE configuration on 2 tenants (provider bundle byte-identical)
+    content fc201c1a674f   routing key "LA_LEMS"   6 queries built, 6 shared with our build
+    ONE FIX COVERS ALL OF THESE; one defect is present on all of them:
+       lafayettela-sherifftraining        dept 5107052982
+       lafayettesheriff-la                dept 20032392972
+
+====================================================================================
+  ALIGNS WITH: CA_eSUN   [California]   -- 5 tenant(s)
+  our current build: v3.3
+====================================================================================
+  FAMILY 1 -- ONE configuration on 2 tenants (provider bundle byte-identical)
+    content 94f4ce24a40f   routing key "CA_eSUN"   7 queries built, 6 shared with our build
+    ONE FIX COVERS ALL OF THESE; one defect is present on all of them:
+       sandiegoso-foundation              dept 59872925305
+       sdso                               dept 71459778290
+
+  ONE-OFF -- fullwooddemo (dept 35013420755)
+    exists on NO other tenant we have looked at. State: California
+    content f1a4a72a2782   routing key "CA_eSUN"   6 queries built, 6 shared with our build
+    !! INTERNALLY INCONSISTENT: the bundle HEADER says provider="NJ_NJCJIS" while every
+       configuration inside declares "CA_eSUN". Reported, not silently resolved.
+
+  ONE-OFF -- sandiegoharborpd-foundation (dept 63160611189)
+    exists on NO other tenant we have looked at. State: California
+    content cae6a5ab6f9d   routing key "CA_eSUN"   7 queries built, 6 shared with our build
+
+  ONE-OFF -- practice-robsgambellone (dept 68908334972)
+    exists on NO other tenant we have looked at. State: California
+    content 9f08e0aad9b2   routing key "CA_eSUN"   7 queries built, 6 shared with our build
+
+====================================================================================
+  ALIGNS WITH: HI_HCJDC_OFML   [Hawaii]   -- 1 tenant(s)
+  our current build: v4.20
+====================================================================================
+  ONE-OFF -- gordo (dept 30578897692)
+    exists on NO other tenant we have looked at. State: Hawaii
+    content 80f5a75ac21f   routing key "HI_HCJDC"   6 queries built, 6 shared with our build
+    !! the bundle is NAMED "HI_HCJDC" while its configurations route to HI_HCJDC. A name is a claim.
+
+====================================================================================
+  ALIGNS WITH: FL_FCIC   [Florida]   -- 1 tenant(s)
+  our current build: v7.24
+====================================================================================
+  ONE-OFF -- 1836 (dept 19930015536)
+    exists on NO other tenant we have looked at. State: Florida
+    content 72cce410da53   routing key "FL_FCIC"   6 queries built, 5 shared with our build
+    !! NO ENTITIES BUNDLE -- the forms cannot render. This is a fragment, not a working config.
+
+====================================================================================
+  NO RECOGNISED ROUTING KEY -- 2 tenant(s)
+====================================================================================
+  Reported as unmatched rather than assigned to the least-bad provider. Naming one would
+  invent a support obligation that does not exist.
+
+  ccpd                               routing key "RecordsArchive"  bundle "RecordsArchive"  [ENTITIES+RecordsArchive]
+  ccpd-jms-migration-round-1         routing key "RecordsArchive"  bundle "RecordsArchive"  [ENTITIES+RecordsArchive]
+
+====================================================================================
+  HOW THE MATCH IS MADE, AND WHAT IT IS NOT
+====================================================================================
+  Identity is the bundle ROUTING KEY -- the `provider` field the platform dispatches on to
+  reach a state system -- resolved to the provider we would have to support (exact name, then
+  unique prefix). It is a fact about the configuration, not a similarity score.
+
+  "IDENTICAL" means the provider bundle is byte-identical after canonicalisation (description
+  excluded, platform nulls normalised), so one fix covers the whole family and one defect is
+  present on every member.
+
+  IT DOES NOT SAY the config is ours (none carry our version stamp), who wrote it, or that it
+  works. Query coverage is shown to indicate how complete each one is RELATIVE to our build
+  for the same system -- it is not evidence of authorship or of correctness.
+====================================================================================

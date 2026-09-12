@@ -774,6 +774,45 @@ TOOLS
 
 
 
+
+  tools/identify_notours_provider.ps1
+    WHICH USx PROVIDER WOULD HAVE TO SUPPORT EACH NOT-OUR-BUILD CONFIG -- and which tenants are
+    identical, so one fix covers them all. Rob, 2026-09-12: "i want you to beter idetify the usx
+    provider it mostly aligns with adn say which ones are identical in the saem family ergo same
+    usx provder support and any one off with associated state."
+    Grouped BY PROVIDER (the unit of support), FAMILIES within it (byte-identical provider bundle
+    = ONE configuration on N tenants, so one defect is N defects and one fix is one fix), and
+    one-offs named with their STATE -- because "who would have to be involved" is the real
+    question behind a one-off.
+    Baseline 2026-09-12: LA_LEMS/Louisiana 22 | CA_eSUN/California 5 | HI_HCJDC_OFML/Hawaii 1 |
+    FL_FCIC/Florida 1 | 2 with no recognised routing key.
+
+    ⚠️ IDENTITY IS THE ROUTING KEY, NOT A SIMILARITY SCORE -- AND THE FIRST TWO INSTRUMENTS WERE
+    BOTH WRONG. Worth reading before writing any "which of ours does this resemble" probe:
+
+      1. Scoring keyReference + query-type overlap by Jaccard reported 23 tenants -- every one
+         carrying a bundle named LA_LEMS -- as aligning with NJ_NJCJIS. Louisiana matched to New
+         Jersey while our own LA_LEMS build sat right there. CAUSE: these configs use DESCRIPTIVE
+         keyRefs (BirthDateNamePurposeCodeSexCodeRegistrationStateAttention) where ours are short
+         codes (DQ, IA.QV), so overlap was ZERO against all twenty builds; the score rode entirely
+         on generic query names every provider shares, and Jaccard then crowned whichever build had
+         the SMALLEST signature. A SIMILARITY MEASURE OVER A DIMENSION WHERE NOTHING CAN MATCH DOES
+         NOT RETURN "NO MATCH" -- IT RETURNS NOISE SHAPED LIKE AN ANSWER.
+
+      2. Switching to the bundle HEADER's `provider` field then filed `fullwooddemo` under New
+         Jersey -- because its header says provider=NJ_NJCJIS while ALL NINE configurations inside
+         declare provider=CA_eSUN. Identity now comes from the majority across CONFIGURATIONS
+         (what each QIDM actually declares), and a header that disagrees with its own contents is
+         REPORTED as an inconsistency rather than silently resolved either way.
+
+    ⚠️ NO RECOGNISED ROUTING KEY = NO MATCH, never the nearest one. RecordsArchive (ccpd pair) is
+    not a CJIS provider at all; assigning it to the closest one would invent a support obligation
+    that does not exist.
+    Also flags: a bundle whose NAME differs from what it routes to, and a config with NO ENTITIES
+    bundle (1836 -- the forms cannot render, so it is a fragment rather than a working config).
+    Query coverage is reported only as coverage against our build for the SAME system -- never as
+    evidence of authorship or correctness.
+    Usage: .\tools\identify_notours_provider.ps1 [-OutFile <txt>] [-TenantDir <dir>]
   tools/report_notours_reuse.ps1
     OF THE CONFIGS WE DID NOT BUILD, WHICH ARE COPIES AND WHICH ARE ONE-OFFS? Rob, 2026-09-12:
     "for all the json you found that are 'not our builds' can you narrow down if any are being
