@@ -729,6 +729,86 @@ TOOLS
     would deny the caller its denominator, which is what this module exists to prevent) /
     Get-ScopeFooterLines (the denominator line, centralised so no report can omit it).
 
+
+  tools/emit_import_job.ps1
+    THE IMPORT JOB FILE -- the reviewed artifact that authorises an import. Rob, 2026-09-11,
+    after driving the first automated import by hand: "this is still too clunky  i want the
+    import process to be run by a json you create  kinda of like a import job file.  then i
+    runi t via the console  it updates based on what we discused here."
+    The clunk was not keystrokes. The operator was ASSEMBLING THE DECISION AT THE KEYBOARD --
+    open a tenant, read a panel, judge a dry run, press a red button -- so decision and
+    execution were one act, with nothing to review beforehand and nothing to diff afterwards.
+    Now the decision is a FILE: this writes providers\IMPORT_JOB.json, a human reads it,
+    serve_plans serves it at GET /job, and the DEPLOY panel button executes only what it says.
+    (It was a console command, __usxJob(), for about ten minutes -- which broke the standing
+    GUI-ONLY rule: "i will not run commands in the console." Translate a mechanism into a
+    CONTROL, never an instruction.)
+    PLANS ON CONTENT, NEVER LABELS -- queued only when a bundle HASH differs from the repo
+    build, because four tenants carry stale descriptions over current content and a
+    label-driven job would queue no-op imports that each archive a test package.
+    THREE REFUSALS: NOT-OUR-BUILD is never queued silently (-Force required, and the override
+    is recorded IN the job); an EMPTY job FAILs rather than being written ("nothing to do" and
+    "the tool found nothing" must not look the same); every target records expectBundlesNow,
+    which the browser re-checks against the live page and REFUSES if the tenant changed since
+    the job was cut. A LIVE tenant is queued with liveConfirmed:false and armed only by hand.
+    Usage: .\tools\emit_import_job.ps1 [-DeptId <id[,id]>] [-Provider <NAME>] [-All]
+                                       [-DryRunOnly] [-Force] [-TenantDir <dir>] [-OutFile]
+
+  tools/watch_imports.ps1
+    WAIT FOR THE AFTER-EXPORT AND PROVE THE IMPORT, WITHOUT BEING ASKED. Closes Rob's loop:
+    "execute the imports, then run an export, then compare the 2 to confirm the json update
+    takes place." The import became one click; the PROOF was three manual steps and the middle
+    one is the step that gets skipped -- and verify_tenant_import reports UNPROVEN without a
+    fresh AFTER, deliberately refusing to fall back on "AFTER matches REPO, therefore it
+    worked" (a tenant ALREADY at the target satisfies that with no import at all).
+    The panel auto-exports after a CLICKED verdict; this picks the file up and finishes the
+    chain: ingest_tenant_configs -> verify_tenant_import -> PASS / DID-NOT-LAND / FAIL.
+    CONSIDERS ONLY FILES NEWER THAN ITS OWN START -- the OPPOSITE of watch_captures' startup
+    catch-up, for the opposite reason: a capture is evidence whenever it was made, but an
+    AFTER-export is evidence only RELATIVE TO A SPECIFIC IMPORT, so a config sitting in
+    Downloads from an earlier pull must never satisfy it. A timeout reports TIMEOUT and exits
+    2 -- "nothing arrived" must not look like "nothing was wrong". -Once is the supported mode
+    (a persistent watcher never notifies and gets killed -- watch_captures' lesson).
+    Usage: .\tools\watch_imports.ps1 -Once [-DeptId <id[,id]>] [-TimeoutSec <n>] [-PollSec <n>]
+
+  tools/propose_ledger_patch.ps1
+    PROPOSE LEDGER CORRECTIONS. NEVER WRITE THEM. Rob: "i will help align them with our ledger
+    as needed" -- so this reports the delta and he stays the author.
+    IMPORT_LEDGER.md's rows are not data, they are PARAGRAPHS OF ADJUDICATION ("SDSO runs v1.0,
+    NOT v3.3", "Lafayette is hand-built by engineering", "TX_TLETS_CCH is PARKED"). A tool that
+    rewrote them would destroy reasoning it cannot reconstruct, silently.
+    PROPOSES ONLY WHAT CONTENT PROVES (every comparable bundle hashes equal to a repo build);
+    a merely-LABELLED tenant is listed separately with the reason, because "we could not prove
+    it" and "it agrees" must never look the same.
+    THREE CLASSES THAT ARE NOT CONTRADICTIONS, each earned on its first run: a row that states
+    NO version (8 false DISAGREEs -- the matches were Section B.0's correlation table, whose
+    cells carry a PLATFORM COUNTER by design); a filename with no parseable deptId (a
+    non-matching -replace returns its INPUT, so one stray export produced a proposed row
+    reading "(dept CA_eSUN_dept69510509021_20260910-163019)"); and a row naming SEVERAL
+    versions, where only one is the claim and the rest are HISTORY -- the first cut emitted an
+    EDIT for each, i.e. would have rewritten the record to read as though it had always been
+    current. A literal EDIT is offered ONLY when a row names exactly one version.
+    Proven able to fire via -LedgerPath against a mutated replica -- which is how the
+    history-rewrite hazard was found, since the clean run reports DISAGREE 0.
+    Usage: .\tools\propose_ledger_patch.ps1 [-Tenant <name>] [-LedgerPath <replica>] [-OutFile]
+
+  tools/install_git_hooks.ps1
+    MAKES A GATE UNBYPASSABLE BY HABIT. Copies hooks\ into .git\hooks\ (which is NOT
+    version-controlled, so a hook written straight there exists on one machine and silently
+    does not exist anywhere else). Currently one hook: pre-commit, which runs
+    audit_extension_syntax.ps1 for staged automation/extension/*.js and audit_ps51_parse.ps1
+    for staged tools/*.ps1, blocking the commit on a parse failure.
+    THE GATE WAS NEVER THE WEAK POINT -- THE HABIT WAS. On 2026-09-04 an apostrophe inside a
+    single-quoted console.log killed the driver and capture tools FOR FIVE DAYS. On 2026-09-11
+    the same mistake was made in deploy_probe.js, the gate DID report it, and the commit went
+    through anyway because it had been chained behind a `grep` that matched the output whether
+    the verdict was PASS or FAIL. Then the SAME mistake was made a third time in PowerShell
+    ("panel's" in a single-quoted string), which the first version of the hook did not cover --
+    a guard that watches one instance of a recurring class will be surprised by the next.
+    --no-verify still works deliberately: a hook nobody can override in an emergency gets
+    uninstalled rather than respected. -Verify reports STALE by CONTENT HASH, never Test-Path
+    (a leftover satisfies that), and an empty hooks\ FAILs rather than passing vacuously.
+    Usage: .\tools\install_git_hooks.ps1 [-Verify]
   tools/verify_tenant_import.ps1
     DID THE IMPORT ACTUALLY LAND? Proof, per bundle, from content hashes. Rob, 2026-09-11:
     "so maybe a skill that imports and runs the export o check what the actual cversion is with
