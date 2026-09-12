@@ -476,8 +476,113 @@
     return res;
   }
 
+  // ══ THE JOB RUNNER ═══════════════════════════════════════════════════════════════════════
+  //
+  // Rob, 2026-09-11: "this is still too clunky  i want the import process to be run by a json you
+  // create  kinda of like a import job file.  then i runi t via the console  it updates based on
+  // what we discused here."
+  //
+  // The clunk was real and it was not about keystrokes: the operator was ASSEMBLING THE DECISION
+  // AT THE KEYBOARD -- open a tenant, read a panel, judge a dry run, press a red button. Decision
+  // and execution were the same act, so there was nothing to review beforehand and nothing to diff
+  // afterwards. Now the decision is a FILE (tools\emit_import_job.ps1 writes it, Rob reads it) and
+  // this only executes what the file says.
+  //
+  // ONE TENANT PER CALL, STILL. The import happens through THIS page's modal, so the job may list
+  // many targets but a call imports only the row matching the page it is run on -- then prints the
+  // next url. That keeps the standing safeguard while letting one reviewed file cover a batch.
+  async function fetchJob(port) {
+    const url = 'http://localhost:' + (port || 8477) + '/job';
+    const r = await fetch(url, { method: 'GET' });
+    const t = await r.text();
+    let j = null; try { j = JSON.parse(t); } catch (e) {}
+    if (!r.ok) { throw new Error('job fetch failed (' + r.status + '): ' + ((j && j.error) || t.slice(0, 200))); }
+    if (!j || !j.targets || !j.targets.length) { throw new Error('the job file has no targets'); }
+    return j;
+  }
+
+  // PRE-FLIGHT: is the tenant still in the state the job was cut against?
+  // Safeguard 2 from the usx-deploy skill -- "re-export and confirm the BEFORE still matches the
+  // plan; abort the row if it changed" -- which is what stops us overwriting somebody else's
+  // concurrent change. Read the page's own bundle tables, the same way admin_probe reads them
+  // (generic table/tbody scrape; there is no measured id for that table, so do not invent one).
+  function bundleNamesOnPage() {
+    const cells = [];
+    document.querySelectorAll('table td, table th').forEach(c => {
+      const s = (c.textContent || '').replace(/\s+/g, ' ').trim();
+      if (s && s.length < 60) { cells.push(s); }
+    });
+    return cells;
+  }
+  function bundlePreflight(expected) {
+    const cells = bundleNamesOnPage();
+    if (!cells.length) { return 'no table cells on this page -- cannot confirm the tenant is still in the state the job was cut against'; }
+    const missing = (expected || []).filter(n => !cells.some(c => c === n || c.indexOf(n) >= 0));
+    if (missing.length === (expected || []).length && missing.length > 0) {
+      return 'none of the job expected bundles [' + expected.join(', ') + '] appear on this page -- either the table has not loaded or this is not the tenant the job describes';
+    }
+    if (missing.length) {
+      return 'the tenant no longer carries [' + missing.join(', ') + '] which the job recorded as present -- it has CHANGED since the job was cut, so this row is refused rather than overwritten';
+    }
+    return null;
+  }
+
+  async function runJob(opts) {
+    opts = opts || {};
+    const job = await fetchJob(opts.port);
+    const did = deptIdFromUrl();
+    if (!did) { throw new Error('no department id in this URL -- open a target configuration page'); }
+
+    const rows = job.targets.filter(t => String(t.deptId) === String(did));
+    if (rows.length !== 1) {
+      console.log('%c[USx-JOB] this page is not in the job (' + job.jobId + ')', 'color:#fa0;font-weight:bold');
+      console.table(job.targets.map(t => ({ tenant: t.subdomain, deptId: t.deptId, to: t.provider + ' v' + t.toVersion, done: !!t.done, url: t.url })));
+      throw new Error('deptId ' + did + ' matched ' + rows.length + ' job target(s) -- open one of the urls listed above');
+    }
+    const t = rows[0];
+
+    // TWO INDEPENDENT AUTHORITIES MUST AGREE. The job says what to import; /target says what the
+    // repo RECORD believes this tenant runs. A job typo that contradicts the record is refused.
+    const tgt = await resolveTarget(did, opts.port);
+    if (tgt.provider !== t.provider) {
+      throw new Error('job says ' + t.provider + ' but the repo record says ' + tgt.subdomain + ' runs ' +
+                      tgt.provider + ' (' + tgt.source + ') -- refusing on a disagreement');
+    }
+    if (tgt.scopeExcluded) { throw new Error('tenant is EXCLUDED by tenant_scope.json: ' + tgt.scopeExcluded); }
+
+    if (!opts.skipBundlePreflight && !job.skipBundlePreflight) {
+      const p = bundlePreflight(t.expectBundlesNow);
+      if (p) { throw new Error('PRE-FLIGHT: ' + p); }
+    }
+    if (/LIVE/i.test(String(t.tenantStatus || '')) && t.liveConfirmed !== true) {
+      throw new Error('tenant status is ' + t.tenantStatus + ' -- set liveConfirmed:true on this target IN THE JOB FILE, deliberately, before it can run');
+    }
+
+    const execute = (job.dryRunOnly === true) ? false : (opts.dryRun !== true);
+    console.log('%c[USx-JOB] ' + job.jobId + ' -> ' + t.subdomain + ' (' + did + ')  ' +
+                (t.fromVersion ? 'v' + t.fromVersion : 'NOT-OURS') + ' -> ' + t.provider + ' v' + t.toVersion +
+                (execute ? '  EXECUTING' : '  DRY RUN'), 'color:#6cf;font-weight:bold');
+
+    const res = await deployFromRepo({
+      deptId: did, provider: t.provider, execute: execute,
+      liveConfirmed: t.liveConfirmed === true, port: opts.port
+    });
+    res.jobId = job.jobId;
+
+    const remaining = job.targets.filter(x => String(x.deptId) !== String(did) && !x.done);
+    if (remaining.length) {
+      console.log('%c[USx-JOB] next: ' + remaining[0].subdomain + '  ' + remaining[0].url,
+                  'color:#fa0;font-weight:bold', '(' + remaining.length + ' target(s) left in this job)');
+    } else {
+      console.log('%c[USx-JOB] that was the last target in ' + job.jobId, 'color:#6c6;font-weight:bold');
+    }
+    console.log('%c[USx-JOB] NOT PROOF. Pull with button 6b, then ingest_tenant_configs.ps1 + verify_tenant_import.ps1.', 'color:#999');
+    return res;
+  }
+
+  window.__usxJob = runJob;
   window.__usxDeployAbort = false;
-  window.__usxDeploy = { deployOne, deployFromRepo, openImportModal, fetchBuild, runGuards, resolveTarget, targetReady, isShown, modalIsOpen, verifyReadBack,
+  window.__usxDeploy = { deployOne, deployFromRepo, openImportModal, fetchBuild, runGuards, resolveTarget, targetReady, isShown, modalIsOpen, verifyReadBack, runJob, fetchJob, bundlePreflight,
                          findTargetField, MODAL, TEXTAREA, DO_IMPORT, OPEN_BTN };
   console.log('%c[USx-DEPLOY]', 'color:#f66;font-weight:bold',
     'deploy_probe loaded -- THE ONLY WRITE PATH. Dry-run by default; execute:true required. ' +

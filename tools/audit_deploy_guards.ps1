@@ -97,6 +97,7 @@ $html = @"
   <textarea id="import-json"></textarea>
   <button id="do-import">Import</button>
 </div>
+<table><tbody><tr><td>ENTITIES</td><td>7</td></tr><tr><td>FL_FCIC</td><td>7</td></tr><tr><td>RMS</td><td>7</td></tr></tbody></table>
 <pre id="results"></pre>
 <script src="usx_lib_stub.js"></script>
 <script src="deploy_probe.js"></script>
@@ -252,6 +253,17 @@ $html = @"
          D.verifyReadBack(LF, LF.split('FL_FCIC').join('XX_XXXX')) === null, false);
   assert('a non-JSON read-back is refused',
          D.verifyReadBack(LF, 'x'.repeat(LF.length)) === null, false);
+
+  // ── THE JOB PRE-FLIGHT: is the tenant still what the job was cut against? ───────────────
+  // Safeguard 2 from the usx-deploy skill -- "re-export and confirm the BEFORE still matches the
+  // plan; abort the row if it changed" -- which is the one that stops us overwriting somebody
+  // else's concurrent change. The harness page carries a bundle table mirroring the real one.
+  assert('preflight: the expected bundle set is present -> proceed',
+         D.bundlePreflight(['ENTITIES', 'FL_FCIC', 'RMS']), null);
+  assert('preflight: a bundle the job recorded is GONE -> refuse (the tenant changed)',
+         D.bundlePreflight(['ENTITIES', 'FL_FCIC', 'RMS', 'CA_eSUN']) === null, false);
+  assert('preflight: NONE of the expected bundles present -> refuse (wrong page, or table not loaded)',
+         D.bundlePreflight(['NJ_NJCJIS']) === null, false);
 
   check('operator abort',         function(){ window.__usxDeployAbort = true; }, true);
   window.__usxDeployAbort = false;

@@ -8,6 +8,7 @@
     GET /scope/<PROVIDER>   -> providers/<P>/logs/<P>_PICKLIST_SCOPE.json
     GET /build/<PROVIDER>   -> providers/<P>/<P>_v*.json  (the CURRENT build, for the deploy path)
     GET /target/<deptId>    -> which PROVIDER that tenant is SUPPOSED to run (intent, not install)
+    GET /job                -> providers/IMPORT_JOB.json (the reviewed import job, run by __usxJob())
 
   TcpListener on 127.0.0.1:8477 (no admin/urlacl needed, unlike HttpListener).
   http://localhost is exempt from mixed-content blocking, so the https tenant page can
@@ -223,6 +224,21 @@ while ($true) {
                     '","source":"' + $src + '","class":"' + [string]$t.class + '","status":"' + [string]$t.status +
                     '","installedBundles":"' + $installed + '","scopeExcluded":"' + ($excl -replace '"', "'") + '"}'
             Send-Http $stream 200 $body
+        }
+        elseif ($urlPath -match '^/job/?$') {
+            # /job -- THE IMPORT JOB FILE, the reviewed artifact that authorises an import.
+            # Written by tools\emit_import_job.ps1, read by __usxJob() in the tenant console.
+            # Rob 2026-09-11: "i want the import process to be run by a json you create ... then i
+            # runi t via the console". Serving it here means the browser reads the SAME file that
+            # was reviewed, rather than something pasted or re-typed.
+            # Re-read per request: editing the job (e.g. setting liveConfirmed) must take effect
+            # without restarting the server.
+            $jobPath = Join-Path $providersDir 'IMPORT_JOB.json'
+            if (Test-Path $jobPath) {
+                Write-Host "[SERVE] /job -> IMPORT_JOB.json ($('{0:N0}' -f (Get-Item $jobPath).Length) bytes)" -ForegroundColor Cyan
+                Send-Http $stream 200 (Get-Content $jobPath -Raw)
+            }
+            else { Send-Http $stream 404 '{"error":"no providers\\IMPORT_JOB.json -- generate one with tools\\emit_import_job.ps1"}' }
         }
         else { Send-Http $stream 404 '{"error":"unknown path"}' }
     } catch { Write-Host "[SERVE] request error: $_" -ForegroundColor DarkYellow }
