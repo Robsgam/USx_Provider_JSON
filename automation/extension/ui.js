@@ -670,6 +670,47 @@
         try {
           const r = await window.__usxDeploy.runJob({});
           depReport(r);
+
+          // ── AUTO-EXPORT THE AFTER. Closing the loop at the proof end. ─────────────────
+          // Rob's goal, stated twice: "execute the imports, then run an export, then compare the
+          // 2 to confirm the json update takes place." Until now the operator had to remember to
+          // press 6b afterwards -- and the step that gets skipped is the one that makes the rest
+          // meaningless: verify_tenant_import reports UNPROVEN without a fresh AFTER, and it
+          // deliberately refuses to fall back on "AFTER matches REPO, therefore it worked"
+          // (a tenant ALREADY at the target satisfies that with no import at all).
+          //
+          // Reuses button 6b's own path scoped to ONE deptId -- admin_probe is GET-only by
+          // construction and its export click is allowlist-gated, so nothing new can write here.
+          //
+          // ⚠️ IT RETRIES ON THE VERSION LABEL, AND A LABEL IS NOT PROOF. The browser cannot
+          // hash a bundle the way _bundle_identity.ps1 does, so the label is used ONLY as a
+          // "has the platform settled yet" signal -- the real verdict is still the PowerShell
+          // content compare. Saying otherwise here would reintroduce exactly the trap the whole
+          // verification exists to avoid.
+          if (r && r.verdict === 'CLICKED') {
+            depStat.style.color = '#fa0';
+            depStat.textContent = 'imported -- exporting the AFTER for proof...';
+            let settled = false, attempts = 0, sawVersion = null;
+            while (attempts < 3 && !settled) {
+              attempts++;
+              try {
+                const ex = await window.__usxAdminProbe.runExportSweepDl({ deptIds: String(jobRow.deptId), pullConfigs: true });
+                const rec = (ex && ex.results && ex.results[0]) || null;
+                sawVersion = rec ? rec.version : null;
+                if (sawVersion && String(sawVersion) === String(jobRow.toVersion)) { settled = true; }
+              } catch (e) { depStat.textContent = 'AFTER export failed: ' + e.message; break; }
+              if (!settled && attempts < 3) { await new Promise(s => setTimeout(s, 4000)); }
+            }
+            depStat.style.color = settled ? '#7c7' : '#fa0';
+            depStat.textContent = 'CLICKED + AFTER captured'
+              + (sawVersion ? ' (tenant now labels v' + sawVersion + ')' : ' (no version label read)')
+              + (settled ? '' : ' -- label has not caught up after ' + attempts + ' export(s)')
+              + '  >  run tools\\watch_imports.ps1 (or ingest_tenant_configs + verify_tenant_import) for the PROOF.';
+            console.log('%c[USx-JOB] AFTER captured for ' + jobRow.subdomain +
+                        ' -- a label is NOT proof; verify_tenant_import.ps1 is.',
+                        'color:#fa0;font-weight:bold', { attempts: attempts, labelRead: sawVersion, expected: jobRow.toVersion });
+          }
+
           const left = jobDoc.targets.filter(t => String(t.deptId) !== String(jobRow.deptId) && !t.done);
           depNext.textContent = '';
           if (left.length) {
