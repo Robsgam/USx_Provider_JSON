@@ -115,7 +115,7 @@ fixed delay returning an empty table would recreate the 21-zeros defect with a n
 | usx-or-leds | OR_LEDS /1 | yes | ok |
 | usx-tn-ties | TN_TIES /4 | yes | ok |
 | usx-tx-tlets | TX_TLETS /34 | yes | ok |
-| usx-fl-fcic | CA_eSUN /41 | NO | ✅ unrelated test (Rob) -- re-import before sweeping |
+| usx-fl-fcic | **FL_FCIC v7.24** | yes | ✅ **RESOLVED 2026-09-11** -- see the dated note below |
 | **usx-la-lems** | **LA_LETTS_OFML /1** | yes | 🟠 **PRE-RENAME NAME** |
 | usx-ca-contra-costa | — | no | none imported |
 | usx-ca-san-louis-obispo | — | no | none imported |
@@ -135,6 +135,15 @@ note, not a finding.
 
 `usx-fl-fcic` (69510828830) carries `ENTITIES/588` + **`CA_eSUN/41`**, and **no RMS bundle**.
 There is no `FL_FCIC` bundle on it at all.
+
+> **RESOLVED 2026-09-11 -- this paragraph is the OBSERVATION AS MADE, kept for the record.** The
+> tenant was imported to `FL_FCIC v7.24` and the change was PROVEN by content hash (BEFORE / AFTER /
+> REPO per bundle): the `CA_eSUN` bundle was REMOVED, `FL_FCIC` ADDED, `ENTITIES` CHANGED, all three
+> matching the repo build. That import also produced the third independent confirmation that **an
+> import REPLACES the bundle set rather than merging it**. Rob then seeded `CA_eSUN v3.3` as a blind
+> test, which was identified by content and overwritten again by the first fully automated import.
+> Current state is authoritative in `TENANT_PROVENANCE.txt` / `IMPORT_PLAN.txt`, refreshed by
+> `refresh_tenant_reports.ps1`; this file is a dated narrative and is not regenerated.
 
 **VERIFIED, NOT INFERRED — two independent checks:**
 1. **The page identifies itself.** Each configuration page renders its own heading
@@ -483,6 +492,9 @@ Whatever "v1.0" came from, it did not come from the tenant. Same for `sandiegoha
 - `usx-fl-fcic` carries `ENTITIES/588 CA_eSUN/41` and no FL_FCIC bundle. **Rob ruled this an
   unrelated test on 2026-09-10 and the finding was retracted.** Recorded here only so the next
   sweep does not rediscover it as an alarm. `practice-robsgambellone` is byte-identical to it.
+  **SUPERSEDED 2026-09-11: the tenant now runs `FL_FCIC v7.24`, content-verified.** The retraction
+  was still correct at the time -- it was never a defect, and re-raising the eSUN bundle as a
+  finding would be re-discovering a closed question.
 - `newarkpd-foundation` v4.16 vs ledger v4.17 — confirmed again; Rob's call, unchanged.
 - `lafayettesheriff-la` — no version string, CONFIRMS the ledger's "not ours".
 - `gordo` carries `HI_HCJDC` (not `HI_HCJDC_OFML`) and `ccpd`/`ccpd-jms-migration-round-1` carry

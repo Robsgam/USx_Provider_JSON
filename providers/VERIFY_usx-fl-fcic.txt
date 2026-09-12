@@ -3,26 +3,26 @@
   IMPORT VERIFICATION -- usx-fl-fcic
 ====================================================================================
   tenant: usx-fl-fcic   deptId: 69510828830
-  AFTER  : usx-fl-fcic_69510828830.json  (327,770 bytes, 2026-09-11 15:24)
-  BEFORE : usx-fl-fcic_69510828830_20260911-145812.json  (245,253 bytes, 2026-09-11 14:58)
+  AFTER  : usx-fl-fcic_69510828830.json  (327,770 bytes, 2026-09-11 21:55)
+  BEFORE : usx-fl-fcic_69510828830_20260911-165216.json  (294,107 bytes, 2026-09-12 11:02)
   REPO   : FL_FCIC_v7.24.json  (target v7.24)
 
   ---- PROOF, per bundle (canonical hash; description excluded, platform nulls normalized)
   BUNDLE               BEFORE         AFTER          REPO TARGET    
   ------------------------------------------------------------------------------------------------
-  CA_eSUN              9f08e0aad9b2   (absent)       (absent)       
-  ENTITIES             6824c9c5ee42   99157dfb99c5   99157dfb99c5   CHANGED / == REPO
+  CA_eSUN              473ae88f42f9   (absent)       (absent)       
+  ENTITIES             d40d88756cf3   99157dfb99c5   99157dfb99c5   CHANGED / == REPO
   FL_FCIC              (absent)       504a63c40c3f   504a63c40c3f   ADDED / == REPO
-  RMS                  (absent)       a2c5484e4a62   a2c5484e4a62   ADDED / == REPO
+  RMS                  a2c5484e4a62   a2c5484e4a62   a2c5484e4a62   == REPO
 
   ---- LABELS (reported, never used as the verdict) --------------------------------
-  CA_eSUN              before: (not stamped)                after: (absent)
+  CA_eSUN              before: CA_eSUN v3.3                 after: (absent)
   ENTITIES             before: (not stamped)                after: FL_FCIC v7.24
   FL_FCIC              before: (absent)                     after: FL_FCIC v7.24
-  RMS                  before: (absent)                     after: (not stamped)
+  RMS                  before: (not stamped)                after: (not stamped)
 
   ---- VERDICT ---------------------------------------------------------------------
-  bundles that CHANGED: ENTITIES, FL_FCIC, RMS
+  bundles that CHANGED: ENTITIES, FL_FCIC
   PASS -- the config changed AND every comparable bundle now matches the repo v7.24 build.
   That is the acceptance test: a real change, landing on the intended build.
 

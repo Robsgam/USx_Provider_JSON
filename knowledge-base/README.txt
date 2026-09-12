@@ -772,6 +772,36 @@ TOOLS
     Usage: .\tools\watch_imports.ps1 -Once [-DeptId <id[,id]>] [-TimeoutSec <n>] [-PollSec <n>]
 
 
+
+  tools/refresh_tenant_reports.ps1
+    REGENERATE THE DERIVED TENANT REPORTS, AND SAY WHICH ONES CANNOT BE. Rob, 2026-09-12:
+    "i am looking at the reports in the privers folder and they are not updated with current
+    info  please reveiw adn address."
+    He was right, and the content was WRONG rather than merely old: IMPORT_PLAN,
+    TENANT_PROVENANCE, LEDGER_VS_REALITY and TENANT_BUNDLE_VERSIONS all still described
+    usx-fl-fcic as carrying a CA_eSUN bundle and "NOT OUR BUILD" -- hours after an import had
+    moved it to FL_FCIC v7.24 and the change had been proven by content hash.
+    WHY, which matters more than the staleness: each report is produced by its own tool, with
+    its own -OutFile, at whatever moment someone happened to run it. NOTHING OWNED THE SET. A
+    report regenerated only when somebody remembers is stale exactly when a decision is being
+    made from it -- and these are the documents scope and ledger entries are decided from.
+    TWO CLASSES, AND CONFLATING THEM IS THE FAILURE THIS PREVENTS:
+      DERIVABLE LOCALLY -- computed from _versions\tenant_exports\ + the repo. Regenerated
+        every run: IMPORT_PLAN, TENANT_PROVENANCE, LEDGER_PATCH, TENANT_GROUPS (html+pdf),
+        LEDGER_VS_REALITY, TENANT_BUNDLE_VERSIONS.
+      NEEDS A FRESH BROWSER PULL -- input is a capture only the operator can make (census
+        chunks, versions sweep, config pull). CANNOT be refreshed from disk, so they are
+        REPORTED with their age and the button that refreshes them. Never regenerated from
+        stale input; never left silently looking current.
+    Uses the newest tenant export as a DATA CLOCK -- any derived report older than it is
+    describing a state that no longer exists.
+    Verifies every rewrite by WRITE TIME, never Test-Path: a leftover satisfies Test-Path, and
+    a generator that failed over an existing file leaves a document that LOOKS current. That is
+    reported as a FAIL, louder than a missing file.
+    DOES NOT TOUCH IMPORT_LEDGER.md (hand-authored; its rows are adjudications, not data --
+    deltas are proposed in LEDGER_PATCH.md and applied by Rob) or TENANT_INVENTORY.md (a
+    narrative written with Rob, not a tool output).
+    Usage: .\tools\refresh_tenant_reports.ps1 [-CheckOnly] [-Quiet]
   tools/report_tenant_groups.ps1
     EVERY TENANT WE FOUND, GROUPED FOR A HUMAN TO DECIDE ON -- HTML + PDF. Rob, 2026-09-12:
     "i need the list of found tenants so i can group them. start by grouping the provider we

@@ -15,7 +15,7 @@ tr:nth-child(even) td{background:#fafafa}
 @media print{h2{page-break-after:avoid}table{page-break-inside:auto}tr{page-break-inside:avoid}}
 </style></head><body>
 <h1>USx Tenant Groups</h1>
-<p class="sub">Generated 2026-09-12 09:03 by <span class="mono">tools\report_tenant_groups.ps1</span> from 64 pulled tenant configurations. Repo builds indexed: 20 providers.</p>
+<p class="sub">Generated 2026-09-12 11:19 by <span class="mono">tools\report_tenant_groups.ps1</span> from 64 pulled tenant configurations. Repo builds indexed: 20 providers.</p>
 <div class="decide"><b>What this document is for.</b> Scoping is the blocker: <span class="mono">tenant_scope.json</span> ships empty, so every report and every import job still carries tenants already decided against. Mark this up and the exclusions get applied with your reason and the date.</div>
 <div class="note"><b>What is measured and what is guessed.</b> <b>Ours / not ours is MEASURED</b> &mdash; a configuration of ours carries a <span class="mono">Provider configuration for &lt;P&gt; vX.Y</span> stamp in its bundle description, and where the content also hashes equal to the current repo build it is marked CURRENT. Absence of that stamp is <i>evidence</i>, not a gap: it is how Lafayette was confirmed hand-built by engineering. <b>The real-vs-development split in section B is a HEURISTIC</b> &mdash; the only guessed thing here. Each row prints the signal that placed it, so you can correct it by looking rather than by trusting the tool.</div>
 <h2>Summary</h2><table><tr><th>Group</th><th>Count</th><th>Basis</th></tr>

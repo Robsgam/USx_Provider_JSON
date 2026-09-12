@@ -2,7 +2,7 @@
 ====================================================================================
   OUR RECORDS  vs  WHAT IS ACTUALLY DEPLOYED
 ====================================================================================
-  tenants in the join: 64   version files read: 3   tenants measured: 64   providers in repo: 20
+  tenants in the join: 64   version files read: 33   tenants measured: 64   providers in repo: 20
 
   ---- PER TENANT -------------------------------------------------------------------
   TENANT                         OUR RECORDS SAY                    REALITY (measured)         VERDICT
@@ -59,7 +59,7 @@
   usx-ca-clets                   Section A: CA_CLETS v2.27 logged   CA_CLETS v2.27             logs OK / repo current
   usx-ca-clets-ocats             Section A: CA_CLETS_OCATS v2.12 logged CA_CLETS_OCATS v2.12       logs OK / repo current
   usx-ca-esun                    Section A: CA_eSUN v3.3 logged     CA_eSUN v3.3               logs OK / repo current
-  usx-fl-fcic                    Section A: FL_FCIC v7.24 logged    - no version string        NOT OUR BUILD
+  usx-fl-fcic                    Section A: FL_FCIC v7.24 logged    FL_FCIC v7.24              logs OK / repo current
   usx-hi-hcjdc-ofml              Section A: HI_HCJDC_OFML v4.20 logged HI_HCJDC_OFML v4.19        LOGS CLAIM v4.20 / behind repo v4.20
   usx-il-leads-ofml              Section A: IL_LEADS_OFML v2.8 logged IL_LEADS_OFML v2.8         logs OK / repo current
   usx-la-lems                    Section A: LA_LEMS NEVER TESTED (0 logs) LA_LETTS_OFML v2.0         logs OK
@@ -72,7 +72,7 @@
   usx-tn-ties                    Section A: TN_TIES v2.6 logged     TN_TIES v2.6               logs OK / repo current
   usx-tx-tlets                   Section A: TX_TLETS v4.22 logged   TX_TLETS v4.22             logs OK / repo current
 
-  RECORDED 28 | *** UNRECORDED 36 *** | fully agreeing 18 | DRIFT 4 | behind repo 10 | not our build 32
+  RECORDED 28 | *** UNRECORDED 36 *** | fully agreeing 19 | DRIFT 4 | behind repo 10 | not our build 31
 
   ---- PER PROVIDER: how many installs we recorded vs how many exist ---------------
   PROVIDER               REPO     OUR RECORDS (n + versions)   REALITY (n + versions)
@@ -81,7 +81,7 @@
   CA_CLETS               v2.27    3 tenant(s)                  3 tenant(s): v2.27
   CA_CLETS_OCATS         v2.12    1 tenant(s)                  1 tenant(s): v2.12
   CA_eSUN                v3.3     1 tenant(s)                  1 tenant(s): v3.3
-  FL_FCIC                v7.24    3 tenant(s)                  4 tenant(s): v7.18 v7.24  <== +1 NOT RECORDED
+  FL_FCIC                v7.24    4 tenant(s)                  5 tenant(s): v7.18 v7.24  <== +1 NOT RECORDED
   HI_HCJDC_OFML          v4.20    3 tenant(s)                  4 tenant(s): v4.15 v4.19  <== +1 NOT RECORDED
   IL_LEADS_OFML          v2.8     2 tenant(s)                  4 tenant(s): v2.8  <== +2 NOT RECORDED
   LA_LETTS_OFML          --       1 tenant(s)                  1 tenant(s): v2.0
@@ -94,7 +94,7 @@
   TN_TIES                v2.6     1 tenant(s)                  1 tenant(s): v2.6
   TX_TLETS               v4.22    2 tenant(s)                  2 tenant(s): v4.22
 
-  Plus 32 tenant(s) carrying a provider bundle with NO version string = NOT OUR BUILD.
+  Plus 31 tenant(s) carrying a provider bundle with NO version string = NOT OUR BUILD.
   Those are counted in neither column above, because they are not deployments of ours.
 
   ---- THE REVERSE GAP: ledger rows matching NO tenant on this host ---------------

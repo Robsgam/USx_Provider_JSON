@@ -2,9 +2,9 @@
 ====================================================================================
   TENANT VERSION CROSS-CHECK -- measured vs ledger vs repo
 ====================================================================================
-  files: 2   distinct tenants: 64   repo versions known for 20 provider(s)
+  files: 33   distinct tenants: 64   repo versions known for 20 provider(s)
 
-  VERSION READ 32 | NOT-OUR-BUILD (exported, no version string) 32 | UNRESOLVED 0
+  VERSION READ 33 | NOT-OUR-BUILD (exported, no version string) 31 | UNRESOLVED 0
 
   tenant                           provider             MEASURED  LEDGER    REPO      verdict
   --------------------------------------------------------------------------------------------------------------------------
@@ -60,7 +60,7 @@
   usx-ca-clets                     CA_CLETS             v2.27     --        v2.27     NO LEDGER ROW / repo OK
   usx-ca-clets-ocats               CA_CLETS_OCATS       v2.12     --        v2.12     NO LEDGER ROW / repo OK
   usx-ca-esun                      CA_eSUN              v3.3      --        v3.3      NO LEDGER ROW / repo OK
-  usx-fl-fcic                      -                    -         --        --        NOT OUR BUILD (no version string)
+  usx-fl-fcic                      FL_FCIC              v7.24     --        v7.24     NO LEDGER ROW / repo OK
   usx-hi-hcjdc-ofml                HI_HCJDC_OFML        v4.19     --        v4.20     NO LEDGER ROW / behind repo
   usx-il-leads-ofml                IL_LEADS_OFML        v2.8      --        v2.8      NO LEDGER ROW / repo OK
   usx-la-lems                      LA_LETTS_OFML        v2.0      --        --        NO LEDGER ROW
@@ -73,7 +73,7 @@
   usx-tn-ties                      TN_TIES              v2.6      --        v2.6      NO LEDGER ROW / repo OK
   usx-tx-tlets                     TX_TLETS             v4.22     --        v4.22     NO LEDGER ROW / repo OK
 
-  fully agreeing 8 | LEDGER DRIFT 1 | behind repo 10 | measured but NO ledger row 21
+  fully agreeing 8 | LEDGER DRIFT 1 | behind repo 10 | measured but NO ledger row 22
 
   A "behind repo" row is not automatically a defect -- a Foundation tenant is expected to
   lag until someone imports. A LEDGER DRIFT row is: the record and the tenant disagree.
