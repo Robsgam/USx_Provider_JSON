@@ -265,6 +265,44 @@ $html = @"
   assert('preflight: NONE of the expected bundles present -> refuse (wrong page, or table not loaded)',
          D.bundlePreflight(['NJ_NJCJIS']) === null, false);
 
+  // ── THE BATCH SEAM: every DOM read must work against a DOCUMENT THAT IS NOT THIS ONE ────
+  // Rob, 2026-09-11: "i want the process to be able to eventually say update all fl_fcic tenants
+  // and you would create the job and i would have to launch it ... that is the eventual intent so
+  // please be sure that goal is in mind."
+  //
+  // NOT ENABLED -- there is still no batch runner. What is tested here is that the write path can
+  // be POINTED at another document, because the admin surface is host-agnostic (any admin host
+  // serves any department by deptId -- how the census iframes 1,785 config pages from one page),
+  // so the batch run is this same code against an iframe. If these assertions ever fail, the
+  // batch goal has quietly become a rewrite of the only file that can write to a tenant.
+  var ifr = document.createElement('iframe');
+  document.body.appendChild(ifr);
+  var idoc = ifr.contentDocument;
+  idoc.open();
+  idoc.write('<!doctype html><html><body>'
+    + '<table><tbody><tr><td>ENTITIES</td></tr><tr><td>NJ_NJCJIS</td></tr><tr><td>RMS</td></tr></tbody></table>'
+    + '<div id="import-modal">'
+    + '<input type="text" id="import-dept-id-input" value="11111111111">'
+    + '<input type="text" id="import-file-name">'
+    + '<textarea id="import-json"></textarea>'
+    + '<button id="do-import">Import</button>'
+    + '</div></body></html>');
+  idoc.close();
+  var imodal = idoc.querySelector('#import-modal');
+
+  assert('seam: the iframe document is genuinely a DIFFERENT document (control)',
+         idoc !== document, true);
+  assert('seam: findTargetField resolves inside the iframe modal',
+         D.findTargetField(imodal) === idoc.querySelector('#import-dept-id-input'), true);
+  assert('seam: targetReady reads the iframe field value',
+         D.targetReady(imodal), true);
+  assert('seam: modalIsOpen works on the iframe modal',
+         D.modalIsOpen(imodal), true);
+  assert('seam: bundlePreflight reads the IFRAME table, not this page',
+         D.bundlePreflight(['ENTITIES', 'NJ_NJCJIS', 'RMS'], idoc), null);
+  assert('seam: bundlePreflight against the iframe REFUSES this page bundles (proves it is not reading document)',
+         D.bundlePreflight(['FL_FCIC'], idoc) === null, false);
+
   check('operator abort',         function(){ window.__usxDeployAbort = true; }, true);
   window.__usxDeployAbort = false;
   line('CASES ' + CASES);

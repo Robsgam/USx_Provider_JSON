@@ -24,11 +24,15 @@
 //  ⚠️ DRY RUN IS THE DEFAULT. Every guard runs, nothing is clicked, and the
 //  result says exactly what WOULD have happened. `execute:true` is required.
 //
-//  ⚠️ ONE TENANT PER CALL. There is deliberately no batch and no "all". Rob's
-//  eventual model -- "auto update grouped by usx provider" -- is a REPO-SIDE
-//  plan that calls this once per tenant, so a group is N audited single
-//  actions rather than one unaudited loop. Grouping goes ON TOP of a proven
-//  single, not beside an unproven one.
+//  ⚠️ ONE TENANT PER CALL, TODAY. There is deliberately no batch and no "all"
+//  yet. The EVENTUAL goal is Rob's, 2026-09-11: "update all fl_fcic tenants and
+//  you would create the job and i would have to launch it" -- one launch, N
+//  tenants. The seam for it is already threaded through this file (every DOM
+//  read takes a `doc`, so a batch is THIS code against an iframe rather than a
+//  second write path), and the list of what is still owed before a batch may
+//  run is at the FOOT of this file under DESIGN TARGET. Grouping goes ON TOP of
+//  a proven single, never beside an unproven one -- which is why the single was
+//  proven first, on usx-fl-fcic, by content hash.
 // ===========================================================================
 (() => {
   if (window.__usxDeploy) return;
@@ -191,6 +195,18 @@
 
   async function deployOne(opts) {
     opts = opts || {};
+    // SEAM FOR THE BATCH GOAL -- every DOM read below goes through `doc`, never the global
+    // `document`. Rob, 2026-09-11: "i want the process to be able to eventually say update all
+    // fl_fcic tenants and you would create the job and i would have to launch it ... that is the
+    // eventual intent so please be sure that goal is in mind."
+    //
+    // The admin surface is HOST-AGNOSTIC -- any admin host serves any department's configuration
+    // page by deptId, which is exactly how the census iframes 1,785 of them from ONE page. So the
+    // batch run is THIS function against an IFRAME document, not a new write path. Parameterising
+    // it now costs nothing; discovering it later would mean rewriting the only file in this
+    // project that can write to a tenant, which is the last file that should be rewritten in a
+    // hurry. NOT ENABLED YET -- see the DESIGN TARGET note at the foot of this file.
+    const doc = opts.doc || document;
     const out = {
       probe: 'usx-deploy', version: 1, capturedAt: new Date().toISOString(),
       host: location.hostname, url: location.href,
@@ -198,12 +214,12 @@
       guardsFailed: [], clicked: false, verdict: null, notes: []
     };
 
-    const modal = document.querySelector(MODAL);
+    const modal = doc.querySelector(MODAL);
     const ctx = {
       urlDeptId: deptIdFromUrl(),
       modal: modal,
       textarea: modal ? modal.querySelector(TEXTAREA) : null,
-      doBtn: document.querySelector(DO_IMPORT),
+      doBtn: doc.querySelector(DO_IMPORT),
       targetField: modal ? findTargetField(modal) : null
     };
 
@@ -384,18 +400,21 @@
 
   function modalIsOpen(modal) { return !!(modal && modal.querySelector(TEXTAREA) && isShown(modal)); }
 
-  async function openImportModal(budgetMs) {
+  // Same seam as deployOne: `doc` defaults to the live page, so today nothing changes, and a
+  // batch run later drives an IFRAME document through the identical code rather than a copy of it.
+  async function openImportModal(budgetMs, docArg) {
+    const doc = docArg || document;
     const budget = budgetMs || 8000;
     const t0 = Date.now();
-    let modal = document.querySelector(MODAL);
+    let modal = doc.querySelector(MODAL);
     const already = modalIsOpen(modal);
     if (!already) {
-      const btn = document.querySelector(OPEN_BTN);
+      const btn = doc.querySelector(OPEN_BTN);
       if (!btn) { throw new Error('cannot find ' + OPEN_BTN + ' -- is this a configuration page?'); }
       btn.click();
     }
     while (Date.now() - t0 < budget) {
-      modal = document.querySelector(MODAL);
+      modal = doc.querySelector(MODAL);
       if (modalIsOpen(modal) && targetReady(modal)) {
         return { opened: !already, already: already, modal: modal,
                  waitedMs: Date.now() - t0, targetShown: findTargetField(modal).value };
@@ -403,7 +422,7 @@
       await new Promise(r => setTimeout(r, 150));
     }
     // THREE distinguishable failures. Reporting any of them as another is what cost two rounds.
-    modal = document.querySelector(MODAL);
+    modal = doc.querySelector(MODAL);
     if (!modal || !modal.querySelector(TEXTAREA)) {
       throw new Error('the import modal (' + MODAL + ') never appeared within ' + budget + 'ms');
     }
@@ -459,7 +478,7 @@
     // but still pass it as expectVersion so the guard compares the payload against itself and
     // a malformed build cannot slip through by simply not stating a version.
     const m = payload.match(/Provider configuration for ([A-Za-z0-9_]+) v([0-9]+\.[0-9]+)/);
-    await openImportModal(opts.modalBudgetMs);
+    await openImportModal(opts.modalBudgetMs, opts.doc);
     // tenantStatus comes from the RECORD, not from the caller. It used to be an opts field, which
     // meant the LIVE guard was armed only by an operator who volunteered the status -- i.e. it was
     // disarmed by default on exactly the tenants it exists to protect (hawaii-dle is LIVE).
@@ -470,7 +489,8 @@
       expectVersion: m ? m[2] : null,
       tenantStatus: tgt.status || opts.tenantStatus || null,
       liveConfirmed: opts.liveConfirmed === true,
-      execute: opts.execute === true
+      execute: opts.execute === true,
+      doc: opts.doc
     });
     res.target = tgt;
     return res;
@@ -506,16 +526,16 @@
   // plan; abort the row if it changed" -- which is what stops us overwriting somebody else's
   // concurrent change. Read the page's own bundle tables, the same way admin_probe reads them
   // (generic table/tbody scrape; there is no measured id for that table, so do not invent one).
-  function bundleNamesOnPage() {
+  function bundleNamesOnPage(docArg) {
     const cells = [];
-    document.querySelectorAll('table td, table th').forEach(c => {
+    (docArg || document).querySelectorAll('table td, table th').forEach(c => {
       const s = (c.textContent || '').replace(/\s+/g, ' ').trim();
       if (s && s.length < 60) { cells.push(s); }
     });
     return cells;
   }
-  function bundlePreflight(expected) {
-    const cells = bundleNamesOnPage();
+  function bundlePreflight(expected, docArg) {
+    const cells = bundleNamesOnPage(docArg);
     if (!cells.length) { return 'no table cells on this page -- cannot confirm the tenant is still in the state the job was cut against'; }
     const missing = (expected || []).filter(n => !cells.some(c => c === n || c.indexOf(n) >= 0));
     if (missing.length === (expected || []).length && missing.length > 0) {
@@ -551,7 +571,7 @@
     if (tgt.scopeExcluded) { throw new Error('tenant is EXCLUDED by tenant_scope.json: ' + tgt.scopeExcluded); }
 
     if (!opts.skipBundlePreflight && !job.skipBundlePreflight) {
-      const p = bundlePreflight(t.expectBundlesNow);
+      const p = bundlePreflight(t.expectBundlesNow, opts.doc);
       if (p) { throw new Error('PRE-FLIGHT: ' + p); }
     }
     if (/LIVE/i.test(String(t.tenantStatus || '')) && t.liveConfirmed !== true) {
@@ -565,7 +585,7 @@
 
     const res = await deployFromRepo({
       deptId: did, provider: t.provider, execute: execute,
-      liveConfirmed: t.liveConfirmed === true, port: opts.port
+      liveConfirmed: t.liveConfirmed === true, port: opts.port, doc: opts.doc
     });
     res.jobId = job.jobId;
 
@@ -584,6 +604,41 @@
   // Rob, 2026-09-11: "i will not run commands in the console." Do not document this as the way
   // to run a job, and do not hand it to the operator as an instruction.
   window.__usxJob = runJob;
+  // ══ DESIGN TARGET -- NOT BUILT YET, AND THE SEAM IS DELIBERATE ═══════════════════════════
+  //
+  // Rob, 2026-09-11: "i want the process to be able to eventually say update all fl_fcic tenants
+  // and you would create the job and i would have to launch it" -- and, immediately after,
+  // "that is the eventual intent so please be sure that goal is in mind."
+  //
+  // WHAT MAKES IT FEASIBLE, measured rather than hoped: the admin surface is HOST-AGNOSTIC. Any
+  // admin host serves any department's configuration page by deptId -- which is exactly how
+  // admin_probe's census iframes 1,785 configuration pages from ONE page, and how the export
+  // sweep clicks Export JSON per tenant without navigating. So a batch import is NOT a new write
+  // path: it is deployOne/openImportModal/bundlePreflight pointed at an IFRAME document.
+  //
+  // WHICH IS WHY `doc` IS THREADED THROUGH ALL OF THEM ALREADY. Nothing today passes it, so
+  // nothing today behaves differently; audit_deploy_guards proves the seam works by driving the
+  // resolver, targetReady, modalIsOpen and bundlePreflight against a real iframe document. If
+  // those cases ever fail, the batch goal has quietly turned into a rewrite of the only file in
+  // this project that can write to a tenant -- the last file anyone should rewrite in a hurry.
+  //
+  // WHAT IS STILL OWED BEFORE A BATCH RUNS (do not skip these to save a click):
+  //   1. Per-target GUARDS INSIDE THE FRAME. Every guard already reads from ctx, so this is
+  //      wiring, not new logic -- but the modal-target-field check is the one that catches
+  //      "right build, wrong tenant", and in an iframe nobody is LOOKING at the page. It becomes
+  //      the only thing standing between a job typo and 30 tenants.
+  //   2. AN ABORT THAT WORKS MID-BATCH. window.__usxDeployAbort exists and guard 6 honours it;
+  //      a batch must check it between targets, not only within one.
+  //   3. STOP ON FIRST FAILURE, never continue. A batch that carries on past a REFUSED row turns
+  //      one bad target into N.
+  //   4. VERIFY PER TARGET, not at the end. watch_imports.ps1 already proves one tenant; a batch
+  //      must not report success for rows whose AFTER nobody has compared.
+  //   5. A LIVE tenant stays armed ONLY by liveConfirmed in the job FILE. Never batch-armed.
+  //
+  // THE PROPERTY THAT IS LOST, stated plainly so the trade is a decision and not a surprise:
+  // today the write goes through the page the operator is looking at, so the tenant being changed
+  // is visible. An iframe batch removes that. The replacement is the job file (reviewed BEFORE)
+  // plus per-row verification (proven AFTER) -- which is why step 1 of the loop was built first.
   window.__usxDeployAbort = false;
   window.__usxDeploy = { deployOne, deployFromRepo, openImportModal, fetchBuild, runGuards, resolveTarget, targetReady, isShown, modalIsOpen, verifyReadBack, runJob, fetchJob, bundlePreflight,
                          findTargetField, MODAL, TEXTAREA, DO_IMPORT, OPEN_BTN };
