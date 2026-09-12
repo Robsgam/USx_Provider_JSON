@@ -773,6 +773,32 @@ TOOLS
 
 
 
+
+  tools/report_notours_reuse.ps1
+    OF THE CONFIGS WE DID NOT BUILD, WHICH ARE COPIES AND WHICH ARE ONE-OFFS? Rob, 2026-09-12:
+    "for all the json you found that are 'not our builds' can you narrow down if any are being
+    resued and which ones are unique."
+    WHY THE TENANT COUNT DOES NOT ANSWER IT: a not-ours config on ONE tenant is a hand-built
+    one-off; the same config on FIFTEEN is a de-facto product, and a defect in it is fifteen
+    defects. Completely different support exposure, same row count.
+    TWO AXES, BECAUSE ONE IS MISLEADING ALONE:
+      WHOLE CONFIG    -- byte-identical after canonicalisation; the same file.
+      PROVIDER BUNDLE -- the useful one. Two tenants can differ in ENTITIES or RMS while running
+        the IDENTICAL provider bundle, which is the part that talks to the state system.
+        Grouping only on the whole config reports those as unrelated one-offs and understates
+        the reuse. Measured: 31 tenants, 14 distinct whole configs, but only 11 distinct
+        provider bundles.
+    Hashes go through _bundle_identity.ps1 -- description excluded, platform-added nulls
+    normalised -- because a raw byte compare cannot work here for the same reason it cannot
+    verify an import: the platform re-serializes on export.
+    "NOT OURS" IS MEASURED: the provider bundle carries no "Provider configuration for <P> vX.Y"
+    description. Absence of that stamp is EVIDENCE (it is how Lafayette was confirmed hand-built
+    by engineering), not a gap in our records.
+    IT STATES WHAT IT DOES NOT KNOW: identical content is equally consistent with a centrally
+    maintained config and with one file hand-copied onto many tenants -- and the second is the
+    exposure worth knowing about. It does not claim authorship.
+    0 not-ours configs FAILs rather than reporting an empty analysis as a result.
+    Usage: .\tools\report_notours_reuse.ps1 [-OutFile <txt>] [-TenantDir <dir>]
   tools/refresh_tenant_reports.ps1
     REGENERATE THE DERIVED TENANT REPORTS, AND SAY WHICH ONES CANNOT BE. Rob, 2026-09-12:
     "i am looking at the reports in the privers folder and they are not updated with current

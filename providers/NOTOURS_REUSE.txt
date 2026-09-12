@@ -1,0 +1,106 @@
+====================================================================================
+  NOT-OUR-BUILD CONFIGS -- reused across tenants, or one-off?
+====================================================================================
+  65 config(s) on disk | 33 OURS (stamped, not analysed here) | 31 NOT OURS | 1 skipped
+
+  ---- AXIS 1: IDENTICAL WHOLE CONFIG (same file, canonicalised) -----------------
+  14 distinct config(s) across 31 tenants -- 8 reused, 6 one-off
+
+  x8  6e19d7de3ed1  [LA_LEMS+ENTITIES+RMS]  165,447 bytes
+        abbey-demo  (dept 67531517395)
+        dark-demo  (dept 1870685224)
+        jeffco-demo  (dept 68397625745)
+        kris-demo  (dept 65456869021)
+        kyle-demo  (dept 54589578643)
+        louisville-demo  (dept 25763508631)
+        lyle-demo  (dept 56768145752)
+        shelby-demo  (dept 64975047986)
+
+  x4  5a1df389bc57  [LA_LEMS+ENTITIES+RMS]  165,447 bytes
+        erich-demo1  (dept 67996979499)
+        lam-demo  (dept 56475148757)
+        mint  (dept 36568869640)
+        reno-nv-demo  (dept 29967674360)
+
+  x3  469649a807ac  [LA_LEMS+ENTITIES+RMS]  165,523 bytes
+        cbp-demo  (dept 65505627848)
+        dea-demo  (dept 67404108343)
+        justin-demo  (dept 64985141433)
+
+  x2  767d7b7bbd81  [ENTITIES+CA_eSUN]  244,743 bytes
+        sandiegoso-foundation  (dept 59872925305)
+        sdso  (dept 71459778290)
+
+  x2  3246acd9867d  [LA_LEMS+ENTITIES+RMS]  163,687 bytes
+        lafayettela-sherifftraining  (dept 5107052982)
+        lafayettesheriff-la  (dept 20032392972)
+
+  x2  f15b32793b0a  [LA_LEMS+ENTITIES+RMS]  163,602 bytes
+        neworleanspd  (dept 66397342490)
+        neworleanspd-foundation  (dept 57501651030)
+
+  x2  1129fb4c0c94  [ENTITIES+RecordsArchive]  86,748 bytes
+        ccpd  (dept 1001142)
+        ccpd-jms-migration-round-1  (dept 63333802057)
+
+  x2  15a90eb99395  [LA_LEMS+ENTITIES+RMS]  165,447 bytes
+        demo-boston-cad2025  (dept 62638109121)
+        demo-ny-se  (dept 71875989157)
+
+  ---- AXIS 2: IDENTICAL PROVIDER BUNDLE (the part that talks to the state) ------
+  11 distinct provider bundle(s) across 31 tenants -- 6 reused, 5 unique
+
+  x15  bundle LA_LEMS  content 9d7b62529773  (4 different whole configs -- same provider bundle, different ENTITIES/RMS)
+        abbey-demo                         LA_LEMS+ENTITIES+RMS
+        dark-demo                          LA_LEMS+ENTITIES+RMS
+        demo                               LA_LEMS+ENTITIES+RMS
+        demo-boston-cad2025                LA_LEMS+ENTITIES+RMS
+        demo-ny-se                         LA_LEMS+ENTITIES+RMS
+        erich-demo1                        LA_LEMS+ENTITIES+RMS
+        jeffco-demo                        LA_LEMS+ENTITIES+RMS
+        kris-demo                          LA_LEMS+ENTITIES+RMS
+        kyle-demo                          LA_LEMS+ENTITIES+RMS
+        lam-demo                           LA_LEMS+ENTITIES+RMS
+        louisville-demo                    LA_LEMS+ENTITIES+RMS
+        lyle-demo                          LA_LEMS+ENTITIES+RMS
+        mint                               LA_LEMS+ENTITIES+RMS
+        reno-nv-demo                       LA_LEMS+ENTITIES+RMS
+        shelby-demo                        LA_LEMS+ENTITIES+RMS
+
+  x3  bundle LA_LEMS  content bb2385c82a6e  (whole config identical too)
+        cbp-demo                           LA_LEMS+ENTITIES+RMS
+        dea-demo                           LA_LEMS+ENTITIES+RMS
+        justin-demo                        LA_LEMS+ENTITIES+RMS
+
+  x2  bundle LA_LEMS  content fc201c1a674f  (whole config identical too)
+        lafayettela-sherifftraining        LA_LEMS+ENTITIES+RMS
+        lafayettesheriff-la                LA_LEMS+ENTITIES+RMS
+
+  x2  bundle LA_LEMS  content 86aeb973ab73  (whole config identical too)
+        neworleanspd                       LA_LEMS+ENTITIES+RMS
+        neworleanspd-foundation            LA_LEMS+ENTITIES+RMS
+
+  x2  bundle RecordsArchive  content d9300d867d28  (whole config identical too)
+        ccpd                               ENTITIES+RecordsArchive
+        ccpd-jms-migration-round-1         ENTITIES+RecordsArchive
+
+  x2  bundle CA_eSUN  content 94f4ce24a40f  (whole config identical too)
+        sandiegoso-foundation              ENTITIES+CA_eSUN
+        sdso                               ENTITIES+CA_eSUN
+
+  ---- ONE-OFFS: a provider bundle on exactly ONE tenant -------------------------
+  Each of these is a configuration that exists nowhere else we have looked.
+
+  fullwooddemo                       CA_eSUN            ENTITIES+CA_eSUN       215,204 bytes
+  practice-robsgambellone            CA_eSUN            ENTITIES+CA_eSUN       245,253 bytes
+  sandiegoharborpd-foundation        CA_eSUN            ENTITIES+CA_eSUN       230,960 bytes
+  1836                               FL_FCIC            FL_FCIC                33,151 bytes
+  gordo                              HI_HCJDC           HI_HCJDC+ENTITIES+RMS  224,680 bytes
+
+  ---- WHAT THIS DOES AND DOES NOT SAY -------------------------------------------
+  IT SAYS: which of these configurations are the SAME configuration, by content.
+  IT DOES NOT SAY who authored any of them, nor that a reused config is maintained
+  centrally -- identical content is equally consistent with one file copied by hand
+  to many tenants, which is exactly the support exposure worth knowing about.
+  Absence of our version stamp is EVIDENCE these are not our builds, not a gap.
+====================================================================================

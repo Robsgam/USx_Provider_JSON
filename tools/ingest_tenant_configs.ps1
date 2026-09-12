@@ -165,9 +165,20 @@ foreach ($f in $files) {
         # "import, then run an export, then compare the 2" -- and without this, the 2nd export
         # destroys the 1st. Only archived when the content actually DIFFERS, so a routine
         # re-pull does not accumulate identical copies.
+        $unchanged = $false
         if (Test-Path $dest) {
             $prior = [System.IO.File]::ReadAllText($dest)
-            if ($prior -ne $cfg) {
+            if ($prior -eq $cfg) {
+                # ⚠️ DO NOT REWRITE AN IDENTICAL EXTRACT. Added 2026-09-12.
+                # This used to WriteAllText unconditionally, so every ingest bumped the mtime of all
+                # 64 extracts even when nothing had changed -- ~14MB of pointless rewriting, and,
+                # worse, it destroyed the meaning of the timestamp. refresh_tenant_reports uses the
+                # newest tenant export as its DATA CLOCK, so a refresh run moved the clock past the
+                # very reports it had just generated and the next check reported all 8 STALE
+                # seconds after a clean run. A staleness signal that the refresh itself invalidates
+                # is worse than none: it trains the reader to ignore it.
+                $unchanged = $true
+            } else {
                 $arcDir = Join-Path $outDir '_before'
                 if (-not (Test-Path $arcDir)) { New-Item -ItemType Directory -Path $arcDir -Force | Out-Null }
                 $stampf = (Get-Item $dest).LastWriteTime.ToString('yyyyMMdd-HHmmss')
@@ -175,7 +186,9 @@ foreach ($f in $files) {
                 if (-not (Test-Path $archived)) { Move-Item -Path $dest -Destination $archived }
             }
         }
-        [System.IO.File]::WriteAllText($dest, $cfg, (New-Object System.Text.UTF8Encoding($false)))
+        if (-not $unchanged) {
+            [System.IO.File]::WriteAllText($dest, $cfg, (New-Object System.Text.UTF8Encoding($false)))
+        }
         $bytesTotal += $cfg.Length
         try {
             $parsed = $cfg | ConvertFrom-Json

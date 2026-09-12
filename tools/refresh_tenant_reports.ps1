@@ -70,6 +70,7 @@ $derivable = @(
     @{ Name = 'TENANT_PROVENANCE.txt';     Script = 'audit_tenant_provenance.ps1';  Args = @('-OutFile', (Join-Path $provDir 'TENANT_PROVENANCE.txt'), '-Quiet') }
     @{ Name = 'LEDGER_PATCH.md';           Script = 'propose_ledger_patch.ps1';     Args = @('-OutFile', (Join-Path $provDir 'LEDGER_PATCH.md'), '-Quiet') }
     @{ Name = 'TENANT_GROUPS.html/.pdf';   Script = 'report_tenant_groups.ps1';     Args = @('-OutFile', (Join-Path $provDir 'TENANT_GROUPS.html'), '-PdfFile', (Join-Path $provDir 'TENANT_GROUPS.pdf'), '-Quiet') }
+    @{ Name = 'NOTOURS_REUSE.txt';         Script = 'report_notours_reuse.ps1';     Args = @('-OutFile', (Join-Path $provDir 'NOTOURS_REUSE.txt'), '-Quiet') }
     @{ Name = 'LEDGER_VS_REALITY.txt';     Script = '_probes\reconcile_ledger_vs_reality.ps1';   Args = @('-OutFile', (Join-Path $provDir 'LEDGER_VS_REALITY.txt')) }
     @{ Name = 'TENANT_BUNDLE_VERSIONS.txt';Script = '_probes\audit_tenant_bundle_versions.ps1';  Args = @('-OutFile', (Join-Path $provDir 'TENANT_BUNDLE_VERSIONS.txt')) }
 )
