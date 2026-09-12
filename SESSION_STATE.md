@@ -36,21 +36,16 @@ No PASS count is recorded here on purpose: it moves every time a gate is added, 
 absolute number is guaranteed to go stale and teach the next session to distrust this file.
 <!-- END GENERATED -->
 
-**MISSION: 13 of 20 LIFECYCLE-COMPLETE** (`report_mission_status.ps1`, 2026-09-10). eSUN's sweep did
-NOT move it -- eSUN gained stage T and is now blocked on Jira alone (**test 5 -> 4, jira 1 -> 2**).
-Owed: **test 4** (CA_CONTRA_COSTA, CA_SAN_LUIS_OBISPO, CA_VENTURA, LA_LEMS) - **jira 2**
-(CA_CLETS_OCATS DEX-980, CA_eSUN DEX-1312: comment 811409 covers the v2.2 RADIOBUTTON line ONLY, v3.3
-owes a release line, and eSUN is the first provider with a SUBTASK -- 1312 parent / 1313 sub, NAME the
-ticket). TX_TLETS_CCH is PARKED and can never complete; 19-of-20 as denominator is Rob's call.
-**Two Jira comments are the whole distance from 13 to 15.**
+**MISSION: 13 of 20 LIFECYCLE-COMPLETE** (`report_mission_status.ps1`, 2026-09-10). Owed: **test 4**
+(CA_CONTRA_COSTA, CA_SAN_LUIS_OBISPO, CA_VENTURA, LA_LEMS) and **jira 2** (CA_CLETS_OCATS DEX-980;
+CA_eSUN DEX-1312 parent / DEX-1313 sub -- v3.3 owes a release line). TX_TLETS_CCH is PARKED and can
+never complete. **Two Jira comments are the whole distance from 13 to 15.**
 
-**TEST-AND-READY, NOT FOR RELEASE (Rob 2026-09-09).** Never-tested providers are owed a SWEEP, not an
-import. CA_CONTRA_COSTA is the ONE exception: BLOCKED on Rob's JAWS call. The other three
-(CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, LA_LEMS) measured sweep-ready 2026-09-09 -- pre-flight CLEAR,
-PENDING_UPDATES live-blocking lines = 0 (every `[FLAG:]` is `#`-COMMENTED). Residual: CA_VENTURA's
-hollow toggle, blocked on picklist capture. **SDSO LIVE runs eSUN v1.0 vs repo v3.3** -- Rob's call.
-
-**OFFICER GUIDES 20/20 CURRENT** (473 rows); checker `_probes/audit_guide_completeness.ps1`. **Handover guide for a new owner: `USX_PROJECT_GUIDE.pdf`** (repo root). **`audit_extension_syntax.ps1`** (in `doctor`) parses the browser scripts -- nothing did until a 1-char break killed driver+capture for 5 days. **ANY PRIOR JSON IS ONE COMMAND: `get_provider_version.ps1 -Provider <P> -Version <X.Y> [-IncludeLegacy]`** -- 671 artifacts, byte-exact from git, hash-verified, to gitignored `_versions\`. It is RETRIEVAL: re-running an old build script does NOT reproduce an old version.
+**TEST-AND-READY, NOT FOR RELEASE (Rob 2026-09-09).** A never-tested provider is owed a SWEEP, not an
+import. CA_CONTRA_COSTA is BLOCKED on Rob's JAWS call; the other three measured sweep-ready
+2026-09-09 (CA_VENTURA residual: hollow toggle, blocked on picklist capture).
+**SDSO LIVE runs eSUN v1.0 vs repo v3.3** -- Rob's call.
+**OFFICER GUIDES 20/20 CURRENT** (473 rows). **Handover guide: `USX_PROJECT_GUIDE.pdf`** (repo root). **ANY PRIOR JSON IS ONE COMMAND: `get_provider_version.ps1 -Provider <P> -Version <X.Y> [-IncludeLegacy]`** -- 671 artifacts, byte-exact from git. RETRIEVAL, not rebuild: re-running an old build script does NOT reproduce an old version. Closed 2026-09-10 (detail in git): the three gate gaps, and RND-71625 -- does NOT reproduce, Jira reply HELD, nothing owed.
 
 ## ROB'S CALLS, NOT MINE
 
@@ -66,29 +61,34 @@ hollow toggle, blocked on picklist capture. **SDSO LIVE runs eSUN v1.0 vs repo v
 - **LIMITATION #41** (HOME state routes a local plate to NLETS) -- paused pending CommSys. 5 providers owe the picklist capture. **NCIC hit blocks CONFIG-PRESENT, NOT RENDERING-VERIFIED** on HI and TN.
 - **RESWEEP 2026-09-08: 20/20 ENFORCED 0F/0W, no defect in any provider JSON.** Fidelity 426 branches / 4 UNDER / 4 OVER / 0 NEVER-COMPARED -- all 4+4 are CA_CONTRA_COSTA's (Rob's JAWS call).
 
-## NEXT PHYSICAL ACTION -- WAITING ON THE (7) FULL CENSUS, running in Rob's browser
+## THE DEPLOY LOOP IS BUILT AND PROVEN (2026-09-11/12). WHAT REMAINS IS ROB'S DECISIONS.
 
-All 1,785 departments are being scanned; chunks land in Downloads as `usx_admin_scan_<from>-<to>_*.json`
-(first at index 250, then every 3). Run **`tools\ingest_tenant_scan.ps1`** -> KNOWN-FLEET / KNOWN-LEDGER
-/ **UNKNOWN** + uncovered offsets. Rob: *"uncover any json imports that we do not know about"* and *"well
-also verifiying the known ones"*. The ~40 `500`s are THEIRS (ERROR, never "no provider") and the
-`unsafe header "Cookie"` lines are the page's own jQuery, not our probe.
+**There IS a write path now** -- `automation/extension/deploy_probe.js`, the only file that can write,
+dry-run by default, 46 mutation cases in `audit_deploy_guards`. The loop end to end:
+`emit_import_job.ps1` -> review `providers\IMPORT_JOB.json` -> **panel button RUN THE JOB FOR THIS
+TENANT** -> auto re-export -> `watch_imports.ps1` -> `verify_tenant_import` PASS/DID-NOT-LAND/FAIL.
+**First fully automated import PROVEN by content hash:** usx-fl-fcic CA_eSUN v3.3 -> FL_FCIC v7.24.
 
-**NEWARK FOUNDATION RUNS NJ v4.16 WHILE THE LEDGER CLAIMS v4.17** -- read from the tenant's own Export
-JSON, corroborated by a second column (counter 77 vs our v4.17 tenant's 78 vs Anzini v4.9's 74). Failed
-import / rollback / reported-as-intent is **Rob's call**. I have no write path (probe is GET-only,
-`Import JSON` is on the DESTRUCTIVE denylist) and his own rule -- refuse any host that is not `usx-*` --
-excludes Newark regardless. Detail: `providers/TENANT_INVENTORY.md`.
+⚠️ **NEVER hand Rob a console command.** GUI only -- `__usxJob()` was shipped and corrected the same
+hour. ⚠️ An import **REPLACES** the bundle set (usx-fl-fcic's CA_eSUN bundle was removed).
 
-**THE THREE OWED GATE GAPS ARE CLOSED (2026-09-10).** `validate` type-checks the QIDM `requirements`
-subtree (eSUN's `conditions`-as-OBJECT import reject); `audit_query_selectable.ps1` is enforce PHASE 2y
-BLOCKING (DH `autoSelect=$false` unsendable checkbox -- **ABSENT IS NOT FALSE**, 44/44 absent-autoSelect
-queries hold logs; do NOT "tighten" it); `watch_captures` allowlists only `usx_captured_*`/
-`usx_picklists_*`. Both classes mutation-tested. 2y shipped INERT first -- `-Quiet` ate its verdict.
+**NEXT PHYSICAL ACTION -- ROB'S CALLS, NOT CODE:**
+1. **Scoping** (parked by him, now the blocker): `tenant_scope.json` ships EMPTY, so the `-All` job
+   queues amyblair + onscene, which he has already said will be excluded.
+2. **`providers\LEDGER_PATCH.md`** -- 16 content-verified tenants have NO ledger row (every `usx-*`
+   fleet tenant among them); 8 more appear only in B.0, which records no version by design. 0
+   contradictions. The tool NEVER writes the ledger.
+3. **hawaii-dle is LIVE** and queued with `liveConfirmed:false`; it is armed only by hand, in the file.
 
-**RND-71625 -- ANSWERED, JIRA REPLY HELD.** Does NOT reproduce (all 3 surfaces show the icon);
-nothing owed. Evidence + narrower real findings: `FINDINGS_REGISTER.md`. Do NOT restate here.
+**Then, still owed:** the BATCH (*"update all fl_fcic tenants ... i would have to launch it"*) -- the
+seam is threaded (`doc` through the write path, 6 iframe cases prove it) but nothing batches yet; the
+5 preconditions are at the foot of `deploy_probe.js` under DESIGN TARGET. Confluence last, per-publish
+approval.
 
+**NEWARK FOUNDATION RUNS NJ v4.16 WHILE THE LEDGER CLAIMS v4.17** -- read from the tenant's own
+Export JSON, corroborated by a second column. Failed import / rollback / reported-as-intent is
+**Rob's call**; a write path existing does not make it mine, and his standing rule (refuse any host
+that is not `usx-*`) excludes Newark regardless. Detail: `providers/TENANT_INVENTORY.md`.
 ## DO NOT RE-RAISE
 
 - `State2`-`State5` multi-state broadcast: OUT OF SCOPE 2026-08-02. OH's `ReasonCode`/`Requestor` =
