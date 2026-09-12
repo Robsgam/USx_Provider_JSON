@@ -580,6 +580,9 @@
     return res;
   }
 
+  // Exposed for the harness and for debugging ONLY. THE INTERFACE IS THE PANEL BUTTON:
+  // Rob, 2026-09-11: "i will not run commands in the console." Do not document this as the way
+  // to run a job, and do not hand it to the operator as an instruction.
   window.__usxJob = runJob;
   window.__usxDeployAbort = false;
   window.__usxDeploy = { deployOne, deployFromRepo, openImportModal, fetchBuild, runGuards, resolveTarget, targetReady, isShown, modalIsOpen, verifyReadBack, runJob, fetchJob, bundlePreflight,

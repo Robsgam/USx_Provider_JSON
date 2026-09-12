@@ -550,7 +550,7 @@
 
       let depTarget = null;
       const depDry = el('button', BTN, 'DRY RUN \u2014 resolve the target, fetch the build, open the dialog, run every guard, click NOTHING');
-      const depGo = el('button', BTN + ';' + RED, 'EXECUTE THE IMPORT (writes to this tenant)');
+      const depGo = el('button', BTN + ';' + RED, 'RUN THE JOB FOR THIS TENANT');
 
       // Resolve on injection so the panel STATES the target before anyone clicks anything, and so
       // an unrecorded tenant is refused while the buttons are still cold rather than mid-import.
@@ -597,28 +597,100 @@
       };
       depWrap.appendChild(depDry);
 
+      // \u2500\u2500 THE JOB \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+      // Rob, 2026-09-11: "__usxJob()  i will not run commands in the console."
+      // A standing rule (GUI ONLY) that I broke by shipping the job runner as a console call.
+      // The job file was the right answer to "too clunky"; making the operator type a function
+      // name to run it was the wrong delivery, and it is the second time console-vs-GUI has had
+      // to be corrected. The job is now a BUTTON, and the write path is ONLY the job.
+      //
+      // The ad-hoc EXECUTE button is GONE on purpose. It was the "decision assembled at the
+      // keyboard" path -- the exact clunk being complained about. The only way to write to a
+      // tenant is now: generate a job file -> read it -> press this. DRY RUN stays, because a
+      // rehearsal that writes nothing is worth having.
+      const depJob = el('div', 'font:11px ui-monospace,monospace;color:#999;margin:4px 0;min-height:28px', 'loading the job\u2026');
+      depWrap.appendChild(depJob);
+      const depNext = el('div', 'font-size:11px;margin:2px 0');
+      depWrap.appendChild(depNext);
+
+      let jobRow = null, jobDoc = null;
+      async function depLoadJob() {
+        const did = (location.pathname.match(/configurations\/(\d+)/) || [])[1];
+        depNext.textContent = '';
+        try {
+          jobDoc = await window.__usxDeploy.fetchJob();
+          const rows = jobDoc.targets.filter(t => String(t.deptId) === String(did));
+          jobRow = rows.length === 1 ? rows[0] : null;
+          if (!jobRow) {
+            depJob.style.color = '#fa0';
+            depJob.textContent = 'JOB ' + jobDoc.jobId + ' \u2014 this tenant is NOT in it ('
+                               + jobDoc.targets.length + ' target(s)). Open one of its urls:';
+            depGo.disabled = true;
+            jobDoc.targets.slice(0, 6).forEach(t => {
+              const a = el('a', 'display:block;color:#7cf;font:11px ui-monospace,monospace;text-decoration:underline');
+              a.href = t.url; a.target = '_blank';
+              a.textContent = '\u2192 ' + t.subdomain + '  ' + t.provider + ' v' + t.toVersion;
+              depNext.appendChild(a);
+            });
+            return;
+          }
+          const live = /LIVE/i.test(String(jobRow.tenantStatus || '')) && jobRow.liveConfirmed !== true;
+          depJob.style.color = live ? '#f77' : '#7c7';
+          depJob.textContent = 'JOB ' + jobDoc.jobId + ' \u2014 '
+            + (jobRow.fromVersion ? 'v' + jobRow.fromVersion : 'NOT-OURS') + ' \u2192 ' + jobRow.provider + ' v' + jobRow.toVersion
+            + ' \u00b7 changes: ' + (jobRow.willChange || []).join(', ')
+            + (jobDoc.dryRunOnly ? ' \u00b7 DRY-RUN-ONLY JOB (cannot write)' : '')
+            + (live ? ' \u00b7 LIVE and NOT armed: set liveConfirmed:true in the job file' : '');
+          depGo.disabled = live;
+          depGo.textContent = jobDoc.dryRunOnly
+            ? 'RUN THE JOB FOR THIS TENANT (dry-run-only job \u2014 writes nothing)'
+            : 'RUN THE JOB FOR THIS TENANT \u2014 imports ' + jobRow.provider + ' v' + jobRow.toVersion;
+        } catch (e) {
+          jobDoc = null; jobRow = null;
+          depJob.style.color = '#f77';
+          depJob.textContent = '\u2716 ' + e.message + ' \u2014 generate one with tools\\emit_import_job.ps1';
+          depGo.disabled = true;
+        }
+      }
+
       depGo.onclick = async () => {
-        const did = (location.pathname.match(/configurations\/(\d+)/) || [])[1] || '(unknown)';
-        if (!depTarget) { depStat.style.color = '#f77'; depStat.textContent = '\u2716 target not resolved -- run the DRY RUN first'; return; }
+        if (!jobRow || !jobDoc) { depStat.style.color = '#f77'; depStat.textContent = '\u2716 no job row for this tenant'; return; }
         // Spell out BOTH the build and the target. A confirm that says "are you sure?" trains
         // people to click yes; one that names what is about to be overwritten does not.
-        if (!confirm('IMPORT ' + depTarget.provider + ' into ' + depTarget.subdomain + ' (department ' + did + ')?\n\n'
-          + '\u00b7 provider resolved from the repo record (' + depTarget.source + '), not typed\n'
-          + '\u00b7 this REPLACES the tenant configuration bundle set\n'
-          + '\u00b7 the import removes any bundle the payload does not contain\n'
-          + '\u00b7 run the DRY RUN first if you have not\n'
-          + '\u00b7 afterwards: pull with 6b and verify -- "import complete" is not proof')) return;
+        if (!jobDoc.dryRunOnly) {
+          if (!confirm('JOB ' + jobDoc.jobId + '\n\nIMPORT ' + jobRow.provider + ' v' + jobRow.toVersion
+            + ' into ' + jobRow.subdomain + ' (' + jobRow.deptId + ')?\n\n'
+            + '\u00b7 this is what the reviewed job file says to do\n'
+            + '\u00b7 it REPLACES the tenant configuration bundle set\n'
+            + '\u00b7 the import removes any bundle the payload does not contain\n'
+            + '\u00b7 afterwards: pull with 6b and verify -- "import complete" is not proof')) return;
+        }
         depGo.disabled = true; depDry.disabled = true;
-        depStat.style.color = '#fa0'; depStat.textContent = 'importing\u2026';
-        try { depReport(await window.__usxDeploy.deployFromRepo({ execute: true, liveConfirmed: false })); }
+        depStat.style.color = '#fa0'; depStat.textContent = 'running the job\u2026';
+        try {
+          const r = await window.__usxDeploy.runJob({});
+          depReport(r);
+          const left = jobDoc.targets.filter(t => String(t.deptId) !== String(jobRow.deptId) && !t.done);
+          depNext.textContent = '';
+          if (left.length) {
+            depNext.appendChild(el('span', 'color:#999;font-size:11px', 'next (' + left.length + ' left): '));
+            const a = el('a', 'color:#7cf;font:11px ui-monospace,monospace;text-decoration:underline');
+            a.href = left[0].url; a.target = '_blank';
+            a.textContent = left[0].subdomain + ' \u2192 ' + left[0].provider + ' v' + left[0].toVersion;
+            depNext.appendChild(a);
+          } else {
+            depNext.appendChild(el('span', 'color:#7c7;font-size:11px', 'that was the last target in this job.'));
+          }
+        }
         catch (e) { depStat.style.color = '#f77'; depStat.textContent = '\u2716 ' + e.message; }
         finally { depGo.disabled = false; depDry.disabled = false; }
       };
       depWrap.appendChild(depGo);
       depWrap.appendChild(el('div', 'color:#999;font-size:11px;margin-top:2px',
-        'Needs serve_plans.ps1 running (/target/<deptId> for the intent, /build/<PROVIDER> for the payload). '
-        + 'The provider is NOT typed -- it comes from the repo record, and an unrecorded tenant is refused.'));
+        'Needs serve_plans.ps1 running (/job for the reviewed job, /target/<deptId> for the intent, /build/<PROVIDER> for the payload). '
+        + 'Nothing is typed here: the provider comes from the repo record and the decision comes from the job file.'));
       depResolve();
+      depLoadJob();
 
       p.appendChild(censusWrap);
       p.appendChild(depWrap);
@@ -1054,5 +1126,5 @@
 
   window.__usxUiTimer = setInterval(tick, 1000);
   tick();
-  console.log('%c[USx-UI]', 'color:#fa0;font-weight:bold', 'control panel injected. BUILD 2026-09-11g (matches deploy_probe 11g. DEPLOY has NO PROVIDER BOX: the provider comes from serve_plans /target/<deptId> -- the recorded intent, not something typed, because a typo there imports the wrong provider and every guard still passes. The panel STATES the resolved target before anything is clicked, and refuses an unrecorded or scope-excluded tenant while the buttons are still cold. Earlier: the DEPLOY section -- dry-run and execute buttons over deploy_probe.js, the only write path; payload fetched from serve_plans /build/<PROVIDER> so it is the repo artifact byte-for-byte. Adds the Capture-this-page form-element button -- read-only live-DOM capture for measuring the import dialog before automating it. STEP 3 CLEANUP: the admin panel now shows only the standing workflow -- 2 list tenants, 6b pull the configs, 7 census. Buttons 1/3/4/5/6 are HIDDEN behind a collapsed diagnostics toggle, not deleted: their handlers read inputs that would throw if removed, and a deleted code path is how the driver died for five days).');
+  console.log('%c[USx-UI]', 'color:#fa0;font-weight:bold', 'control panel injected. BUILD 2026-09-11h (THE JOB IS A BUTTON, not a console command -- Rob: "i will not run commands in the console", a standing GUI-ONLY rule I broke by shipping the runner as __usxJob(). The ad-hoc EXECUTE button is GONE with it: that was the decision-assembled-at-the-keyboard path, so the ONLY write path is now generate a job file, read it, press the button. DEPLOY has NO PROVIDER BOX: the provider comes from serve_plans /target/<deptId> -- the recorded intent, not something typed, because a typo there imports the wrong provider and every guard still passes. The panel STATES the resolved target before anything is clicked, and refuses an unrecorded or scope-excluded tenant while the buttons are still cold. Earlier: the DEPLOY section -- dry-run and execute buttons over deploy_probe.js, the only write path; payload fetched from serve_plans /build/<PROVIDER> so it is the repo artifact byte-for-byte. Adds the Capture-this-page form-element button -- read-only live-DOM capture for measuring the import dialog before automating it. STEP 3 CLEANUP: the admin panel now shows only the standing workflow -- 2 list tenants, 6b pull the configs, 7 census. Buttons 1/3/4/5/6 are HIDDEN behind a collapsed diagnostics toggle, not deleted: their handlers read inputs that would throw if removed, and a deleted code path is how the driver died for five days).');
 })();
