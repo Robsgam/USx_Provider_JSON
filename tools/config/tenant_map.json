@@ -469,7 +469,9 @@
           "platformCounter": "77"
         }
       ],
-      "ledgerVersion": "4.17"
+      "ledgerVersion": "4.17",
+      "intendedProvider": "NJ_NJCJIS",
+      "_intendedProviderWhy": "AUTHORISED BY ROB 2026-09-12: 'add intendedProvider for newark so we can reimport v4.17'. This is a DELIBERATE OVERRIDE of the standing rule that the deploy path refuses any host that is not usx-*, and it is recorded here rather than typed at the keyboard so the decision is visible to whoever reads this file. Reason: the ledger records a v4.17 import on 2026-08-20 (same pass as the DEX-988 release line and the catalog update) but the tenant runs v4.16 -- proven three independent ways: the bundle description, the CONTENT HASH of both ENTITIES and NJ_NJCJIS against the v4.16 build, and the platform counter (77 here vs 78 on usx-nj-njcjis at v4.17 vs 74 on Anzini at v4.9). Both bundles agree with their labels, so this is a CLEAN v4.16, not a half-landed import. Cost of leaving it: v4.16->v4.17 is the middle-name + suffix fix, so a Newark officer cannot enter either on a Driver License search and the wire can only carry 'DOE, JOHN'. Status is TEST, not LIVE, so no liveConfirmed is required."
     },
     {
       "subdomain": "neworleanspd",
