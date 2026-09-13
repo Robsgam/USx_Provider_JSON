@@ -79,6 +79,60 @@ foreach ($f in $vfiles) {
     foreach ($r in @($o.results)) { $measured["$($r.deptId)"] = $r }   # last write wins
 }
 
+# ---------------------------------------------------------------- CONTENT OVERLAY
+# ⚠️ THE SWEEP'S `version` IS A LABEL, AND THIS PROBE WAS RE-RAISING RETRACTED FINDINGS BECAUSE OF
+# IT. `usx_admin_versions_*.json` reads the bundle DESCRIPTION, and a description is not a version:
+# on 2026-09-11 four findings of mine were retracted for exactly this reason, and on 2026-09-12 this
+# report -- freshly regenerated -- asserted three of them again:
+#     usx-hi-hcjdc-ofml  LOGS CLAIM v4.20 / measured v4.19
+#     usx-ny-nyspin-ejustice  LOGS CLAIM v4.26 / measured v4.24
+#     usx-or-leds  LOGS CLAIM v2.6 / measured v2.5
+# All three are CURRENT by content; their ENTITIES or provider bundle simply carries an older
+# description. A report that re-raises a finding already closed with evidence is worse than one that
+# never found it -- it burns the reader's trust in the ones that are real.
+#
+# So: where the tenant's extracted config is on disk, the measured version comes from CONTENT (every
+# comparable bundle hashing equal to a repo build), and the label is kept only to be displayed
+# beside it. Where content proves nothing, the label is used AND MARKED, never silently promoted.
+$identityMod = Join-Path (Split-Path $PSScriptRoot -Parent) '_bundle_identity.ps1'
+$canonicalMod = Join-Path (Split-Path $PSScriptRoot -Parent) '_json_canonical.ps1'
+$contentVer = @{}   # deptId -> version proven by content
+if ((Test-Path $identityMod) -and (Test-Path $canonicalMod)) {
+    . $canonicalMod
+    . $identityMod
+    $repoRootP = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
+    $rHash = @{}; $rVer = @{}
+    foreach ($d in (Get-ChildItem (Join-Path $repoRootP 'providers') -Directory)) {
+        $cands = @(Get-ChildItem $d.FullName -Filter ('{0}_v*.json' -f $d.Name) -File -ErrorAction SilentlyContinue)
+        if ($cands.Count -ne 1) { continue }
+        $ro = $null
+        try { $ro = Get-Content $cands[0].FullName -Raw -Encoding UTF8 | ConvertFrom-Json } catch { continue }
+        if ($cands[0].Name -match '_v([0-9]+\.[0-9]+)\.json$') { $rVer[$d.Name] = $Matches[1] }
+        foreach ($b in (Get-BundleList $ro)) { $rHash[('{0}|{1}' -f $d.Name, $b.name)] = (Get-BundleContentHash $b) }
+    }
+    $expDirP = Join-Path $repoRootP '_versions\tenant_exports'
+    foreach ($ef in @(Get-ChildItem $expDirP -Filter '*.json' -File -ErrorAction SilentlyContinue |
+                      Where-Object { $_.Name -notmatch 'provenance' })) {
+        $edept = ($ef.BaseName -replace '^.*_(\d+)$', '$1')
+        if ($edept -notmatch '^\d+$') { continue }
+        $eo = $null
+        try { $eo = Get-Content $ef.FullName -Raw -Encoding UTF8 | ConvertFrom-Json } catch { continue }
+        $ebl = Get-BundleList $eo
+        $epb = @($ebl | Where-Object { ('{0}' -f $_.name) -ne 'ENTITIES' -and ('{0}' -f $_.name) -ne 'RMS' })[0]
+        if (-not $epb) { continue }
+        $epn = '{0}' -f $epb.name
+        if (-not $rVer.ContainsKey($epn)) { continue }
+        $all = $true; $cmp = 0
+        foreach ($b in $ebl) {
+            $k = '{0}|{1}' -f $epn, $b.name
+            if (-not $rHash.ContainsKey($k)) { $all = $false; break }
+            $cmp++
+            if ((Get-BundleContentHash $b) -ne $rHash[$k]) { $all = $false; break }
+        }
+        if ($all -and $cmp -gt 0) { $contentVer[$edept] = $rVer[$epn] }   # proven == repo current
+    }
+}
+
 # ---------------------------------------------------------------- input 3: repo + log-derived
 $repoVer = @{}; $logVer = @{}
 foreach ($d in Get-ChildItem (Join-Path $repoRoot 'providers') -Directory) {
@@ -146,8 +200,23 @@ foreach ($t in ($tenants | Sort-Object { $_.subdomain })) {
     }
 
     # --- REALITY column
+    # CONTENT WINS over the swept label. See the CONTENT OVERLAY note above: the sweep reads a
+    # bundle DESCRIPTION, and three tenants carry a stale one over current content.
+    $proven = $contentVer["$($t.deptId)"]
+    if ($proven -and $m -and $m.version -and $m.version -ne $proven) {
+        # Record the disagreement so the report can show both rather than quietly substituting.
+        $m | Add-Member -NotePropertyName labelVersion -NotePropertyValue $m.version -Force
+        $m | Add-Member -NotePropertyName version -NotePropertyValue $proven -Force
+    } elseif ($proven -and $m -and -not $m.version) {
+        $m | Add-Member -NotePropertyName version -NotePropertyValue $proven -Force
+    }
     if (-not $m) { $realV = '(not swept)'; $realP = '-' ; $verdict = 'UNMEASURED' }
-    elseif ($m.verdict -eq 'VERSION-READ') { $realP = $m.provider; $realV = 'v' + $m.version; $verdict = '' }
+    elseif ($m.verdict -eq 'VERSION-READ') {
+        $realP = $m.provider
+        $realV = 'v' + $m.version
+        if ($m.PSObject.Properties.Name -contains 'labelVersion') { $realV += (' (label v{0})' -f $m.labelVersion) }
+        $verdict = ''
+    }
     elseif ($m.verdict -eq 'EXPORTED-BUT-NO-VERSION-STRING') { $realP = '-'; $realV = 'no version string'; $verdict = 'NOT OUR BUILD' }
     else { $realP = '-'; $realV = $m.verdict; $verdict = 'UNRESOLVED' }
 
