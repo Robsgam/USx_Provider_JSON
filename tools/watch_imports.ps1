@@ -41,8 +41,18 @@ param(
     [string[]]$DeptId,
     [int]$TimeoutSec = 900,
     [int]$PollSec = 5,
+    [switch]$VersionCheck,
     [switch]$Quiet
 )
+
+# ⚠️ -VersionCheck EXISTS BECAUSE THE RIGHT VERDICT ON THE WRONG QUESTION IS STILL MISLEADING.
+# The default mode proves an IMPORT: it compares BEFORE / AFTER / REPO and, when nothing changed,
+# correctly reports "THE IMPORT DID NOT LAND". But an operator who pulls a tenant merely to ASK WHAT
+# VERSION IS ON IT has performed no import, so that verdict is both true and completely misleading --
+# it reads as a failure when the answer was simply "unchanged". Rob, 2026-09-12, pulling Newark to
+# check a version before deciding whether to import at all, is exactly that case.
+# In -VersionCheck the chain ends at audit_tenant (the dossier: label AND content, side by side)
+# instead of verify_tenant_import, and nothing is reported as a failure for being unchanged.
 
 $ErrorActionPreference = 'Stop'
 $repoRoot  = Split-Path -Parent $PSScriptRoot
@@ -110,11 +120,20 @@ while ((Get-Date) -lt $deadline) {
         $bad = 0
         foreach ($t in $tenants) {
             Say ''
-            Say ('  --- verify_tenant_import.ps1 -Tenant {0} ---------------------------------' -f $t)
-            $out = & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'verify_tenant_import.ps1') -Tenant $t 2>&1
-            $rc = $LASTEXITCODE
-            foreach ($l in $out) { Say ('  {0}' -f $l) }
-            if ($rc -ne 0) { $bad++ }
+            if ($VersionCheck) {
+                Say ('  --- audit_tenant.ps1 -Tenant {0}  (VERSION CHECK, no import claimed) -----' -f $t)
+                $out = & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'audit_tenant.ps1') -Tenant $t 2>&1
+                foreach ($l in $out) { Say ('  {0}' -f $l) }
+                # Deliberately NOT counted as a failure: "unchanged" is a legitimate answer to
+                # "what version is on this tenant", and the exit code of a dossier is not a verdict
+                # about an import nobody performed.
+            } else {
+                Say ('  --- verify_tenant_import.ps1 -Tenant {0} ---------------------------------' -f $t)
+                $out = & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'verify_tenant_import.ps1') -Tenant $t 2>&1
+                $rc = $LASTEXITCODE
+                foreach ($l in $out) { Say ('  {0}' -f $l) }
+                if ($rc -ne 0) { $bad++ }
+            }
         }
 
         Say ''
@@ -123,7 +142,8 @@ while ((Get-Date) -lt $deadline) {
             Say '         A CLICKED verdict and an "import complete" dialog are not evidence; this is.'
             exit 1
         }
-        Say ('  [PASS] {0} tenant(s) verified by CONTENT against the repo build.' -f $tenants.Count)
+        if ($VersionCheck) { Say ("  [DONE] version check complete for {0} tenant(s) -- read the dossier above." -f $tenants.Count) }
+        else { Say ("  [PASS] {0} tenant(s) verified by CONTENT against the repo build." -f $tenants.Count) }
         if ($Once) { exit 0 }
         $startedAt = Get-Date
         $deadline = $startedAt.AddSeconds($TimeoutSec)
