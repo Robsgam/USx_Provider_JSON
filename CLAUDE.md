@@ -49,11 +49,20 @@ tools/                     -- Shared scripts (validator, renderers, simulators)
 ## Import Tracking (which JSON version is in which tenant)
 
 **`providers/IMPORT_LEDGER.md` is the single source of truth** for where each JSON is installed.
-Two tenant classes: **USx Provider Tenants** (one per provider; the driver capture tool is locked
-to these — so the newest version with non-archived `logs/` = proof of what's installed there,
-self-verifying, never assume) and **Foundation Tenants** (customer staging, e.g. Newark / Miami
-Springs / Balcones Heights — the capture tool can't reach them, so their versions are recorded
-manually in the ledger from actual import reports only). Update the ledger's Foundation section on
+Two tenant classes: **USx Provider Tenants** (one per provider; this is where testing happens — so
+the newest version with non-archived `logs/` = proof of what's installed there, self-verifying,
+never assume) and **Foundation Tenants** (customer staging, e.g. Newark / Miami Springs / Balcones
+Heights — their versions are recorded manually in the ledger from actual import reports only).
+
+⚠️ **THE DRIVER IS NOT TECHNICALLY LOCKED TO `usx-*`, AND THIS LINE SAID IT WAS** (corrected
+2026-09-12, read from the code rather than repeated). `isProviderTestTenant()` is
+`/usx-[a-z0-9-]+\.mark43/i` on the hostname, and `ui.js` uses it for a **two-click in-panel
+confirmation** — *"NOT a test tenant. Queries here hit a customer site. Click again to confirm."* —
+**not a block**. So capture on a foundation or LIVE tenant is POSSIBLE and is a POLICY choice not to,
+which is the honest framing: driving a test plan on `hawaii-dle` would send real queries to Hawaii's
+state system under the customer's ORI. The distinction matters when answering "do we need new logs
+for this import" — the answer is no because the version is already tenant-verified on its provider
+tenant, **not** because the tool is incapable. Update the ledger's Foundation section on
 every reported import; the Provider-Tenant section is log-derived (recompute via `portfolio_status.ps1`
 or the ledger's one-liner). Do NOT answer "where is X installed" from memory alone — read the ledger.
 
