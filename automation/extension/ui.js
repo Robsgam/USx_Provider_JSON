@@ -526,6 +526,115 @@
       censusWrap.appendChild(stopC);
       censusWrap.appendChild(el('div', 'color:#999;font-size:11px;margin-top:2px',
         'Saves one file per chunk, so a failure costs one chunk. Stopping is safe — finished chunks are already saved.'));
+
+      // ── 7b. RESCAN = INDEX DIFF, then census ONLY what moved ─────────────────────────
+      // Rob 2026-09-14: "fix up the extension so you can easliy rescan everything and update you
+      // tenenat list."
+      // ⚠️ THE WIN IS NOT A FASTER CENSUS, IT IS NOT RUNNING ONE. Button 7 visits all 1,785
+      // configuration pages (20-25 min) and is the right tool exactly once -- for a bootstrap.
+      // The department INDEX is ONE page load and already carries deptId + subdomain + status, so
+      // a recurring audit is: read the index, diff it against the committed baseline, and census
+      // ONLY the rows that moved. That is seconds. ingest_tenant_roster.ps1 has prescribed this
+      // since it was written; the browser could not do it because it had no way to READ the
+      // baseline. It can now -- serve_plans exposes GET /roster.
+      //
+      // THE THREE CONFLATIONS THIS REFUSES, copied deliberately from the PowerShell tool that
+      // already learned them the hard way:
+      //   1. NO BASELINE IS NOT 1,785 DISCOVERIES. /roster 404s rather than returning empty, and
+      //      a bootstrap reports NOTHING as new and says so.
+      //   2. A RENAME IS NOT A NEW TENANT. Same deptId + different subdomain = RENAMED. deptId is
+      //      the join key precisely because subdomains move (the hawaii-dle lesson).
+      //   3. A SHORT INDEX IS A TRUNCATED CAPTURE, NOT A MASS DELETION. If the index came back
+      //      more than 10% smaller than the baseline, departures are SUPPRESSED and flagged --
+      //      a partial page load must never read as tenants being removed.
+      const rescan = el('button', BTN + ';' + BLU, '7b. RESCAN — refresh the tenant list, census ONLY what changed');
+      const rProg  = el('div', 'font:11px ui-monospace,monospace;color:#7cf;margin:3px 0;min-height:16px');
+      const MAX_SHRINK_PCT = 10;
+      const RESCAN_CENSUS_CAP = 60;   // above this, report and let the operator decide -- an
+                                      // unbounded auto-census is how a "quick refresh" becomes 25 min
+
+      rescan.onclick = async () => {
+        rescan.disabled = true; aStatus.style.color = '#fa0';
+        aStatus.textContent = 'reading the department index (one page load)…';
+        rProg.textContent = '';
+        try {
+          // 1. BASELINE. A 404 here is a real answer, not a failure to handle silently.
+          let baseline = null, baseErr = null;
+          try {
+            const rr = await fetch('http://localhost:8477/roster', { cache: 'no-store' });
+            if (rr.ok) baseline = await rr.json();
+            else baseErr = 'HTTP ' + rr.status + ' from /roster';
+          } catch (e) { baseErr = 'serve_plans not reachable on 8477 (' + e.message + ')'; }
+
+          // 2. CURRENT INDEX -- one page load, and it is SAVED so ingest_tenant_roster -Update
+          //    can absorb exactly what was diffed here rather than a second, different pull.
+          const idx = await window.__usxAdminProbe.runList();
+          // ⚠️ THE FIELD IS `deptIds` AND IT HOLDS FULL RECORDS, NOT IDS. `extractDeptIds` is a
+          // straight alias for `extractDeptRecords` (admin_probe.js line 158), so each element is
+          // { deptId, subdomain, status, analyticsAlias, cadSubdomain }. I first wrote
+          // `idx.records || idx.departments` from the shape the name implies -- both undefined,
+          // which would have made every diff read "0 departments". Checked against the source
+          // rather than shipped.
+          const cur = (idx && idx.deptIds) || [];
+          if (!cur.length) throw new Error('index returned 0 departments -- that is a finding about the read, not a diff result');
+
+          if (!baseline || !baseline.tenants || !baseline.tenants.length) {
+            aStatus.style.color = '#fa0';
+            aStatus.textContent = '⚠ BOOTSTRAP: ' + cur.length + ' departments read and saved, but NO baseline ('
+              + (baseErr || 'roster empty') + '). Reporting NOTHING as new — every row would read as a discovery.'
+              + ' Run: tools\\ingest_tenant_roster.ps1 -Update';
+            return;
+          }
+
+          // 3. DIFF, keyed on deptId.
+          const byIdOld = new Map(baseline.tenants.map(t => [String(t.deptId), t]));
+          const byIdNew = new Map(cur.map(t => [String(t.deptId), t]));
+          const added = [], renamed = [], statusChanged = [];
+          byIdNew.forEach((n, id) => {
+            const o = byIdOld.get(id);
+            if (!o) { added.push(n); return; }
+            if (String(o.subdomain || '') !== String(n.subdomain || '')) renamed.push({ id: id, from: o.subdomain, to: n.subdomain });
+            if (String(o.status || '') !== String(n.status || '')) statusChanged.push({ id: id, sub: n.subdomain, from: o.status, to: n.status });
+          });
+          const shrinkPct = ((byIdOld.size - byIdNew.size) / Math.max(1, byIdOld.size)) * 100;
+          const truncated = shrinkPct > MAX_SHRINK_PCT;
+          const departed = truncated ? [] : [...byIdOld.keys()].filter(id => !byIdNew.has(id));
+
+          // 4. CENSUS ONLY WHAT MOVED. A rename or a status flip does not change the installed
+          //    config, so only genuinely NEW tenants are worth reading a configuration page for.
+          const toCensus = added.map(a => String(a.deptId));
+          let censusMsg = '';
+          if (!toCensus.length) censusMsg = 'nothing new to census';
+          else if (toCensus.length > RESCAN_CENSUS_CAP) {
+            censusMsg = toCensus.length + ' new — ABOVE THE CAP of ' + RESCAN_CENSUS_CAP
+              + ', not auto-censused. Paste the ids into the box above and use button 3.';
+          } else {
+            rProg.textContent = 'censusing ' + toCensus.length + ' new tenant(s)…';
+            const o = await window.__usxAdminProbe.runScan({ limit: toCensus.length, deptIds: toCensus.join(',') });
+            const withCfg = (o.results || []).filter(r => r.meta && r.meta.ok).length;
+            censusMsg = 'censused ' + withCfg + '/' + toCensus.length + ' new (saved to Downloads)';
+          }
+
+          rProg.textContent =
+              'baseline ' + byIdOld.size + ' → index ' + byIdNew.size
+            + (truncated ? ('   ⚠ INDEX ' + shrinkPct.toFixed(1) + '% SHORTER — departures SUPPRESSED (treat as a truncated capture, re-run before believing it)') : '')
+            + '\nNEW ' + added.length + ' · RENAMED ' + renamed.length + ' · STATUS ' + statusChanged.length + ' · DEPARTED ' + departed.length
+            + (added.length ? ('\nnew: ' + added.slice(0, 8).map(a => a.subdomain + '(' + a.deptId + ')').join(', ') + (added.length > 8 ? ' …' : '')) : '')
+            + (renamed.length ? ('\nrenamed: ' + renamed.slice(0, 5).map(r => r.from + '→' + r.to).join(', ')) : '');
+
+          const quiet = !added.length && !renamed.length && !statusChanged.length && !departed.length;
+          aStatus.style.color = truncated ? '#fa0' : (quiet ? '#7c7' : '#7cf');
+          aStatus.textContent = (quiet ? '✔ NO CHANGE — ' : '✔ ')
+            + byIdNew.size + ' departments read · ' + censusMsg
+            + ' · index saved. Absorb with: tools\\ingest_tenant_roster.ps1 -Update';
+        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
+        finally { rescan.disabled = false; }
+      };
+      censusWrap.appendChild(rescan);
+      censusWrap.appendChild(rProg);
+      censusWrap.appendChild(el('div', 'color:#999;font-size:11px;margin-top:2px',
+        '7b is the RECURRING audit — seconds, not 25 minutes. Use 7 only to bootstrap a host from nothing. '
+        + 'Needs serve_plans.ps1 running on 8477 for the baseline; it refuses to guess if that is down.'));
       // ── DEPLOY (the ONLY write path in the extension) ────────────────────────────────
       // Rob, 2026-09-11: "i thought we were automating this". Correct -- the mechanism existed
       // in deploy_probe.js but had no control surface, so the operator was still clicking

@@ -9,6 +9,8 @@
     GET /build/<PROVIDER>   -> providers/<P>/<P>_v*.json  (the CURRENT build, for the deploy path)
     GET /target/<deptId>    -> which PROVIDER that tenant is SUPPOSED to run (intent, not install)
     GET /job                -> providers/IMPORT_JOB.json (the reviewed import job, run by __usxJob())
+    GET /roster             -> tools/config/tenant_roster.json (the committed tenant BASELINE, so the
+                               browser can DIFF the department index instead of re-censusing 1,785 pages)
 
   TcpListener on 127.0.0.1:8477 (no admin/urlacl needed, unlike HttpListener).
   http://localhost is exempt from mixed-content blocking, so the https tenant page can
@@ -239,6 +241,33 @@ while ($true) {
                 Send-Http $stream 200 (Get-Content $jobPath -Raw)
             }
             else { Send-Http $stream 404 '{"error":"no providers\\IMPORT_JOB.json -- generate one with tools\\emit_import_job.ps1"}' }
+        }
+        elseif ($urlPath -match '^/roster/?$') {
+            # /roster -- THE COMMITTED TENANT BASELINE, so the browser can DIFF instead of censusing.
+            # Rob 2026-09-14: "fix up the extension so you can easliy rescan everything and update
+            # you tenenat list."
+            # ⚠️ THE POINT IS TO MAKE THE FULL CENSUS UNNECESSARY, not faster. Visiting all 1,785
+            # configuration pages takes 20-25 minutes; the department INDEX is ONE page load and
+            # already carries deptId/subdomain/status. So the recurring audit is: pull the index ->
+            # diff against this baseline -> census ONLY what changed. That is seconds, and it is
+            # exactly what ingest_tenant_roster.ps1's own header prescribes -- the browser simply
+            # could not do it before, because it had no way to read the baseline.
+            # Served METADATA-ONLY (this file carries no config payloads, which is why it is
+            # committed). Re-read per request so an -Update run takes effect without a restart.
+            $rosterPath = Join-Path $PSScriptRoot 'config\tenant_roster.json'
+            if (Test-Path $rosterPath) {
+                $rj = Get-Content $rosterPath -Raw
+                $rc = 0; try { $rc = (($rj | ConvertFrom-Json).tenants).Count } catch { }
+                Write-Host "[SERVE] /roster -> tenant_roster.json ($rc tenants)" -ForegroundColor Cyan
+                Send-Http $stream 200 $rj
+            }
+            else {
+                # A MISSING baseline must not read as "nothing has changed" -- that would make the
+                # browser report every tenant as new, the BOOTSTRAP conflation ingest_tenant_roster
+                # explicitly refuses. 404 so the caller can say "no baseline" rather than guess.
+                Write-Host "[SERVE] /roster -> NO BASELINE at tools\config\tenant_roster.json" -ForegroundColor Red
+                Send-Http $stream 404 '{"error":"no tools\\config\\tenant_roster.json -- bootstrap it with tools\\ingest_tenant_roster.ps1 -Update before diffing"}'
+            }
         }
         else { Send-Http $stream 404 '{"error":"unknown path"}' }
     } catch { Write-Host "[SERVE] request error: $_" -ForegroundColor DarkYellow }
