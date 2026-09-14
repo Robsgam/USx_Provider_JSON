@@ -1,0 +1,19 @@
+
+================================================================
+  DEVDOC COMBINATION COVERAGE (devdoc -> built)
+================================================================
+  [FAIL] SC_SLED -- BoatQuery #1 is devdoc-listed but UNBUILT: mandatory field(s) BoatHullSerialNumber wired nowhere in that query
+           devdoc text: (In/Out) BoatHullSerialNumber, [RegistrationNumber, State]
+           -> build it, or record it: accept_divergence.ps1 -Provider SC_SLED (rule devdoc-combo-unbuilt, field BoatHullSerialNumber)
+  [FAIL] SC_SLED -- DriverRegistrationQuery #1 is devdoc-listed but UNBUILT: mandatory field(s) BirthDate, Name, SexCode wired nowhere in that query
+           devdoc text: (In/Out) BirthDate, Name, SexCode, [ImageIndicator, State, State2, State3, State4, State5]
+           -> build it, or record it: accept_divergence.ps1 -Provider SC_SLED (rule devdoc-combo-unbuilt, field BirthDate)
+  [FAIL] SC_SLED -- DriverRegistrationQuery #2 is devdoc-listed but UNBUILT: mandatory field(s) OperatorLicenseNumber wired nowhere in that query
+           devdoc text: (In/Out) OperatorLicenseNumber, [ImageIndicator, State, State2, State3, State4, State5]
+           -> build it, or record it: accept_divergence.ps1 -Provider SC_SLED (rule devdoc-combo-unbuilt, field OperatorLicenseNumber)
+  [NOTE] SC_SLED -- WantedPersonQuery #2: all fields wired but no single combo's set[] covers [LicensePlateNumber, LicensePlateStateCode, VehicleIdentificationNumber, VehicleMakeCode] (metadata may require more; human check)
+
+----------------------------------------------------------------
+  RESULT: 3 FAIL / 1 NOTE
+----------------------------------------------------------------
+

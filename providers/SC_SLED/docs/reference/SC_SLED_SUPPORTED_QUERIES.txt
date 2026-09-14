@@ -1,0 +1,40 @@
+STATUS: PROVISIONAL
+# SC_SLED supported queries -- DERIVED FROM JSON COMBOS, NOT YET CONFIRMED.
+# ACTION: verify this list against the provider devdoc 'Basic Queries Supported'.
+#   - remove any line the devdoc does NOT authorize
+#   - add any devdoc-supported query intentionally not built (document as a skip)
+# Then change STATUS to CONFIRMED to turn this into a hard gate.
+# Format: <QueryLabel> | <PrimaryFieldReference>
+#
+# ---- DEVDOC GROUND TRUTH (auto-extracted -- reconcile the lines below AGAINST THIS) ----
+# SC_SLED_DEVDOC.txt 'Basic Queries Supported' section, lines 24-333:
+#     ArticleSingleQuery
+#     BoatQuery
+#     DriverLicenseQuery
+#     DriverRegistrationQuery
+#     GunQuery
+#     VehicleRegistrationQuery
+#     VehicleStolenQuery
+#     WantedPersonQuery
+# A built query whose transaction name is NOT in the list above is a SHADOW / scope
+# violation (e.g. NY's NyNyspinDriverLicenseNameQuery was an Expanded-section transaction).
+# ---------------------------------------------------------------------------------------
+
+Administrative Message | FreeText
+Article | ArticleSerialNumber
+Boat | BoatHullSerialNumber
+Boat | RegistrationNumber
+Driver License | Name
+Driver License | OperatorLicenseNumber
+Driver Registration | Name
+Driver Registration | OperatorLicenseNumber
+Firearm | GunSerialNumber
+Vehicle Registration | LicensePlateNumber
+Vehicle Registration | VehicleIdentificationNumber
+Vehicle Stolen | LicensePlateNumber
+Vehicle Stolen | VehicleIdentificationNumber
+Wanted Person | LicensePlateNumber
+Wanted Person | Name
+Wanted Person | NCICNumber
+Wanted Person | OriginatingAgencyCaseNumber
+Wanted Person | VehicleIdentificationNumber

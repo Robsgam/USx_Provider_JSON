@@ -129,10 +129,33 @@ $vehRegQuery = Build-Qidm -ProviderName $providerName -Query 'VehicleRegistratio
 #    Rob 2026-09-14 chose to BUILD this, against the NJ precedent: SC's devdoc lists
 #    "NCIC (QA, QB, QG, QV, QW) ... returned from Data mining", and QV is this query, so the state
 #    may already run it. His call, recorded here rather than argued.
-#    NOTE the overlap with VehicleRegistrationQuery: QV.P set[Plate] is a strict SUBSET of
-#    QVRQ.P set[Plate+Type+Year]. They are SEPARATE QIDMs, so both can fire on a full plate fill --
-#    a registration lookup plus a stolen check, which is how NCIC is normally used. Phase 1 proves
-#    what actually fires with test_commsys before anyone calls that intended.
+#    MEASURED 2026-09-14 (Rob: "build both and we can sort it out ... i think they each have a
+#    shadow of the other"). He is right that each masks the other, but the MECHANISM is CO-FIRE,
+#    not shadowing -- shadowing only happens WITHIN one QIDM's combination array, and these are
+#    two QIDMs. QV.P set[Plate] vs QVRQ.P set[Plate,PlateType,PlateYear]: PlateType='PC' and
+#    PlateYear are FORM-PREFILLED, so QVRQ.P's effective set collapses to an always-present
+#    [Plate] -- EXACTLY EQUAL to QV.P. That is the AZ_AZDPS DQPN/DQP exact-collision shape, which
+#    ordering cannot separate. test_commsys confirms: one plate entry fires QVRQ.P AND QV.P; one
+#    VIN fires QVRQ.V AND QV.VM. Since QVRQ IS "SC Vehicle Stolen/Reg Inquiry" (its own MessageKey
+#    description), the stolen check goes out TWICE. Dropping QV would lose NO field.
+#
+#    ⚠️ MASKING STOLEN IS NOT AVAILABLE AS AN OBVIOUS FIX -- both mechanisms are disqualified TODAY:
+#      (a) queriesToDeselect alone is PROVEN NOT TO WORK for this shape. NY_NYSPIN v2.8 live-tested
+#          it: the LOWER-threshold query sent twice and the higher-threshold one zero times, because
+#          deselect only unchecks a box in the UI and cannot recall a queued send. QV.P is the
+#          lower-threshold query here (1 mandatory field vs 3), so it is the one that would send.
+#      (b) autoSelect=$false is the prescribed fix and has ZERO TENANT-PROVEN CARRIERS. Measured:
+#          the only live ones in the portfolio are TX_TLETS_CCH's 8 CCH queries, and that provider
+#          is PARKED and NEVER tenant-tested. The one tenant-OBSERVED outcome of the flag is the
+#          CA_eSUN v3.0-v3.2 failure, where the platform rendered the checkbox and never ACTIVATED
+#          it, so Send stayed DISABLED and 13 of 13 DH tests could not send.
+#    So the first SC_SLED import is the DISCRIMINATING TEST, and SC_SLED is the right subject
+#    precisely because it has never been tested -- nothing tuned is at risk. Until then: BOTH
+#    BUILT, both autoSelect=$true, no deselect. Do not "fix" this from the rule alone.
+#
+#    SC_SLED is also the ONLY provider in the portfolio that builds a standalone VehicleStolenQuery
+#    (FL_FCIC, HI_HCJDC_OFML and NJ_NJCJIS each removed theirs; MD_METERS never had one), so there
+#    is no working example to copy and no precedent to appeal to in either direction.
 # =====================================================================
 $vehStolenAttrs = @(
     Build-QidmAttribute -Name 'LicensePlateNumber'          -Size 10 -SourceField @('LicensePlateNumber')
@@ -158,6 +181,29 @@ $vehStolenQuery = Build-Qidm -ProviderName $providerName -Query 'VehicleStolenQu
 # 4. PERSON -- DriverLicenseQuery
 #    Metadata: DQ OLN [Image, State..5] | QWDQ Sex+DOB+Name [OLN, State..5]
 #    These two keyRefs are DISTINCT in metadata, so no synthetic suffix is needed.
+#
+#    MEASURED 2026-09-14 -- the Person side behaves DIFFERENTLY from Vehicle, so do not reason
+#    about them together:
+#      * WITHIN this QIDM there IS a real shadow, and it is ONE-DIRECTIONAL, not mutual.
+#        test_commsys on a Name+Sex+DOB+OLN fill: "[FIRES first-match] QWDQ" then
+#        "[FIRES shadowed -- first match above wins] DQ". DQ is NOT dead -- on an OLN-ONLY fill
+#        QWDQ's set cannot be satisfied, so DQ is the only thing that can fire. Both reachable.
+#      * ACROSS QIDMs, QWDQ CO-FIRES with WantedPersonQuery's QWA.N: QWA.N needs only
+#        set[NameLast,NameFirst] and shares this card's UNSUFFIXED field pool, so a Name+Sex+DOB
+#        fill satisfies both. QWDQ is "SC Driver Wanted/Reg Inquiry" (its MessageKey description),
+#        so the WANTED check goes out twice. Gating QWA.N out would reproduce the TN_TIES KQ.N
+#        defect -- it kills the plain name-wanted search, which is the only way to run one.
+#      * DriverRegistrationQuery does NOT interact with this card at all: its fieldIds are
+#        DR-suffixed, so it is a separate pool and test_commsys shows it not firing from here.
+#        But its OLN branch is an AUTHORITY-LEVEL DUPLICATE of this QIDM's DQ combo -- the metadata
+#        keys BOTH DriverRegistrationQuery combinations 'DQ', and its OLN variant's <Requirements>
+#        are IDENTICAL to this one's (Set[OperatorLicenseNumber], Any[ImageIndicator,State..5]).
+#        The only thing DriverRegistrationQuery adds is the DQ NAME path. Cards stay separate by
+#        Rob's call 2026-09-14 ("keep the cards separate for now").
+#      * AN OLN-ONLY SEARCH GETS NO WANTED CHECK, AND THAT IS SC'S DESIGN, NOT A DEFECT HERE.
+#        QWDQ requires the full Name+Sex+BirthDate triple and QWA defines NO OLN-mandatory branch
+#        (OLN is an optional on QWA{Name} only), so no metadata-sanctioned combination can run a
+#        wanted check off a licence number alone. Building one would invent a variant.
 # =====================================================================
 $dlAttrs = @(
     Build-QidmAttribute -Name 'OperatorLicenseNumber' -Size 20 -SourceField @('OperatorLicenseNumber')

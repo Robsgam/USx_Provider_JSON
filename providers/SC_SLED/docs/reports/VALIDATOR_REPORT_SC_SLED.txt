@@ -1,0 +1,117 @@
+﻿================================================================
+  Build Report: SC_SLED
+  Source: SC_SLED_v1.0.json
+  Generated: 2026-09-14 12:50
+================================================================
+VALIDATOR RESULTS
+================
+
+
+=== PHASE 0: File & Encoding ===
+  [PASS] No BOM
+  [PASS] Clean UTF-8 encoding
+  [PASS] JSON parses successfully
+
+=== PHASE 1: Bundle Structure ===
+  [PASS] bundles array present (3 bundles)
+  [PASS] Bundle 'ENTITIES': 6 configurations
+  [PASS] Bundle 'SC_SLED': 12 configurations
+  [PASS] Bundle 'RMS': 6 configurations
+  [PASS] ENTITIES bundle is first
+  [PASS] ENTITIES bundle provider='MARK43'
+  [PASS] ENTITIES order is nested object with 'default' key
+
+=== PHASE 2: Entity QIFs ===
+  [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat, AdministrativeMessage
+  [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
+  [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 10 fieldIds
+  [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
+  [PASS] QIF 'ENTITY_Person' -> Person : 34 fieldIds
+  [PASS] QIF 'ENTITY_Firearm' -> Firearm : 7 fieldIds
+  [PASS] QIF 'ENTITY_Article' -> Article : 5 fieldIds
+  [PASS] QIF 'ENTITY_Boat' -> Boat : 6 fieldIds
+  [PASS] QIF 'ENTITY_AdministrativeMessage' -> AdministrativeMessage : 9 fieldIds
+
+=== PHASE 3: QIDM Validation ===
+  [PASS] QIDM 'SC_SLED_VehicleRegistrationQuery' -> Vehicle : 7 attrs, 2 combos
+  [PASS] QIDM 'SC_SLED_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] QIDM 'SC_SLED_VehicleStolenQuery' -> Vehicle : 4 attrs, 2 combos
+  [PASS] QIDM 'SC_SLED_VehicleStolenQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] QIDM 'SC_SLED_DriverLicenseQuery' -> Person : 6 attrs, 2 combos
+  [PASS] QIDM 'SC_SLED_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] QIDM 'SC_SLED_DriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
+  [PASS] QIDM 'SC_SLED_DriverLicenseQuery' ImageIndicator size=1
+  [PASS] QIDM 'SC_SLED_DriverLicenseQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
+  [PASS] QIDM 'SC_SLED_DriverRegistrationQuery' -> Person : 6 attrs, 2 combos
+  [PASS] QIDM 'SC_SLED_DriverRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] QIDM 'SC_SLED_DriverRegistrationQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
+  [PASS] QIDM 'SC_SLED_DriverRegistrationQuery' ImageIndicator size=1
+  [PASS] QIDM 'SC_SLED_DriverRegistrationQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
+  [PASS] QIDM 'SC_SLED_WantedPersonQuery' -> Person : 18 attrs, 5 combos
+  [PASS] QIDM 'SC_SLED_WantedPersonQuery' attr 'LicensePlateStateCode' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] QIDM 'SC_SLED_WantedPersonQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
+  [PASS] QIDM 'SC_SLED_WantedPersonQuery' ImageIndicator size=1
+  [PASS] QIDM 'SC_SLED_WantedPersonQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
+  [PASS] QIDM 'SC_SLED_GunQuery' -> Firearm : 4 attrs, 1 combos
+  [PASS] QIDM 'SC_SLED_ArticleSingleQuery' -> Article : 2 attrs, 1 combos
+  [PASS] QIDM 'SC_SLED_BoatQuery' -> Boat : 3 attrs, 2 combos
+  [PASS] QIDM 'SC_SLED_BoatQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] QIDM 'SC_SLED_AdministrativeMessage' -> AdministrativeMessage : 6 attrs, 1 combos
+  [PASS] RMS Person QIDM 'RMS Person Search query' has registrationState attr
+  [PASS] RMS Vehicle QIDM 'RMS Vehicle search query' has RegistrationState in combo any[]
+
+=== PHASE 4: AutoSelect & Cross-Reference ===
+  [PASS] Article : 1 QIDMs, 1 QIF(s)
+  [PASS] Person: 3 QIDMs co-fire with autoSelect=true + queriesToDeselect on SINGLE QIF
+         SC_SLED_DriverLicenseQuery (query=DriverLicenseQuery, deselect=)
+         SC_SLED_DriverRegistrationQuery (query=DriverRegistrationQuery, deselect=DriverLicenseQuery)
+         SC_SLED_WantedPersonQuery (query=WantedPersonQuery, deselect=)
+  [PASS] Person : 3 QIDMs, 1 QIF(s)
+  [LIMITATION] Vehicle: 2 QIDMs have autoSelect=true on a SINGLE QIF without queriesToDeselect -- co-fire lacks toggle control
+         SC_SLED_VehicleRegistrationQuery (query=VehicleRegistrationQuery)
+         SC_SLED_VehicleStolenQuery (query=VehicleStolenQuery)
+  [PASS] Vehicle : 2 QIDMs, 1 QIF(s)
+  [PASS] AdministrativeMessage : 1 QIDMs, 1 QIF(s)
+  [PASS] Boat : 1 QIDMs, 1 QIF(s)
+  [PASS] Firearm : 1 QIDMs, 1 QIF(s)
+
+=== PHASE 5: Auth / QMF / Results ===
+  [PASS] AUTHENTICATION present
+  [PASS] QUERYMESSAGEFORMAT present
+  [PASS] QUERYRESULTDATAMAPPING present
+  [PASS] RMS AUTHENTICATION present
+  [PASS] RMS QUERYMESSAGEFORMAT present
+  [PASS] RMS QUERYRESULTDATAMAPPING present
+  [PASS] RMS QUERYRESULTSLAYOUT present
+  [PASS] RMS bundle has 2 QIDM(s)
+  [PASS] RMS QIDM 'RMS Person Search query' autoSelect=true
+  [PASS] RMS QIDM 'RMS Vehicle search query' autoSelect=true
+
+=== PHASE 6: Query Simulation ===
+  [PASS] QIDM 'SC_SLED_VehicleRegistrationQuery' combo 'QVRQ.P': all set[]/any[] fields resolvable
+  [PASS] QIDM 'SC_SLED_VehicleRegistrationQuery' combo 'QVRQ.V': all set[]/any[] fields resolvable
+  [PASS] QIDM 'SC_SLED_VehicleStolenQuery' combo 'QV.VM': all set[]/any[] fields resolvable
+  [PASS] QIDM 'SC_SLED_VehicleStolenQuery' combo 'QV.P': all set[]/any[] fields resolvable
+  [PASS] QIDM 'SC_SLED_DriverLicenseQuery' combo 'QWDQ': all set[]/any[] fields resolvable
+  [PASS] QIDM 'SC_SLED_DriverLicenseQuery' combo 'DQ': all set[]/any[] fields resolvable
+  [PASS] QIDM 'SC_SLED_DriverRegistrationQuery' combo 'DQ.RN': all set[]/any[] fields resolvable
+  [PASS] QIDM 'SC_SLED_DriverRegistrationQuery' combo 'DQ.RO': all set[]/any[] fields resolvable
+  [PASS] QIDM 'SC_SLED_WantedPersonQuery' combo 'QWA.NCIC': all set[]/any[] fields resolvable
+  [PASS] QIDM 'SC_SLED_WantedPersonQuery' combo 'QWA.OCA': all set[]/any[] fields resolvable
+  [PASS] QIDM 'SC_SLED_WantedPersonQuery' combo 'QWA.P': all set[]/any[] fields resolvable
+  [PASS] QIDM 'SC_SLED_WantedPersonQuery' combo 'QWA.VM': all set[]/any[] fields resolvable
+  [PASS] QIDM 'SC_SLED_WantedPersonQuery' combo 'QWA.N': all set[]/any[] fields resolvable
+  [PASS] QIDM 'SC_SLED_GunQuery' combo 'QG': all set[]/any[] fields resolvable
+  [PASS] QIDM 'SC_SLED_ArticleSingleQuery' combo 'QA': all set[]/any[] fields resolvable
+  [PASS] QIDM 'SC_SLED_BoatQuery' combo 'QBBQ.H': all set[]/any[] fields resolvable
+  [PASS] QIDM 'SC_SLED_BoatQuery' combo 'QBBQ.R': all set[]/any[] fields resolvable
+  [PASS] QIDM 'SC_SLED_AdministrativeMessage' combo 'AM': all set[]/any[] fields resolvable
+
+â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
+  RESULTS: 80 PASS / 0 FAIL / 0 WARN / 1 LIMITATION
+â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
+
+  1 known limitation(s) -- documented, no action needed.
+
+  Ready for import.
+
