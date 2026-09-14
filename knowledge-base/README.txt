@@ -1352,10 +1352,28 @@ TOOLS
     Usage: .\tools\audit_xml_consistency.ps1 -Provider <name> [-BaselineRef <commit>]
 
   tools/serve_plans.ps1
-    Localhost HTTP server (127.0.0.1:8477, TcpListener, CORS *) so the extension panel's
-    "Load plan from repo" / "Scope picklists" buttons fetch the repo's CURRENT
-    TEST_PLAN / PICKLIST_SCOPE for the tenant (provider derived from hostname) instead of
-    the operator file-picking. Start once per session, like watch_captures.ps1.
+    Localhost HTTP server (127.0.0.1:8477, TcpListener, CORS *) -- THE BRIDGE THE EXTENSION READS
+    THE REPO THROUGH, so nothing the browser uses is hand-picked or pasted.
+      GET /plan/<P> · /scope/<P>   test driver: the repo's CURRENT TEST_PLAN / PICKLIST_SCOPE
+                                   (provider derived from hostname) instead of file-picking
+      GET /build/<P>               the deploy payload, repo artifact byte-for-byte
+      GET /target/<deptId>         which provider that tenant is SUPPOSED to run (intent, not
+                                   install); explicit-map -> usx-subdomain -> 409 REFUSE
+      GET /job                     providers/IMPORT_JOB.json, the reviewed import job
+      GET /roster                  tools/config/tenant_roster.json -- THE COMMITTED TENANT
+                                   BASELINE (added 2026-09-14). Exists so the panel's button 7b
+                                   can DIFF the department index instead of re-censusing 1,785
+                                   configuration pages: the index is ONE page load and already
+                                   carries deptId/subdomain/status, so the recurring audit is
+                                   read-index -> diff -> census only what moved (seconds, not
+                                   20-25 min). 404s when there is no baseline rather than
+                                   returning empty -- a bootstrap must not read as 1,785
+                                   discoveries. Metadata only; the roster holds no config payload.
+    Start once per session, like watch_captures.ps1. Re-reads its config per request on purpose --
+    a server started yesterday has served pre-change code for a day. ⚠️ VERIFY A RUNNING INSTANCE
+    BY CURLING ITS ENDPOINTS, NOT BY ITS START TIME: on 2026-09-14 a 3-day-old process looked stale
+    by timestamp (started 2 minutes before the script's own last commit) and answered every
+    endpoint correctly. An explanation is not a measurement.
     Usage: pwsh -File tools\serve_plans.ps1
 
   tools/import_picklists.ps1
