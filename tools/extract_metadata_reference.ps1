@@ -17,7 +17,16 @@
 param(
     [Parameter(Mandatory=$true)]
     [string]$XmlPath,
-    [Parameter(Mandatory=$true)]
+    # ⚠️ NO LONGER MANDATORY -- and that was a CHICKEN-AND-EGG BLOCK ON EVERY GROUND-UP BUILD.
+    # This tool produces the FIELD DEFINITIONS and COMBINATION REQUIREMENTS that CLAUDE.md's Source
+    # Authority table says you must read BEFORE writing a build script. It also produces a BUILD
+    # COVERAGE map, which genuinely needs the built JSON. Requiring -Path for both meant a brand-new
+    # provider could not get its reference until after it had been built -- i.e. the document you
+    # need in order to build was unavailable until the build existed.
+    # Found 2026-09-14 on SC_SLED, the first ground-up provider since the toolchain changed.
+    # Without -Path the metadata sections are produced in full and the coverage map reports
+    # NOT-YET-BUILT rather than being faked or silently omitted. Existing callers pass -Path and are
+    # byte-for-byte unaffected (verified against NJ_NJCJIS and OR_LEDS before/after).
     [string]$Path,
     [string]$OutFile,
     [string]$DevdocPath = "",
@@ -29,16 +38,25 @@ $ErrorActionPreference = "Stop"
 . (Join-Path $PSScriptRoot '_metadata_keyref_match.ps1')
 
 $xmlResolved = Resolve-Path $XmlPath
-$jsonResolved = Resolve-Path $Path
-$providerName = [System.IO.Path]::GetFileNameWithoutExtension($jsonResolved) -replace '_v[\d.]+$', '' -replace '_(BASE|MC)$', ''
-# Separate, fully-stripped name (version suffix too) for locating <PROVIDER>_ACCEPTED_DIVERGENCES.txt,
-# which is never version-suffixed. Kept distinct from $providerName above (used verbatim in the report
-# header) to avoid changing existing report output for versioned providers.
-$declProviderName = $providerName -replace '_v[\d.]+$', ''
-$keyRefDeclarations = Get-KeyRefDeclarations -JsonDir ([System.IO.Path]::GetDirectoryName($jsonResolved)) -ProviderName $declProviderName
+$hasBuild = -not [string]::IsNullOrWhiteSpace($Path)
+if ($hasBuild) {
+    $jsonResolved = Resolve-Path $Path
+    $providerName = [System.IO.Path]::GetFileNameWithoutExtension($jsonResolved) -replace '_v[\d.]+$', '' -replace '_(BASE|MC)$', ''
+    # Separate, fully-stripped name (version suffix too) for locating <PROVIDER>_ACCEPTED_DIVERGENCES.txt,
+    # which is never version-suffixed. Kept distinct from $providerName above (used verbatim in the report
+    # header) to avoid changing existing report output for versioned providers.
+    $declProviderName = $providerName -replace '_v[\d.]+$', ''
+    $keyRefDeclarations = Get-KeyRefDeclarations -JsonDir ([System.IO.Path]::GetDirectoryName($jsonResolved)) -ProviderName $declProviderName
+} else {
+    # Derive the provider from the XML instead -- which is exactly the naming rule the repo already
+    # enforces (folder name == XML filename minus .xml), so this cannot disagree with the built name.
+    $providerName = [System.IO.Path]::GetFileNameWithoutExtension($xmlResolved)
+    $declProviderName = $providerName
+    $keyRefDeclarations = Get-KeyRefDeclarations -JsonDir ([System.IO.Path]::GetDirectoryName($xmlResolved)) -ProviderName $declProviderName
+}
 
 [xml]$metadata = Get-Content $xmlResolved -Raw
-$json = [System.IO.File]::ReadAllText($jsonResolved) | ConvertFrom-Json
+$json = if ($hasBuild) { [System.IO.File]::ReadAllText($jsonResolved) | ConvertFrom-Json } else { $null }
 
 $nsm = New-Object System.Xml.XmlNamespaceManager($metadata.NameTable)
 $defaultNs = $metadata.DocumentElement.NamespaceURI
@@ -190,7 +208,8 @@ foreach ($txNode in $metadata.SelectNodes("//${nsPrefix}Transaction[@name]", $ns
 $devdocConstraints = New-Object System.Collections.Generic.List[object]
 $devdocResolved = $DevdocPath
 if (-not $devdocResolved) {
-    $jsonDir = [System.IO.Path]::GetDirectoryName($jsonResolved)
+    # Without a build, the devdoc sits beside the XML -- same source/ directory either way.
+    $jsonDir = if ($hasBuild) { [System.IO.Path]::GetDirectoryName($jsonResolved) } else { [System.IO.Path]::GetDirectoryName([System.IO.Path]::GetDirectoryName($xmlResolved)) }
     $candidate = [System.IO.Path]::Combine($jsonDir, "source", "${providerName}_DEVDOC.txt")
     if (Test-Path $candidate) { $devdocResolved = $candidate }
 }
@@ -233,7 +252,7 @@ $sb = [System.Text.StringBuilder]::new()
 [void]$sb.AppendLine("$providerName METADATA REFERENCE")
 [void]$sb.AppendLine("=" * ($providerName.Length + 20))
 [void]$sb.AppendLine("Generated: $(Get-Date -Format 'yyyy-MM-dd')")
-[void]$sb.AppendLine("Source: $([System.IO.Path]::GetFileName($xmlResolved)) (metadata) + $([System.IO.Path]::GetFileName($jsonResolved))")
+[void]$sb.AppendLine("Source: $([System.IO.Path]::GetFileName($xmlResolved)) (metadata)$(if ($hasBuild) { " + " + [System.IO.Path]::GetFileName($jsonResolved) } else { " -- NOT YET BUILT, no JSON to compare" })")
 [void]$sb.AppendLine("Metadata: $totalTransactions total transactions, $($builtQueries.Count) queries built in JSON")
 [void]$sb.AppendLine("")
 
