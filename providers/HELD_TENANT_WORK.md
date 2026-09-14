@@ -96,14 +96,26 @@ suggest the *recording* step is where this leaks.
   `onscene`, `practice-bertanzini`
 - **All 16 `usx-*` provider tenants are current.** The tenants we test on need nothing.
 
-## Environment to restore
+## Environment to restore — SWEPT AND MEASURED 2026-09-14, before a planned Claude restart
 
-- `tools\serve_plans.ps1` on port **8477** — serves `/job`, `/target/<deptId>`, `/build/<PROVIDER>`,
-  `/plan/<P>`, `/scope/<P>`. Start it before using the panel; a stale instance from a previous day has
-  served pre-change code before, so check the process start time if anything reads oddly.
-- No watcher running. The last one timed out cleanly having proven nothing, which is the correct
-  report rather than a pass.
+- **`tools\serve_plans.ps1` on port 8477 — WAS RUNNING (PID 24248) AND THE RESTART KILLS IT.
+  START IT FIRST; nothing else in this file works without it.** Verified live before the restart:
+  `GET /job`, `GET /target/68055618928` and `GET /build/SC_SLED` all returned **HTTP 200**, so
+  Newark's `intendedProvider` override still resolves and SC_SLED is already servable as a deploy
+  payload. ⚠️ **Check the ENDPOINTS, not the process start time.** The start time said 21:02 and the
+  script's last commit said 21:04, which looks exactly like the known "a server started yesterday
+  serves pre-change code" trap — and the three probes refuted it. An explanation is not a
+  measurement; curl the endpoints.
+- **No watcher running** (`watch_captures` / `watch_imports` both absent). The last one timed out
+  cleanly having proven nothing, which is the correct report rather than a pass.
+- **`~\Downloads` holds 80 `usx_tenant_config_*` files from the 2026-09-11 sweep, and 65 are already
+  extracted to `_versions\tenant_exports\`. DO NOT BULK-REPLAY THEM.** Re-ingesting the folder is
+  what produced 4 duplicate `_before` archives and destroyed the true pre-import state once already
+  (the root cause is fixed — newest-per-tenant, skip-identical — but there is no reason to re-run it
+  and the `_before` chain currently holds 3 archives that are evidence). **There are NO
+  `usx_captured*` test captures stranded**, so nothing auto-ingests on restart.
 - `tools\install_git_hooks.ps1` — pre-commit blocks a commit that breaks extension JS or `tools\*.ps1`.
+  **Verified installed and current 2026-09-14** (`-Verify` → 1 hook matches, by content hash).
   Re-install after a fresh clone; `.git\hooks` is not version-controlled.
 
 ## Reports that describe all of this
