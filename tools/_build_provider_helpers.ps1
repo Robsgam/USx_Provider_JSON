@@ -203,6 +203,92 @@ function Build-QidmCombo {
     }
 }
 
+function Build-Qidm {
+    <#
+      THE QIDM ENVELOPE -- the 6 invariant properties every build script re-types by hand.
+
+      WHY THIS EXISTS (added 2026-09-14, authoring SC_SLED, the first ground-up provider since the
+      toolchain changed). Build-QidmAttribute and Build-QidmCombo were already here and **NO PROVIDER
+      BUILD SCRIPT USED EITHER OF THEM** -- 20 providers hand-write the PSCustomObject literals, so
+      the helpers that exist to make a whole defect class impossible were dead code. The missing
+      piece was the outer envelope: without it there was nothing to hang the attribute/combo helpers
+      off, and hand-writing the envelope means hand-writing the members too.
+
+      ⚠️ IT ENFORCES THE SHAPE THAT ONCE GOT A WHOLE FILE REJECTED. CA_eSUN v3.0/v3.1 shipped
+      `"conditions": {...}` as an OBJECT and the platform refused the entire import
+      (`Cannot deserialize ArrayList<Combination$Condition> from Object value`) with ~40 gates green.
+      Cause: a PowerShell helper returning ONE object unwraps to a scalar. `validate.ps1` now
+      type-checks that subtree -- but a gate catches it AFTER the fact, whereas `[array]` casts and
+      the @() wrappers below make it unrepresentable. Prefer impossible over detected.
+
+      ⚠️ NAME IS DERIVED, NOT PASSED. Every provider's QIDM is named `<PROVIDER>_<Query>`; passing it
+      separately is an opportunity for it to disagree with `query`, and `audit_sqvr_integrity` and
+      the log-attribution gates both key off that name.
+
+      Attributes and Combinations take EITHER helper output or hand-written objects, so a script can
+      adopt this incrementally rather than in a single rewrite.
+    #>
+    param(
+        [Parameter(Mandatory)][string]$ProviderName,
+        [Parameter(Mandatory)][string]$Query,
+        [Parameter(Mandatory)][string]$TargetEntity,
+        [Parameter(Mandatory)][string]$QueryLabel,
+        [Parameter(Mandatory)][array]$Attributes,
+        [Parameter(Mandatory)][array]$Combinations,
+        [Parameter(Mandatory)][string]$Description,
+        [string]$HandlerFunction = 'CommsysTransactionRequestHandler',
+        # ABSENT IS THE PLATFORM DEFAULT AND IS SENDABLE -- 44 of 44 absent-autoSelect queries on
+        # tenant-verified providers hold logs. `$false` renders a checkbox that never ACTIVATES, so
+        # Send stays disabled (CA_eSUN DH, 13 of 13 tests could not send). Opt-in queries that
+        # legitimately need $false must ALSO carry an `autoSelect | opt-in-query` registry row --
+        # audit_query_selectable is BLOCKING and demands the declaration, not the value.
+        [bool]$AutoSelect = $true,
+        [string[]]$QueriesToDeselect,
+        [string]$ProviderType = 'Commsys'
+    )
+
+    # ⚠️ THESE TWO NEVER FIRE, and saying so is the point. `[Parameter(Mandatory)][array]` already
+    # refuses an empty collection at BINDING time ("Cannot bind argument ... because it is an empty
+    # collection"), so these throws are unreachable. Kept as documentation of intent, labelled so a
+    # reader does not mistake them for the active mechanism -- an unreachable check that LOOKS like a
+    # guard is the same lie as a gate that cannot fail. Measured, not assumed: the guard probe shows
+    # the binder's message, not these strings.
+    if (-not $Attributes -or @($Attributes).Count -eq 0) {
+        throw "Build-Qidm: $Query has no attributes. A QIDM with no attributes sends nothing."
+    }
+    if (-not $Combinations -or @($Combinations).Count -eq 0) {
+        throw "Build-Qidm: $Query has no combinations. A QIDM with no combinations can never fire."
+    }
+    # Refuse the wrong property name at the source. `keyRef` instead of `keyReference` deserializes
+    # to a silent null and then fails the import -- CLAUDE.md calls it out by name.
+    foreach ($c in @($Combinations)) {
+        if (-not $c.keyReference) {
+            throw "Build-Qidm: $Query has a combination with no keyReference (did you write keyRef?)."
+        }
+        if ($c.requirements -and $null -ne $c.requirements.conditions -and
+            $c.requirements.conditions -isnot [System.Collections.IEnumerable]) {
+            throw "Build-Qidm: $Query combo $($c.keyReference) has conditions that are not an ARRAY -- the platform rejects the whole file."
+        }
+    }
+
+    $o = [ordered]@{
+        attributes      = @($Attributes)
+        combinations    = @($Combinations)
+        description     = $Description
+        handlerFunction = $HandlerFunction
+        name            = "${ProviderName}_${Query}"
+        type            = 'QUERYINPUTDATAMAPPING'
+        autoSelect      = $AutoSelect
+        provider        = $ProviderName
+        providerType    = $ProviderType
+        query           = $Query
+        queryLabel      = $QueryLabel
+        targetEntity    = $TargetEntity
+    }
+    if ($QueriesToDeselect) { $o.queriesToDeselect = @($QueriesToDeselect) }
+    [PSCustomObject]$o
+}
+
 function Write-ProviderJson {
     param(
         [Parameter(Mandatory)]$BundleObject,
