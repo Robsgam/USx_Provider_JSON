@@ -36,34 +36,35 @@ No PASS count is recorded here on purpose: it moves every time a gate is added, 
 absolute number is guaranteed to go stale and teach the next session to distrust this file.
 <!-- END GENERATED -->
 
-**MISSION: 13 of 20 LIFECYCLE-COMPLETE** (`report_mission_status.ps1`). Owed: **test 4**
-(CA_CONTRA_COSTA -- BLOCKED on Rob's JAWS call; CA_SAN_LUIS_OBISPO, CA_VENTURA, LA_LEMS -- measured
-sweep-ready, CA_VENTURA residual is its hollow toggle pending a picklist capture) and **jira 2**
-(CA_CLETS_OCATS DEX-980; CA_eSUN DEX-1312/1313 owes a v3.3 release line). TX_TLETS_CCH is PARKED.
-**A never-tested provider is owed a SWEEP, not an import** (Rob 2026-09-09). **SDSO LIVE runs eSUN
-v1.0 vs repo v3.3** -- Rob's call. Officer guides 20/20 current. Handover: `USX_PROJECT_GUIDE.pdf`.
+**MISSION** -- headline count deliberately NOT restated: it read "13 of 20" and went stale the moment
+SC_SLED became the 21st. **Derive live: `report_mission_status.ps1`.** Owed per that tool 2026-09-14:
+**test 5** (CA_CONTRA_COSTA BLOCKED on Rob's JAWS call; CA_SAN_LUIS_OBISPO, CA_VENTURA, LA_LEMS
+sweep-ready, CA_VENTURA owes a picklist capture for its hollow toggle; **SC_SLED** -- the one
+provider whose sweep CANNOT precede its import) and **jira 2** (CA_CLETS_OCATS DEX-980; CA_eSUN
+DEX-1312/1313 owes a v3.3 release line). TX_TLETS_CCH is PARKED.
+**A never-tested provider is owed a SWEEP, not an import** (Rob 2026-09-09) -- **SC_SLED IS THE ONE
+EXCEPTION, and by necessity: it is on no tenant, so its sweep cannot run until it is imported.**
+**SDSO LIVE runs eSUN v1.0 vs repo v3.3** -- Rob's call. Handover: `USX_PROJECT_GUIDE.pdf`.
 **ANY PRIOR JSON IS ONE COMMAND:** `get_provider_version.ps1 -Provider <P> -Version <X.Y>` -- 671
-artifacts, byte-exact from git. RETRIEVAL, not rebuild: re-running an old script does NOT reproduce it.
+artifacts, byte-exact. RETRIEVAL, not rebuild: re-running an old script does NOT reproduce it.
 
 ## ACTIVE: SC_SLED v1.0 -- the 21st provider, BUILT AND GREEN, NEVER IMPORTED
 
-9 QIDMs / 18 combos / 6 QIFs / 80P-0F-0W-1LIM. The 1 LIM is not debt, it NAMES THE OPEN
-QUESTION: Vehicle's two QIDMs co-fire with no toggle. **MEASURED, not theorised** -- one plate
-fires `QVRQ.P` AND `QV.P` (PlateType/PlateYear are prefilled, so QVRQ.P's set collapses to
-`[Plate]`, EQUAL to QV.P -- the AZ `DQPN`/`DQP` shape ordering cannot separate). `QVRQ` IS
-"SC Vehicle Stolen/Reg", so stolen goes out twice. Same on Person: `QWDQ` + `QWA.N`.
-Rob 2026-09-14: *"build both and we can sort it out ... keep the cards separate for now."*
+9 QIDMs / 18 combos / 6 QIFs / 80P-0F-0W-1LIM. The 1 LIM is not debt, it NAMES THE OPEN QUESTION:
+Vehicle's two QIDMs co-fire with no toggle. **MEASURED** -- one plate fires `QVRQ.P` AND `QV.P`
+(PlateType/PlateYear prefilled, so QVRQ.P's set collapses to `[Plate]`, EQUAL to QV.P -- the AZ
+`DQPN`/`DQP` shape ordering cannot separate). `QVRQ` IS "SC Vehicle Stolen/Reg", so stolen goes out
+twice; same on Person (`QWDQ` + `QWA.N`). Rob: *"build both ... keep the cards separate for now."*
 ⚠️ **MASKING IS NOT AVAILABLE AND BOTH MECHANISMS ARE DISQUALIFIED -- do not reach for the
 standing rule.** `queriesToDeselect` alone is REFUTED for this shape (NY v2.8: lower-threshold
 query sent twice, higher zero); `autoSelect=$false` has ZERO tenant-proven carriers (only
 TX_TLETS_CCH's 8, PARKED/never-tested; its one observed outcome is CA_eSUN's disabled Send).
-**THE FIRST IMPORT IS THE DISCRIMINATING TEST** -- and also owes AdministrativeMessage
-(STATUS: HYPOTHESIS, must confirm the 5 real entities still render) and NCIC ST-1.
-SC_SLED is the ONLY provider building a standalone `VehicleStolenQuery`; FL/HI/NJ removed theirs.
-4 shared-tool blind spots it exposed, each fixed + verified by a 21-provider before/after diff
-(only SC_SLED moved): `dr$` suffix + `BoatHullSerialNumber` alias in `audit_devdoc_combinations`;
-`Message` suffix in `audit_supported_queries` AND `audit_metadata` (both filtered non-`*Query`
-names out BEFORE comparing, so a devdoc-listed, XML-defined transaction read as invented).
+**THE FIRST IMPORT IS THE DISCRIMINATING TEST** -- it also owes AdministrativeMessage (HYPOTHESIS:
+confirm the 5 real entities still render) and NCIC ST-1. SC_SLED is the ONLY provider building a
+standalone `VehicleStolenQuery`; FL/HI/NJ removed theirs. 4 shared-tool blind spots it exposed, all
+fixed + verified by a 21-provider diff (only SC_SLED moved): `dr$` + `BoatHullSerialNumber` in
+`audit_devdoc_combinations`; `Message` in `audit_supported_queries` AND `audit_metadata`, which
+filtered non-`*Query` names out BEFORE comparing so a devdoc-listed transaction read as invented.
 **`audit_tool_portability` printed success after exercising ZERO cells** -- now FAILs; 315 cells.
 
 ## ROB'S CALLS, NOT MINE
