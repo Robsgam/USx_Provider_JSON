@@ -227,7 +227,7 @@ if ($providerBundle) {
             # so no label existed for it. Named for what the officer is asking for, per the CLAUDE.md
             # queryLabel rule (not the backend name "ImageQuery"). Additive only: widening this
             # allowlist cannot redden another provider.
-            $validLabels = @('Vehicle Registration','Vehicle Stolen','Driver License','Driver History','DL Name Search','Driver Photo','Firearm','Article','Boat','Wanted Person','Missing Person','Supervised Release','RMS','CCH Criminal History (QH)','CCH Name Inquiry (IQ)','CCH Wanted/III (QWI)','CCH Record Request (QR)','CCH Record Request (ZR)','CCH SID Query (FQ)','CCH Admin Query (AQ)','CCH Admin Response (AR)')
+            $validLabels = @('Vehicle Registration','Vehicle Stolen','Driver License','Driver History','DL Name Search','Driver Photo','Firearm','Article','Boat','Wanted Person','Missing Person','Supervised Release','Driver Registration','Administrative Message','RMS','CCH Criminal History (QH)','CCH Name Inquiry (IQ)','CCH Wanted/III (QWI)','CCH Record Request (QR)','CCH Record Request (ZR)','CCH SID Query (FQ)','CCH Admin Query (AQ)','CCH Admin Response (AR)')
             if ($cfg.queryLabel -notin $validLabels) {
                 Fail "QIDM '$($cfg.name)' queryLabel='$($cfg.queryLabel)' not in standard set [$($validLabels -join ', ')]"
             }

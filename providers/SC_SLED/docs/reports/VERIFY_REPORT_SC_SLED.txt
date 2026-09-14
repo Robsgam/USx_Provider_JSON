@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: SC_SLED
   Source: SC_SLED_v1.0.json
-  Generated: 2026-09-14 12:50
+  Generated: 2026-09-14 13:13
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -26,8 +26,6 @@ POST-BUILD VERIFICATION
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: Reference Pattern Check ---
-  [FAIL] QIDM 'SC_SLED_DriverRegistrationQuery' queryLabel='Driver Registration' not in standard set [Vehicle Registration, Vehicle Stolen, Driver License, Driver History, DL Name Search, Driver Photo, Firearm, Article, Boat, Wanted Person, Missing Person, Supervised Release, RMS, CCH Criminal History (QH), CCH Name Inquiry (IQ), CCH Wanted/III (QWI), CCH Record Request (QR), CCH Record Request (ZR), CCH SID Query (FQ), CCH Admin Query (AQ), CCH Admin Response (AR)]
-  [FAIL] QIDM 'SC_SLED_AdministrativeMessage' queryLabel='Administrative Message' not in standard set [Vehicle Registration, Vehicle Stolen, Driver License, Driver History, DL Name Search, Driver Photo, Firearm, Article, Boat, Wanted Person, Missing Person, Supervised Release, RMS, CCH Criminal History (QH), CCH Name Inquiry (IQ), CCH Wanted/III (QWI), CCH Record Request (QR), CCH Record Request (ZR), CCH SID Query (FQ), CCH Admin Query (AQ), CCH Admin Response (AR)]
   [PASS] Reference patterns checked (queryLabel, ImageIndicator size, keyReference, state)
   [PASS] All 2 RMS QIDMs have autoSelect=true
 
@@ -36,12 +34,7 @@ POST-BUILD VERIFICATION
   [PASS] Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard
 
 --- CHECK 7: Synthetic keyRef Documentation ---
-  [FAIL] QIDM 'SC_SLED_VehicleRegistrationQuery' has 2 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'VehicleRegistrationQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
-  [FAIL] QIDM 'SC_SLED_VehicleStolenQuery' has 2 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'VehicleStolenQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
-  [FAIL] QIDM 'SC_SLED_DriverLicenseQuery' has 2 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'DriverLicenseQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
-  [FAIL] QIDM 'SC_SLED_DriverRegistrationQuery' has 2 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'DriverRegistrationQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
-  [FAIL] QIDM 'SC_SLED_WantedPersonQuery' has 5 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'WantedPersonQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
-  [FAIL] QIDM 'SC_SLED_BoatQuery' has 2 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'BoatQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
+  [PASS] All 6 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 8: RMS combos subset of CommSys combos ---
   [PASS] RMS combo fields (9) are a subset of CommSys combo fields (44) (RMS-generic allowed)
@@ -56,11 +49,10 @@ POST-BUILD VERIFICATION
   [PASS] All conditions[].field values reference valid QIF fieldIds (no inert conditions)
 
 --- CHECK 12: NOT_EXISTS field not in own set[]/any[] (gate-xor-companion) ---
-  [FAIL] QIDM 'SC_SLED_WantedPersonQuery' combo 'QWA.VM': NOT_EXISTS field 'LicensePlateNumber' is also in any[] -- dead config (can never serialize) + poisons test conductor; remove it from any[] (gate XOR companion)
+  [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
 --- CHECK 13: Form Field Label Hints ---
-  [WARN] Field 'raceCode' (any[]-only) label='Race' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [INFO] 1 field(s) need label hint fixes
+  [PASS] All form field labels have required routing hint qualifiers (51 fields scanned)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)
@@ -74,7 +66,7 @@ POST-BUILD VERIFICATION
   [PASS] No duplicate targetField in any REQUEST QIDM (5 in response mappings -- INFO, see CHECK 15 header)
 
 ========================================
- VERIFICATION FAILED: 9 FAIL / 1 WARN / 14 PASS
+ VERIFICATION PASSED: 17 PASS / 0 WARN / 0 FAIL
 ========================================
 
 

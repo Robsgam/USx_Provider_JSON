@@ -50,7 +50,7 @@ cannot, revert.
 ## Step 2 — Portability is a separate property from correctness
 
 `tools\audit_tool_portability.ps1` runs the `-Path` gates against every provider and asks only
-whether each **reaches a verdict**. **280 cells (14 gates x 20 providers), currently 0 unportable** (re-measured 2026-08-21; this line read 260/13 and was stale). The 13th is `audit_wiring_closure`, added 2026-08-02 -- it was blocking in enforce for a day while absent from this sweep AND from the fuzz panel, so **when you add a gate, add it to every harness that characterises the stack, not just to enforce**.
+whether each **reaches a verdict**. **315 cells (15 gates x 21 providers), currently 0 unportable** (re-measured 2026-09-14 when SC_SLED became the 21st provider; this line has now gone stale TWICE -- it read 260/13, then 280/14). ⚠️ **A 0-CELL RUN USED TO PRINT SUCCESS AND EXIT 0.** `-Only` filters **PROVIDERS**, not gates, so `-Only <a-gate-name>` matched nothing, exercised zero cells, and still printed *"Every shared gate reaches a verdict on every provider"* -- the exact vacuous-pass class this tool exists to catch, inside the tool itself (ENGINEERING_STANDARD 4.3). Fixed 2026-09-14: 0 cells now FAILs and exits 1, and the success line prints its own denominator. Proven both ways (0-cell exits 1, real run exits 0). The 13th is `audit_wiring_closure`, added 2026-08-02 -- it was blocking in enforce for a day while absent from this sweep AND from the fuzz panel, so **when you add a gate, add it to every harness that characterises the stack, not just to enforce**.
 
 **A green portability sweep does NOT mean the tools are right.** Every real bug found on 2026-08-01
 reached a verdict happily — it was just wrong:

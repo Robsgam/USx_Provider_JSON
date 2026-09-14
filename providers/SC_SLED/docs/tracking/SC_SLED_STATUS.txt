@@ -6,18 +6,46 @@
 
 CURRENT STATE
 =============
-  Phase: 1 (STANDUP)
-  JSON: Not built (SC_SLED_v1.0.json)
-  Import: Not attempted
-  USx tenant test: Not started
+  Phase: 1 COMPLETE (QIDM confirmation) -- layout built in the same pass
+  JSON: SC_SLED_v1.0.json  --  80P/0F/0W/1LIM
+  Score: 80P/0F/0W/1LIM  (BASE 80P/0F/0W/1LIM)
+  Import: NOT ATTEMPTED -- no tenant carries SC_SLED
+  USx tenant test: NOT STARTED (0 of 5 entities)
+
+  9 QIDMs / 18 combinations / 6 QIFs.
+  First ground-up provider since the toolchain changed; first build authored with
+  the Build-Qidm / Build-QidmAttribute / Build-QidmCombo helpers.
+
+WHAT THE FIRST IMPORT MUST SETTLE (it is a real test, not a formality)
+=====================================================================
+  1. THE VEHICLE CO-FIRE. A plate entry fires QVRQ.P and QV.P; a VIN entry fires
+     QVRQ.V and QV.VM. QVRQ is "SC Vehicle Stolen/Reg Inquiry", so the stolen check
+     goes out twice. Rob 2026-09-14: "build both and we can sort it out." Neither
+     masking mechanism is available yet -- queriesToDeselect is REFUTED for this
+     shape (NY v2.8) and autoSelect=$false has ZERO tenant-proven carriers -- so
+     this import is the discriminating test. Capture BOTH transactions per fill.
+  2. THE PERSON CO-FIRE. Name+Sex+BirthDate fires QWDQ and QWA.N; wanted twice.
+  3. ADMINISTRATIVEMESSAGE (STATUS: HYPOTHESIS). It is the 6th card and the only
+     non-search transaction. Confirm the FIVE REAL ENTITIES STILL RENDER with it
+     present. If they do not, remove it -- Rob: "we can alwasy remove it later."
+  4. THE NCIC STATE PATTERN (ST-1), required on any new provider's first import.
 
 TEST MATRIX
 ===========
   Entity              Query                    Combo       Result    Date
   ------------------  -----------------------  ----------  --------  ----------
-  (no tests yet)
+  (no tests yet -- provider has never been imported)
+
+  Planned coverage is the 18 combinations in SC_SLED_SQVR.txt, every marker
+  [PENDING]. A marker moves only on a committed log carrying the CommSys request.
 
 NOTES
 =====
-  Provider scaffolded on 2026-09-14.
-  XML source: SC_SLED.xml
+  Scope: the devdoc "Basic Query Transactions" list, 9 entries. The metadata XML
+  defines 67 transactions; the other 58 are NCIC ENTRY/MODIFY/CANCEL/LOCATE, CCH,
+  WMPI and Orion -- out of scope by the two-authority rule, not by omission.
+
+  Registered divergences (5, all reasoned in SC_SLED_ACCEPTED_DIVERGENCES.txt):
+    - DriverLicenseQuery QWDQ / ImageIndicator  -- devdoc-optional-unreachable
+    - WantedPersonQuery QWA.P  / VIN + Make     -- demoted-to-any (nested-Set group)
+    - WantedPersonQuery QWA.VM / Plate + State  -- demoted-to-any (nested-Set group)

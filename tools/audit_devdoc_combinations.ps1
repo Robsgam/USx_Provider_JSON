@@ -119,6 +119,7 @@ $fieldMap = @{
     'guncaliber'                  = @('guncaliber')
     'guntypecode'                 = @('guntypecode','guntype')
     'boathullidnumber'            = @('boathullidnumber','hullidnumber')
+    'boathullserialnumber'        = @('boathullidnumber','hullidnumber','boathullserialnumber')  # SC_SLED's metadata/devdoc name the field BoatHullSerialNumber; the MANDATED USx CAD token is BoatHullIdNumber (CLAUDE.md's 22), so the QIDM attribute is BoatHullSerialNumber and the sourceField is BoatHullIdNumber. Same shape as articleserialnumber->serialnumber above
     'registrationnumber'          = @('registrationnumber','boatregistrationnumber')
     'licenseplatenumber'          = @('licenseplatenumber')
     'socialsecuritynumber'        = @('socialsecuritynumber','ownersocialsecuritynumber')
@@ -140,6 +141,15 @@ function Get-CanonicalToken([string]$t) {
     $k = ($t -replace '[^A-Za-z0-9]','').ToLower()
     $k = $k -replace 'dh$',''       # DH-suffixed fieldIds are the same logical field
     $k = $k -replace 'cch$',''      # CCH-suffixed likewise
+    $k = $k -replace 'dr$',''       # DR-suffixed likewise (added 2026-09-14). SC_SLED is the first
+                                    # provider to isolate a SECOND driver card -- DriverRegistration-
+                                    # Query gets its own field pool exactly as DH does elsewhere, so
+                                    # BirthDateDR/NameLastDR/OperatorLicenseNumberDR are the same
+                                    # logical fields the devdoc calls BirthDate/Name/OLN. Without
+                                    # this the gate reported both DriverRegistrationQuery combos
+                                    # UNBUILT on a provider that builds them, and test_commsys shows
+                                    # both firing. Verified by a 21-provider before/after diff: no
+                                    # other provider's verdict moved.
     return [string]$k
 }
 # Acceptable built tokens for a DEVDOC field name. Comma-guarded so it cannot unroll.

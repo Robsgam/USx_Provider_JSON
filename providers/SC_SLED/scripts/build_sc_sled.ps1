@@ -80,6 +80,24 @@ Write-Host '========================================' -ForegroundColor Cyan
 #   per QIDM or the later combo silently overwrites the earlier, so each is given a synthetic
 #   suffix. keyRef is platform-internal and the provider routes by field CONTENT, not by keyRef
 #   name -- invented keyRefs are proven to work (NY v1.19).
+#
+# ---- SYNTHETIC keyRef INVENTORY (LIMITATION #21 / #36) -------------------------------------
+#   Every multi-combination QIDM below, with the metadata keyRef it splits and the reason.
+#   BUILD_RULES Section 15 requires this block; verify_build CHECK 7 reads it.
+#
+#   VehicleRegistrationQuery  metadata QVRQ x2  ->  QVRQ.P (plate+type+year) · QVRQ.V (VIN)
+#   VehicleStolenQuery        metadata QV   x2  ->  QV.P (plate)             · QV.VM (VIN+make)
+#   DriverLicenseQuery        DQ + QWDQ, ALREADY DISTINCT IN METADATA -- no suffix invented; the
+#                             two combos carry the real keyRefs. Listed here because the QIDM has
+#                             >1 combination, not because anything was synthesised.
+#   DriverRegistrationQuery   metadata DQ   x2  ->  DQ.RN (DOB+name) · DQ.RO (OLN). NOTE both are
+#                             keyRef DQ in metadata, the SAME transaction DriverLicenseQuery's DQ
+#                             combo uses -- the split is per-QIDM uniqueness, not a new transaction.
+#   WantedPersonQuery         metadata QWA  x5  ->  QWA.NCIC · QWA.OCA · QWA.P · QWA.VM · QWA.N
+#   BoatQuery                 metadata QBBQ x1 with a <Choice> nested under <Set> (hull|reg), so
+#                             ONE declared combination is TWO real alternatives ->  QBBQ.H · QBBQ.R
+#                             This is the LIMITATION #36 Choice-split case, not a duplicate keyRef.
+# --------------------------------------------------------------------------------------------
 
 # =====================================================================
 # 1. PROVIDER BUNDLE -- AUTH / QMF / QRDM
@@ -200,6 +218,17 @@ $vehStolenQuery = Build-Qidm -ProviderName $providerName -Query 'VehicleStolenQu
 #        are IDENTICAL to this one's (Set[OperatorLicenseNumber], Any[ImageIndicator,State..5]).
 #        The only thing DriverRegistrationQuery adds is the DQ NAME path. Cards stay separate by
 #        Rob's call 2026-09-14 ("keep the cards separate for now").
+#      * SexCode ON DriverRegistrationQuery IS OPTIONAL AND THE AUTHORITIES DISAGREE -- metadata
+#        wins, so it stays in any[]. The DEVDOC lists DriverRegistrationQuery #1 as
+#        mand=[BirthDate, Name, SexCode]; the METADATA <Requirements> for that DQ variant reads
+#        Set[BirthDate, Name] with SexCode inside <Any>. Metadata is FIELD authority (usx-build
+#        Step 3), and the distinction is deliberate rather than a slip: the SAME XML makes SexCode
+#        MANDATORY on QWDQ (Set[SexCode, BirthDate, Name]) and optional here, so SC is separating
+#        the compound wanted/reg inquiry from the plain registration one. Promoting it to set[]
+#        would block a legitimate name+DOB registration search. audit_devdoc_combinations reports
+#        this as a [NOTE] for human check -- that note is EXPECTED and is NOT to be silenced with a
+#        registry row: an existence-class rule would suppress the whole keyRef comparison in
+#        audit_requirement_fidelity, costing coverage and buying nothing.
 #      * AN OLN-ONLY SEARCH GETS NO WANTED CHECK, AND THAT IS SC'S DESIGN, NOT A DEFECT HERE.
 #        QWDQ requires the full Name+Sex+BirthDate triple and QWA defines NO OLN-mandatory branch
 #        (OLN is an optional on QWA{Name} only), so no metadata-sanctioned combination can run a
@@ -321,10 +350,21 @@ $wpCombos = @(
     Build-QidmCombo -KeyReference 'QWA.P' -PrimaryFieldReference 'LicensePlateNumber' `
         -Set @('LicensePlateNumber','LicensePlateStateCode') `
         -Any @('VehicleIdentificationNumber','VehicleMakeCode','ImageIndicator','RelatedHitSearchIndicator') -Defaults $imgDefault
+    # NO `LicensePlateNumber NOT_EXISTS` GATE HERE, DELIBERATELY (fixed 2026-09-14).
+    # It was here as a Plate>VIN guardrail while LicensePlateNumber also sat in this combo's any[],
+    # which verify_build correctly called DEAD CONFIG -- the condition can never be satisfied at the
+    # same time as the optional it contradicts, and it poisons the test conductor.
+    # BOTH obvious repairs were considered and the other one is WORSE: keeping the gate and dropping
+    # plate from any[] creates a DEAD ZONE -- a VIN+Make+Plate fill with NO plate state matches
+    # QWA.P (needs state), does not match QWA.VM (plate exists), and has no name for QWA.N, so
+    # NOTHING fires. That is the TN_TIES KQ.N defect shape.
+    # The guardrail does not need a condition: QWA.P is ORDERED AHEAD of this combo, so a full
+    # plate+state fill takes the plate path by first-match. Ordering is the mechanism, conditions
+    # are not (usx-build Step 2). Metadata backs the any[]: QWA{VIN,Make}'s <Any> holds a nested
+    # <Set>[LicensePlateNumber, LicensePlateStateCode], so plate IS a defined optional here.
     Build-QidmCombo -KeyReference 'QWA.VM' -PrimaryFieldReference 'VehicleIdentificationNumber' `
         -Set @('VehicleIdentificationNumber','VehicleMakeCode') `
-        -Any @('LicensePlateNumber','LicensePlateStateCode','ImageIndicator','RelatedHitSearchIndicator') `
-        -Conditions @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }) -Defaults $imgDefault
+        -Any @('LicensePlateNumber','LicensePlateStateCode','ImageIndicator','RelatedHitSearchIndicator') -Defaults $imgDefault
     Build-QidmCombo -KeyReference 'QWA.N' -PrimaryFieldReference 'Name' `
         -Set @('NameLast','NameFirst') `
         -Any @('BirthDate','SexCode','raceCode','FBINumber','MiscellaneousNumber','OperatorLicenseNumber',
@@ -565,7 +605,7 @@ $perLayout = MakeLayouts @(
                 @{ id = 'OriginatingAgencyCaseNumber_Input';  node = Inp 'OriginatingAgencyCaseNumber' 'Originating Agency Case Number (with last name)' '20' 'ROW_WP_1' }
             )}
             @{ id = 'ROW_WP_2'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'raceCode_Input';             node = Sel 'raceCode' 'Race' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_WP_2' }
+                @{ id = 'raceCode_Input';             node = Sel 'raceCode' 'Race (optional)' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_WP_2' }
                 @{ id = 'SocialSecurityNumber_Input'; node = Inp 'SocialSecurityNumber' 'SSN (optional)' '9' 'ROW_WP_2' }
                 @{ id = 'FBINumber_Input';            node = Inp 'FBINumber' 'FBI Number (optional)' '9' 'ROW_WP_2' }
                 @{ id = 'MiscellaneousNumber_Input';  node = Inp 'MiscellaneousNumber' 'Miscellaneous Number (optional)' '15' 'ROW_WP_2' }

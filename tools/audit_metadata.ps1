@@ -243,8 +243,16 @@ function Audit-Provider {
     # Filter to query transactions (name ends with Query)
     $xmlQueryTxns = @()
     foreach ($txn in $xmlTransactions) {
-        # Include transactions ending in Query or Inquiry (e.g. AZ WMPIMissingPersonInquiry)
-        if ($txn.name -match '(Query|Inquiry)$') {
+        # Include transactions ending in Query, Inquiry (e.g. AZ WMPIMissingPersonInquiry) or
+        # Message. ⚠️ `Message` added 2026-09-14: SC_SLED is the first provider whose devdoc-Basic
+        # list contains a transaction that is NOT a search -- `AdministrativeMessage` (free text to
+        # up to five destination ORIs). It IS a real <Transaction> in the XML and IS listed in the
+        # devdoc, but this filter dropped it BEFORE the JSON->XML comparison below, so the tool
+        # reported `AdministrativeMessage: in JSON but NOT in XML (invalid query)` -- accusing the
+        # build of inventing a transaction the metadata defines. The suffix list is deliberately
+        # explicit rather than a wildcard: an unexpected name stays a visible FAIL instead of being
+        # silently swallowed. Verified by a 21-provider before/after diff: only SC_SLED moved.
+        if ($txn.name -match '(Query|Inquiry|Message)$') {
             $xmlQueryTxns += $txn
         }
     }

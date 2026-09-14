@@ -102,9 +102,19 @@ if ($bad.Count) {
     O '  A gate that cannot reach a verdict on a provider is UNPORTABLE THERE. Fix the tool, not the' 'Yellow'
     O '  provider -- and re-run this sweep afterwards, because portability fixes routinely break a' 'Yellow'
     O '  DIFFERENT provider (the $formOnly namespace break did exactly that).' 'Yellow'
+} elseif ($cells -eq 0) {
+    # ENGINEERING_STANDARD 4.3 -- "found nothing" and "never looked" must not print the same line.
+    # Found 2026-09-14: `-Only audit_devdoc_combinations` (a GATE name -- but -Only filters
+    # PROVIDERS, line 63) matched no provider, so the sweep ran ZERO cells and still printed
+    # "Every shared gate reaches a verdict on every provider" and exited 0. That is the precise
+    # failure class this tool exists to catch, in the tool itself: a green line standing in for a
+    # measurement that never happened. A caller who mistypes -Only gets a clean bill of health.
+    O '  [FAIL] 0 cells exercised -- NOTHING WAS MEASURED, and that is not a pass.' 'Red'
+    O ("         -Only filters PROVIDERS (got: {0}); it does not select gates." -f ($Only -join ',')) 'Yellow'
+    O '         Run with no -Only for the full sweep, or pass provider directory names.' 'Yellow'
 } else {
-    O '  Every shared gate reaches a verdict on every provider.' 'Green'
+    O ("  Every shared gate reaches a verdict on every provider ({0} cells)." -f $cells) 'Green'
 }
 
 if ($OutFile) { $lines | Set-Content -Path $OutFile -Encoding ASCII }
-exit $(if ($bad.Count) { 1 } else { 0 })
+exit $(if ($bad.Count -or $cells -eq 0) { 1 } else { 0 })

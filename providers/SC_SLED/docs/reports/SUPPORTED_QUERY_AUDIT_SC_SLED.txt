@@ -2,8 +2,28 @@
   SUPPORTED-QUERY (DEVDOC) AUDIT -- SC_SLED
 ================================================================
 
-[FAIL] CHECK 0 SCOPE VIOLATION: built transaction 'AdministrativeMessage' is NOT in the devdoc 'Basic Queries Supported' list
+[PASS] CHECK 0 transaction-name scope: all 9 built transaction(s) are devdoc-authorized (compared against 9 Basic name(s))
 
-[INFO] no extract found -- wrote PROVISIONAL template (18 combos) to SC_SLED_SUPPORTED_QUERIES.txt; confirm against devdoc
+Extract STATUS: PROVISIONAL  (PROVISIONAL -- mismatches INFO until devdoc sign-off)
+Devdoc 'Basic Queries Supported' (SC_SLED_DEVDOC.txt, lines 24-333): AdministrativeMessage, ArticleSingleQuery, BoatQuery, DriverLicenseQuery, DriverRegistrationQuery, GunQuery, VehicleRegistrationQuery, VehicleStolenQuery, WantedPersonQuery
 
-RESULTS: 0 PASS / 1 FAIL / 0 WARN (1 INFO)
+[PASS] combo QVRQ.P: 'Vehicle Registration | LicensePlateNumber' is devdoc-supported
+[PASS] combo QVRQ.V: 'Vehicle Registration | VehicleIdentificationNumber' is devdoc-supported
+[PASS] combo QV.VM: 'Vehicle Stolen | VehicleIdentificationNumber' is devdoc-supported
+[PASS] combo QV.P: 'Vehicle Stolen | LicensePlateNumber' is devdoc-supported
+[PASS] combo QWDQ: 'Driver License | Name' is devdoc-supported
+[PASS] combo DQ: 'Driver License | OperatorLicenseNumber' is devdoc-supported
+[PASS] combo DQ.RN: 'Driver Registration | Name' is devdoc-supported
+[PASS] combo DQ.RO: 'Driver Registration | OperatorLicenseNumber' is devdoc-supported
+[PASS] combo QWA.NCIC: 'Wanted Person | NCICNumber' is devdoc-supported
+[PASS] combo QWA.OCA: 'Wanted Person | OriginatingAgencyCaseNumber' is devdoc-supported
+[PASS] combo QWA.P: 'Wanted Person | LicensePlateNumber' is devdoc-supported
+[PASS] combo QWA.VM: 'Wanted Person | VehicleIdentificationNumber' is devdoc-supported
+[PASS] combo QWA.N: 'Wanted Person | Name' is devdoc-supported
+[PASS] combo QG: 'Firearm | GunSerialNumber' is devdoc-supported
+[PASS] combo QA: 'Article | ArticleSerialNumber' is devdoc-supported
+[PASS] combo QBBQ.H: 'Boat | BoatHullSerialNumber' is devdoc-supported
+[PASS] combo QBBQ.R: 'Boat | RegistrationNumber' is devdoc-supported
+[PASS] combo AM: 'Administrative Message | FreeText' is devdoc-supported
+
+RESULTS: 19 PASS / 0 FAIL / 0 WARN (0 INFO)

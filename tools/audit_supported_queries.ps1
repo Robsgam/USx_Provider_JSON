@@ -99,7 +99,17 @@ function Get-DevdocBasic($srcDir) {
         # never heard of. Relaxing the anchor was measured across all 20 providers before landing --
         # it adds exactly 6 names (HI BoatQuery; NJ ArticleSingleQuery/BoatQuery/DriverLicenseQuery/
         # GunQuery/VehicleStolenQuery) and admits no non-query text. Fixed 2026-08-04.
-        if ($t -match '^([A-Za-z][A-Za-z0-9]*(?:Query|Inquiry))\b') { [void]$names.Add($Matches[1]) }
+        # ⚠️ `Message` ADDED 2026-09-14 -- second time this suffix list was too narrow. SC_SLED's
+        # devdoc-Basic list opens with `AdministrativeMessage` (line 26, directly under the
+        # "Basic Query Transactions:" header this parser correctly finds), but it ends in neither
+        # Query nor Inquiry, so it was invisible to the extractor -- and CHECK 0 then reported it as
+        # a SCOPE VIOLATION: "built transaction 'AdministrativeMessage' is NOT in the devdoc list",
+        # when the devdoc lists it first. A scope gate accusing a build of inventing a transaction
+        # the devdoc authorises is the worst direction for this check to fail in: the obvious
+        # "fix" is to delete a query the devdoc supports. Note the name alone cannot match
+        # ("Message" needs a prefix under this anchor), so prose is still excluded.
+        # Verified by a 21-provider before/after diff: only SC_SLED moved.
+        if ($t -match '^([A-Za-z][A-Za-z0-9]*(?:Query|Inquiry|Message))\b') { [void]$names.Add($Matches[1]) }
     }
     $res.found = $true
     $res.startLine = $start + 1      # 1-based, for human cross-reference
@@ -135,7 +145,7 @@ function Get-DevdocVariantSection($srcDir) {
     }
     for ($i=$s+1; $i -lt $e; $i++) {
         $t = $L[$i].Trim()
-        if ($t -match '^([A-Za-z][A-Za-z0-9]*(?:Query|Inquiry))\b') { $out += $Matches[1] }
+        if ($t -match '^([A-Za-z][A-Za-z0-9]*(?:Query|Inquiry|Message))\b') { $out += $Matches[1] }
     }
     return @($out | Sort-Object -Unique)
 }

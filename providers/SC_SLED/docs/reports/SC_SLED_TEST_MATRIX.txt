@@ -67,7 +67,7 @@ Arrangement: ENTITY-GROUPED -- each entity is tested start-to-finish
 (render/negative are manual one-time checks at initial provider build, not in this matrix)
 
 
-ENTITY 1: PERSON (22 tests -- 3 cards, 9 combos)
+ENTITY 1: PERSON (21 tests -- 3 cards, 9 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -83,21 +83,21 @@ ENTITY 1: PERSON (22 tests -- 3 cards, 9 combos)
               Expected: WantedPersonQuery fires (QWA.P)
  6  Person      QW+A.P             + ImageIndicator, RelatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
- 7  Person      QW+A.OCA           NameLast=DOE, NameFirst=JOHN, Origina... [    ]
-              Expected: WantedPersonQuery fires (QWA.OCA)
- 8  Person      QW+A.OCA           + ExpandedNameSearchCode, ImageIndicator, RelatedHitSearchIndicator [    ]
+ 7  Person      QW+A.VM            VehicleIdentificationNumber=1HGCM8263... [    ]
+              Expected: WantedPersonQuery fires (QWA.VM)
+ 8  Person      QW+A.VM            + ImageIndicator, RelatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
  9  Person      QW+A.NCIC          NCICNumber=X123456789            [    ]
               Expected: WantedPersonQuery fires (QWA.NCIC)
 10  Person      QW+A.NCIC          + ImageIndicator, RelatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-11  Person      QW+A.N             NameLast=DOE, NameFirst=JOHN     [    ]
-              Expected: WantedPersonQuery fires (QWA.N)
-12  Person      QW+A.N             + raceCode, FBINumber, MiscellaneousNumber, SocialSecurityNumber [    ]
+11  Person      QW+A.OCA           NameLast=DOE, NameFirst=JOHN, Origina... [    ]
+              Expected: WantedPersonQuery fires (QWA.OCA)
+12  Person      QW+A.OCA           + ExpandedNameSearchCode, ImageIndicator, RelatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-13  Person      QW+A.VM            VehicleIdentificationNumber=1HGCM8263... [    ]
-              Expected: WantedPersonQuery fires (QWA.VM)
-14  Person      QW+A.VM            + ImageIndicator, RelatedHitSearchIndicator [    ]
+13  Person      QW+A.N             NameLast=DOE, NameFirst=JOHN     [    ]
+              Expected: WantedPersonQuery fires (QWA.N)
+14  Person      QW+A.N             + raceCode, FBINumber, MiscellaneousNumber, SocialSecurityNumber [    ]
               Expected: any[] fields present in XML output.
 15  Person      DQ+.RO             OperatorLicenseNumberDR=D999888777 [    ]
               Expected: DriverRegistrationQuery fires (DQ.RO)
@@ -107,90 +107,88 @@ ENTITY 1: PERSON (22 tests -- 3 cards, 9 combos)
               Expected: DriverRegistrationQuery fires (DQ.RN)
 18  Person      DQ+.RN             + RegistrationStateDR, SexCodeDR [    ]
               Expected: any[] fields present in XML output.
-19  Person      Guardrail: QWA.P>QWA.VM  LicensePlateNumber=TEST123, VehicleId... [    ]
-              Expected: WantedPersonQuery fires (QWA.P). VIN+VehicleMakeCode absent from XML.
-20  Person      Guardrail: QWA.NCIC>QWA.N  NCICNumber=X123456789, NameLast=DOE, ... [    ]
+19  Person      Guardrail: QWA.NCIC>QWA.N  NCICNumber=X123456789, NameLast=DOE, ... [    ]
               Expected: WantedPersonQuery fires (QWA.NCIC). LastName+FirstName absent from XML.
-21  Person      Guardrail: QWA.OCA>QWA.N  OriginatingAgencyCaseNumber=TEST, Nam... [    ]
+20  Person      Guardrail: QWA.OCA>QWA.N  OriginatingAgencyCaseNumber=TEST, Nam... [    ]
               Expected: WantedPersonQuery fires (QWA.OCA). LastName+FirstName absent from XML.
-22  Person      Deselect: DriverRegistration deselects DL.            [    ]
+21  Person      Deselect: DriverRegistration deselects DL.            [    ]
               Fill both query fields. Check deselect behavior.
 
 ENTITY 2: VEHICLE (9 tests -- 1 card, 4 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-23  Vehicle     QV+RQ.P            LicensePlateNumber=TEST123, LicensePl... [    ]
+22  Vehicle     QV+RQ.P            LicensePlateNumber=TEST123, LicensePl... [    ]
               Expected: VehicleRegistrationQuery fires (QVRQ.P)
-24  Vehicle     QV+RQ.P            + RegistrationState             [    ]
+23  Vehicle     QV+RQ.P            + RegistrationState             [    ]
               Expected: any[] fields present in XML output.
-25  Vehicle     QV+RQ.V            VehicleIdentificationNumber=1HGCM8263... [    ]
+24  Vehicle     QV+RQ.V            VehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleRegistrationQuery fires (QVRQ.V)
-26  Vehicle     QV+RQ.V            + RegistrationState, vehicleYear [    ]
+25  Vehicle     QV+RQ.V            + RegistrationState, vehicleYear [    ]
               Expected: any[] fields present in XML output.
-27  Vehicle     QV+.P              LicensePlateNumber=TEST123       [    ]
+26  Vehicle     QV+.P              LicensePlateNumber=TEST123       [    ]
               Expected: VehicleStolenQuery fires (QV.P)
-28  Vehicle     QV+.P              + RegistrationState             [    ]
+27  Vehicle     QV+.P              + RegistrationState             [    ]
               Expected: any[] fields present in XML output.
-29  Vehicle     QV+.VM             VehicleIdentificationNumber=1HGCM8263... [    ]
+28  Vehicle     QV+.VM             VehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleStolenQuery fires (QV.VM)
-30  Vehicle     Guardrail: QVRQ.P>QVRQ.V  LicensePlateNumber=TEST123, VehicleId... [    ]
+29  Vehicle     Guardrail: QVRQ.P>QVRQ.V  LicensePlateNumber=TEST123, VehicleId... [    ]
               Expected: VehicleRegistrationQuery fires (QVRQ.P). VIN absent from XML.
-31  Vehicle     Guardrail: QVRQ.P>QV.VM  LicensePlateNumber=TEST123, VehicleId... [    ]
+30  Vehicle     Guardrail: QVRQ.P>QV.VM  LicensePlateNumber=TEST123, VehicleId... [    ]
               Expected: VehicleRegistrationQuery fires (QVRQ.P). VIN+VehicleMakeCode absent from XML.
 
 ENTITY 3: BOAT (5 tests -- 1 card, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-32  Boat        QB+BQ.H            BoatHullIdNumber=FL1234AB56H7    [    ]
+31  Boat        QB+BQ.H            BoatHullIdNumber=FL1234AB56H7    [    ]
               Expected: BoatQuery fires (QBBQ.H)
-33  Boat        QB+BQ.H            + RegistrationState             [    ]
+32  Boat        QB+BQ.H            + RegistrationState             [    ]
               Expected: any[] fields present in XML output.
-34  Boat        QB+BQ.R            RegistrationNumber=FL1234AB      [    ]
+33  Boat        QB+BQ.R            RegistrationNumber=FL1234AB      [    ]
               Expected: BoatQuery fires (QBBQ.R)
-35  Boat        QB+BQ.R            + RegistrationState             [    ]
+34  Boat        QB+BQ.R            + RegistrationState             [    ]
               Expected: any[] fields present in XML output.
-36  Boat        Guardrail: QBBQ.H>QBBQ.R  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+35  Boat        Guardrail: QBBQ.H>QBBQ.R  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (QBBQ.H). Reg absent from XML.
 
 ENTITY 4: FIREARM (2 tests -- 1 card, 1 combo)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-37  Firearm     QG+serialNumber    serialNumber=GUN12345            [    ]
+36  Firearm     QG+serialNumber    serialNumber=GUN12345            [    ]
               Expected: GunQuery fires (QG)
-38  Firearm     QG+serialNumber    + GunMake, GunModel, GunCaliber [    ]
+37  Firearm     QG+serialNumber    + GunMake, GunModel, GunCaliber [    ]
               Expected: any[] fields present in XML output.
 
 ENTITY 5: ARTICLE (1 tests -- 1 card, 1 combo)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-39  Article     QA+Serial          ArticleSerialNumber=ART99999, Article... [    ]
+38  Article     QA+Serial          ArticleSerialNumber=ART99999, Article... [    ]
               Expected: ArticleSingleQuery fires (QA)
 
 ENTITY 6: ADMINISTRATIVEMESSAGE (2 tests -- 1 card, 1 combo)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-40  AdministrativeMessage  AM+AM              FreeText=TEST                    [    ]
+39  AdministrativeMessage  AM+AM              FreeText=TEST                    [    ]
               Expected: AdministrativeMessage fires (AM)
-41  AdministrativeMessage  AM+AM              + DestinationCode, DestinationCode2, DestinationCode3, DestinationCode4 [    ]
+40  AdministrativeMessage  AM+AM              + DestinationCode, DestinationCode2, DestinationCode3, DestinationCode4 [    ]
               Expected: any[] fields present in XML output.
 
 ================================================================================
-TOTAL: 41 tests
+TOTAL: 40 tests
 
 COMBO COVERAGE (18/18):
-  VehicleRegistrationQuery: 2/2 -- T23(RQ.P), T25(RQ.V)
-  VehicleStolenQuery: 2/2 -- T27(.P), T29(.VM)
+  VehicleRegistrationQuery: 2/2 -- T22(RQ.P), T24(RQ.V)
+  VehicleStolenQuery: 2/2 -- T26(.P), T28(.VM)
   DriverLicenseQuery: 2/2 -- T1(DQ+OLN), T3(QW+DQ)
   DriverRegistrationQuery: 2/2 -- T15(DQ+.RO), T17(DQ+.RN)
-  WantedPersonQuery: 5/5 -- T5(A.P), T7(A.OCA), T9(A.NCIC), T11(A.N), T13(A.VM)
-  GunQuery: 1/1 -- T37(serialNumber)
-  ArticleSingleQuery: 1/1 -- T39(Serial)
-  BoatQuery: 2/2 -- T32(BQ.H), T34(BQ.R)
-  AdministrativeMessage: 1/1 -- T40(AM)
+  WantedPersonQuery: 5/5 -- T5(A.P), T7(A.VM), T9(A.NCIC), T11(A.OCA), T13(A.N)
+  GunQuery: 1/1 -- T36(serialNumber)
+  ArticleSingleQuery: 1/1 -- T38(Serial)
+  BoatQuery: 2/2 -- T31(BQ.H), T33(BQ.R)
+  AdministrativeMessage: 1/1 -- T39(AM)
 
 IMPORT FILE: SC_SLED_v1.0.json

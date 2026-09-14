@@ -5,7 +5,7 @@
 > every number from `portfolio_status.ps1` / `enforce.ps1`, never from memory.
 
 <!-- BEGIN GENERATED: tools\sync_session_state.ps1 -- do not hand-edit below this line -->
-**Last updated:** 2026-09-10 (generated) | **Branch:** `main`
+**Last updated:** 2026-09-14 (generated) | **Branch:** `main`
 
 ## Tenant-test state -- GENERATED, do not hand-edit
 
@@ -29,7 +29,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | OR_LEDS | v2.6 | ALL-PASS (27 logs) |
 | TN_TIES | v2.6 | ALL-PASS (67 logs) |
 | TX_TLETS | v4.22 | ALL-PASS (98 logs) |
-| _5 others_ | -- | never tenant-tested: CA_CONTRA_COSTA, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, LA_LEMS, TX_TLETS_CCH |
+| _6 others_ | -- | never tenant-tested: CA_CONTRA_COSTA, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, LA_LEMS, SC_SLED, TX_TLETS_CCH |
 
 **Gate invariant:** `tools\enforce.ps1 -Provider <NAME>` must exit 0 -- `0 FAIL / 0 WARN`.
 No PASS count is recorded here on purpose: it moves every time a gate is added, so an
@@ -45,6 +45,27 @@ v1.0 vs repo v3.3** -- Rob's call. Officer guides 20/20 current. Handover: `USX_
 **ANY PRIOR JSON IS ONE COMMAND:** `get_provider_version.ps1 -Provider <P> -Version <X.Y>` -- 671
 artifacts, byte-exact from git. RETRIEVAL, not rebuild: re-running an old script does NOT reproduce it.
 
+## ACTIVE: SC_SLED v1.0 -- the 21st provider, BUILT AND GREEN, NEVER IMPORTED
+
+9 QIDMs / 18 combos / 6 QIFs / 80P-0F-0W-1LIM. The 1 LIM is not debt, it NAMES THE OPEN
+QUESTION: Vehicle's two QIDMs co-fire with no toggle. **MEASURED, not theorised** -- one plate
+fires `QVRQ.P` AND `QV.P` (PlateType/PlateYear are prefilled, so QVRQ.P's set collapses to
+`[Plate]`, EQUAL to QV.P -- the AZ `DQPN`/`DQP` shape ordering cannot separate). `QVRQ` IS
+"SC Vehicle Stolen/Reg", so stolen goes out twice. Same on Person: `QWDQ` + `QWA.N`.
+Rob 2026-09-14: *"build both and we can sort it out ... keep the cards separate for now."*
+⚠️ **MASKING IS NOT AVAILABLE AND BOTH MECHANISMS ARE DISQUALIFIED -- do not reach for the
+standing rule.** `queriesToDeselect` alone is REFUTED for this shape (NY v2.8: lower-threshold
+query sent twice, higher zero); `autoSelect=$false` has ZERO tenant-proven carriers (only
+TX_TLETS_CCH's 8, PARKED/never-tested; its one observed outcome is CA_eSUN's disabled Send).
+**THE FIRST IMPORT IS THE DISCRIMINATING TEST** -- and also owes AdministrativeMessage
+(STATUS: HYPOTHESIS, must confirm the 5 real entities still render) and NCIC ST-1.
+SC_SLED is the ONLY provider building a standalone `VehicleStolenQuery`; FL/HI/NJ removed theirs.
+4 shared-tool blind spots it exposed, each fixed + verified by a 21-provider before/after diff
+(only SC_SLED moved): `dr$` suffix + `BoatHullSerialNumber` alias in `audit_devdoc_combinations`;
+`Message` suffix in `audit_supported_queries` AND `audit_metadata` (both filtered non-`*Query`
+names out BEFORE comparing, so a devdoc-listed, XML-defined transaction read as invented).
+**`audit_tool_portability` printed success after exercising ZERO cells** -- now FAILs; 315 cells.
+
 ## ROB'S CALLS, NOT MINE
 
 - **CA_CONTRA_COSTA JAWS/SuperQuery** -- 4 UNDER / 3 OVER, verbatim in its BUILD_NOTES. Hold the
@@ -57,24 +78,18 @@ artifacts, byte-exact from git. RETRIEVAL, not rebuild: re-running an old script
 - **CA_eSUN v2.2: 2 BUILD_NOTES items deliberately OFF the ticket** -- the 7 validator FAILs the 53 captures REFUTE, and the BirthDate over-permit whose fix collapses the owner-name search.
 - **LIMITATION #41** (HOME state routes a local plate to NLETS) -- paused pending CommSys; 5 providers owe a picklist capture. **CA_VENTURA hollow toggle** needs a TEST_VALUE_OVERRIDE after its capture. **RESWEEP 2026-09-08: 20/20 ENFORCED 0F/0W**; fidelity 426 branches, the only 4 UNDER / 4 OVER are CA_CONTRA_COSTA(Rob(s JAWS call).
 
-## THE DEPLOY LOOP IS BUILT AND PROVEN (2026-09-11/12) -- detail in git, resume point below.
+## THE DEPLOY LOOP IS BUILT AND PROVEN -- and ALL TENANT WORK IS HELD (Rob 2026-09-14)
 
-`emit_import_job.ps1` -> review `providers\IMPORT_JOB.json` -> **panel button RUN THE JOB FOR THIS
-TENANT** -> auto re-export -> `watch_imports.ps1` -> `verify_tenant_import` PASS/DID-NOT-LAND/FAIL.
-`deploy_probe.js` is the ONLY file that can write; dry-run by default; 46 mutation cases in
-`audit_deploy_guards`. First automated import proven by hash: usx-fl-fcic CA_eSUN v3.3 -> FL_FCIC v7.24.
+**RECOVERY RECORD: `providers\HELD_TENANT_WORK.md`. Read it before resuming -- nothing is
+half-applied and the only outstanding action is ONE operator click.** In one line:
+`newarkpd-foundation` (68055618928) runs NJ_NJCJIS v4.16 while ledger AND catalog say v4.17,
+proven five ways. Loop: `emit_import_job.ps1` -> review `providers\IMPORT_JOB.json` -> panel button
+**RUN THE JOB FOR THIS TENANT** -> auto re-export -> `watch_imports.ps1` -> `verify_tenant_import`.
+`deploy_probe.js` is the ONLY file that can write; dry-run by default; 46 mutation cases.
 ⚠️ **NEVER hand Rob a console command** -- GUI only. ⚠️ An import **REPLACES** the bundle set.
-
-## ⏸ TENANT WORK IS HELD (Rob 2026-09-14: "HOLD ALL THIS ... we need to pivot to a new provider")
-
-**THE RECOVERY RECORD IS `providers\HELD_TENANT_WORK.md` -- read it before resuming.** Nothing is
-half-applied: all committed, all gates green, and the only outstanding action is ONE operator click.
-In one line: **`newarkpd-foundation` (68055618928) runs NJ_NJCJIS v4.16 while ledger AND catalog say
-v4.17** -- proven five ways including three pulls two days apart at payload SHA `E8A370D0ABB66B1A`.
-Job `job-20260912-215904` is cut; `intendedProvider` is recorded on its `tenant_map.json` row.
-⚠️ **Still unexplained, and worth more than the import: WHY the 2026-08-20 import did not land** when
-the release line and catalog update from the same pass did. Also held (Rob's calls): scoping,
-`LEDGER_PATCH.md`, `hawaii-dle` LIVE, the batch, Confluence.
+⚠️ Still unexplained and worth more than the import: **WHY the 2026-08-20 Newark import did not
+land** when the release line and catalog update from the same pass did. Also held (Rob's calls):
+scoping, `LEDGER_PATCH.md`, `hawaii-dle` LIVE, the batch, Confluence.
 
 ## DO NOT RE-RAISE
 
@@ -83,23 +98,22 @@ the release line and catalog update from the same pass did. Also held (Rob's cal
   TN `RQ01` + name-component casing CLOSED 08-24.
 - **A keyRef NEVER reaches the wire, nor does `primaryFieldReference`** -- before calling an
   identity-label difference a defect, ask whether the label ships. **`[FLAG:plan-dedupe-vacuous-
-  tests]` is DONE** (FL/HI/IL/NJ/NY, 2026-08-31); inflation reads 853 logs / 0 findings.
-- **NY DEMOTED-QUALIFIER: CLOSED, not owed** (`ny-demote-mandatory-qualifier` is [KILLED] 2026-09-09;
-  no third fix -- two REJECTED, see `FINDINGS_REGISTER.md`). **NJ guardrail mutation: N/A, not stale**
-  -- unhostable portfolio-wide; do NOT re-aim. Both were stale-OWED claims IN THIS FILE that invented
-  work on tenant-verified providers -- **measure before believing this file.**
+  tests]` is DONE** (FL/HI/IL/NJ/NY); inflation reads 853 logs / 0 findings.
+- **NY DEMOTED-QUALIFIER: CLOSED, not owed** ([KILLED] 2026-09-09; two fixes REJECTED, see
+  `FINDINGS_REGISTER.md`). **NJ guardrail mutation: N/A, not stale** -- do NOT re-aim. Both were
+  stale-OWED claims IN THIS FILE that invented work -- **measure before believing this file.**
 - **Jira is HELD and lifts ONE PROVIDER AT A TIME.** No approval carries to the next provider.
 
 ## RULES I BROKE -- READ BEFORE EDITING
 
-- Two durable rules MOVED to `usx-tooling` (Steps 6 / 8a): **a registry row only suppresses if its
-  rule name is the string the gate greps**, and **validate every probe against a known answer WITH
-  negative controls**. **A `#`-COMMENTED LINE IS NOT A FINDING** (2-6 false blockers on 4 providers).
-- **NEVER verify a produced file with `Test-Path`** (a leftover satisfies it -- compare write times). **REPLACE this file, never append:** it has failed its own 120-line gate five times, twice today.
-- **A SAME-LOOKING STRUCTURE ON ANOTHER PROVIDER IS A QUESTION, NEVER A PRECEDENT.** 5 claims
-  retracted 2026-09-08. Read that provider's OWN `<Requirements>` FIRST.
-- **A STALE MUTATION IS INDISTINGUISHABLE FROM A BLIND GATE** -- give every new mutation a `Valid={}`.
-- **AN EXPLANATION IS NOT A MEASUREMENT.** I wrote a plausible `file://` story for 3 extension
-  scripts instead of getting the real error; they were genuinely broken, dead 5 days.
-- **MY OWN LEDGER/STATE ROWS GO STALE WITHIN HOURS.** I wrote eSUN "NOT IMPORTED" and it was false
-  by afternoon; a tool caught that Section A had no eSUN row at all. Re-read before citing.
+- Durable rules live in `usx-tooling` (Steps 6 / 8a): **a registry row only suppresses if its rule
+  name is the string the gate greps**, and **validate every probe against a known answer WITH
+  negative controls**. **A `#`-COMMENTED LINE IS NOT A FINDING.**
+- **NEVER verify a produced file with `Test-Path`** -- compare write times. **REPLACE this file,
+  never append:** it has failed its own 120-line gate six times.
+- **A SAME-LOOKING STRUCTURE ON ANOTHER PROVIDER IS A QUESTION, NEVER A PRECEDENT.** Read that
+  provider's OWN `<Requirements>` FIRST. **A STANDING RULE IS NOT EVIDENCE EITHER** -- 2026-09-14
+  the rule prescribing `autoSelect=false` for VehStolen had ZERO tenant-proven carriers.
+- **AN EXPLANATION IS NOT A MEASUREMENT.** **A GATE THAT MEASURED NOTHING IS NOT A PASS** --
+  `audit_tool_portability` printed success on 0 cells until 2026-09-14.
+- **MY OWN LEDGER/STATE ROWS GO STALE WITHIN HOURS.** Re-read before citing.

@@ -2,7 +2,7 @@
 
 Auto-generated from `CA_eSUN_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v3.3** | Generated: 2026-09-10
+Current: **v3.3** | Generated: 2026-09-14
 
 ---
 

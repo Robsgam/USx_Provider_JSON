@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: SC_SLED
   Source: SC_SLED_v1.0.json
-  Generated: 2026-09-14 12:50
+  Generated: 2026-09-14 13:13
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-09-14 12:50
+ Generated: 2026-09-14 13:13
 ============================================================
 
 ============================================================
@@ -18,6 +18,7 @@ METADATA AUDIT
   JSON: SC_SLED_v1.0.json
 
 --- CHECK 1: Query Coverage ---
+  [PASS] AdministrativeMessage: in XML and JSON
   [PASS] ArticleSingleQuery: in XML and JSON
   [PASS] BoatQuery: in XML and JSON
   [PASS] DriverLicenseQuery: in XML and JSON
@@ -26,15 +27,22 @@ METADATA AUDIT
   [PASS] VehicleRegistrationQuery: in XML and JSON
   [PASS] VehicleStolenQuery: in XML and JSON
   [PASS] WantedPersonQuery: in XML and JSON
-  [FAIL] AdministrativeMessage: in JSON but NOT in XML (invalid query)
 
 --- CHECK 2: KeyReference Validation ---
   [PASS] QWDQ: exists in XML DriverLicenseQuery
   [PASS] DQ: exists in XML DriverLicenseQuery
   [PASS] QG: exists in XML GunQuery
   [PASS] QA: exists in XML ArticleSingleQuery
+  [PASS] AM: exists in XML AdministrativeMessage
 
 --- CHECK 3: Field Coverage ---
+  AdministrativeMessage:
+  [PASS]   DestinationCode: in XML and QIDM
+  [PASS]   DestinationCode2: in XML and QIDM
+  [PASS]   DestinationCode3: in XML and QIDM
+  [PASS]   DestinationCode4: in XML and QIDM
+  [PASS]   DestinationCode5: in XML and QIDM
+  [PASS]   FreeText: in XML and QIDM
   AOSOrionQuery: (not built in JSON -- see CHECK 1)
   ArticleSingleQuery:
   [PASS]   ArticleSerialNumber: in XML and QIDM
@@ -112,6 +120,13 @@ METADATA AUDIT
   WMPIWantedPersonQuery: (not built in JSON -- see CHECK 1)
 
 --- CHECK 4: Combination Field Requirements ---
+  AdministrativeMessage:
+  [PASS]   keyRef AM: set field 'FreeText' present
+  [PASS]   keyRef AM: any field 'DestinationCode' present
+  [PASS]   keyRef AM: any field 'DestinationCode2' present
+  [PASS]   keyRef AM: any field 'DestinationCode3' present
+  [PASS]   keyRef AM: any field 'DestinationCode4' present
+  [PASS]   keyRef AM: any field 'DestinationCode5' present
   ArticleSingleQuery:
   [PASS]   keyRef QA: set field 'ArticleTypeCode' present
   [PASS]   keyRef QA: set field 'ArticleSerialNumber' present
@@ -189,14 +204,17 @@ METADATA AUDIT
   [PASS]   No fields over-promoted from metadata any[] to set[]
 
 --- CHECK 4e: Field demoted to any[] vs metadata set[] ---
-  [FAIL]   keyRef QWA.P (WantedPersonQuery): 'VehicleIdentificationNumber' DEMOTED to any[] but metadata REQUIRES it in set[] -- the query can fire without it; promote to set[] or record in SC_SLED_ACCEPTED_DIVERGENCES.txt
-  [FAIL]   keyRef QWA.P (WantedPersonQuery): 'VehicleMakeCode' DEMOTED to any[] but metadata REQUIRES it in set[] -- the query can fire without it; promote to set[] or record in SC_SLED_ACCEPTED_DIVERGENCES.txt
-  [FAIL]   keyRef QWA.VM (WantedPersonQuery): 'LicensePlateNumber' DEMOTED to any[] but metadata REQUIRES it in set[] -- the query can fire without it; promote to set[] or record in SC_SLED_ACCEPTED_DIVERGENCES.txt
-  [FAIL]   keyRef QWA.VM (WantedPersonQuery): 'LicensePlateStateCode' DEMOTED to any[] but metadata REQUIRES it in set[] -- the query can fire without it; promote to set[] or record in SC_SLED_ACCEPTED_DIVERGENCES.txt
+  [NOTE]   keyRef QWA.P: 'VehicleIdentificationNumber' in any[] but metadata set[] -- ACCEPTED per registry
+  [NOTE]   keyRef QWA.P: 'VehicleMakeCode' in any[] but metadata set[] -- ACCEPTED per registry
+  [NOTE]   keyRef QWA.VM: 'LicensePlateNumber' in any[] but metadata set[] -- ACCEPTED per registry
+  [NOTE]   keyRef QWA.VM: 'LicensePlateStateCode' in any[] but metadata set[] -- ACCEPTED per registry
+  [PASS]   No metadata-required fields demoted to any[]
 
 --- CHECK 4b: Choice-Set Option Coverage ---
 
 --- CHECK 5: Primary Field Coverage (HARD GATE) ---
+  AdministrativeMessage: 1 metadata search paths
+  [PASS]   FreeText: at least one combo built (e.g. AM)
   ArticleSingleQuery: 1 metadata search paths
   [PASS]   ArticleSerialNumber: at least one combo built (e.g. QA)
   BoatQuery: 1 metadata search paths
@@ -223,6 +241,12 @@ METADATA AUDIT
   [PASS]   VehicleIdentificationNumber: at least one combo built (e.g. QWA)
 
 --- CHECK 5: Field maxLength Alignment ---
+  [PASS] DestinationCode: maxLength 9 matches XML (DestinationCode)
+  [PASS] DestinationCode2: maxLength 9 matches XML (DestinationCode2)
+  [PASS] DestinationCode3: maxLength 9 matches XML (DestinationCode3)
+  [PASS] DestinationCode4: maxLength 9 matches XML (DestinationCode4)
+  [PASS] DestinationCode5: maxLength 9 matches XML (DestinationCode5)
+  [PASS] FreeText: maxLength 501 matches XML (FreeText)
   [PASS] ArticleSerialNumber: maxLength 20 matches XML (ArticleSerialNumber)
   [PASS] BoatHullIdNumber: maxLength 20 matches XML (BoatHullSerialNumber)
   [PASS] RegistrationNumber: maxLength 8 matches XML (RegistrationNumber)
@@ -264,6 +288,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 179 PASS / 5 FAIL / 0 WARN
+Total: 201 PASS / 0 FAIL / 0 WARN
 ============================================================
 

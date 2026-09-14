@@ -1,783 +1,115 @@
-﻿==============================================================================
-  QUERY TRANSACTIONS IN METADATA (check devdoc for supported query list)
-  Source: SC_SLED.xml
-  Generated: 2026-09-14 10:26
+==============================================================================
+  SUPPORTED QUERY VALIDATION REPORT -- SC_SLED v1.0
+  Generated: 2026-09-14        Source: SC_SLED.xml + SC_SLED_DEVDOC.txt
 ==============================================================================
 
-State: SC  System: SLED  Version: 13
+SCOPE AUTHORITY: the devdoc "Basic Query Transactions" list (9 entries, DEVDOC lines
+26-322). The metadata XML defines 67 transactions; the other 58 are NCIC record
+ENTRY / MODIFY / CANCEL / LOCATE operations, CCH transactions, WMPI and Orion --
+a different product surface, deliberately out of scope. Building them would be
+scope invention, not completeness.
 
-QUERY TRANSACTIONS FOUND: 25
-------------------------------------------------------------------------------
+TOTALS: 9 CommSys QIDMs      Total CommSys combos: 18
 
-CATEGORY SUMMARY
-----------------------------------------
-  Standard (6):
-    ArticleSingleQuery, BoatQuery, DriverLicenseQuery, GunQuery
-    VehicleRegistrationQuery, VehicleStolenQuery
-
-  WMPI (5):
-    WMPIMissingPersonQuery, WMPIProtectionOrderQuery, WMPISexOffenderQuery
-    WMPIUnidentifiedPersonQuery, WMPIWantedPersonQuery
-
-  CCH (state-prefixed) (11):
-    CCHCriminalHistoryNcicQHQuery, CCHCriminalHistoryNcicQRQuery
-    CCHCriminalHistoryNcicZRQuery, CCHCriminalHistoryNletsAQQuery
-    CCHCriminalHistoryNletsARQuery, CCHCriminalHistoryNletsFQQuery
-    CCHCriminalHistoryNletsIQQuery, CCHCriminalHistoryRAPRequestQuery
-    CCHCriminalHistoryRAPSummaryQuery, CCHCriminalHistorySCNameQuery
-    CCHCriminalHistoryWarrantQuery
-
-  Provider-specific (3):
-    AOSOrionQuery, DriverRegistrationQuery, WantedPersonQuery
-
-==============================================================================
+  Every marker below is [PENDING]. SC_SLED has NEVER been tenant-tested, so no
+  combination has wire evidence. A marker only moves to [CONFIRMED] when a
+  committed log under logs/<Entity>/ carries the CommSys request XML for it.
 
 ------------------------------------------------------------------------------
-AOSOrionQuery (v6)
+VEHICLE
 ------------------------------------------------------------------------------
+  VehicleRegistrationQuery  (metadata QVRQ -- "SC Vehicle Stolen/Reg Inquiry", COMPOUND)
+    [PENDING] QVRQ.P   set: LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear
+                       any: RegistrationState
+    [PENDING] QVRQ.V   set: VehicleIdentificationNumber
+                       any: RegistrationState, VehicleMakeCode, vehicleYear
+                       gate: LicensePlateNumber NOT_EXISTS  (Plate > VIN priority)
 
-  FIELDS (5):
-  Name                       Type          Size  ValueList
-  -------------------------  ------------  ----  --------------------
-  State                      Alphanumeric  2     
-  FormORI                    Alphanumeric  9     
-  AgencyTypeCode             Alphanumeric  2     
-  Location                   Alphanumeric  20    
-  FederalAgencyCode          Alphanumeric  3     
+  VehicleStolenQuery  (metadata QV -- "Stolen Vehicle Inquiry", NCIC)
+    [PENDING] QV.VM    set: VehicleIdentificationNumber, VehicleMakeCode
+                       gate: LicensePlateNumber NOT_EXISTS
+    [PENDING] QV.P     set: LicensePlateNumber
+                       any: VehicleIdentificationNumber, RegistrationState, VehicleMakeCode
 
-  COMBINATIONS (3):
-
-  1. keyRef: TQ
-     primary: FormORI
-     set: FormORI
-     any: [State]
-
-  2. keyRef: TQ
-     primary: Location
-     set: Location
-     any: [State, AgencyTypeCode]
-
-  3. keyRef: TQ
-     primary: FederalAgencyCode
-     set: FederalAgencyCode
-     any: [State, Location]
+  !! CO-FIRE, MEASURED -- NOT A DEFECT MARKER, A TESTING INSTRUCTION.
+     A plate entry fires QVRQ.P *and* QV.P; a VIN entry fires QVRQ.V *and* QV.VM.
+     QVRQ already carries the stolen half, so the stolen check goes out twice.
+     THE FIRST IMPORT IS THE DISCRIMINATING TEST for whether that is acceptable --
+     capture BOTH transactions per fill and record them separately. Do not file one
+     log for the pair. Rob 2026-09-14: "build both and we can sort it out."
 
 ------------------------------------------------------------------------------
-ArticleSingleQuery (v5)
+PERSON
 ------------------------------------------------------------------------------
+  DriverLicenseQuery  (metadata DQ + QWDQ -- two DISTINCT keyRefs, no suffix invented)
+    [PENDING] QWDQ     set: SexCode, BirthDate, NameLast, NameFirst
+                       any: OperatorLicenseNumber, RegistrationState
+                       "SC Driver Wanted/Reg Inquiry" -- COMPOUND
+    [PENDING] DQ       set: OperatorLicenseNumber
+                       any: ImageIndicator, RegistrationState
+                       SHADOWED by QWDQ on a full name fill; reachable ONLY on an
+                       OLN-without-name fill. TEST IT THAT WAY OR IT IS NOT TESTED.
 
-  FIELDS (2):
-  Name                       Type          Size  ValueList
-  -------------------------  ------------  ----  --------------------
-  ArticleTypeCode            Alphanumeric  7     
-  ArticleSerialNumber        Alphanumeric  20    
+  DriverRegistrationQuery  (metadata DQ x2 -- same transaction as DriverLicenseQuery's DQ)
+    [PENDING] DQ.RN    set: BirthDateDR, NameLastDR, NameFirstDR
+                       any: RegistrationStateDR, SexCodeDR
+    [PENDING] DQ.RO    set: OperatorLicenseNumberDR
+                       any: ImageIndicatorDR, RegistrationStateDR
+                       Requirements IDENTICAL to DriverLicenseQuery's DQ combo.
+                       DR-suffixed fieldIds = separate pool, so no co-fire with the
+                       DL card. Cards kept separate by Rob's call 2026-09-14.
 
-  COMBINATIONS (1):
+  WantedPersonQuery  (metadata QWA x5 -- all five synthetic)
+    [PENDING] QWA.NCIC set: NCICNumber
+    [PENDING] QWA.OCA  set: NameLast, NameFirst, OriginatingAgencyCaseNumber
+    [PENDING] QWA.P    set: LicensePlateNumber, LicensePlateStateCode
+    [PENDING] QWA.VM   set: VehicleIdentificationNumber, VehicleMakeCode
+                       Plate > VIN comes from ORDERING (QWA.P is ahead), not a gate.
+    [PENDING] QWA.N    set: NameLast, NameFirst
+                       gate: NCICNumber NOT_EXISTS, OriginatingAgencyCaseNumber NOT_EXISTS
 
-  1. keyRef: QA
-     primary: ArticleSerialNumber
-     set: ArticleTypeCode, ArticleSerialNumber
-
-------------------------------------------------------------------------------
-BoatQuery (v7)
-------------------------------------------------------------------------------
-
-  FIELDS (3):
-  Name                       Type          Size  ValueList
-  -------------------------  ------------  ----  --------------------
-  State                      Alphanumeric  2     
-  BoatHullSerialNumber       Alphanumeric  20    
-  RegistrationNumber         Alphanumeric  8     
-
-  COMBINATIONS (1):
-
-  1. keyRef: QBBQ
-     primary: BoatHullSerialNumber
-     set: 
-
-------------------------------------------------------------------------------
-CCHCriminalHistoryNcicQHQuery (v7)
-------------------------------------------------------------------------------
-
-  FIELDS (9):
-  Name                       Type          Size  ValueList
-  -------------------------  ------------  ----  --------------------
-  Name                       Alphanumeric  30    
-  SexCode                    Alphanumeric  1     
-  RaceCode                   Alphanumeric  1     
-  BirthDate                  Alphanumeric  8     
-  SocialSecurityNumber       Alphanumeric  9     
-  PurposeCode                Alphanumeric  9     
-  Attention                  Alphanumeric  30    
-  MiscellaneousNumber        Alphanumeric  15    
-  FBINumber                  Alphanumeric  10    
-
-  COMBINATIONS (4):
-
-  1. keyRef: QH
-     primary: SocialSecurityNumber
-     set: SocialSecurityNumber, PurposeCode, Name
-     any: [Attention]
-
-  2. keyRef: QH
-     primary: Name
-     set: PurposeCode, Name, SexCode, RaceCode, BirthDate
-     any: [Attention]
-
-  3. keyRef: QH
-     primary: MiscellaneousNumber
-     set: MiscellaneousNumber, PurposeCode, Name
-     any: [Attention]
-
-  4. keyRef: QH
-     primary: FBINumber
-     set: PurposeCode, FBINumber
-     any: [Attention]
+  !! CO-FIRE, MEASURED: a Name+Sex+BirthDate fill satisfies QWDQ *and* QWA.N (shared
+     unsuffixed pool), so the wanted check goes out twice. Capture both.
+  !! AN OLN-ONLY SEARCH GETS NO WANTED CHECK. QWDQ needs the full name triple and QWA
+     defines no OLN-mandatory branch. That is SC's design; it is not a gap to close.
 
 ------------------------------------------------------------------------------
-CCHCriminalHistoryNcicQRQuery (v5)
+FIREARM / ARTICLE / BOAT
 ------------------------------------------------------------------------------
+  GunQuery  (metadata QG -- "Stolen Gun Inquiry")
+    [PENDING] QG       set: serialNumber        any: GunMake, GunModel, GunCaliber
 
-  FIELDS (10):
-  Name                       Type          Size  ValueList
-  -------------------------  ------------  ----  --------------------
-  StateIdNumber              Alphanumeric  10    
-  Name                       Alphanumeric  30    
-  PurposeCode                Alphanumeric  1     
-  Attention                  Alphanumeric  30    
-  DepartmentName             Alphanumeric  30    
-  AddressStreet              Alphanumeric  30    
-  AddressCityState           Alphanumeric  30    
-  AddressZipCode             Alphanumeric  9     
-  BuildingName               Alphanumeric  30    
-  FBINumber                  Alphanumeric  10    
+  ArticleSingleQuery  (metadata QA -- "Article Inquiry")
+    [PENDING] QA       set: ArticleSerialNumber, ArticleTypeCode
 
-  COMBINATIONS (2):
-
-  1. keyRef: QR
-     primary: StateIdNumber
-     set: StateIdNumber, PurposeCode, Attention
-     any: [Name, DepartmentName, AddressStreet, AddressCityState, AddressZipCode, BuildingName]
-
-  2. keyRef: QR
-     primary: FBINumber
-     set: FBINumber, PurposeCode, Attention
-     any: [Name, DepartmentName, AddressStreet, AddressCityState, AddressZipCode, BuildingName]
+  BoatQuery  (metadata QBBQ -- "SC Boat Stolen/Reg Inquiry", COMPOUND; ONE declared
+              combination holding a <Choice> nested under <Set>, i.e. TWO alternatives)
+    [PENDING] QBBQ.H   set: BoatHullIdNumber     any: RegistrationState
+                       RegistrationNumber is NOT permitted here -- it is the OTHER
+                       mandatory alternative of the Choice, not an optional.
+    [PENDING] QBBQ.R   set: RegistrationNumber   any: RegistrationState
+                       gate: BoatHullIdNumber NOT_EXISTS  (Hull > Registration)
 
 ------------------------------------------------------------------------------
-CCHCriminalHistoryNcicZRQuery (v5)
+ADMINISTRATIVE MESSAGE
 ------------------------------------------------------------------------------
+  AdministrativeMessage  (metadata AM)  -- Rob 2026-09-14: "make it its card at the
+                         end. we can alwasy remove it later."
+    [PENDING] AM       set: FreeText
+                       any: DestinationCode .. DestinationCode5
 
-  FIELDS (3):
-  Name                       Type          Size  ValueList
-  -------------------------  ------------  ----  --------------------
-  StateIdNumber              Alphanumeric  10    
-  PurposeCode                Alphanumeric  1     
-  FBINumber                  Alphanumeric  9     
-
-  COMBINATIONS (2):
-
-  1. keyRef: ZR
-     primary: StateIdNumber
-     set: StateIdNumber
-     any: [PurposeCode]
-
-  2. keyRef: ZR
-     primary: FBINumber
-     set: FBINumber
-     any: [PurposeCode]
+  !! STATUS: HYPOTHESIS -- this is the only non-search transaction here and the only
+     entity that is not one of the five standard ones. The first import must confirm
+     the five REAL entities still render with it present. If they do not, remove it.
 
 ------------------------------------------------------------------------------
-CCHCriminalHistoryNletsAQQuery (v4)
+DATA-MINED -- WHAT THE STATE RUNS FOR US (devdoc, verbatim)
 ------------------------------------------------------------------------------
-
-  FIELDS (4):
-  Name                       Type          Size  ValueList
-  -------------------------  ------------  ----  --------------------
-  NletsDestination           Alphanumeric  9     
-  PurposeCode                Alphanumeric  1     
-  Attention                  Alphanumeric  30    
-  FreeText                   Alphanumeric  14400 
-
-  COMBINATIONS (1):
-
-  1. keyRef: AQ
-     primary: FreeText
-     set: PurposeCode, FreeText, Attention, NletsDestination
-
-------------------------------------------------------------------------------
-CCHCriminalHistoryNletsARQuery (v2)
-------------------------------------------------------------------------------
-
-  FIELDS (4):
-  Name                       Type          Size  ValueList
-  -------------------------  ------------  ----  --------------------
-  NletsDestination           Alphanumeric  9     
-  PurposeCode                Alphanumeric  1     
-  Attention                  Alphanumeric  30    
-  FreeText                   Alphanumeric  14400 
-
-  COMBINATIONS (1):
-
-  1. keyRef: AR
-     primary: FreeText
-     set: PurposeCode, FreeText, Attention, NletsDestination
-
-------------------------------------------------------------------------------
-CCHCriminalHistoryNletsFQQuery (v4)
-------------------------------------------------------------------------------
-
-  FIELDS (9):
-  Name                       Type          Size  ValueList
-  -------------------------  ------------  ----  --------------------
-  State                      Alphanumeric  2     
-  PurposeCode                Alphanumeric  1     
-  Attention                  Alphanumeric  30    
-  StateIdNumber              Alphanumeric  10    
-  DepartmentName             Alphanumeric  30    
-  BuildingName               Alphanumeric  30    
-  AddressStreet              Alphanumeric  30    
-  AddressCityState           Alphanumeric  30    
-  AddressZipCode             Alphanumeric  9     
-
-  COMBINATIONS (1):
-
-  1. keyRef: FQ
-     primary: Attention
-     set: PurposeCode, Attention, StateIdNumber
-     any: [State, DepartmentName, BuildingName, AddressStreet, AddressCityState, AddressZipCode]
-
-------------------------------------------------------------------------------
-CCHCriminalHistoryNletsIQQuery (v5)
-------------------------------------------------------------------------------
-
-  FIELDS (9):
-  Name                       Type          Size  ValueList
-  -------------------------  ------------  ----  --------------------
-  State                      Alphanumeric  2     
-  PurposeCode                Alphanumeric  1     
-  Attention                  Alphanumeric  30    
-  Name                       Alphanumeric  30    
-  BirthDate                  Alphanumeric  8     
-  SexCode                    Alphanumeric  1     
-  RaceCode                   Alphanumeric  1     
-  SocialSecurityNumber       Alphanumeric  9     
-  MiscellaneousNumber        Alphanumeric  15    
-
-  COMBINATIONS (3):
-
-  1. keyRef: IQ
-     primary: BirthDate
-     set: PurposeCode, Attention, BirthDate, Name
-     any: [State, SexCode, RaceCode, SocialSecurityNumber, MiscellaneousNumber]
-
-  2. keyRef: IQ
-     primary: SocialSecurityNumber
-     set: PurposeCode, Attention, SocialSecurityNumber, Name
-     any: [State]
-
-  3. keyRef: IQ
-     primary: MiscellaneousNumber
-     set: PurposeCode, Attention, MiscellaneousNumber, Name
-     any: [State]
-
-------------------------------------------------------------------------------
-CCHCriminalHistoryRAPRequestQuery (v4)
-------------------------------------------------------------------------------
-
-  FIELDS (10):
-  Name                       Type          Size  ValueList
-  -------------------------  ------------  ----  --------------------
-  FBINumber                  Alphanumeric  9     
-  StateIdNumber              Alphanumeric  10    
-  Justification              Alphanumeric  60    
-  PurposeCode                Alphanumeric  1     
-  Attention                  Alphanumeric  30    
-  AddressStreet              Alphanumeric  30    
-  AddressCityState           Alphanumeric  30    
-  AddressZipCode             Alphanumeric  10    
-  BuildingName               Alphanumeric  30    
-  DepartmentName             Alphanumeric  30    
-
-  COMBINATIONS (1):
-
-  1. keyRef: ICHR
-     primary: Justification
-     set: PurposeCode, Attention, Justification
-     any: [FBINumber, StateIdNumber, AddressStreet, AddressCityState, AddressZipCode, BuildingName, DepartmentName]
-
-------------------------------------------------------------------------------
-CCHCriminalHistoryRAPSummaryQuery (v4)
-------------------------------------------------------------------------------
-
-  FIELDS (10):
-  Name                       Type          Size  ValueList
-  -------------------------  ------------  ----  --------------------
-  Name                       Alphanumeric  30    
-  SexCode                    Alphanumeric  1     
-  RaceCode                   Alphanumeric  1     
-  BirthDate                  Alphanumeric  8     
-  PurposeCode                Alphanumeric  1     
-  SocialSecurityNumber       Alphanumeric  9     
-  StateIdNumber              Alphanumeric  10    
-  FBINumber                  Alphanumeric  9     
-  Attention                  Alphanumeric  30    
-  Justification              Alphanumeric  60    
-
-  COMBINATIONS (1):
-
-  1. keyRef: ICHS
-     primary: Justification
-     set: PurposeCode, Attention, Justification
-     any: [Name, BirthDate, SexCode, RaceCode, SocialSecurityNumber, StateIdNumber, FBINumber]
-
-------------------------------------------------------------------------------
-CCHCriminalHistorySCNameQuery (v4)
-------------------------------------------------------------------------------
-
-  FIELDS (4):
-  Name                       Type          Size  ValueList
-  -------------------------  ------------  ----  --------------------
-  Name                       Alphanumeric  30    
-  BirthDate                  Alphanumeric  8     
-  RaceCode                   Alphanumeric  1     
-  SexCode                    Alphanumeric  1     
-
-  COMBINATIONS (1):
-
-  1. keyRef: ICHN
-     primary: Name
-     set: Name
-     any: [BirthDate, RaceCode, SexCode]
-
-------------------------------------------------------------------------------
-CCHCriminalHistoryWarrantQuery (v4)
-------------------------------------------------------------------------------
-
-  FIELDS (2):
-  Name                       Type          Size  ValueList
-  -------------------------  ------------  ----  --------------------
-  WarrantNumber              Alphanumeric  9     
-  ArrestDate                 Alphanumeric  8     
-
-  COMBINATIONS (1):
-
-  1. keyRef: ICHW
-     primary: WarrantNumber
-     set: WarrantNumber
-     any: [ArrestDate]
-
-------------------------------------------------------------------------------
-DriverLicenseQuery (v8)
-------------------------------------------------------------------------------
-
-  FIELDS (10):
-  Name                       Type          Size  ValueList
-  -------------------------  ------------  ----  --------------------
-  State                      Alphanumeric  2     
-  State2                     Alphanumeric  2     
-  State3                     Alphanumeric  2     
-  State4                     Alphanumeric  2     
-  State5                     Alphanumeric  2     
-  Name                       Alphanumeric  30    
-  BirthDate                  Alphanumeric  8     
-  SexCode                    Alphanumeric  1     
-  OperatorLicenseNumber      Alphanumeric  20    
-  ImageIndicator             Alphabetic    1     
-
-  COMBINATIONS (2):
-
-  1. keyRef: DQ
-     primary: OperatorLicenseNumber
-     set: OperatorLicenseNumber
-     any: [ImageIndicator, State, State2, State3, State4, State5]
-
-  2. keyRef: QWDQ
-     primary: Name
-     set: SexCode, BirthDate, Name
-     any: [OperatorLicenseNumber, State, State2, State3, State4, State5]
-
-------------------------------------------------------------------------------
-DriverRegistrationQuery (v7)
-------------------------------------------------------------------------------
-
-  FIELDS (10):
-  Name                       Type          Size  ValueList
-  -------------------------  ------------  ----  --------------------
-  State                      Alphanumeric  2     
-  State2                     Alphanumeric  2     
-  State3                     Alphanumeric  2     
-  State4                     Alphanumeric  2     
-  State5                     Alphanumeric  2     
-  Name                       Alphanumeric  30    
-  BirthDate                  Alphanumeric  8     
-  SexCode                    Alphanumeric  1     
-  OperatorLicenseNumber      Alphanumeric  20    
-  ImageIndicator             Alphabetic    1     
-
-  COMBINATIONS (2):
-
-  1. keyRef: DQ
-     primary: Name
-     set: BirthDate, Name
-     any: [State, State2, State3, State4, State5, SexCode]
-
-  2. keyRef: DQ
-     primary: OperatorLicenseNumber
-     set: OperatorLicenseNumber
-     any: [ImageIndicator, State, State2, State3, State4, State5]
-
-------------------------------------------------------------------------------
-GunQuery (v4)
-------------------------------------------------------------------------------
-
-  FIELDS (4):
-  Name                       Type          Size  ValueList
-  -------------------------  ------------  ----  --------------------
-  GunSerialNumber            Alphanumeric  11    
-  GunMake                    Alphanumeric  3     
-  GunModel                   Alphanumeric  4     
-  GunCaliber                 Alphanumeric  4     
-
-  COMBINATIONS (1):
-
-  1. keyRef: QG
-     primary: GunSerialNumber
-     set: GunSerialNumber
-     any: [GunMake, GunModel, GunCaliber]
-
-------------------------------------------------------------------------------
-VehicleRegistrationQuery (v6)
-------------------------------------------------------------------------------
-
-  FIELDS (11):
-  Name                         Type          Size  ValueList
-  ---------------------------  ------------  ----  --------------------
-  State                        Alphanumeric  2     
-  State2                       Alphanumeric  2     
-  State3                       Alphanumeric  2     
-  State4                       Alphanumeric  2     
-  State5                       Alphanumeric  2     
-  LicensePlateNumber           Alphanumeric  10    
-  LicensePlateYear             Alphanumeric  4     
-  LicensePlateTypeCode         Alphanumeric  2     
-  VehicleIdentificationNumber  Alphanumeric  20    
-  VehicleMakeCode              Alphanumeric  4     
-  VehicleYear                  Alphanumeric  4     
-
-  COMBINATIONS (2):
-
-  1. keyRef: QVRQ
-     primary: LicensePlateNumber
-     set: LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear
-     any: [State, State2, State3, State4, State5]
-
-  2. keyRef: QVRQ
-     primary: VehicleIdentificationNumber
-     set: VehicleIdentificationNumber
-     any: [State, State2, State3, State4, State5, VehicleMakeCode, VehicleYear]
-
-------------------------------------------------------------------------------
-VehicleStolenQuery (v5)
-------------------------------------------------------------------------------
-
-  FIELDS (4):
-  Name                         Type          Size  ValueList
-  ---------------------------  ------------  ----  --------------------
-  LicensePlateNumber           Alphanumeric  10    
-  State                        Alphanumeric  2     
-  VehicleIdentificationNumber  Alphanumeric  20    
-  VehicleMakeCode              Alphanumeric  4     
-
-  COMBINATIONS (2):
-
-  1. keyRef: QV
-     primary: LicensePlateNumber
-     set: LicensePlateNumber
-     any: [VehicleIdentificationNumber, State, VehicleMakeCode]
-
-  2. keyRef: QV
-     primary: VehicleIdentificationNumber
-     set: VehicleIdentificationNumber, VehicleMakeCode
-
-------------------------------------------------------------------------------
-WantedPersonQuery (v10)
-------------------------------------------------------------------------------
-
-  FIELDS (18):
-  Name                         Type          Size  ValueList
-  ---------------------------  ------------  ----  --------------------
-  Name                         Alphanumeric  30    
-  SexCode                      Alphanumeric  1     
-  RaceCode                     Alphanumeric  1     
-  BirthDate                    Alphanumeric  8     
-  FBINumber                    Alphanumeric  9     
-  MiscellaneousNumber          Alphanumeric  15    
-  SocialSecurityNumber         Alphanumeric  9     
-  OperatorLicenseNumber        Alphanumeric  20    
-  LicensePlateNumber           Alphanumeric  10    
-  LicensePlateStateCode        Alphanumeric  2     
-  VehicleIdentificationNumber  Alphanumeric  20    
-  VehicleMakeCode              Alphanumeric  24    
-  OriginatingAgencyCaseNumber  Alphanumeric  20    
-  NCICNumber                   Alphanumeric  10    
-  ImageIndicator               Alphabetic    1     
-  RelatedHitSearchIndicator    Alphabetic    1     
-  ExpandedBirthDateSearchCode  Numeric       1     
-  ExpandedNameSearchCode       Alphabetic    1     
-
-  COMBINATIONS (5):
-
-  1. keyRef: QWA
-     primary: Name
-     set: Name
-     any: [BirthDate, SexCode, RaceCode, FBINumber, MiscellaneousNumber, OperatorLicenseNumber, SocialSecurityNumber, ImageIndicator, ExpandedBirthDateSearchCode, ExpandedNameSearchCode, RelatedHitSearchIndicator]
-
-  2. keyRef: QWA
-     primary: LicensePlateNumber
-     set: LicensePlateNumber, LicensePlateStateCode
-     any: [ImageIndicator, RelatedHitSearchIndicator]
-
-  3. keyRef: QWA
-     primary: VehicleIdentificationNumber
-     set: VehicleIdentificationNumber, VehicleMakeCode
-     any: [ImageIndicator, RelatedHitSearchIndicator]
-
-  4. keyRef: QWA
-     primary: OriginatingAgencyCaseNumber
-     set: Name, OriginatingAgencyCaseNumber
-     any: [ExpandedNameSearchCode, ImageIndicator, RelatedHitSearchIndicator]
-
-  5. keyRef: QWA
-     primary: NCICNumber
-     set: NCICNumber
-     any: [ImageIndicator, RelatedHitSearchIndicator]
-
-------------------------------------------------------------------------------
-WMPIMissingPersonQuery (v2)
-------------------------------------------------------------------------------
-
-  FIELDS (10):
-  Name                         Type          Size  ValueList
-  ---------------------------  ------------  ----  --------------------
-  Age                          Alphanumeric  2     
-  SexCode                      Alphanumeric  1     
-  RaceCode                     Alphanumeric  1     
-  EyeColorCode                 Alphanumeric  3     
-  HairColorCode                Alphanumeric  3     
-  Height                       Alphanumeric  3     
-  Weight                       Alphanumeric  3     
-  Name                         Name          30    
-  ImageIndicator               Alphanumeric  1     
-  EnhancedNameSearchIndicator  Alphanumeric  1     
-
-  COMBINATIONS (1):
-
-  1. keyRef: QM
-     primary: EyeColorCode
-     set: Age, SexCode, RaceCode, EyeColorCode, HairColorCode, Height, Weight
-     any: [Name, ImageIndicator, EnhancedNameSearchIndicator]
-
-------------------------------------------------------------------------------
-WMPIProtectionOrderQuery (v5)
-------------------------------------------------------------------------------
-
-  FIELDS (16):
-  Name                         Type          Size  ValueList
-  ---------------------------  ------------  ----  --------------------
-  NCICNumber                   Alphanumeric  10    
-  ImageIndicator               Alphanumeric  1     
-  Name                         Name          30    
-  ProtectionOrderNumber        Alphanumeric  15    
-  OriginatingAgencyCaseNumber  Alphanumeric  20    
-  BirthDate                    Date          10    
-  SexCode                      Alphanumeric  1     
-  RaceCode                     Alphanumeric  1     
-  FBINumber                    Alphanumeric  9     
-  MiscellaneousNumber          Alphanumeric  15    
-  SocialSecurityNumber         Alphanumeric  10    
-  OperatorLicenseNumber        Alphanumeric  20    
-  LicensePlateNumber           Alphanumeric  10    
-  LicensePlateStateCode        Alphanumeric  2     
-  VehicleIdentificationNumber  Alphanumeric  20    
-  VehicleMakeCode              Alphanumeric  4     
-
-  COMBINATIONS (4):
-
-  1. keyRef: QPO
-     primary: NCICNumber
-     set: NCICNumber
-     any: [ImageIndicator]
-
-  2. keyRef: QPO
-     primary: ProtectionOrderNumber
-     set: ProtectionOrderNumber, Name
-     any: [ImageIndicator]
-
-  3. keyRef: QPO
-     primary: OriginatingAgencyCaseNumber
-     set: OriginatingAgencyCaseNumber, Name
-     any: [ImageIndicator]
-
-  4. keyRef: QPO
-     primary: Name
-     set: Name
-     any: [BirthDate, SexCode, RaceCode, FBINumber, MiscellaneousNumber, SocialSecurityNumber, OperatorLicenseNumber, LicensePlateNumber, LicensePlateStateCode, VehicleIdentificationNumber, VehicleMakeCode, ImageIndicator]
-
-------------------------------------------------------------------------------
-WMPISexOffenderQuery (v5)
-------------------------------------------------------------------------------
-
-  FIELDS (36):
-  Name                           Type          Size  ValueList
-  -----------------------------  ------------  ----  --------------------
-  Name                           Name          30    
-  BirthDate                      Date          10    
-  AddressZipCode                 Alphanumeric  10    
-  SexualOffenderStatusIndicator  Alphanumeric  1     
-  ImageIndicator                 Alphanumeric  1     
-  OriginatingAgencyCaseNumber    Alphanumeric  20    
-  SexCode                        Alphanumeric  1     
-  RaceCode                       Alphanumeric  1     
-  FBINumber                      Alphanumeric  9     
-  MiscellaneousNumber            Alphanumeric  15    
-  SocialSecurityNumber           Alphanumeric  9     
-  OperatorLicenseNumber          Alphanumeric  20    
-  LicensePlateNumber             Alphanumeric  10    
-  LicensePlateStateCode          Alphanumeric  2     
-  VehicleIdentificationNumber    Alphanumeric  20    
-  VehicleMakeCode                Alphanumeric  24    
-  RelatedHitSeachIndicator       Alphanumeric  1     
-  EnhancedNameSearchIndicator    Alphanumeric  1     
-  Attention                      Alphanumeric  30    
-  QueryTypeCode                  Alphanumeric  1     
-  StateIdNumber                  Alphanumeric  10    
-  JuvenileJusticeIdNumber        Alphanumeric  10    
-  SexOffenderRegistryNumber      Alphanumeric  10    
-  ScarsMarksTatoos               Alphanumeric  10    
-  BloodType                      Alphanumeric  5     
-  OffenseCode                    Alphanumeric  4     
-  AddressCountyNumber            Alphanumeric  2     
-  AlsoKnownAs                    Alphanumeric  30    
-  Age                            Alphanumeric  2     
-  Height                         Alphanumeric  3     
-  Weight                         Alphanumeric  3     
-  EyeColorCode                   Alphanumeric  3     
-  HairColorCode                  Alphanumeric  3     
-  OperatorLicenseStateCode       Alphanumeric  2     
-  VehicleModelCode               Alphanumeric  3     
-  VehicleColorCode               Alphanumeric  7     
-
-  COMBINATIONS (4):
-
-  1. keyRef: QXS
-     primary: AddressZipCode
-     set: AddressZipCode
-     any: [SexualOffenderStatusIndicator, ImageIndicator]
-
-  2. keyRef: QXS
-     primary: OriginatingAgencyCaseNumber
-     set: OriginatingAgencyCaseNumber, Name
-     any: [ImageIndicator]
-
-  3. keyRef: QXS
-     primary: Name
-     set: Name
-     any: [BirthDate, SexCode, RaceCode, FBINumber, MiscellaneousNumber, SocialSecurityNumber, OperatorLicenseNumber, LicensePlateNumber, LicensePlateStateCode, VehicleIdentificationNumber, VehicleMakeCode, ImageIndicator, RelatedHitSeachIndicator, EnhancedNameSearchIndicator]
-
-  4. keyRef: QSO
-     primary: QueryTypeCode
-     set: Attention, QueryTypeCode
-     any: [StateIdNumber, FBINumber, JuvenileJusticeIdNumber, SexOffenderRegistryNumber, SocialSecurityNumber, ScarsMarksTatoos, BloodType, OffenseCode, AddressZipCode, AddressCountyNumber, AlsoKnownAs, SexCode, RaceCode, Age, Height, Weight, EyeColorCode, HairColorCode, OperatorLicenseNumber, OperatorLicenseStateCode, LicensePlateNumber, LicensePlateStateCode, VehicleIdentificationNumber, VehicleModelCode, VehicleMakeCode, VehicleColorCode]
-
-------------------------------------------------------------------------------
-WMPIUnidentifiedPersonQuery (v5)
-------------------------------------------------------------------------------
-
-  FIELDS (13):
-  Name                         Type          Size  ValueList
-  ---------------------------  ------------  ----  --------------------
-  NCICNumber                   Alphanumeric  10    
-  ImageIndicator               Alphanumeric  1     
-  RelatedHitSearchIndicator    Alphanumeric  1     
-  OriginatingAgencyCaseNumber  Alphanumeric  20    
-  BodyPartsStatus              Alphanumeric  14    
-  SexCode                      Alphanumeric  1     
-  RaceCode                     Alphanumeric  1     
-  Area                         Alphanumeric  3     
-  Age                          Alphanumeric  2     
-  EyeColorCode                 Alphanumeric  3     
-  HairColorCode                Alphanumeric  3     
-  Height                       Alphanumeric  3     
-  Weight                       Alphanumeric  3     
-
-  COMBINATIONS (4):
-
-  1. keyRef: QU
-     primary: NCICNumber
-     set: NCICNumber
-     any: [ImageIndicator, RelatedHitSearchIndicator]
-
-  2. keyRef: QU
-     primary: OriginatingAgencyCaseNumber
-     set: OriginatingAgencyCaseNumber
-     any: [ImageIndicator]
-
-  3. keyRef: QU
-     primary: BodyPartsStatus
-     set: BodyPartsStatus
-     any: [SexCode, RaceCode, Area]
-
-  4. keyRef: QU
-     primary: EyeColorCode
-     set: Age, SexCode, RaceCode, EyeColorCode, HairColorCode, Height, Weight
-     any: [ImageIndicator]
-
-------------------------------------------------------------------------------
-WMPIWantedPersonQuery (v4)
-------------------------------------------------------------------------------
-
-  FIELDS (20):
-  Name                         Type          Size  ValueList
-  ---------------------------  ------------  ----  --------------------
-  NCICNumber                   Alphanumeric  10    
-  ImageIndicator               Alphanumeric  1     
-  Name                         Name          30    
-  OriginatingAgencyCaseNumber  Alphanumeric  20    
-  MessageKeyModifier           Alphanumeric  1     
-  PurposeCode                  Alphanumeric  1     
-  BirthDate                    Date          10    
-  SexCode                      Alphanumeric  1     
-  RaceCode                     Alphanumeric  1     
-  FBINumber                    Alphanumeric  9     
-  MiscellaneousNumber          Alphanumeric  15    
-  SocialSecurityNumber         Alphanumeric  9     
-  OperatorLicenseNumber        Alphanumeric  20    
-  LicensePlateNumber           Alphanumeric  10    
-  LicensePlateStateCode        Alphanumeric  2     
-  VehicleIdentificationNumber  Alphanumeric  20    
-  VehicleMakeCode              Alphanumeric  4     
-  RelatedHitSeachIndicator     Alphanumeric  1     
-  EnhancedNameSearchIndicator  Alphanumeric  1     
-  Attention                    Alphanumeric  30    
-
-  COMBINATIONS (3):
-
-  1. keyRef: QW#
-     primary: NCICNumber
-     set: NCICNumber
-     any: [ImageIndicator]
-
-  2. keyRef: QW#
-     primary: OriginatingAgencyCaseNumber
-     set: OriginatingAgencyCaseNumber, Name
-     any: [ImageIndicator]
-
-  3. keyRef: QW#
-     primary: Name
-     set: Name
-     any: [MessageKeyModifier, PurposeCode, BirthDate, SexCode, RaceCode, FBINumber, MiscellaneousNumber, SocialSecurityNumber, OperatorLicenseNumber, LicensePlateNumber, LicensePlateStateCode, VehicleIdentificationNumber, VehicleMakeCode, ImageIndicator, RelatedHitSeachIndicator, EnhancedNameSearchIndicator, Attention]
-
-==============================================================================
-TOTALS: 25 query transactions, 53 combinations
+  "NCIC (QA, QB, QG, QV, QW) and DMV (Person and Vehicle) Tags returned from Data mining"
+
+  QB is mined off QBBQ and is correctly NOT built standalone.
+  QV and QW ARE built standalone (VehicleStolenQuery, WantedPersonQuery) -- see the
+  co-fire notes above; that is the open question the first import settles.
+  QA and QG have NO compound SC sibling, so nothing mines them off a request we send:
+  they are the only way to ask, and building them is not duplication.
 ==============================================================================
