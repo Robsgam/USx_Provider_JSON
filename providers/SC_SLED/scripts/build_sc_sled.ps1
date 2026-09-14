@@ -347,8 +347,14 @@ $boatAttrs = @(
 )
 $boatCombos = @(
     # Hull>Registration identifier priority: hull is the unique handle.
+    # RegistrationNumber is DELIBERATELY NOT in this combo's any[]. The metadata puts Hull and
+    # RegistrationNumber in a <Choice> nested directly under <Set>, so reg is the OTHER MANDATORY
+    # ALTERNATIVE, not an optional on the hull branch -- that branch's own <Any> holds State alone.
+    # Carrying it made audit_requirement_fidelity report OVER-PERMITTED (2026-09-14): on a hull+reg
+    # fill QBBQ.H wins on identifier priority and would have transmitted a field this branch does
+    # not define. Discarding the reg value is the CORRECT behaviour here, not a dropped optional.
     Build-QidmCombo -KeyReference 'QBBQ.H' -PrimaryFieldReference 'BoatHullSerialNumber' `
-        -Set @('BoatHullIdNumber') -Any @('RegistrationNumber','RegistrationState')
+        -Set @('BoatHullIdNumber') -Any @('RegistrationState')
     Build-QidmCombo -KeyReference 'QBBQ.R' -PrimaryFieldReference 'RegistrationNumber' `
         -Set @('RegistrationNumber') -Any @('RegistrationState') `
         -Conditions @([PSCustomObject]@{ field = @('BoatHullIdNumber'); operator = 'NOT_EXISTS' })
