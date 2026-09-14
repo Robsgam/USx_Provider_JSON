@@ -1,0 +1,45 @@
+# TEST_VALUE_OVERRIDES.txt -- fieldId=value  OR  <Entity>.fieldId=value (entity-scoped wins)
+#
+# SC_SLED, created 2026-09-14. WHY THIS FILE EXISTS HERE: emit_test_plan reported 15 fields with
+# "no test value (unmapped in Get-TestValue)", and THREE OF THEM ARE MANDATORY set[] FIELDS --
+# QWA.OCA/OriginatingAgencyCaseNumber, QWA.P/LicensePlateStateCode and AM/FreeText. A mandatory
+# field with no test value is not cosmetic: the driver fills nothing, the tenant correctly keeps
+# Send DISABLED, and the test never transmits. That is the OH_LEADS defect test_phase2 step [2]
+# FILLABILITY was rewritten to catch (50 tests / 2 BLANK / 7 UNSATISFIED, reported as
+# "PRE-FLIGHT CLEAR" by the check that only grepped two marker strings).
+#
+# EVERY VALUE BELOW IS WITHIN ITS METADATA maxLen -- read from SC_SLED_METADATA_REFERENCE.txt, not
+# guessed. Exceeding maxLen is its own defect class (the CA_SAN_LUIS_OBISPO OLN 20-vs-17 case).
+
+# --- Person / DriverRegistrationQuery -------------------------------------------------------
+# DR-suffixed State. SC is the home state; the DR card has no separate in/out keyRef split, so a
+# home-state value does not change which combination fires.
+Person.RegistrationStateDR=SC
+
+# --- Person / WantedPersonQuery -------------------------------------------------------------
+# OCA = the originating agency's own case number (maxLen 20). MANDATORY on QWA.OCA.
+Person.OriginatingAgencyCaseNumber=SC2026-000147
+# The plate's state, distinct from RegistrationState (maxLen 2). MANDATORY on QWA.P.
+Person.LicensePlateStateCode=SC
+# FBI number, maxLen 9. Optional on QWA.N.
+Person.FBINumber=123456AB7
+# Miscellaneous number, maxLen 15. Optional on QWA.N.
+Person.MiscellaneousNumber=MISC2026000147
+# Expanded-name-search indicator, ALPHABETIC maxLen 1. 'Y' broadens the name match; using Y rather
+# than N on purpose so the flag is OBSERVABLE on the wire -- an N here would be indistinguishable
+# from the field being dropped, which is audit_log_inflation's "competing fields prove nothing".
+Person.ExpandedNameSearchCode=Y
+
+# --- AdministrativeMessage ------------------------------------------------------------------
+# ⚠️ AdministrativeMessage is the ONE non-search transaction here and is STATUS: HYPOTHESIS --
+# the first import must confirm the 5 real entities still render alongside it. These values let
+# the plan be FILLABLE; they do not make the card proven.
+# FreeText is MANDATORY, maxLen 501. Deliberately self-identifying so a message that actually
+# reaches SLED is obviously a test and not an operational broadcast.
+AdministrativeMessage.FreeText=USX AUTOMATED CONFIGURATION TEST - NO ACTION REQUIRED - DISREGARD
+# Destination ORIs, maxLen 9 each. SC ORIs are 9 characters (SC + 7).
+AdministrativeMessage.DestinationCode=SC0320000
+AdministrativeMessage.DestinationCode2=SC0320100
+AdministrativeMessage.DestinationCode3=SC0320200
+AdministrativeMessage.DestinationCode4=SC0320300
+AdministrativeMessage.DestinationCode5=SC0320400

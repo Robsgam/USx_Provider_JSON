@@ -100,7 +100,17 @@ $optionalByDesign = @{
     '<P>_STATE_BULLETINS.txt'  = 'provider-specific state bulletin log (IL ISP); only exists where a bulletin was issued'
     'bulletins'                = 'provider-specific bulletin PDFs + extracts, companion to <P>_STATE_BULLETINS.txt'
     'NY_BASIC_COMBO_RUNSHEET.md' = 'NY-specific hand runsheet; provider content, not a pipeline artifact'
+    'TEST_PARKED.txt'          = 'marks a provider whose TESTING IS PARKED BY DECISION (Rob 2026-08-21, TX_TLETS_CCH). Its ABSENCE is the normal state -- a provider that is not parked must not carry one -- so the singleton is correct, not drift. Added 2026-09-14'
 }
+
+# ⚠️ 'DEX_TICKET_ARCHIVE.md' IS DELIBERATELY *NOT* ALLOWLISTED, AND THE OBVIOUS REASON FOR DOING SO
+# IS FALSE. It is missing on 7 providers and the tempting justification -- "it only exists where
+# Jira comments were posted and later superseded" -- was CHECKED before being written and does not
+# hold: 6 of the 7 carry ZERO `POSTED:` markers (absence correct), but **CA_eSUN carries ONE and
+# still has no archive**, while OR_LEDS with the same single marker has a 32-line archive. So one of
+# those 7 is a REAL gap. Allowlisting the token is all-or-nothing, so it would suppress CA_eSUN's
+# genuine gap to silence six correct absences -- the "registration that costs coverage and buys
+# nothing" this repo has reverted twice. Leave it FAILing until CA_eSUN's is created.
 
 # NOT allowlisted on purpose: '.gitkeep'. A placeholder is only meaningful while its directory is
 # empty, so once logs/ carries real captures the file is vestigial -- and it appeared on exactly one
