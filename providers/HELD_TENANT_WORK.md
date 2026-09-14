@@ -106,6 +106,17 @@ suggest the *recording* step is where this leaks.
   script's last commit said 21:04, which looks exactly like the known "a server started yesterday
   serves pre-change code" trap — and the three probes refuted it. An explanation is not a
   measurement; curl the endpoints.
+- **START IT DETACHED, OR IT DIES WITH THE SESSION.** Launching it as an agent background task got
+  it KILLED by the host under memory pressure on 2026-09-14, minutes after a restart. Use
+  `Start-Process powershell -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-File','<repo>\tools\serve_plans.ps1' -WindowStyle Hidden`
+  so it outlives whatever started it. Confirm with a curl, then leave it alone.
+- ⚠️ **COUNTING THE PROCESS BY NAME REPORTS A PHANTOM EVERY TIME, AND IT CAUGHT ME.** A
+  `Where-Object { $_.CommandLine -match 'serve_plans' }` query MATCHES ITSELF -- the checking
+  shell's own command line contains the literal string. On 2026-09-14 that made a single healthy
+  server read as TWO instances ("one bound, one stray"), and I killed the "stray", which was the
+  previous query's own shell already exiting. `usx-resume` Step 3b documents this exact trap for
+  `watch_captures`; it applies verbatim here. Exclude `$PID` and its parent, and match on
+  `-File .*serve_plans` rather than the bare name. Measured correctly: **1 instance, bound=1.**
 - **No watcher running** (`watch_captures` / `watch_imports` both absent). The last one timed out
   cleanly having proven nothing, which is the correct report rather than a pass.
 - **`~\Downloads` holds 80 `usx_tenant_config_*` files from the 2026-09-11 sweep, and 65 are already
