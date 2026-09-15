@@ -138,26 +138,27 @@ Write-Host ("  out-of-state code      : {0}" -f $OutOfStateCode)
 #   * LicensePlateYear is carried AND placed in XOUT's set[] -- it mirrors NY's real RVEHOUT (which
 #     mandates Year) and clears the standard-default WARN without creating a DEAD CONTROL, which is
 #     what adding it as an unused field would have done.
+# ROUND 5 -- MULTIPLE CODE TYPES TRANSLATING IN ONE REQUEST.
+# Rob: "make that json so the test shows how the tranaltion will work if we need more thatn one
+# code type to wrok with".
+# Two DIFFERENT code types are mapped in the same submit, each through its own table:
+#   plate type  <- NY_NIBRS / NCIC_LICENSE_PLATE_TYPE  (Rob's new NYTESTPLATE: 16/17/18/19)
+#   state       <- STATE / NCIC                        (already proven: GA -> GEORGIA)
+# Plus a RAW control on the new table, so "it mapped" and "it did nothing" cannot be confused for
+# the code type we have not measured yet. State needs no raw control -- its untranslated value (GA)
+# is already on disk from three earlier captures.
 $cards = @(
-    @{ id = 'CARD_XLATE'; title = 'TRANSLATE TEST -- State BLANK = in-state (XIN), State GA = out-of-state (XOUT)'; rows = @(
+    @{ id = 'CARD_XLATE'; title = 'TRANSLATE TEST -- two code types mapped in ONE request'; rows = @(
         @{ id = 'ROW_X1'; cols = @('6','6'); fields = @(
-            @{ id = 'FLD_PLATE'; node = (Inp 'LicensePlateNumber' 'Plate (carrier -- just type TEST123)' '10' 'ROW_X1') }
-            @{ id = 'FLD_STATE'; node = (Sel 'RegistrationState' 'State (optional)' @{ attributeTypeId = 'STATE' } 'ROW_X1') }
+            @{ id = 'FLD_PLATE'; node = (Inp 'LicensePlateNumber' 'Plate (carrier -- type TEST123)' '10' 'ROW_X1') }
+            @{ id = 'FLD_STATE'; node = (Sel 'RegistrationState' 'MAPPED code type 2 -- pick Georgia' @{ attributeTypeId = 'STATE' } 'ROW_X1') }
         )}
-        # ROUND 3 -- CODE TYPE -> CODE TYPE, which is what Rob asked for from the start:
-        # "can you tranalaste from one code type to another rather than a filled in field.  i told
-        #  you they woudl both be code types".
-        # BOTH controls bind to the SAME REAL code table (VEHICLE_MAKE). The ONLY difference is
-        # whether the QIDM ATTRIBUTE declares codeTypeProvider. Baseline and test ride in ONE submit
-        # so an absent tag can never again be mistaken for a mechanism result.
-        # TAG CHOICE IS MEASURED, NOT GUESSED: across 4 captures on this provider only
-        # LicensePlateNumber / LicensePlateTypeCode / LicensePlateYear / State / VehicleStyleCode
-        # ever serialized. VehicleMakeCode NEVER did -- that, not translation, is why round 2's tag
-        # vanished. So VEHICLE_MAKE is routed through two tags that provably serialize.
-        @{ id = 'ROW_X2'; cols = @('4','4','4'); fields = @(
-            @{ id = 'FLD_PTYPE'; node = (Sel 'LicensePlateTypeCode' 'Plate Type (present only to satisfy the Vehicle-form convention)' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC' } 'ROW_X2') }
-            @{ id = 'FLD_PYEAR'; node = (Inp 'LicensePlateYear' 'Plate Year (same reason)' '4' 'ROW_X2') }
-            @{ id = 'FLD_VMAKE'; node = (Sel 'VehicleMakeCode'  'DISCRIMINATOR -- pick FORD (same choice as the last run)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_X2') }
+        @{ id = 'ROW_X2'; cols = @('6','6'); fields = @(
+            @{ id = 'FLD_PTYPE'; node = (Sel 'LicensePlateTypeCode' 'MAPPED code type 1 -- pick 16' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NY_NIBRS' } 'ROW_X2') }
+            @{ id = 'FLD_PTRAW'; node = (Sel 'PlateTypeRaw' 'RAW control -- pick the SAME value (16)' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NY_NIBRS' } 'ROW_X2') }
+        )}
+        @{ id = 'ROW_X3'; cols = @('12'); fields = @(
+            @{ id = 'FLD_PYEAR'; node = (Inp 'LicensePlateYear' 'Plate Year (convention field -- ignore)' '4' 'ROW_X3') }
         )}
     )}
 )
@@ -180,63 +181,49 @@ $vehForm = [PSCustomObject]@{
 # that was the tag, not the mechanism. Both probes now use tags known to come out.
 $attrs = @(
     Build-QidmAttribute -Name 'LicensePlateNumber' -Size 10 -SourceField @('LicensePlateNumber')
-    # ROUND 4 -- CommsysResultAttributeMappingRuleHandler ON THE REQUEST PATH.
-    # Rob pushed back with the handler's own documentation: "Maps a raw code (e.g., NCIC code) to a
-    # display value using the attributes table ... Input {"addressstatecode":"CA"} -> Output
-    # "California"", with attributeType + codeTypeSource on the attribute. He is right that I
-    # dismissed it on CLASSIFICATION rather than measurement: the registry calls it a RESULT handler
-    # and all 189 uses in the portfolio are on QUERYRESULTDATAMAPPING -- ZERO on a request QIDM. That
-    # makes it UNTESTED on the request path, not impossible.
-    #
-    # THE TEST NEEDS NO NEW CODE TABLE, which is why STATE is the subject: the STATE attribute table
-    # already maps code GA <-> display "Georgia", and three captures on this exact rig/tag/selection
-    # measured the wire carrying GA. So ONE variable changes and the baseline is already recorded.
-    #   wire "Georgia" -> THE HANDLER RUNS ON THE REQUEST PATH. Rob's design is viable: provision a
-    #                     table shaped code = NY numeric / display = NCIC code, and 16/17/18 all
-    #                     carrying display PC gives many-to-one for free.
-    #   wire GA        -> the handler is inert on the request path; it is response-only after all.
-    #   tag absent     -> it ran and returned null (the doc says null when the code is not found).
-    #
-    # Hand-written rather than Build-QidmAttribute because that helper exposes -CodeTypeProvider but
-    # NOT attributeType / codeTypeSource, which are the two properties this handler reads. Build-Qidm
-    # accepts hand-written attribute objects by design.
+    Build-QidmAttribute -Name 'LicensePlateYear'   -Size 4  -SourceField @('LicensePlateYear')
+
+    # ---- CODE TYPE 1: plate type, via Rob's provisioned NY table -------------------------------
+    # MAPPED. size 20 (not the real 2) on purpose: if the mapped value is longer we must SEE it
+    # rather than let truncation hide the result.
+    [PSCustomObject]@{
+        name        = 'LicensePlateTypeCode'
+        rule        = [PSCustomObject]@{ function = 'CommsysResultAttributeMappingRuleHandler' }
+        size        = 20
+        sourceField = @('LicensePlateTypeCode')
+        targetField = 'LicensePlateTypeCode'
+        codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'
+        codeTypeSource   = 'NY_NIBRS'
+        description = 'CODE TYPE 1 MAPPED -- code -> description via NYTESTPLATE.'
+    }
+    # RAW control for code type 1 -- same table, same pick, NO rule.
+    Build-QidmAttribute -Name 'PlateTypeRaw' -Size 20 -SourceField @('PlateTypeRaw') `
+        -TargetField 'VehicleStyleCode' `
+        -Description 'CODE TYPE 1 RAW -- same NY table, no rule. Expect the CODE.'
+
+    # ---- CODE TYPE 2: state, via the STATE table (already proven GA -> GEORGIA) ----------------
+    # codeTypeProvider STAYS: AP #1 requires it on an attributeTypeId control, and without it the
+    # platform sends the internal numeric row id. It is the "emit the code" switch, not a mapper.
     [PSCustomObject]@{
         name        = 'State'
         rule        = [PSCustomObject]@{ function = 'CommsysResultAttributeMappingRuleHandler' }
         size        = 20
         sourceField = @('RegistrationState')
         targetField = 'State'
-        # codeTypeProvider STAYS. AP #1: an attributeTypeId control without it sends the internal
-        # NUMERIC ROW ID instead of the code -- so this property is the "emit the code" switch, not
-        # a translator. That is also why it read as inert in round 3: it was doing its real job.
-        # Keeping it means the baseline (GA) still holds and the RULE is the only new variable.
         codeTypeProvider = 'NCIC'
         attributeType    = 'STATE'
         codeTypeSource   = 'NCIC'
-        description = 'ROUND 4 -- does CommsysResultAttributeMappingRuleHandler run on the REQUEST path? Baseline: GA.'
+        description = 'CODE TYPE 2 MAPPED -- proven GA -> GEORGIA. Confirms two tables map in one request.'
     }
-    Build-QidmAttribute -Name 'LicensePlateTypeCode' -Size 2 -SourceField @('LicensePlateTypeCode')
-    Build-QidmAttribute -Name 'LicensePlateYear' -Size 4 -SourceField @('LicensePlateYear')
-
-    # BASELINE -- code-backed source, attribute declares NO provider. This is how every provider in
-    # the portfolio builds it today, and LIMITATION #38 says it emits the RAW ATTRIBUTE CODE
-    # (CNST_FORD) even though the CONTROL declares codeTypeProvider=NCIC.
-    Build-QidmAttribute -Name 'VehicleMakeCode' -Size 24 -SourceField @('VehicleMakeCode') `
-        -TargetField 'VehicleStyleCode' -CodeTypeProvider 'NCIC' `
-        -Description 'BASELINE -- code table in, NO attribute codeTypeProvider. Expect the raw code.'
-
 )
 
-# ONE combination. The default-override question (M1) is already answered and REFUTED
-# (LIMITATION #43), so the second combo and its defaults[] are gone -- fewer moving parts, and
-# nothing here depends on which combo fires.
+# ONE combination -- nothing here depends on routing.
 $combos = @(
     Build-QidmCombo -KeyReference 'XLATE' -PrimaryFieldReference 'LicensePlateNumber' `
         -Set @('LicensePlateNumber') `
-        -Any @('RegistrationState','LicensePlateTypeCode','LicensePlateYear','VehicleMakeCode') `
+        -Any @('RegistrationState','LicensePlateTypeCode','PlateTypeRaw','LicensePlateYear') `
         -State 'In/Out'
 )
-
 $qidm = Build-Qidm -ProviderName $Provider -Query 'VehicleRegistrationQuery' -TargetEntity 'Vehicle' `
     -QueryLabel 'Vehicle Registration' -Attributes $attrs -Combinations $combos `
     -Description 'TRANSLATE TEST rig -- NOT a provider build. Tests outgoing many-to-one code translation.'
@@ -267,24 +254,29 @@ Write-ProviderJson -BundleObject $bundle -OutPath $OutPath -Label 'TRANSLATE_TES
 
 Write-Host ''
 Write-Host ''
-Write-Host '  ---- RUN IT: ROUND 4 -- ONE IMPORT, ONE SUBMIT ---------------------------------'
-Write-Host '  THE QUESTION: does CommsysResultAttributeMappingRuleHandler run on the REQUEST'
-Write-Host '  path? All 189 uses in the portfolio are response-side QRDMs; ZERO are on a request'
-Write-Host '  QIDM. So it is UNTESTED there, not impossible.'
-Write-Host ''
-Write-Host '  NO NEW CODE TABLE IS NEEDED: the STATE table already maps code GA <-> display'
-Write-Host '  "Georgia", and 3 earlier captures on this same rig/tag/selection measured GA on the'
-Write-Host '  wire. One variable changes (the rule) and the baseline is already recorded.'
-Write-Host ''
-Write-Host '  1. Import providers\TRANSLATE_TEST.json (it REPLACES the bundle set).'
-Write-Host '  2. Fill: Plate = TEST123, State = Georgia. (Ignore the other fields.)'
-Write-Host '  3. Submit, capture, and read ONE tag: <State>'
+Write-Host '  ---- RUN IT: ROUND 5 -- TWO CODE TYPES, ONE REQUEST ----------------------------'
+Write-Host '  1. Import providers\TRANSLATE_TEST.json.'
+Write-Host '  2. Fill FOUR fields:  Plate = TEST123'
+Write-Host '                        MAPPED code type 2 (State)      -> Georgia'
+Write-Host '                        MAPPED code type 1 (Plate Type)  -> 16'
+Write-Host '                        RAW control                      -> 16   (the same value)'
+Write-Host '  3. Submit, capture, and read FOUR tags:'
+Write-Host '       <State>                 code type 2, MAPPED -- expect GEORGIA (already proven)'
+Write-Host '       <LicensePlateTypeCode>  code type 1, MAPPED -- expect the DESCRIPTION of code 16'
+Write-Host '       <VehicleStyleCode>      code type 1, RAW    -- expect the CODE 16'
+Write-Host '       <LicensePlateNumber>    carrier'
 Write-Host '  4. Read it:'
-Write-Host '       Georgia  -> THE HANDLER RUNS ON THE REQUEST PATH. Your design is viable:'
-Write-Host '                   provision a table shaped code = NY numeric / display = NCIC code,'
-Write-Host '                   and 16/17/18 all carrying display PC gives many-to-one for free.'
-Write-Host '       GA       -> inert on the request path; it really is response-only.'
-Write-Host '       ABSENT   -> it RAN and returned null (the doc says null when code not found),'
-Write-Host '                   which still proves it executes -- just that the lookup missed.'
+Write-Host '       BOTH mapped tags differ from the raw one -> TWO code types translate in ONE'
+Write-Host '         request, independently, each through its own table. That is the answer.'
+Write-Host '       <LicensePlateTypeCode> = 16 -> the lookup ran but NYTESTPLATE descriptions are'
+Write-Host '         still the codes themselves, so there is nothing to translate TO. Fix the TABLE,'
+Write-Host '         not the config: set description 16->PC, 17->PC, 18->CO, 19->CO.'
+Write-Host '       <LicensePlateTypeCode> absent -> the lookup returned null (doc: null when the'
+Write-Host '         code is not found), which still proves it executed.'
+Write-Host ''
+Write-Host '  ? THE MAPPING LIVES IN THE DESCRIPTION COLUMN. The handler emits the DESCRIPTION, so'
+Write-Host '    the table must be built backwards: CODE = the NY code, DESCRIPTION = the code you'
+Write-Host '    want on the wire. Many-to-one then falls out -- 16 and 17 both described PC, 18 and'
+Write-Host '    19 both described CO.'
 Write-Host '===================================================================================='
 Write-Host ''
