@@ -1254,3 +1254,57 @@ CAPABILITY #44 (NOT a limitation -- this slot HELD A FALSE LIMITATION FOR ONE HO
       on any attributeTypeId-backed control, and its absence sends a numeric ID. That is why it read
       as inert when tested for translation: it was doing its real job.
     * LIMITATION #43 (combo defaults only fill an empty field) still stands -- unaffected.
+
+================================================================================
+LIMITATION #45: ONE WIRE TAG PER QUERY GETS EXACTLY ONE TRANSFORMATION. A query
+                cannot send a state's OWN code in-state and the NCIC equivalent
+                out-of-state, because that needs two transformations of the SAME
+                targetField within one (targetEntity, query).
+================================================================================
+  STATUS: DERIVED from three measured constraints (no new tenant test needed; each
+  component is separately LIVE-PROVEN or gate-enforced). Raised 2026-09-15 by NY_NYSPIN_EJUSTICE.
+
+  THE REQUIREMENT. Rob: NY uses its own NUMERIC plate-type codes in-state and NCIC alpha codes
+  out-of-state, and BOTH are needed -- "it wants boths  16 for in state and pc for out of state".
+  Not a nicety: "some in state plate need a type and not by the nature of the query  it has to do
+  with getting the right info". The metadata agrees -- VehicleRegistrationQuery's RVEH is a <Choice>
+  whose in-state branch carries LicensePlateTypeCode in <Any> (optional but PERMITTED, so LAW 1
+  makes it reachable work) and whose out-of-state branch MANDATES it.
+
+  BOTH TRANSFORMATIONS ARE INDIVIDUALLY AVAILABLE, measured on State in this rig:
+    attribute WITHOUT the mapping handler -> wire carries the attribute CODE  (GA)
+    attribute WITH    the mapping handler -> wire carries the attribute NAME  (GEORGIA)
+  So "NY code in-state" and "NCIC code out-of-state" are each buildable. They cannot COEXIST.
+
+  THE THREE WALLS, and all three were checked rather than assumed:
+   1. TWO ATTRIBUTES, ONE QIDM -- validate.ps1 FAILs on a duplicate targetField, and the platform
+      behaviour it encodes is "only the last wins -- silent data loss".
+   2. TWO QIDMs, ONE QUERY -- LIMITATION #2: only one is evaluated, the others silently ignored,
+      and autoSelect=false does NOT bypass it. Already CONFIRMED BROKEN ON NY ITSELF (v1.8-v1.10,
+      v1.18b). The validator refuses the build outright.
+   3. A SEPARATE TRANSACTION (LIMITATION #2's own third resolution) -- MEASURED ABSENT. Of NY's 30
+      transactions only SIX reference LicensePlateTypeCode and five are record-ENTRY transactions
+      (Derelict / BEPFelony / Impounded / Repossessed / BEPStolen VehicleEntry), out of Basic scope.
+      VehicleRegistrationQuery is the ONLY query that takes a plate type.
+  AP #17 (do not declare a path unimplementable without exhausting the options) is therefore
+  satisfied by measurement: (a) single QIDM + multiple combos exists already and cannot vary
+  attribute behaviour, since attributes are QIDM-level not combination-level; (b) DH-suffix fieldIds
+  solve field-pool collisions ACROSS QUERIES and cannot help when both paths write one tag in one
+  query; (c) no separate transaction exists.
+
+  ⚠️ MORE CARDS DO NOT HELP, and this is the intuition worth correcting. A second card changes only
+  LAYOUT; the wire-tag constraint is untouched. Two cards additionally force distinct fieldIds on
+  every field (a fieldId cannot appear on two cards), which is why CARD_PER_DH suffixes all twelve
+  of its fields -- and CAD populates by fieldId, so a suffixed card stops being CAD-fed (DH is
+  recorded as NOT SUPPORTED FROM CAD). Cost with no benefit here.
+
+  WHAT IS ACTUALLY LEFT -- all three are platform/CommSys asks, not build work:
+    * a per-COMBINATION rule or attribute override (does not exist today), or
+    * allow DUPLICATE CODES within an attribute, so many-to-one can live on the CODE side. Rob hit
+      this wall directly: "it would not let me have suplicates in the code filed so i reversed it
+      and uised the attribute name". Duplicates ARE allowed on the NAME, which is why the handler
+      path works at all, or
+    * a second NY metadata transaction for out-of-state plate search (CommSys-side).
+  Until one of those, a build must CHOOSE which path is correct and accept the other is wrong. NY
+  v4.26 currently sends the NCIC code on both paths, so the IN-STATE path is the wrong one today --
+  officer-triggered only (there is no prefill; see the note under LIMITATION #43's evidence).
