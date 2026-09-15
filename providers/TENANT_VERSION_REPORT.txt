@@ -2,9 +2,10 @@
 ====================================================================================
   TENANT VERSION CROSS-CHECK -- measured vs ledger vs repo
 ====================================================================================
-  files: 33   distinct tenants: 64   repo versions known for 20 provider(s)
+  files: 59   distinct tenants: 72   repo versions known for 21 provider(s)
 
-  VERSION READ 33 | NOT-OUR-BUILD (exported, no version string) 31 | UNRESOLVED 0
+  VERSION READ 34 | NOT-OUR-BUILD (exported, no version string) 31 | UNRESOLVED 7
+  !! UNRESOLVED IS NOT AGREEMENT -- those tenants were not measured at all.
 
   tenant                           provider             MEASURED  LEDGER    REPO      verdict
   --------------------------------------------------------------------------------------------------------------------------
@@ -16,6 +17,8 @@
   cbp-demo                         -                    -         --        --        NOT OUR BUILD (no version string)
   ccpd                             -                    -         --        --        NOT OUR BUILD (no version string)
   ccpd-jms-migration-round-1       -                    -         --        --        NOT OUR BUILD (no version string)
+  cocosheriff-migration-round-2    -                    -         --        --        UNRESOLVED -- CLICKED-BUT-NO-JSON
+  dallastx-foundation              TX_TLETS             v4.22     --        v4.22     NO LEDGER ROW / repo OK
   dark-demo                        -                    -         --        --        NOT OUR BUILD (no version string)
   dea-demo                         -                    -         --        --        NOT OUR BUILD (no version string)
   demo                             -                    -         --        --        NOT OUR BUILD (no version string)
@@ -42,6 +45,7 @@
   miamispringspd-foundation        FL_FCIC              v7.24     v7.24     v7.24     ledger OK / repo OK
   mint                             -                    -         --        --        NOT OUR BUILD (no version string)
   newarkpd-foundation              NJ_NJCJIS            v4.16     v4.17     v4.17     *** LEDGER SAYS v4.17 *** / behind repo
+  newmexicoosi-foundation          -                    -         --        --        UNRESOLVED -- CLICKED-BUT-NO-JSON
   neworleanspd                     -                    -         --        --        NOT OUR BUILD (no version string)
   neworleanspd-foundation          -                    -         --        --        NOT OUR BUILD (no version string)
   northmiami-foundation            FL_FCIC              v7.24     v7.24     v7.24     ledger OK / repo OK
@@ -56,10 +60,14 @@
   sandiegoso-foundation            -                    -         --        --        NOT OUR BUILD (no version string)
   sdso                             -                    -         --        --        NOT OUR BUILD (no version string)
   shelby-demo                      -                    -         --        --        NOT OUR BUILD (no version string)
+  starbasepd                       -                    -         --        --        UNRESOLVED -- CLICKED-BUT-NO-JSON
   usx-az-azdps                     AZ_AZDPS             v3.12     --        v3.12     NO LEDGER ROW / repo OK
   usx-ca-clets                     CA_CLETS             v2.27     --        v2.27     NO LEDGER ROW / repo OK
   usx-ca-clets-ocats               CA_CLETS_OCATS       v2.12     --        v2.12     NO LEDGER ROW / repo OK
+  usx-ca-contra-costa              -                    -         --        --        UNRESOLVED -- CLICKED-BUT-NO-JSON
   usx-ca-esun                      CA_eSUN              v3.3      --        v3.3      NO LEDGER ROW / repo OK
+  usx-ca-san-louis-obispo          -                    -         --        --        UNRESOLVED -- CLICKED-BUT-NO-JSON
+  usx-ca-ventura-county            -                    -         --        --        UNRESOLVED -- CLICKED-BUT-NO-JSON
   usx-fl-fcic                      FL_FCIC              v7.24     --        v7.24     NO LEDGER ROW / repo OK
   usx-hi-hcjdc-ofml                HI_HCJDC_OFML        v4.19     --        v4.20     NO LEDGER ROW / behind repo
   usx-il-leads-ofml                IL_LEADS_OFML        v2.8      --        v2.8      NO LEDGER ROW / repo OK
@@ -70,10 +78,11 @@
   usx-ny-nyspin-ejustice           NY_NYSPIN_EJUSTICE   v4.24     --        v4.26     NO LEDGER ROW / behind repo
   usx-oh-leads                     OH_LEADS             v2.11     --        v2.11     NO LEDGER ROW / repo OK
   usx-or-leds                      OR_LEDS              v2.5      --        v2.6      NO LEDGER ROW / behind repo
+  usx-sc-sled                      -                    -         --        --        UNRESOLVED -- CLICKED-BUT-NO-JSON
   usx-tn-ties                      TN_TIES              v2.6      --        v2.6      NO LEDGER ROW / repo OK
   usx-tx-tlets                     TX_TLETS             v4.22     --        v4.22     NO LEDGER ROW / repo OK
 
-  fully agreeing 8 | LEDGER DRIFT 1 | behind repo 10 | measured but NO ledger row 22
+  fully agreeing 8 | LEDGER DRIFT 1 | behind repo 10 | measured but NO ledger row 23
 
   A "behind repo" row is not automatically a defect -- a Foundation tenant is expected to
   lag until someone imports. A LEDGER DRIFT row is: the record and the tenant disagree.

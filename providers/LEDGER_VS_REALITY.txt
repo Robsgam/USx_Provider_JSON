@@ -2,7 +2,7 @@
 ====================================================================================
   OUR RECORDS  vs  WHAT IS ACTUALLY DEPLOYED
 ====================================================================================
-  tenants in the join: 64   version files read: 33   tenants measured: 64   providers in repo: 20
+  tenants in the join: 65   version files read: 59   tenants measured: 72   providers in repo: 21
 
   ---- PER TENANT -------------------------------------------------------------------
   TENANT                         OUR RECORDS SAY                    REALITY (measured)         VERDICT
@@ -15,6 +15,7 @@
   cbp-demo                       *** NO RECORD *** --               - no version string        not ours, and unrecorded
   ccpd                           *** NO RECORD *** --               - no version string        not ours, and unrecorded
   ccpd-jms-migration-round-1     *** NO RECORD *** --               - no version string        not ours, and unrecorded
+  dallastx-foundation            Dallas TX Foundation (no version)  TX_TLETS v4.22             UNRECORDED INSTALL / repo current
   dark-demo                      *** NO RECORD *** --               - no version string        not ours, and unrecorded
   dea-demo                       *** NO RECORD *** --               - no version string        not ours, and unrecorded
   demo                           *** NO RECORD *** --               - no version string        not ours, and unrecorded
@@ -72,7 +73,7 @@
   usx-tn-ties                    Section A: TN_TIES v2.6 logged     TN_TIES v2.6               logs OK / repo current
   usx-tx-tlets                   Section A: TX_TLETS v4.22 logged   TX_TLETS v4.22             logs OK / repo current
 
-  RECORDED 28 | *** UNRECORDED 36 *** | fully agreeing 22 | DRIFT 1 | behind repo 6 | not our build 31
+  RECORDED 29 | *** UNRECORDED 36 *** | fully agreeing 22 | DRIFT 1 | behind repo 6 | not our build 31
 
   ---- PER PROVIDER: how many installs we recorded vs how many exist ---------------
   PROVIDER               REPO     OUR RECORDS (n + versions)   REALITY (n + versions)
@@ -92,7 +93,7 @@
   OH_LEADS               v2.11    1 tenant(s)                  2 tenant(s): v2.11  <== +1 NOT RECORDED
   OR_LEDS                v2.6     1 tenant(s)                  1 tenant(s): v2.6
   TN_TIES                v2.6     1 tenant(s)                  1 tenant(s): v2.6
-  TX_TLETS               v4.22    2 tenant(s)                  2 tenant(s): v4.22
+  TX_TLETS               v4.22    3 tenant(s)                  3 tenant(s): v4.22
 
   Plus 31 tenant(s) carrying a provider bundle with NO version string = NOT OUR BUILD.
   Those are counted in neither column above, because they are not deployments of ours.
