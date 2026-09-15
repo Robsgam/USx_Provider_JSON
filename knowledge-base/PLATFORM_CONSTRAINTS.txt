@@ -1133,3 +1133,60 @@ PORTFOLIO SCOPE -- DELIBERATELY NOT CLAIMED: the `size`-does-not-truncate behavi
   or another provider's tolerance. Read that provider's own state manual. (Same day, a
   cross-provider majority nearly drove a wrong "fix" to TX's Name separator -- see
   FIELD_REFERENCE.txt "SEPARATOR: THE PROVIDER'S OWN STATE MANUAL OVERRIDES".)
+
+================================================================================
+LIMITATION #43: `requirements.defaults[]` ONLY FILLS AN EMPTY FIELD -- IT NEVER
+                OVERRIDES A VALUE THE OFFICER TYPED. So a combo default cannot
+                NORMALISE or FORCE a value, and cannot collapse many codes to one.
+================================================================================
+  STATUS: LIVE-PROVEN docs/evidence/2026-09-15_TRANSLATE_TEST_captures_XOUT_XIN.json
+  (measured 2026-09-15 on practice-robsgambellone, dept 68908334972; 3 captures in that file,
+  the decisive one being transaction 01M2K662T3XSE28AJZMFFE8KRC. Baseline submit in
+  docs/evidence/2026-09-15_TRANSLATE_TEST_capture_XIN_first.json, transaction
+  01M2K60KYC1C4S2FQC6024GAZE.)
+  RIG: tools/build_translate_test.ps1 -> providers/TRANSLATE_TEST.json
+
+  WHAT WAS ASKED. Rob, 2026-09-15, on NY_NYSPIN_EJUSTICE: NY uses CUSTOM NUMERIC in-state
+  plate types and NCIC alpha types out-of-state, and "we would have mulitple ny nistate
+  plate types used on the form tranlasted down to 1 ncic code  we would have this many to
+  one assoication". The cheapest candidate mechanism was a combo default: put
+  defaults[]={LicensePlateTypeCode: PC} on the out-of-state combination and let it
+  overwrite whichever NY code the officer picked. That would have made many-to-one FREE.
+
+  THE MEASUREMENT. Two combinations on one throwaway form, gated exactly like NY's real
+  RVEH/RVEHOUT seam (RegistrationState NOT_EXISTS vs State required):
+    XOUT  set[Plate, RegistrationState, LicensePlateTypeCode, LicensePlateYear]
+          defaults[] LicensePlateTypeCode = PC
+    XIN   set[Plate]  any[LicensePlateTypeCode]  cond RegistrationState NOT_EXISTS
+  Officer typed LicensePlateTypeCode = 16 and filled State = Georgia + Year = 2020, so
+  XOUT matched and its default was live. The wire:
+    <LicensePlateYear>2020</LicensePlateYear><State>GA</State>
+    <LicensePlateTypeCode>16</LicensePlateTypeCode><LicensePlateNumber>TEST</LicensePlateNumber>
+  The default said PC. THE WIRE SAID 16. Two further captures with State blank fired XIN
+  and also carried 16 verbatim.
+
+  TWO CONSEQUENCES, AND THE FIRST IS REASSURING:
+  (a) EVERY combo default shipped across the portfolio is SAFE -- it cannot clobber what an
+      officer typed. That property was assumed and had never been measured. It is why the
+      CAD-default convention (CAD ignores form initialValue, so combo defaults carry the
+      value) does not silently overwrite a real operator entry.
+  (b) A combo default is NOT a normaliser. Do not reach for defaults[] to force a code, to
+      collapse a set of values onto one, or to "correct" an operator's choice. It will
+      silently do nothing whenever the field is non-empty -- i.e. exactly in the case you
+      were designing for.
+
+  WHY NO GATE CAUGHT THIS EITHER WAY. `audit_wiring_closure` class E (INERT DEFAULT) checks
+  only that a default's field is REACHABLE (present in that combination's set[]/any[]); no
+  gate has ever asked what a default DOES to a value already present. The question was
+  therefore unanswerable from the repo and had to be measured on a tenant.
+
+  FREE-TEXT PASSTHROUGH, PROVEN IN THE SAME CAPTURES: a FormInput's typed value reaches the
+  wire verbatim (16 -> <LicensePlateTypeCode>16</LicensePlateTypeCode>, three times). So a
+  provider CAN transmit a code for which no platform code table exists -- relevant wherever
+  a state's code set is not provisioned (contrast LIMITATION #39, where a FormSelect bound
+  to an unprovisioned table renders EMPTY).
+
+  STILL OPEN -- NOT tested by this rig: attribute-level `codeTypeProvider` DISAGREEING with
+  its form control. The rig declared it but the second attribute's targetField was never
+  placed in a combination's set[]/any[], so it was never in the serialization pool and no
+  tag was emitted. Absence there is a RIG DEFECT, not a platform result.

@@ -136,6 +136,9 @@ $cards = @(
             @{ id = 'FLD_STATE'; node = (Sel 'RegistrationState' 'State -- BLANK for in-state, GA for out-of-state' @{ attributeTypeId = 'STATE' } 'ROW_X2') }
             @{ id = 'FLD_PYEAR'; node = (Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_X2') }
         )}
+        @{ id = 'ROW_X3'; cols = @('12'); fields = @(
+            @{ id = 'FLD_PXLAT'; node = (Inp 'PlateTypeXlate' ('M2 translate probe -- type ' + $InStateValue + ' here too') '2' 'ROW_X3') }
+        )}
     )}
 )
 $layouts = MakeLayouts $cards
@@ -162,22 +165,31 @@ $attrs = @(
 
     # M2: same source value, but the ATTRIBUTE declares an NCIC code provider while the control is
     # free text. Nobody has ever made these disagree.
-    Build-QidmAttribute -Name 'PlateTypeViaAttrProvider' -Size 2 -SourceField @('LicensePlateTypeCode') `
+    #
+    # ⚠️ ROUND 1 EMITTED NO TAG FOR THIS AND THAT WAS A RIG DEFECT, NOT A RESULT. An attribute is
+    # serialized only when its SOURCEFIELD is in the firing combination's set[]/any[] pool -- and
+    # `LicensePlateTypeCode` IS in the pool, yet only ONE tag appeared. Two attributes sharing one
+    # sourceField is therefore not sufficient: the platform emitted the attribute whose NAME matches
+    # the pooled field and dropped the other. So M2 now reads its OWN dedicated control
+    # (`PlateTypeXlate`), which is placed in the pool in its own right. If the tag is still absent
+    # after that, the absence is about the MECHANISM rather than about the wiring.
+    Build-QidmAttribute -Name 'PlateTypeXlate' -Size 2 -SourceField @('PlateTypeXlate') `
         -TargetField 'VehicleStyleCode' -CodeTypeProvider 'NCIC' `
-        -Description 'M2 -- attribute-level codeTypeProvider disagreeing with the control.'
+        -Description 'M2 -- attribute-level codeTypeProvider on a dedicated control.'
 )
 
 $combos = @(
     # XOUT first: most specific. M1 lives here -- a default on a field the officer ALREADY filled.
     Build-QidmCombo -KeyReference 'XOUT' -PrimaryFieldReference 'LicensePlateNumber' `
         -Set @('LicensePlateNumber','RegistrationState','LicensePlateTypeCode','LicensePlateYear') `
+        -Any @('PlateTypeXlate') `
         -Defaults @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = $OutOfStateCode }) `
         -State 'Out'
 
     # XIN: in-state. NO default -- this is the raw-passthrough baseline. Gated so it cannot also
     # match an out-of-state fill (the same RegistrationState NOT_EXISTS seam NY already uses).
     Build-QidmCombo -KeyReference 'XIN' -PrimaryFieldReference 'LicensePlateNumber' `
-        -Set @('LicensePlateNumber') -Any @('LicensePlateTypeCode') `
+        -Set @('LicensePlateNumber') -Any @('LicensePlateTypeCode','PlateTypeXlate') `
         -Conditions @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }) `
         -State 'In'
 )
