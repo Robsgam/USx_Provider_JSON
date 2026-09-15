@@ -1308,3 +1308,21 @@ LIMITATION #45: ONE WIRE TAG PER QUERY GETS EXACTLY ONE TRANSFORMATION. A query
   Until one of those, a build must CHOOSE which path is correct and accept the other is wrong. NY
   v4.26 currently sends the NCIC code on both paths, so the IN-STATE path is the wrong one today --
   officer-triggered only (there is no prefill; see the note under LIMITATION #43's evidence).
+
+  ---- SHELVED OPTION, recorded so it is neither lost nor wrongly dismissed (Rob 2026-09-15) ----
+  Rob: "2 car would work where we had one with instae palte ode and the other with our of state
+  plate codes  easy way but not pretty  shelve the thought."
+  TWO CARDS, TWO SOURCEFIELDS, ONE TARGETFIELD -- e.g. an in-state control bound to the NY attribute
+  (no handler -> CODE) on one card, and an out-of-state control (handler -> NAME) on the other, both
+  attributes writing <LicensePlateTypeCode>.
+  ⚠️ I FIRST DISMISSED THIS AS "cards are layout only, so it cannot help". THAT IS AN OVERSTATEMENT.
+  Cards do not clear wall 1 (duplicate targetField) -- but wall 1's real behaviour with ONE SOURCE
+  EMPTY has never been measured. "Only the last wins" could mean the last attribute always clobbers,
+  OR that an unfilled sourceField contributes nothing and the populated sibling stands. Those give
+  OPPOSITE outcomes for exactly this design, and the whole idea turns on which is true.
+  So its status differs from walls 2 and 3: those are measured-closed; this is UNMEASURED and
+  blocked by a GATE RULE (validate's duplicate-targetField FAIL) rather than by demonstrated
+  platform behaviour. If it is ever wanted, the discriminating test is one submit -- two controls,
+  two attributes, one targetField, fill ONE of them, and read whether the value survives. A pass
+  would need a registered divergence to get past the validator, which is the correct order: measure
+  first, then decide whether to suppress the gate for that one case.
