@@ -56,15 +56,27 @@
     Submit A (IN-STATE):      Plate=TEST123, PlateType=16, State BLANK   -> fires XIN
     Submit B (OUT-OF-STATE):  Plate=TEST123, PlateType=16, State=GA      -> fires XOUT
 
-    | tag on the wire        | A expected | B if M1 works | B if M1 does not |
-    |------------------------|-----------|---------------|------------------|
-    | LicensePlateTypeCode   | 16        | PC            | 16               |
-    | VehicleStyleCode  (M2) | 16        | PC            | 16 or translated |
+    | tag on the wire         | mechanism | translation WORKS | translation DOES NOT |
+    |-------------------------|-----------|-------------------|----------------------|
+    | LicensePlateTypeCode    | M1        | PC on submit B    | 16   <- MEASURED, REFUTED |
+    | VehicleStyleCode        | M2a       | a mapped value    | 16 (or absent)       |
+    | VehicleMakeCode         | M2b       | FORD              | CNST_FORD            |
 
-  ⚠️ CONFOUND, NAMED SO IT IS NOT MISREAD AS A RESULT: M2 writes to a SECOND tag
-  (VehicleStyleCode) so raw and translated can be compared IN ONE REQUEST. If that tag is ABSENT
-  ENTIRELY, the likeliest cause is that the field is not valid for this query on this provider --
-  NOT that translation produced nothing. The CONTROL tag is what tells the two apart.
+  ROUND 1 RESULT (2026-09-15, committed evidence): M1 IS REFUTED -- the default said PC and the
+  wire said 16. See LIMITATION #43. M2a emitted no tag at all, which was a RIG DEFECT (its target
+  field was never in a combination pool), not a platform result.
+
+  ⚠️ M2b IS THE DECISIVE TEST AND IT NEEDS NO BASELINE CONTROL. Rob: "lets assume the 16 is a
+  proper code type instead of a fill field.  does that change anything.  can we test iwth any
+  otehr code types to see   it doesnt have to be plate types only." It changes the test
+  fundamentally: a FREE-TEXT source has no code system to map FROM, so M2a may have been testing
+  nothing. VEHICLE_MAKE is the right subject because the untranslated answer is ALREADY MEASURED --
+  LIMITATION #38, 16 logs across 4 providers: the officer picks "CNST_FORD - FORD" and the wire
+  carries CNST_FORD **even though the CONTROL declares codeTypeProvider=NCIC**. So form-level
+  codeTypeProvider is proven NOT to translate; the only untested variable is the same property on
+  the ATTRIBUTE, which is what this rig adds. FORD on the wire = translation exists, NY's
+  many-to-one is viable, AND the PARKED portfolio-wide #38 becomes fixable. CNST_FORD = code-system
+  translation does not exist on the request path, and we stop looking.
 
   ⚠️ PRECONDITION -- PROVE THE OBSERVATION CHANNEL BEFORE IMPORTING ANYTHING. Run any query on the
   target tenant AS IT STANDS and confirm dex-log shows an outgoing CommSys XML. A practice tenant
@@ -136,8 +148,20 @@ $cards = @(
             @{ id = 'FLD_STATE'; node = (Sel 'RegistrationState' 'State -- BLANK for in-state, GA for out-of-state' @{ attributeTypeId = 'STATE' } 'ROW_X2') }
             @{ id = 'FLD_PYEAR'; node = (Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_X2') }
         )}
-        @{ id = 'ROW_X3'; cols = @('12'); fields = @(
-            @{ id = 'FLD_PXLAT'; node = (Inp 'PlateTypeXlate' ('M2 translate probe -- type ' + $InStateValue + ' here too') '2' 'ROW_X3') }
+        @{ id = 'ROW_X3'; cols = @('6','6'); fields = @(
+            @{ id = 'FLD_PXLAT'; node = (Inp 'PlateTypeXlate' ('M2a free-text probe -- type ' + $InStateValue + ' here too') '2' 'ROW_X3') }
+            # M2b -- THE GOOD TEST, and it exists because Rob asked "lets assume the 16 is a proper
+            # code type instead of a fill field ... it doesnt have to be plate types only".
+            # A free-text probe has NO SOURCE CODE SYSTEM to map FROM, so M2a may have been testing
+            # nothing. This control is bound to a REAL code table, built EXACTLY as FL_FCIC builds
+            # it (attributeTypeId=VEHICLE_MAKE + codeTypeProvider=NCIC on the control).
+            # WHY VEHICLE_MAKE IS THE IDEAL SUBJECT: we already KNOW the untranslated answer.
+            # LIMITATION #38 measured it on 16 logs across 4 providers -- the officer picks
+            # "CNST_FORD - FORD" and the wire carries <VehicleMakeCode>CNST_FORD</VehicleMakeCode>,
+            # DESPITE the control declaring codeTypeProvider=NCIC. So FORM-level codeTypeProvider is
+            # ALREADY PROVEN NOT TO TRANSLATE. The single untested variable is the same property on
+            # the ATTRIBUTE. No baseline control is needed here: those 16 logs ARE the baseline.
+            @{ id = 'FLD_VMAKE'; node = (Sel 'VehicleMakeCode' 'M2b code-type probe -- pick any make (e.g. FORD)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_X3') }
         )}
     )}
 )
@@ -175,21 +199,33 @@ $attrs = @(
     # after that, the absence is about the MECHANISM rather than about the wiring.
     Build-QidmAttribute -Name 'PlateTypeXlate' -Size 2 -SourceField @('PlateTypeXlate') `
         -TargetField 'VehicleStyleCode' -CodeTypeProvider 'NCIC' `
-        -Description 'M2 -- attribute-level codeTypeProvider on a dedicated control.'
+        -Description 'M2a -- attribute-level codeTypeProvider over a FREE-TEXT source.'
+
+    # M2b -- THE DECISIVE ONE. Same targetField the 16 LIMITATION #38 logs already measured, so the
+    # comparison is against a KNOWN value rather than against a second control:
+    #   attribute WITHOUT codeTypeProvider (every provider today) -> wire = CNST_FORD
+    #   attribute WITH    codeTypeProvider (nobody, ever)         -> wire = ?
+    # If this emits FORD, attribute-level resolution translates -- which both answers NY's
+    # many-to-one question AND makes LIMITATION #38 (PARKED, portfolio-wide, 21 providers) fixable.
+    # If it emits CNST_FORD, code-system translation does not exist on the request path at all and
+    # we stop looking.
+    Build-QidmAttribute -Name 'VehicleMakeCode' -Size 24 -SourceField @('VehicleMakeCode') `
+        -CodeTypeProvider 'NCIC' `
+        -Description 'M2b -- attribute-level codeTypeProvider over a REAL code table (VEHICLE_MAKE).'
 )
 
 $combos = @(
     # XOUT first: most specific. M1 lives here -- a default on a field the officer ALREADY filled.
     Build-QidmCombo -KeyReference 'XOUT' -PrimaryFieldReference 'LicensePlateNumber' `
         -Set @('LicensePlateNumber','RegistrationState','LicensePlateTypeCode','LicensePlateYear') `
-        -Any @('PlateTypeXlate') `
+        -Any @('PlateTypeXlate','VehicleMakeCode') `
         -Defaults @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = $OutOfStateCode }) `
         -State 'Out'
 
     # XIN: in-state. NO default -- this is the raw-passthrough baseline. Gated so it cannot also
     # match an out-of-state fill (the same RegistrationState NOT_EXISTS seam NY already uses).
     Build-QidmCombo -KeyReference 'XIN' -PrimaryFieldReference 'LicensePlateNumber' `
-        -Set @('LicensePlateNumber') -Any @('LicensePlateTypeCode','PlateTypeXlate') `
+        -Set @('LicensePlateNumber') -Any @('LicensePlateTypeCode','PlateTypeXlate','VehicleMakeCode') `
         -Conditions @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }) `
         -State 'In'
 )
