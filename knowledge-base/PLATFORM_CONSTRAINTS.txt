@@ -25,10 +25,10 @@ LIMITATION #1: Attribute serialization controlled by CONDITIONS POOL, not just f
     populated fields from that pool. The combo that FIRES is determined by set[] matching,
     but serialization draws from the entire conditions-matched pool.
   PROOF (TX_TLETS v3.2):
-    T7: Image=N → DQNameImg conditions (EQUALS Y) FAIL → Image/Reason/Email excluded
-        from pool → DQName catchall fires → XML has only State, Sex, DOB, Name. PASS.
-    T8: Image=Y → DQNameImg conditions (EQUALS Y) PASS (but set[] fails, no Sex) →
-        Image/Reason/Email ADDED to pool → QWName fires → XML includes Image=Y,
+    T7: Image=N ? DQNameImg conditions (EQUALS Y) FAIL ? Image/Reason/Email excluded
+        from pool ? DQName catchall fires ? XML has only State, Sex, DOB, Name. PASS.
+    T8: Image=Y ? DQNameImg conditions (EQUALS Y) PASS (but set[] fails, no Sex) ?
+        Image/Reason/Email ADDED to pool ? QWName fires ? XML includes Image=Y,
         Reason=C even though they are NOT in QWName's set[]/any[]. PASS.
   KEY INSIGHT: Conditions filter the serialization pool. When conditions FAIL, those
     combos' unique fields are excluded even if form values exist. When conditions PASS,
@@ -37,7 +37,7 @@ LIMITATION #1: Attribute serialization controlled by CONDITIONS POOL, not just f
     QIDM. Put fields-to-omit ONLY in conditions-guarded combos' any[]. When conditions
     fail, those fields are excluded from XML. When conditions pass, they serialize.
     No need for separate QIDMs.
-  COMPATIBILITY: QIDMs without conditions behave as originally documented — all combos'
+  COMPATIBILITY: QIDMs without conditions behave as originally documented ? all combos'
     fields form one pool, and all populated attributes serialize. LIMITATION #1 original
     claim is correct for the no-conditions case (e.g., NJ v2.1).
 
@@ -70,7 +70,7 @@ LIMITATION #1: Attribute serialization controlled by CONDITIONS POOL, not just f
     combos (RQV, QVV, M55S). When Plate is present, VIN combos exit the conditions
     pool entirely, so their fields (VehicleIdentificationNumber, VehicleMakeCode,
     VehicleYear) do NOT enter the union pool and are absent from the plate XML.
-    LIVE-PROVEN HI v3.6: all-fields test → only RQ fires; VIN absent from XML. Clean.
+    LIVE-PROVEN HI v3.6: all-fields test ? only RQ fires; VIN absent from XML. Clean.
     FULL RULE: See BUILD_RULES.txt "VEHICLEREGISTRATIONQUERY PLATE-WINS GUARDRAIL".
 
 --------------------------------------------------------------------------------
@@ -746,7 +746,7 @@ LIMITATION #34: DH-suffix fields unreachable from CAD dispatch
 
 --------------------------------------------------------------------------------
 
-LIMITATION #36: Metadata Choice-set — OOS combo path not implemented
+LIMITATION #36: Metadata Choice-set ? OOS combo path not implemented
   CONFIRMED: NY_NYSPIN_EJUSTICE v2.1 (2026-06-08) -- DH OOS combos missing
   Behavior: Metadata XML can define combinations with a Choice structure:
     <Requirements><Set><Choice><Set>..minimal..</Set><Set>..+OOS fields..</Set></Choice></Set></Requirements>
@@ -886,7 +886,7 @@ LIMITATION #38: VEHICLE_MAKE attribute codes reach the CommSys wire with a CNST_
   the dex-log response for one VehicleMakeCode query. Note the USx test tenants send
   ORI/Mnemonic=CA1234567 regardless of provider, so a real state response may not be
   obtainable there at all.
-  ⚠️ THE PREFIX IS NOT ALWAYS "CNST_" -- THIS ENTRY'S TITLE OVERSTATES THE PATTERN.
+  ?? THE PREFIX IS NOT ALWAYS "CNST_" -- THIS ENTRY'S TITLE OVERSTATES THE PATTERN.
   Measured 2026-09-15 (docs/evidence/2026-09-15_TRANSLATE_TEST_round3_code_to_code.json):
   selecting FORD emitted <VehicleStyleCode>FARM_FORD</VehicleStyleCode>, not CNST_FORD.
   So the rule is NOT "a CNST_ prefix is added" -- it is "THE RAW ATTRIBUTE CODE REACHES
@@ -1201,47 +1201,56 @@ LIMITATION #43: `requirements.defaults[]` ONLY FILLS AN EMPTY FIELD -- IT NEVER
   tag was emitted. Absence there is a RIG DEFECT, not a platform result.
 
 ================================================================================
-LIMITATION #44: THERE IS NO CODE-TO-CODE TRANSLATION ON THE COMMSYS REQUEST PATH.
-                The wire carries the SELECTED ATTRIBUTE'S OWN CODE. Nothing in the
-                config can map code set A to code set B, in either direction.
+CAPABILITY #44 (NOT a limitation -- this slot HELD A FALSE LIMITATION FOR ONE HOUR):
+                CommsysResultAttributeMappingRuleHandler RUNS ON THE REQUEST PATH
+                and SUBSTITUTES the mapped value onto the wire. Outgoing code
+                translation IS available.
 ================================================================================
-  STATUS: LIVE-PROVEN docs/evidence/2026-09-15_TRANSLATE_TEST_round3_code_to_code.json
-  (measured 2026-09-15 on practice-robsgambellone, dept 68908334972; 3 submits, and the
-  earlier rounds are in the two sibling files in the same directory.)
+  STATUS: LIVE-PROVEN docs/evidence/2026-09-15_TRANSLATE_TEST_round4_REQUEST_PATH_MAPPING_WORKS.json
+  (measured 2026-09-15 on practice-robsgambellone, dept 68908334972; 3 submits.)
   RIG: tools/build_translate_test.ps1
 
-  WHAT WAS ASKED, and it is a reasonable product request. Rob, on NY_NYSPIN_EJUSTICE: NY uses
-  CUSTOM NUMERIC in-state plate types and NCIC alpha types out-of-state, so the officer should pick
-  from NY's finer-grained list and MANY NY codes should collapse to ONE NCIC code when the query
-  leaves the state -- "we would have this many to one assoication". Then, decisively:
-  "can you tranalaste from one code type to another rather than a filled in field.  i told you they
-   woudl both be code types".
+  THE MEASUREMENT. Same rig, same tag, same selection, across four rounds:
+    attribute WITHOUT the rule (rounds 1-3, 3 captures) ...... <State>GA</State>
+    attribute WITH    the rule (round 4) .................... <State>GEORGIA</State>
+                                                              <State>NEW YORK</State>
+  One variable changed -- the rule -- and the wire value changed with it. The handler executed on an
+  OUTGOING request and replaced the resolved code GA with the attribute table's display value.
+  Attribute shape that did it (hand-written; Build-QidmAttribute does not expose the last two):
+    { name:'State', rule:{ function:'CommsysResultAttributeMappingRuleHandler' }, size:20,
+      sourceField:['RegistrationState'], targetField:'State',
+      codeTypeProvider:'NCIC', attributeType:'STATE', codeTypeSource:'NCIC' }
 
-  THREE MECHANISMS TESTED, ALL REFUTED ON THE WIRE:
-    1. COMBO DEFAULT on a filled field ....... wire kept 16, the default said PC  (LIMITATION #43)
-    2. codeTypeProvider on the FORM CONTROL .. wire carried the raw attribute code (LIMITATION #38,
-                                               16 logs / 4 providers, and re-confirmed here)
-    3. codeTypeProvider on the ATTRIBUTE ..... no-op over free text (16 -> 16); over a code-backed
-                                               control the field did not serialize at all
-  Nothing mapped one code to another under any configuration.
+  ⚠️ I RECORDED THE OPPOSITE OF THIS AS LIMITATION #44 AND IT WAS WRONG. The retracted text said
+  "there is no code-to-code translation on the CommSys request path ... no third option involving a
+  handler ... Do not go looking for one." That instruction would have stopped the next person from
+  finding this. The error was not a bad measurement -- it was DISMISSING A MECHANISM ON
+  CLASSIFICATION INSTEAD OF MEASURING IT: the registry labels this a RESULT handler, all 189 uses in
+  the portfolio are on QUERYRESULTDATAMAPPING, and I reasoned from "where we use it" to "where it
+  can be used". Rob refused that: "isnt this what i asked for? ... why wont it work if it is
+  documented as such". He was right. 189 response-side uses and 0 request-side uses means UNTESTED,
+  never IMPOSSIBLE -- the same trap as the UNUSED handler family and as autoSelect=$false.
 
-  WHAT THE PLATFORM *DOES* DO, and it is easy to mistake for translation: it resolves the DISPLAY
-  value to the attribute's CODE. Measured in the same captures -- "Georgia" -> GA, "New York" -> NY,
-  "Illinois" -> IL, plate type "AM" -> AM. That is display->code, ONE code system. It is not
-  code->code, and observing it is what makes people assume a mapping layer exists.
+  WHAT IS PROVEN vs WHAT IS NOT:
+    PROVEN -- the handler runs on the request path and substitutes the mapped value.
+    PROVEN -- the emitted value is UPPERCASED (GEORGIA, NEW YORK). Favourable: an NCIC-style target
+              code is uppercase anyway.
+    NOT PROVEN -- a MANY-TO-ONE table (16/17/18 -> PC). The mechanism supports it by construction
+              (several codes may share one display value) but no such table exists to test against.
+              The dependency is PROVISIONING, not capability.
 
-  CONSEQUENCE FOR A PROVIDER WHOSE STATE USES A NON-NCIC CODE SET: the only two options are
-    (a) a control whose VALUE IS ALREADY the code the state expects -- a FormInput works and is
-        wire-proven (a typed 16 reached the wire verbatim, three times, in the round-1 captures), or
-    (b) get the state's code table PROVISIONED on the platform and bind a FormSelect to it.
-  There is no third option involving a handler, a default, or a code provider. Do not go looking
-  for one: the UNUSED CommsysGet*CodeRuleHandler family reads as if it might do this and does not
-  (no documented arguments, and #38 shows the resolution path has no mapping step), while
-  IgnoreUserValueRuleHandler is documented FILTER-ONLY.
+  HOW TO USE IT FOR A STATE WITH A NON-NCIC CODE SET (the NY plate-type case that prompted this):
+    provision an attribute table shaped   CODE = the state's own code (16, 17, 18)
+                                          DISPLAY VALUE = the target code (PC)
+    then put this handler on that field's REQUEST attribute. The officer picks from the state's
+    list; the wire carries the mapped code. Several state codes mapping to one target code is
+    exactly the many-to-one association that was asked for.
+  ⚠️ The output is the DISPLAY VALUE, so the table must be built "backwards" from how a display
+  table is normally read -- the human-readable column has to hold the code you want transmitted.
 
-  ⚠️ ONE SIDE QUESTION LEFT OPEN DELIBERATELY: when codeTypeProvider sat on an attribute over a
-  code-backed control, that field emitted NO TAG. Two variables differed in that run (the provider
-  AND the target tag), so "the provider silently DROPS the value" is PLAUSIBLE, NOT PROVEN -- the
-  tag may simply not serialize on that provider. The discriminator is built and takes one submit
-  (provider moved onto the attribute that targets a tag already measured as serializing). It does
-  not affect this limitation either way: nothing translated in any configuration.
+  RELATED, AND MEASURED IN THE SAME RUNS:
+    * codeTypeProvider on an attribute is NOT a translator -- it is the switch that makes the
+      platform emit the CODE instead of the internal numeric row id. validate.ps1 AP #1 enforces it
+      on any attributeTypeId-backed control, and its absence sends a numeric ID. That is why it read
+      as inert when tested for translation: it was doing its real job.
+    * LIMITATION #43 (combo defaults only fill an empty field) still stands -- unaffected.
