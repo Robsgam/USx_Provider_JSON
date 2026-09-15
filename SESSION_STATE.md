@@ -39,11 +39,11 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 **MISSION** -- headline count deliberately NOT restated: it read "13 of 20" and went stale the moment
 SC_SLED became the 21st. **Derive live: `report_mission_status.ps1`.** Owed per that tool 2026-09-14:
 **test 5** (CA_CONTRA_COSTA BLOCKED on Rob's JAWS call; CA_SAN_LUIS_OBISPO, CA_VENTURA, LA_LEMS
-sweep-ready, CA_VENTURA owes a picklist capture for its hollow toggle; **SC_SLED** -- the one
-provider whose sweep CANNOT precede its import) and **jira 2** (CA_CLETS_OCATS DEX-980; CA_eSUN
-DEX-1312/1313 owes a v3.3 release line). TX_TLETS_CCH is PARKED.
-**A never-tested provider is owed a SWEEP, not an import** (Rob 2026-09-09) -- **SC_SLED IS THE ONE
-EXCEPTION, and by necessity: it is on no tenant, so its sweep cannot run until it is imported.**
+sweep-ready, CA_VENTURA owes a picklist capture for its hollow toggle; **SC_SLED now BLOCKED too --
+awaiting corrected SC docs, see its section**) and **jira 2** (CA_CLETS_OCATS DEX-980; CA_eSUN
+DEX-1312/1313 owes a v3.3 release line). TX_TLETS_CCH is PARKED. So 3 of the 5 are actionable.
+**A never-tested provider is owed a SWEEP, not an import** (Rob 2026-09-09) -- SC_SLED was the one
+EXCEPTION (on no tenant, so its sweep needed an import first); that is now MOOT while it is blocked.
 **SDSO LIVE runs eSUN v1.0 vs repo v3.3** -- Rob's call. Handover: `USX_PROJECT_GUIDE.pdf`.
 **ANY PRIOR JSON IS ONE COMMAND:** `get_provider_version.ps1 -Provider <P> -Version <X.Y>` -- 671
 artifacts, byte-exact. RETRIEVAL, not rebuild: re-running an old script does NOT reproduce it.
@@ -56,22 +56,22 @@ and start time both lied 09-14; on 09-15 I curled the WRONG PORT and got the NO-
 **Machine pages** -- heavy gates ONE AT A TIME, never piped through `Select-String` (buffers to 0).
 **BUILT, NEVER CLICKED -- HYPOTHESIS: panel `RUN THE JOB` (`/pulljob`) + `7b` RESCAN.**
 
-## ACTIVE: SC_SLED v1.0 -- the 21st provider, BUILT AND GREEN, NEVER IMPORTED
+## SC_SLED v1.0 -- BUILT AND GREEN, but ⛔ BLOCKED: WAITING ON UPDATED SC DOCS (Rob 2026-09-15)
 
-9 QIDMs / 18 combos / 6 QIFs / 80P-0F-0W-1LIM. The 1 LIM is not debt, it NAMES THE OPEN QUESTION:
-Vehicle's two QIDMs co-fire with no toggle. **MEASURED** -- one plate fires `QVRQ.P` AND `QV.P`
-(PlateType/PlateYear prefilled, so QVRQ.P collapses to an always-present `[Plate]` = QV.P -- the AZ
-`DQPN`/`DQP` exact collision ordering cannot separate). `QVRQ` IS "SC Vehicle Stolen/Reg", so
-stolen ships twice; same on Person (`QWDQ` + `QWA.N`). Rob: *"build both ... cards separate."*
-⚠️ **MASKING IS NOT AVAILABLE AND BOTH MECHANISMS ARE DISQUALIFIED -- do not reach for the
-standing rule.** `queriesToDeselect` alone is REFUTED for this shape (NY v2.8: lower-threshold
-query sent twice, higher zero); `autoSelect=$false` has ZERO tenant-proven carriers (only
-TX_TLETS_CCH's 8, PARKED/never-tested; its one observed outcome is CA_eSUN's disabled Send).
-**THE FIRST IMPORT IS THE DISCRIMINATING TEST** -- it also owes AdministrativeMessage (HYPOTHESIS:
-confirm the 5 real entities still render) and NCIC ST-1. ONLY provider building a standalone
-`VehicleStolenQuery`; FL/HI/NJ removed theirs. Exposed 5 shared-tool blind spots, all fixed and
-verified by 21-provider before/after diffs where ONLY SC_SLED moved (`dr$`/hull alias, `Message`
-suffix in two gates, and `audit_tool_portability` printing success on ZERO cells). Detail: git.
+**DO NOT IMPORT OR SWEEP IT YET.** Rob has asked SC/CommSys for corrected docs because *"the combos
+between veh reg adn veh stolen seem mixed and contrary to every other provider meta data"* -- so the
+AUTHORITY is suspect, and the reg/stolen split is built on it. Importing now would test a build
+derived from a doc we expect to change. The co-fire below is the SYMPTOM of that fusion, not a
+separate bug: `QVRQ`/`QWDQ`/`QBBQ` are COMPOUND keys ("SC Vehicle Stolen/Reg") and no other
+provider fuses the two. Re-adjudicate the whole Vehicle/Person split when the docs land.
+9 QIDMs / 18 combos / 6 QIFs / 80P-0F-0W-1LIM. The 1 LIM NAMES the open question: Vehicle's two
+QIDMs co-fire with no toggle. **MEASURED** -- one plate fires `QVRQ.P` AND `QV.P` (PlateType/
+PlateYear prefilled, so QVRQ.P collapses to `[Plate]` = QV.P -- the AZ `DQPN`/`DQP` collision
+ordering cannot separate), so stolen ships twice; same on Person (`QWDQ` + `QWA.N`).
+⚠️ **MASKING IS NOT AVAILABLE, BOTH MECHANISMS DISQUALIFIED:** `queriesToDeselect` REFUTED for this
+shape (NY v2.8); `autoSelect=$false` has ZERO tenant-proven carriers. Also owed once unblocked:
+AdministrativeMessage (HYPOTHESIS -- confirm the 5 real entities still render) and NCIC ST-1. ONLY
+provider building a standalone `VehicleStolenQuery`; FL/HI/NJ removed theirs. Detail: git.
 
 ## ROB'S CALLS + OPEN FINDINGS -- detail lives in `FINDINGS_REGISTER.md`, do NOT restate it here
 
