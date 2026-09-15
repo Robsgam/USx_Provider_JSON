@@ -49,6 +49,66 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 $lines = @()
 function Say([string]$s) { $script:lines += $s; if (-not $Quiet) { Write-Host $s } }
 
+# ================================================================================================
+#  WHICH CELL IS THE ROW'S VERSION CLAIM? -- added 2026-09-15 after a FALSE AGREE.
+#
+#  The bug: claims were collected from the WHOLE ledger line, prose included. The Dallas TX
+#  Foundation row states "**UNCONFIRMED**" in its Version cell and mentions, in its notes prose,
+#  "Balcones Heights (v4.22 since 2026-08-27)" -- A DIFFERENT TENANT. The measured value for
+#  Dallas was also 4.22, so `$claims -contains $provenVer` was satisfied by another tenant's
+#  version and the row was classified AGREE. Output: "NOTHING TO PROPOSE", on the one row that
+#  said outright that it was unconfirmed.
+#
+#  THIS IS THE INVERSE OF THE EIGHT FALSE DISAGREEs recorded below, and it is the worse
+#  direction: a false DISAGREE is loud and gets investigated, a false AGREE reports NOTHING TO DO
+#  and is indistinguishable from a clean run. Same root cause both times -- reading a version out
+#  of text that was never making a version claim about this tenant.
+#
+#  The fix resolves the claim from the COLUMN THE TABLE ITSELF NAMES, by walking up to the nearest
+#  markdown header row. ⚠️ THE OBVIOUS SHORTCUT IS WRONG: "ignore the last cell because notes are
+#  last" holds for the Section A / B / ticket tables but NOT for the one headed
+#  "| Provider | Version | USx provider tenant | Foundation / LIVE |", which has no notes column
+#  at all and whose final cell can legitimately carry a version. Measured before choosing.
+#
+#  Returns $null when no version-ish column exists (e.g. the B.0 correlation table), and the
+#  caller then keeps the original whole-line behaviour -- so this narrows the claim where a column
+#  exists and changes nothing where it does not.
+# ================================================================================================
+function Get-LedgerVersionCell($lines, [int]$lineNo) {
+    $idx = $lineNo - 1
+    if ($idx -lt 0 -or $idx -ge $lines.Count) { return $null }
+    $row = $lines[$idx]
+    if ($row -notmatch '^\s*\|') { return $null }
+
+    # Walk up for the header: a '|' row immediately followed by a '|---|' separator.
+    $hdr = -1
+    for ($i = $idx - 1; $i -ge 0 -and $i -ge ($idx - 60); $i--) {
+        $l = $lines[$i]
+        if ($l -notmatch '^\s*\|') { break }
+        if ($l -match '^\s*\|[\s:|-]+\|\s*$' -and $i -gt 0 -and $lines[$i - 1] -match '^\s*\|') { $hdr = $i - 1; break }
+    }
+    if ($hdr -lt 0) { return $null }
+
+    $split = {
+        param($s)
+        $t = $s.Trim()
+        $t = $t -replace '^\|', ''
+        $t = $t -replace '\|\s*$', ''
+        return @($t -split '\|' | ForEach-Object { $_.Trim() })
+    }
+    $hcells = & $split $lines[$hdr]
+    $rcells = & $split $row
+
+    for ($c = 0; $c -lt $hcells.Count; $c++) {
+        if ($hcells[$c] -match '(?i)^(version|installed.*|repo)$') {
+            if ($c -lt $rcells.Count) {
+                return [pscustomobject]@{ Column = $hcells[$c]; Text = $rcells[$c]; HeaderLine = ($hdr + 1) }
+            }
+        }
+    }
+    return $null
+}
+
 Say '===================================================================================='
 Say '  LEDGER PATCH PROPOSAL -- read-only. IMPORT_LEDGER.md is never written by this tool.'
 Say '===================================================================================='
@@ -80,7 +140,7 @@ $files = @(Get-ChildItem $tenantDir -Filter '*.json' -File -ErrorAction Silently
 if ($files.Count -eq 0) { Say '  [FAIL] no tenant configs on disk -- nothing measured, so nothing may be proposed.'; exit 1 }
 
 $examined = 0; $proven = 0
-$agree = @(); $disagree = @(); $missing = @(); $ambiguous = @(); $unproven = @(); $noversion = @(); $unparsed = @()
+$agree = @(); $disagree = @(); $missing = @(); $ambiguous = @(); $unproven = @(); $noversion = @(); $unparsed = @(); $nocell = @()
 
 foreach ($f in $files) {
     $sub = ($f.BaseName -replace '_\d+$', '')
@@ -170,8 +230,26 @@ foreach ($f in $files) {
 
     $lineNo = $versioned[0]
     $text = $ledgerLines[$lineNo - 1]
-    # What does the ledger CLAIM for this tenant? Collect every vX.Y on its row.
-    $claims = @([regex]::Matches($text, 'v([0-9]+\.[0-9]+)') | ForEach-Object { $_.Groups[1].Value } | Select-Object -Unique)
+
+    # PREFER THE NAMED COLUMN over the whole line. See Get-LedgerVersionCell -- reading the whole
+    # row let another tenant's version, quoted in the notes prose, satisfy the agreement test.
+    $cell = Get-LedgerVersionCell $ledgerLines $lineNo
+    if ($cell) {
+        $cellClaims = @([regex]::Matches($cell.Text, 'v?([0-9]+\.[0-9]+)') | ForEach-Object { $_.Groups[1].Value } | Select-Object -Unique)
+        if ($cellClaims.Count -eq 0) {
+            # The row HAS a version column and it states no version (UNCONFIRMED / UNKNOWN / --).
+            # That is a recordable gap with a definite fix, not the B.0-counter case, so it gets
+            # its own class rather than being folded into 'row states no version'.
+            $nocell += [pscustomobject]@{ Sub = $sub; Dept = $dept; Provider = $pn; Proven = $provenVer
+                                          Line = $lineNo; Column = $cell.Column; Now = $cell.Text }
+            continue
+        }
+        $claims = $cellClaims
+    }
+    else {
+        # No version-ish column (e.g. the B.0 correlation table) -- original whole-line behaviour.
+        $claims = @([regex]::Matches($text, 'v([0-9]+\.[0-9]+)') | ForEach-Object { $_.Groups[1].Value } | Select-Object -Unique)
+    }
 
     if ($claims -contains $provenVer) {
         $agree += [pscustomobject]@{ Sub = $sub; Dept = $dept; Provider = $pn; Proven = $provenVer; Line = $lineNo }
@@ -183,8 +261,8 @@ foreach ($f in $files) {
 
 Say ('  tenants: {0} examined / {1} CONTENT-PROVEN against a repo build' -f $examined, $proven)
 Say ''
-Say ('  agree {0}  |  DISAGREE {1}  |  NO LEDGER ROW {2}  |  row states no version {3}  |  ambiguous {4}  |  not content-proven {5}' -f
-     $agree.Count, $disagree.Count, $missing.Count, $noversion.Count, $ambiguous.Count, $unproven.Count)
+Say ('  agree {0}  |  DISAGREE {1}  |  NO LEDGER ROW {2}  |  version cell EMPTY {3}  |  row states no version {4}  |  ambiguous {5}  |  not content-proven {6}' -f
+     $agree.Count, $disagree.Count, $missing.Count, $nocell.Count, $noversion.Count, $ambiguous.Count, $unproven.Count)
 if ($unparsed.Count -gt 0) {
     # Printed, never silently dropped: a skipped input is part of the denominator.
     Say ''
@@ -243,9 +321,30 @@ if ($missing.Count -gt 0) {
     Say ''
 }
 
+if ($nocell.Count -gt 0) {
+    Say '===================================================================================='
+    Say '  PROPOSAL 3 -- THE ROW HAS A VERSION COLUMN AND IT STATES NO VERSION'
+    Say '===================================================================================='
+    Say '  These rows sit in a VERSIONED table (Section A / B) and their version cell says'
+    Say '  nothing -- UNCONFIRMED, UNKNOWN or blank. Unlike PROPOSAL 4 below this is not a'
+    Say '  by-design gap: the cell exists to hold exactly this value, and content now proves it.'
+    Say '  NOTE: this class exists because a row like this was previously reported as AGREE -- the'
+    Say '  measured version happened to appear in the notes prose, describing ANOTHER tenant.'
+    Say ''
+    foreach ($r in ($nocell | Sort-Object Provider, Sub)) {
+        Say ('  {0}  (dept {1})' -f $r.Sub, $r.Dept)
+        Say ('    measured : {0} v{1}   -- every comparable bundle hashes equal to the repo build' -f $r.Provider, $r.Proven)
+        Say ('    ledger   : line {0}, column "{1}" now reads: {2}' -f $r.Line, $r.Column, $r.Now)
+        Say ('    EDIT     : on line {0}, set the "{1}" cell to "v{2}"' -f $r.Line, $r.Column, $r.Proven)
+        Say ('    KEEP     : whatever the notes say about the IMPORT being unproven -- content proves')
+        Say ('               what is installed, NOT that an import changed it.')
+        Say ''
+    }
+}
+
 if ($noversion.Count -gt 0) {
     Say '===================================================================================='
-    Say '  PROPOSAL 3 -- THE LEDGER MENTIONS THIS TENANT BUT RECORDS NO VERSION'
+    Say '  PROPOSAL 4 -- THE LEDGER MENTIONS THIS TENANT BUT RECORDS NO VERSION'
     Say '===================================================================================='
     Say '  These are NOT contradictions -- the row exists and states nothing about a version.'
     Say '  Most are Section B.0, the NAME CORRELATION table, whose cells carry a PLATFORM COUNTER'
@@ -283,7 +382,7 @@ if ($unproven.Count -gt 0) {
     Say ''
 }
 
-if ($disagree.Count -eq 0 -and $missing.Count -eq 0 -and $noversion.Count -eq 0) {
+if ($disagree.Count -eq 0 -and $missing.Count -eq 0 -and $noversion.Count -eq 0 -and $nocell.Count -eq 0) {
     Say '  NOTHING TO PROPOSE -- every content-proven tenant already agrees with the ledger.'
     Say '  (That is a real result, not an empty run: the denominator is printed above.)'
 }
