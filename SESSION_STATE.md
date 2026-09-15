@@ -65,13 +65,11 @@ derived from a doc we expect to change. The co-fire below is the SYMPTOM of that
 separate bug: `QVRQ`/`QWDQ`/`QBBQ` are COMPOUND keys ("SC Vehicle Stolen/Reg") and no other
 provider fuses the two. Re-adjudicate the whole Vehicle/Person split when the docs land.
 9 QIDMs / 18 combos / 6 QIFs / 80P-0F-0W-1LIM. The 1 LIM NAMES the open question: Vehicle's two
-QIDMs co-fire with no toggle. **MEASURED** -- one plate fires `QVRQ.P` AND `QV.P` (PlateType/
-PlateYear prefilled, so QVRQ.P collapses to `[Plate]` = QV.P -- the AZ `DQPN`/`DQP` collision
-ordering cannot separate), so stolen ships twice; same on Person (`QWDQ` + `QWA.N`).
-⚠️ **MASKING IS NOT AVAILABLE, BOTH MECHANISMS DISQUALIFIED:** `queriesToDeselect` REFUTED for this
-shape (NY v2.8); `autoSelect=$false` has ZERO tenant-proven carriers. Also owed once unblocked:
-AdministrativeMessage (HYPOTHESIS -- confirm the 5 real entities still render) and NCIC ST-1. ONLY
-provider building a standalone `VehicleStolenQuery`; FL/HI/NJ removed theirs. Detail: git.
+QIDMs co-fire with no toggle -- **MEASURED**, one plate fires `QVRQ.P` AND `QV.P` so stolen ships
+twice; same on Person (`QWDQ` + `QWA.N`). ⚠️ **MASKING IS NOT AVAILABLE:** `queriesToDeselect`
+REFUTED for this shape (NY v2.8); `autoSelect=$false` has ZERO tenant-proven carriers. Also owed
+once unblocked: AdministrativeMessage (HYPOTHESIS) and NCIC ST-1. ONLY provider building a
+standalone `VehicleStolenQuery`; FL/HI/NJ removed theirs. Detail: git.
 
 ## ROB'S CALLS + OPEN FINDINGS -- detail lives in `FINDINGS_REGISTER.md`, do NOT restate it here
 
@@ -83,15 +81,13 @@ provider building a standalone `VehicleStolenQuery`; FL/HI/NJ removed theirs. De
 ## THE DEPLOY LOOP IS BUILT AND PROVEN -- and ALL TENANT WORK IS HELD (Rob 2026-09-14)
 
 **RECOVERY RECORD: `providers\HELD_TENANT_WORK.md` -- READ IT BEFORE RESUMING.** Nothing is
-half-applied; the only outstanding action is ONE operator click. In one line: `newarkpd-foundation`
-(68055618928) runs NJ_NJCJIS v4.16 while ledger AND catalog say v4.17, proven five ways. Loop:
-`emit_import_job.ps1` -> review `IMPORT_JOB.json` -> panel **RUN THE JOB FOR THIS TENANT** -> auto
-re-export -> `watch_imports.ps1` -> `verify_tenant_import`. `deploy_probe.js` is the ONLY writer;
-dry-run default; 46 mutation cases. ⚠️ **GUI only, never a console command.** ⚠️ An import
-**REPLACES** the bundle set. ⚠️ Unexplained and worth more than the import: **WHY the 2026-08-20
-Newark import did not land.** Held (Rob's): scoping, `LEDGER_PATCH.md`, `hawaii-dle` LIVE, the
-batch, Confluence. **Dallas 67985044065: TX imported by hand 09-14, provider+version UNCONFIRMED
-and the import UNPROVABLE (no `_before`) -- a config pull settles what is installed.**
+half-applied; the only outstanding action is ONE operator click. `newarkpd-foundation` (68055618928)
+runs NJ_NJCJIS v4.16 while ledger AND catalog say v4.17, proven five ways -- and per Rob it stays
+MANUAL. Loop: `emit_import_job.ps1` -> review `IMPORT_JOB.json` -> panel **RUN THE JOB FOR THIS
+TENANT** -> auto re-export -> `watch_imports.ps1` -> `verify_tenant_import`. `deploy_probe.js` is
+the ONLY writer; dry-run default; 46 mutation cases. ⚠️ **GUI only, never a console command.**
+⚠️ An import **REPLACES** the bundle set. ⚠️ Still unexplained and worth more than the import:
+**WHY the 2026-08-20 Newark import did not land.** Held (Rob's): scoping, the batch, Confluence.
 
 ## DO NOT RE-RAISE
 
@@ -104,6 +100,10 @@ and the import UNPROVABLE (no `_before`) -- a config pull settles what is instal
   `FINDINGS_REGISTER.md`). **NJ guardrail mutation: N/A, not stale** -- do NOT re-aim. Both were
   stale-OWED claims IN THIS FILE that invented work -- **measure before believing this file.**
 - **Jira is HELD and lifts ONE PROVIDER AT A TIME.** No approval carries to the next provider.
+- **`hawaii-dle` LIVE on v4.15 vs repo v4.20 = DECISION, NOT A GAP** (Rob 09-15: *"hawaii will sit at
+  that version until we meet with them again"*) -- reports will keep flagging it; that is correct
+  signal. **NEWARK STAYS MANUAL FOREVER** (*"will not be automated without me"*). Dallas ledger row
+  CLOSED 09-15: content-proven v4.22, applied on Rob's instruction.
 
 ## RULES I BROKE -- READ BEFORE EDITING
 
