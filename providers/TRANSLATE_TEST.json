@@ -76,8 +76,7 @@
                                                                                                      "hidden":  false,
                                                                                                      "nodes":  [
                                                                                                                    "ROW_X1",
-                                                                                                                   "ROW_X2",
-                                                                                                                   "ROW_X3"
+                                                                                                                   "ROW_X2"
                                                                                                                ],
                                                                                                      "linkedNodes":  {
 
@@ -99,7 +98,7 @@
                                                                                                  "hidden":  false,
                                                                                                  "nodes":  [
                                                                                                                "FLD_PLATE",
-                                                                                                               "FLD_PTYPE"
+                                                                                                               "FLD_STATE"
                                                                                                            ],
                                                                                                  "linkedNodes":  {
 
@@ -113,7 +112,7 @@
                                                                                                     "displayName":  "Input",
                                                                                                     "props":  {
                                                                                                                   "fieldId":  "LicensePlateNumber",
-                                                                                                                  "label":  "Plate",
+                                                                                                                  "label":  "Plate (carrier -- just type TEST123)",
                                                                                                                   "maxLength":  "10"
                                                                                                               },
                                                                                                     "isCanvas":  false,
@@ -126,15 +125,15 @@
                                                                                                                     },
                                                                                                     "parent":  "ROW_X1"
                                                                                                 },
-                                                                                  "FLD_PTYPE":  {
+                                                                                  "FLD_STATE":  {
                                                                                                     "type":  {
-                                                                                                                 "resolvedName":  "FormInput"
+                                                                                                                 "resolvedName":  "FormSelect"
                                                                                                              },
-                                                                                                    "displayName":  "Input",
+                                                                                                    "displayName":  "Select",
                                                                                                     "props":  {
-                                                                                                                  "fieldId":  "LicensePlateTypeCode",
-                                                                                                                  "label":  "Plate Type -- type 16",
-                                                                                                                  "maxLength":  "2"
+                                                                                                                  "fieldId":  "RegistrationState",
+                                                                                                                  "label":  "State (optional)",
+                                                                                                                  "attributeTypeId":  "STATE"
                                                                                                               },
                                                                                                     "isCanvas":  false,
                                                                                                     "hidden":  false,
@@ -153,30 +152,35 @@
                                                                                                  "displayName":  "Row",
                                                                                                  "props":  {
                                                                                                                "templateColumns":  [
-                                                                                                                                       "6",
-                                                                                                                                       "6"
+                                                                                                                                       "3",
+                                                                                                                                       "3",
+                                                                                                                                       "3",
+                                                                                                                                       "3"
                                                                                                                                    ]
                                                                                                            },
                                                                                                  "isCanvas":  true,
                                                                                                  "hidden":  false,
                                                                                                  "nodes":  [
-                                                                                                               "FLD_STATE",
-                                                                                                               "FLD_PYEAR"
+                                                                                                               "FLD_PTYPE",
+                                                                                                               "FLD_PYEAR",
+                                                                                                               "FLD_VMAKE",
+                                                                                                               "FLD_VMXLT"
                                                                                                            ],
                                                                                                  "linkedNodes":  {
 
                                                                                                                  },
                                                                                                  "parent":  "CARD_XLATE"
                                                                                              },
-                                                                                  "FLD_STATE":  {
+                                                                                  "FLD_PTYPE":  {
                                                                                                     "type":  {
                                                                                                                  "resolvedName":  "FormSelect"
                                                                                                              },
                                                                                                     "displayName":  "Select",
                                                                                                     "props":  {
-                                                                                                                  "fieldId":  "RegistrationState",
-                                                                                                                  "label":  "State -- BLANK for in-state, GA for out-of-state",
-                                                                                                                  "attributeTypeId":  "STATE"
+                                                                                                                  "fieldId":  "LicensePlateTypeCode",
+                                                                                                                  "label":  "Plate Type (present only to satisfy the Vehicle-form convention)",
+                                                                                                                  "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE",
+                                                                                                                  "codeTypeSource":  "NCIC"
                                                                                                               },
                                                                                                     "isCanvas":  false,
                                                                                                     "hidden":  false,
@@ -195,7 +199,7 @@
                                                                                                     "displayName":  "Input",
                                                                                                     "props":  {
                                                                                                                   "fieldId":  "LicensePlateYear",
-                                                                                                                  "label":  "Plate Year",
+                                                                                                                  "label":  "Plate Year (same reason)",
                                                                                                                   "maxLength":  "4"
                                                                                                               },
                                                                                                     "isCanvas":  false,
@@ -208,48 +212,6 @@
                                                                                                                     },
                                                                                                     "parent":  "ROW_X2"
                                                                                                 },
-                                                                                  "ROW_X3":  {
-                                                                                                 "type":  {
-                                                                                                              "resolvedName":  "Row"
-                                                                                                          },
-                                                                                                 "displayName":  "Row",
-                                                                                                 "props":  {
-                                                                                                               "templateColumns":  [
-                                                                                                                                       "6",
-                                                                                                                                       "6"
-                                                                                                                                   ]
-                                                                                                           },
-                                                                                                 "isCanvas":  true,
-                                                                                                 "hidden":  false,
-                                                                                                 "nodes":  [
-                                                                                                               "FLD_PXLAT",
-                                                                                                               "FLD_VMAKE"
-                                                                                                           ],
-                                                                                                 "linkedNodes":  {
-
-                                                                                                                 },
-                                                                                                 "parent":  "CARD_XLATE"
-                                                                                             },
-                                                                                  "FLD_PXLAT":  {
-                                                                                                    "type":  {
-                                                                                                                 "resolvedName":  "FormInput"
-                                                                                                             },
-                                                                                                    "displayName":  "Input",
-                                                                                                    "props":  {
-                                                                                                                  "fieldId":  "PlateTypeXlate",
-                                                                                                                  "label":  "M2a free-text probe -- type 16 here too",
-                                                                                                                  "maxLength":  "2"
-                                                                                                              },
-                                                                                                    "isCanvas":  false,
-                                                                                                    "hidden":  false,
-                                                                                                    "nodes":  [
-
-                                                                                                              ],
-                                                                                                    "linkedNodes":  {
-
-                                                                                                                    },
-                                                                                                    "parent":  "ROW_X3"
-                                                                                                },
                                                                                   "FLD_VMAKE":  {
                                                                                                     "type":  {
                                                                                                                  "resolvedName":  "FormSelect"
@@ -257,7 +219,7 @@
                                                                                                     "displayName":  "Select",
                                                                                                     "props":  {
                                                                                                                   "fieldId":  "VehicleMakeCode",
-                                                                                                                  "label":  "M2b code-type probe -- pick any make (e.g. FORD)",
+                                                                                                                  "label":  "BASELINE -- pick FORD",
                                                                                                                   "attributeTypeId":  "VEHICLE_MAKE",
                                                                                                                   "codeTypeProvider":  "NCIC"
                                                                                                               },
@@ -269,7 +231,27 @@
                                                                                                     "linkedNodes":  {
 
                                                                                                                     },
-                                                                                                    "parent":  "ROW_X3"
+                                                                                                    "parent":  "ROW_X2"
+                                                                                                },
+                                                                                  "FLD_VMXLT":  {
+                                                                                                    "type":  {
+                                                                                                                 "resolvedName":  "FormSelect"
+                                                                                                             },
+                                                                                                    "displayName":  "Select",
+                                                                                                    "props":  {
+                                                                                                                  "fieldId":  "VehicleMakeXlate",
+                                                                                                                  "label":  "TRANSLATE TEST -- pick the SAME make (FORD)",
+                                                                                                                  "attributeTypeId":  "VEHICLE_MAKE"
+                                                                                                              },
+                                                                                                    "isCanvas":  false,
+                                                                                                    "hidden":  false,
+                                                                                                    "nodes":  [
+
+                                                                                                              ],
+                                                                                                    "linkedNodes":  {
+
+                                                                                                                    },
+                                                                                                    "parent":  "ROW_X2"
                                                                                                 }
                                                                               },
                                                                   "CAD_DISPATCH":  {
@@ -340,8 +322,7 @@
                                                                                                           "hidden":  false,
                                                                                                           "nodes":  [
                                                                                                                         "ROW_X1",
-                                                                                                                        "ROW_X2",
-                                                                                                                        "ROW_X3"
+                                                                                                                        "ROW_X2"
                                                                                                                     ],
                                                                                                           "linkedNodes":  {
 
@@ -363,7 +344,7 @@
                                                                                                       "hidden":  false,
                                                                                                       "nodes":  [
                                                                                                                     "FLD_PLATE",
-                                                                                                                    "FLD_PTYPE"
+                                                                                                                    "FLD_STATE"
                                                                                                                 ],
                                                                                                       "linkedNodes":  {
 
@@ -377,7 +358,7 @@
                                                                                                          "displayName":  "Input",
                                                                                                          "props":  {
                                                                                                                        "fieldId":  "LicensePlateNumber",
-                                                                                                                       "label":  "Plate",
+                                                                                                                       "label":  "Plate (carrier -- just type TEST123)",
                                                                                                                        "maxLength":  "10"
                                                                                                                    },
                                                                                                          "isCanvas":  false,
@@ -390,15 +371,15 @@
                                                                                                                          },
                                                                                                          "parent":  "ROW_X1"
                                                                                                      },
-                                                                                       "FLD_PTYPE":  {
+                                                                                       "FLD_STATE":  {
                                                                                                          "type":  {
-                                                                                                                      "resolvedName":  "FormInput"
+                                                                                                                      "resolvedName":  "FormSelect"
                                                                                                                   },
-                                                                                                         "displayName":  "Input",
+                                                                                                         "displayName":  "Select",
                                                                                                          "props":  {
-                                                                                                                       "fieldId":  "LicensePlateTypeCode",
-                                                                                                                       "label":  "Plate Type -- type 16",
-                                                                                                                       "maxLength":  "2"
+                                                                                                                       "fieldId":  "RegistrationState",
+                                                                                                                       "label":  "State (optional)",
+                                                                                                                       "attributeTypeId":  "STATE"
                                                                                                                    },
                                                                                                          "isCanvas":  false,
                                                                                                          "hidden":  false,
@@ -417,30 +398,35 @@
                                                                                                       "displayName":  "Row",
                                                                                                       "props":  {
                                                                                                                     "templateColumns":  [
-                                                                                                                                            "6",
-                                                                                                                                            "6"
+                                                                                                                                            "3",
+                                                                                                                                            "3",
+                                                                                                                                            "3",
+                                                                                                                                            "3"
                                                                                                                                         ]
                                                                                                                 },
                                                                                                       "isCanvas":  true,
                                                                                                       "hidden":  false,
                                                                                                       "nodes":  [
-                                                                                                                    "FLD_STATE",
-                                                                                                                    "FLD_PYEAR"
+                                                                                                                    "FLD_PTYPE",
+                                                                                                                    "FLD_PYEAR",
+                                                                                                                    "FLD_VMAKE",
+                                                                                                                    "FLD_VMXLT"
                                                                                                                 ],
                                                                                                       "linkedNodes":  {
 
                                                                                                                       },
                                                                                                       "parent":  "CARD_XLATE"
                                                                                                   },
-                                                                                       "FLD_STATE":  {
+                                                                                       "FLD_PTYPE":  {
                                                                                                          "type":  {
                                                                                                                       "resolvedName":  "FormSelect"
                                                                                                                   },
                                                                                                          "displayName":  "Select",
                                                                                                          "props":  {
-                                                                                                                       "fieldId":  "RegistrationState",
-                                                                                                                       "label":  "State -- BLANK for in-state, GA for out-of-state",
-                                                                                                                       "attributeTypeId":  "STATE"
+                                                                                                                       "fieldId":  "LicensePlateTypeCode",
+                                                                                                                       "label":  "Plate Type (present only to satisfy the Vehicle-form convention)",
+                                                                                                                       "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE",
+                                                                                                                       "codeTypeSource":  "NCIC"
                                                                                                                    },
                                                                                                          "isCanvas":  false,
                                                                                                          "hidden":  false,
@@ -459,7 +445,7 @@
                                                                                                          "displayName":  "Input",
                                                                                                          "props":  {
                                                                                                                        "fieldId":  "LicensePlateYear",
-                                                                                                                       "label":  "Plate Year",
+                                                                                                                       "label":  "Plate Year (same reason)",
                                                                                                                        "maxLength":  "4"
                                                                                                                    },
                                                                                                          "isCanvas":  false,
@@ -472,48 +458,6 @@
                                                                                                                          },
                                                                                                          "parent":  "ROW_X2"
                                                                                                      },
-                                                                                       "ROW_X3":  {
-                                                                                                      "type":  {
-                                                                                                                   "resolvedName":  "Row"
-                                                                                                               },
-                                                                                                      "displayName":  "Row",
-                                                                                                      "props":  {
-                                                                                                                    "templateColumns":  [
-                                                                                                                                            "6",
-                                                                                                                                            "6"
-                                                                                                                                        ]
-                                                                                                                },
-                                                                                                      "isCanvas":  true,
-                                                                                                      "hidden":  false,
-                                                                                                      "nodes":  [
-                                                                                                                    "FLD_PXLAT",
-                                                                                                                    "FLD_VMAKE"
-                                                                                                                ],
-                                                                                                      "linkedNodes":  {
-
-                                                                                                                      },
-                                                                                                      "parent":  "CARD_XLATE"
-                                                                                                  },
-                                                                                       "FLD_PXLAT":  {
-                                                                                                         "type":  {
-                                                                                                                      "resolvedName":  "FormInput"
-                                                                                                                  },
-                                                                                                         "displayName":  "Input",
-                                                                                                         "props":  {
-                                                                                                                       "fieldId":  "PlateTypeXlate",
-                                                                                                                       "label":  "M2a free-text probe -- type 16 here too",
-                                                                                                                       "maxLength":  "2"
-                                                                                                                   },
-                                                                                                         "isCanvas":  false,
-                                                                                                         "hidden":  false,
-                                                                                                         "nodes":  [
-
-                                                                                                                   ],
-                                                                                                         "linkedNodes":  {
-
-                                                                                                                         },
-                                                                                                         "parent":  "ROW_X3"
-                                                                                                     },
                                                                                        "FLD_VMAKE":  {
                                                                                                          "type":  {
                                                                                                                       "resolvedName":  "FormSelect"
@@ -521,7 +465,7 @@
                                                                                                          "displayName":  "Select",
                                                                                                          "props":  {
                                                                                                                        "fieldId":  "VehicleMakeCode",
-                                                                                                                       "label":  "M2b code-type probe -- pick any make (e.g. FORD)",
+                                                                                                                       "label":  "BASELINE -- pick FORD",
                                                                                                                        "attributeTypeId":  "VEHICLE_MAKE",
                                                                                                                        "codeTypeProvider":  "NCIC"
                                                                                                                    },
@@ -533,7 +477,27 @@
                                                                                                          "linkedNodes":  {
 
                                                                                                                          },
-                                                                                                         "parent":  "ROW_X3"
+                                                                                                         "parent":  "ROW_X2"
+                                                                                                     },
+                                                                                       "FLD_VMXLT":  {
+                                                                                                         "type":  {
+                                                                                                                      "resolvedName":  "FormSelect"
+                                                                                                                  },
+                                                                                                         "displayName":  "Select",
+                                                                                                         "props":  {
+                                                                                                                       "fieldId":  "VehicleMakeXlate",
+                                                                                                                       "label":  "TRANSLATE TEST -- pick the SAME make (FORD)",
+                                                                                                                       "attributeTypeId":  "VEHICLE_MAKE"
+                                                                                                                   },
+                                                                                                         "isCanvas":  false,
+                                                                                                         "hidden":  false,
+                                                                                                         "nodes":  [
+
+                                                                                                                   ],
+                                                                                                         "linkedNodes":  {
+
+                                                                                                                         },
+                                                                                                         "parent":  "ROW_X2"
                                                                                                      },
                                                                                        "CONTEXT_INFO_CARD":  {
                                                                                                                  "type":  {
@@ -685,8 +649,7 @@
                                                                                                              "hidden":  false,
                                                                                                              "nodes":  [
                                                                                                                            "ROW_X1",
-                                                                                                                           "ROW_X2",
-                                                                                                                           "ROW_X3"
+                                                                                                                           "ROW_X2"
                                                                                                                        ],
                                                                                                              "linkedNodes":  {
 
@@ -708,7 +671,7 @@
                                                                                                          "hidden":  false,
                                                                                                          "nodes":  [
                                                                                                                        "FLD_PLATE",
-                                                                                                                       "FLD_PTYPE"
+                                                                                                                       "FLD_STATE"
                                                                                                                    ],
                                                                                                          "linkedNodes":  {
 
@@ -722,7 +685,7 @@
                                                                                                             "displayName":  "Input",
                                                                                                             "props":  {
                                                                                                                           "fieldId":  "LicensePlateNumber",
-                                                                                                                          "label":  "Plate",
+                                                                                                                          "label":  "Plate (carrier -- just type TEST123)",
                                                                                                                           "maxLength":  "10"
                                                                                                                       },
                                                                                                             "isCanvas":  false,
@@ -735,15 +698,15 @@
                                                                                                                             },
                                                                                                             "parent":  "ROW_X1"
                                                                                                         },
-                                                                                          "FLD_PTYPE":  {
+                                                                                          "FLD_STATE":  {
                                                                                                             "type":  {
-                                                                                                                         "resolvedName":  "FormInput"
+                                                                                                                         "resolvedName":  "FormSelect"
                                                                                                                      },
-                                                                                                            "displayName":  "Input",
+                                                                                                            "displayName":  "Select",
                                                                                                             "props":  {
-                                                                                                                          "fieldId":  "LicensePlateTypeCode",
-                                                                                                                          "label":  "Plate Type -- type 16",
-                                                                                                                          "maxLength":  "2"
+                                                                                                                          "fieldId":  "RegistrationState",
+                                                                                                                          "label":  "State (optional)",
+                                                                                                                          "attributeTypeId":  "STATE"
                                                                                                                       },
                                                                                                             "isCanvas":  false,
                                                                                                             "hidden":  false,
@@ -762,30 +725,35 @@
                                                                                                          "displayName":  "Row",
                                                                                                          "props":  {
                                                                                                                        "templateColumns":  [
-                                                                                                                                               "6",
-                                                                                                                                               "6"
+                                                                                                                                               "3",
+                                                                                                                                               "3",
+                                                                                                                                               "3",
+                                                                                                                                               "3"
                                                                                                                                            ]
                                                                                                                    },
                                                                                                          "isCanvas":  true,
                                                                                                          "hidden":  false,
                                                                                                          "nodes":  [
-                                                                                                                       "FLD_STATE",
-                                                                                                                       "FLD_PYEAR"
+                                                                                                                       "FLD_PTYPE",
+                                                                                                                       "FLD_PYEAR",
+                                                                                                                       "FLD_VMAKE",
+                                                                                                                       "FLD_VMXLT"
                                                                                                                    ],
                                                                                                          "linkedNodes":  {
 
                                                                                                                          },
                                                                                                          "parent":  "CARD_XLATE"
                                                                                                      },
-                                                                                          "FLD_STATE":  {
+                                                                                          "FLD_PTYPE":  {
                                                                                                             "type":  {
                                                                                                                          "resolvedName":  "FormSelect"
                                                                                                                      },
                                                                                                             "displayName":  "Select",
                                                                                                             "props":  {
-                                                                                                                          "fieldId":  "RegistrationState",
-                                                                                                                          "label":  "State -- BLANK for in-state, GA for out-of-state",
-                                                                                                                          "attributeTypeId":  "STATE"
+                                                                                                                          "fieldId":  "LicensePlateTypeCode",
+                                                                                                                          "label":  "Plate Type (present only to satisfy the Vehicle-form convention)",
+                                                                                                                          "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE",
+                                                                                                                          "codeTypeSource":  "NCIC"
                                                                                                                       },
                                                                                                             "isCanvas":  false,
                                                                                                             "hidden":  false,
@@ -804,7 +772,7 @@
                                                                                                             "displayName":  "Input",
                                                                                                             "props":  {
                                                                                                                           "fieldId":  "LicensePlateYear",
-                                                                                                                          "label":  "Plate Year",
+                                                                                                                          "label":  "Plate Year (same reason)",
                                                                                                                           "maxLength":  "4"
                                                                                                                       },
                                                                                                             "isCanvas":  false,
@@ -817,48 +785,6 @@
                                                                                                                             },
                                                                                                             "parent":  "ROW_X2"
                                                                                                         },
-                                                                                          "ROW_X3":  {
-                                                                                                         "type":  {
-                                                                                                                      "resolvedName":  "Row"
-                                                                                                                  },
-                                                                                                         "displayName":  "Row",
-                                                                                                         "props":  {
-                                                                                                                       "templateColumns":  [
-                                                                                                                                               "6",
-                                                                                                                                               "6"
-                                                                                                                                           ]
-                                                                                                                   },
-                                                                                                         "isCanvas":  true,
-                                                                                                         "hidden":  false,
-                                                                                                         "nodes":  [
-                                                                                                                       "FLD_PXLAT",
-                                                                                                                       "FLD_VMAKE"
-                                                                                                                   ],
-                                                                                                         "linkedNodes":  {
-
-                                                                                                                         },
-                                                                                                         "parent":  "CARD_XLATE"
-                                                                                                     },
-                                                                                          "FLD_PXLAT":  {
-                                                                                                            "type":  {
-                                                                                                                         "resolvedName":  "FormInput"
-                                                                                                                     },
-                                                                                                            "displayName":  "Input",
-                                                                                                            "props":  {
-                                                                                                                          "fieldId":  "PlateTypeXlate",
-                                                                                                                          "label":  "M2a free-text probe -- type 16 here too",
-                                                                                                                          "maxLength":  "2"
-                                                                                                                      },
-                                                                                                            "isCanvas":  false,
-                                                                                                            "hidden":  false,
-                                                                                                            "nodes":  [
-
-                                                                                                                      ],
-                                                                                                            "linkedNodes":  {
-
-                                                                                                                            },
-                                                                                                            "parent":  "ROW_X3"
-                                                                                                        },
                                                                                           "FLD_VMAKE":  {
                                                                                                             "type":  {
                                                                                                                          "resolvedName":  "FormSelect"
@@ -866,7 +792,7 @@
                                                                                                             "displayName":  "Select",
                                                                                                             "props":  {
                                                                                                                           "fieldId":  "VehicleMakeCode",
-                                                                                                                          "label":  "M2b code-type probe -- pick any make (e.g. FORD)",
+                                                                                                                          "label":  "BASELINE -- pick FORD",
                                                                                                                           "attributeTypeId":  "VEHICLE_MAKE",
                                                                                                                           "codeTypeProvider":  "NCIC"
                                                                                                                       },
@@ -878,7 +804,27 @@
                                                                                                             "linkedNodes":  {
 
                                                                                                                             },
-                                                                                                            "parent":  "ROW_X3"
+                                                                                                            "parent":  "ROW_X2"
+                                                                                                        },
+                                                                                          "FLD_VMXLT":  {
+                                                                                                            "type":  {
+                                                                                                                         "resolvedName":  "FormSelect"
+                                                                                                                     },
+                                                                                                            "displayName":  "Select",
+                                                                                                            "props":  {
+                                                                                                                          "fieldId":  "VehicleMakeXlate",
+                                                                                                                          "label":  "TRANSLATE TEST -- pick the SAME make (FORD)",
+                                                                                                                          "attributeTypeId":  "VEHICLE_MAKE"
+                                                                                                                      },
+                                                                                                            "isCanvas":  false,
+                                                                                                            "hidden":  false,
+                                                                                                            "nodes":  [
+
+                                                                                                                      ],
+                                                                                                            "linkedNodes":  {
+
+                                                                                                                            },
+                                                                                                            "parent":  "ROW_X2"
                                                                                                         },
                                                                                           "CONTEXT_INFO_CARD":  {
                                                                                                                     "type":  {
@@ -2007,14 +1953,6 @@
                                                                           "targetField":  "LicensePlateNumber"
                                                                       },
                                                                       {
-                                                                          "name":  "LicensePlateYear",
-                                                                          "size":  4,
-                                                                          "sourceField":  [
-                                                                                              "LicensePlateYear"
-                                                                                          ],
-                                                                          "targetField":  "LicensePlateYear"
-                                                                      },
-                                                                      {
                                                                           "name":  "State",
                                                                           "size":  2,
                                                                           "sourceField":  [
@@ -2029,18 +1967,15 @@
                                                                           "sourceField":  [
                                                                                               "LicensePlateTypeCode"
                                                                                           ],
-                                                                          "targetField":  "LicensePlateTypeCode",
-                                                                          "description":  "CONTROL -- no rule, no codeTypeProvider. Shows the raw typed value."
+                                                                          "targetField":  "LicensePlateTypeCode"
                                                                       },
                                                                       {
-                                                                          "name":  "PlateTypeXlate",
-                                                                          "size":  2,
+                                                                          "name":  "LicensePlateYear",
+                                                                          "size":  4,
                                                                           "sourceField":  [
-                                                                                              "PlateTypeXlate"
+                                                                                              "LicensePlateYear"
                                                                                           ],
-                                                                          "targetField":  "VehicleStyleCode",
-                                                                          "codeTypeProvider":  "NCIC",
-                                                                          "description":  "M2a -- attribute-level codeTypeProvider over a FREE-TEXT source."
+                                                                          "targetField":  "LicensePlateYear"
                                                                       },
                                                                       {
                                                                           "name":  "VehicleMakeCode",
@@ -2048,57 +1983,37 @@
                                                                           "sourceField":  [
                                                                                               "VehicleMakeCode"
                                                                                           ],
-                                                                          "targetField":  "VehicleMakeCode",
+                                                                          "targetField":  "VehicleStyleCode",
+                                                                          "description":  "BASELINE -- code table in, NO attribute codeTypeProvider. Expect the raw code."
+                                                                      },
+                                                                      {
+                                                                          "name":  "VehicleMakeXlate",
+                                                                          "size":  24,
+                                                                          "sourceField":  [
+                                                                                              "VehicleMakeXlate"
+                                                                                          ],
+                                                                          "targetField":  "VehicleIdentificationNumber",
                                                                           "codeTypeProvider":  "NCIC",
-                                                                          "description":  "M2b -- attribute-level codeTypeProvider over a REAL code table (VEHICLE_MAKE)."
+                                                                          "description":  "TEST -- code table in, attribute codeTypeProvider=NCIC. Does the code change?"
                                                                       }
                                                                   ],
                                                    "combinations":  [
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "LicensePlateNumber",
-                                                                                                             "RegistrationState",
-                                                                                                             "LicensePlateTypeCode",
-                                                                                                             "LicensePlateYear"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "PlateTypeXlate",
-                                                                                                             "VehicleMakeCode"
-                                                                                                         ],
-                                                                                                 "defaults":  [
-                                                                                                                  {
-                                                                                                                      "field":  "LicensePlateTypeCode",
-                                                                                                                      "value":  "PC"
-                                                                                                                  }
-                                                                                                              ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "LicensePlateNumber",
-                                                                            "keyReference":  "XOUT",
-                                                                            "state":  "Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
                                                                                                              "LicensePlateNumber"
                                                                                                          ],
                                                                                                  "any":  [
+                                                                                                             "RegistrationState",
                                                                                                              "LicensePlateTypeCode",
-                                                                                                             "PlateTypeXlate",
-                                                                                                             "VehicleMakeCode"
-                                                                                                         ],
-                                                                                                 "conditions":  [
-                                                                                                                    {
-                                                                                                                        "field":  [
-                                                                                                                                      "RegistrationState"
-                                                                                                                                  ],
-                                                                                                                        "operator":  "NOT_EXISTS"
-                                                                                                                    }
-                                                                                                                ]
+                                                                                                             "LicensePlateYear",
+                                                                                                             "VehicleMakeCode",
+                                                                                                             "VehicleMakeXlate"
+                                                                                                         ]
                                                                                              },
                                                                             "primaryFieldReference":  "LicensePlateNumber",
-                                                                            "keyReference":  "XIN",
-                                                                            "state":  "In"
+                                                                            "keyReference":  "XLATE",
+                                                                            "state":  "In/Out"
                                                                         }
                                                                     ],
                                                    "description":  "TRANSLATE TEST rig -- NOT a provider build. Tests outgoing many-to-one code translation.",
