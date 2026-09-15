@@ -25,7 +25,7 @@
   Without the reason, "64 unchanged, 1 new file" reads as a partial failure instead of as exactly
   the expected result.
 
-  ==== TWO TRAPS FOUND WHILE WRITING THIS, BOTH OF WHICH SHIPPED IN THE FIRST DRAFT ====
+  ==== THREE TRAPS, ALL OF WHICH SHIPPED BEFORE BEING MEASURED ====
 
   (1) SCOPING THE DEFAULT SET TO THE CONFIG INVENTORY OMITS THE ONE TENANT YOU MOST WANT.
       The inventory is what we have ALREADY PULLED, so a tenant that has never been pulled is by
@@ -42,6 +42,17 @@
       yet. So new tenants are passed in EXPLICITLY via -Include, which is what
       ingest_tenant_roster.ps1 already prints a ready-to-paste list for. An automatic detector that
       silently returns nothing is worse than an explicit parameter.
+
+  (3) tenant_map.json IS NOT MAINTAINED BY ANY TOOL, so it cannot be the sole definition of "ours".
+      Eight tools read it; ZERO write it. Its own `generated` field says 2026-09-10 and its source
+      was the full census -- which enumerated tenants that HAD A PROVIDER BUNDLE. A provider tenant
+      with NOTHING INSTALLED was therefore never in it, and that hid FOUR of our twenty usx-*
+      tenants from every job this tool cut (usx-sc-sled, usx-ca-contra-costa,
+      usx-ca-san-louis-obispo, usx-ca-ventura-county). An EMPTY provider tenant is the most
+      important kind to notice: it means nothing is deployed there. Fixed by ALSO deriving the fleet
+      from the roster by SUBDOMAIN -- a `usx-*` subdomain is ours by construction, the same authority
+      serve_plans' /target already uses -- so a new provider tenant is in scope the moment it
+      appears in the roster, with no file to hand-maintain.
 
   FIVE REFUSALS, each one earned:
     * AN EMPTY JOB FAILS rather than being written. ENGINEERING_STANDARD 4.3 -- "found nothing" and
@@ -80,7 +91,7 @@ param(
     [switch]$Quiet
 )
 
-# ⚠️ PLAIN ARRAYS, NOT System.Collections.Generic.List[object] -- MEASURED 2026-09-15.
+# ?? PLAIN ARRAYS, NOT System.Collections.Generic.List[object] -- MEASURED 2026-09-15.
 # `@($list)` on a List[object] throws `ArgumentException: Argument types do not match` on this
 # engine, and it throws for an EMPTY list too, so the loop body never runs. The first draft used
 # Lists, and the resulting crash inside Split-TenantsByScope exited 1 while writing no file --
@@ -123,7 +134,7 @@ if ($rosterRows.Count -eq 0) { Fail 'tenant_roster.json parsed but holds 0 tenan
 $byId = @{}
 foreach ($t in $rosterRows) { $byId["$($t.deptId)"] = $t }
 
-# ⚠️ PARSE AS UTC AND COMPARE IN UTC. capturedAt carries a 'Z' (the browser writes an ISO UTC
+# ?? PARSE AS UTC AND COMPARE IN UTC. capturedAt carries a 'Z' (the browser writes an ISO UTC
 # stamp), but a bare [datetime] cast yields an unspecified-kind value that then gets compared
 # against LOCAL Get-Date -- so on an EDT machine a roster captured minutes ago reads as
 # "-0.1 days old". That is not cosmetic: a negative or understated age means -MaxAgeDays can
@@ -155,13 +166,36 @@ if (Test-Path $invPath) {
 }
 Say ("  inventory  : {0} tenant(s) with a config already on disk" -f $haveIds.Count)
 
-# -- OUR tenants, per the canonical map. See trap (1): the inventory cannot answer this. --
+# -- OUR tenants. See trap (1): the inventory cannot answer this. --
+# TWO SOURCES, and the second exists because the first CANNOT be complete.
+#
+# ?? TRAP (3), MEASURED 2026-09-15: tenant_map.json IS NOT MAINTAINED BY ANY TOOL. Eight tools read
+# it; zero write it. It was produced once (its own `generated` field says 2026-09-10, source
+# "extension full census") from tenants that HAD A PROVIDER BUNDLE -- so a provider tenant with
+# NOTHING INSTALLED was never in it. That silently hid FOUR of our own twenty usx-* tenants
+# (usx-sc-sled, usx-ca-contra-costa, usx-ca-san-louis-obispo, usx-ca-ventura-county) from every job
+# this tool cut, and an EMPTY provider tenant is the most important kind to notice: it means nothing
+# is deployed there. Relying on a hand-built file to enumerate our own fleet is the defect.
+#
+# So the fleet is ALSO derived from the roster by SUBDOMAIN. A `usx-*` subdomain is ours BY
+# CONSTRUCTION -- the same reasoning serve_plans' /target/<deptId> already uses, where
+# `usx-subdomain` is an authority source ranked beside the explicit map. This cannot rot: a new
+# provider tenant is in scope the moment it appears in the roster.
 $ourIds = @()
 if (Test-Path $mapPath) {
     $map = Get-Content $mapPath -Raw -Encoding UTF8 | ConvertFrom-Json
     $ourIds = @(@($map.tenants) | Where-Object { $_.deptId } | ForEach-Object { "$($_.deptId)" })
 }
-Say ("  tenant_map : {0} tenant(s) we track" -f $ourIds.Count)
+Say ("  tenant_map : {0} tenant(s) recorded (NOT tool-maintained -- see trap 3)" -f $ourIds.Count)
+
+$fleetIds = @($rosterRows | Where-Object { "$($_.subdomain)" -like 'usx-*' } | ForEach-Object { "$($_.deptId)" })
+$fleetNew = @($fleetIds | Where-Object { $ourIds -notcontains $_ })
+Say ("  usx-* fleet: {0} tenant(s) by subdomain ({1} of them absent from tenant_map)" -f $fleetIds.Count, $fleetNew.Count)
+foreach ($id in $fleetNew) {
+    $t2 = $byId[$id]
+    Say ("     + {0} ({1}) -- ours by subdomain, missing from the map" -f $(if ($t2) { "$($t2.subdomain)" } else { '?' }), $id)
+}
+$ourIds = @($ourIds + $fleetIds | Select-Object -Unique)
 
 # -- assemble candidates, each carrying its reason -------------------------------------
 $script:cand = @()
@@ -208,7 +242,7 @@ foreach ($c in $cand) {
 }
 
 # tenant_scope.json exclusions -- via the SHARED module, never re-implemented here.
-# ⚠️ Excluded rows are WRAPPERS: @{ Row = <the row>; Exclusion = <the scope entry> }. Reading
+# ?? Excluded rows are WRAPPERS: @{ Row = <the row>; Exclusion = <the scope entry> }. Reading
 # $e.deptId directly yields $null and prints a blank subdomain -- the first draft did exactly that.
 $split = Split-TenantsByScope $keep 'deptId'
 foreach ($e in @($split.Excluded)) {
