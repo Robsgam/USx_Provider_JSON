@@ -270,6 +270,54 @@ TOOLS
     codeTypeCategory + codeTypeSource combinations produce non-empty dropdowns.
     Usage: -OutFile <path>
 
+  tools/build_translate_test.ps1
+    DOES THE PLATFORM TRANSLATE A CODE ON THE WAY OUT? Generates
+    providers\TRANSLATE_TEST.json -- a throwaway rig, not a provider build.
+    THE REQUIREMENT (Rob 2026-09-15, NY_NYSPIN_EJUSTICE): NY uses CUSTOM NUMERIC in-state plate
+    types and NCIC alpha types out-of-state. The officer should pick from NY's (finer-grained)
+    list, and MANY NY types must collapse to ONE NCIC code when the query goes out-of-state --
+    a MANY-TO-ONE association, not a 1:1 code-table swap. Rob: "i want you to buil a simple josn
+    that tests only that function before we start prying everything else apart."
+    WHY A RIG AND NOT A BUILD: NY v4.26 is tenant-verified with 65 logs, so a build bump archives
+    the whole test package -- and the capability is UNPROVEN. Isolating it onto a practice tenant
+    makes the answer about the PLATFORM, and costs nothing if it fails.
+    WHAT IS ALREADY SETTLED, so the rig does not re-ask it:
+      * LIMITATION #38 measured the resolution path on live wires and NAMES THIS FIELD --
+        LicensePlateTypeCode "PC - REGULAR..." -> PC. The wire value IS the selected attribute's
+        CODE; there is no configurable mapping layer on the request path. So "translate PC into 16"
+        has no known mechanism -- the only way to send 16 is for the control's value to BE 16.
+      * IgnoreUserValueRuleHandler is FILTER-ONLY ("cannot SUBSTITUTE one value for another").
+      * The CommsysGet*CodeRuleHandler family is [UNUSED] with NO documented arguments.
+      * CommsysResultAttributeMappingRuleHandler maps code->display but is RESPONSE-side.
+    THE THREE THINGS IT DOES TEST, in one import and two submits:
+      M1 COMBO DEFAULT OVERRIDE -- requirements.defaults[] on a field the officer ALREADY FILLED.
+         If a default REPLACES a filled value, many-to-one is FREE and needs no new capability:
+         the out-of-state combo defaults the type to PC and every NY code collapses to it. We ship
+         combo defaults on every provider and have NEVER measured this -- audit_wiring_closure only
+         checks that a default is REACHABLE (its "E INERT DEFAULT" class), never what it does to a
+         value that is already there.
+      M2 ATTRIBUTE-LEVEL codeTypeProvider DISAGREEING WITH ITS CONTROL. Build-QidmAttribute already
+         emits codeTypeProvider and SC_SLED ships it on State, but attribute and control have
+         always AGREED. Nobody has made them disagree.
+      C  CONTROL -- same typed value, no rule/default/provider. Proves the observation channel and
+         gives the untranslated value, so "the tag is missing" and "translated to empty" cannot be
+         confused.
+    READ IT: Submit A (State BLANK) fires XIN; Submit B (State=GA) fires XOUT. On B,
+    <LicensePlateTypeCode> = PC means M1 overrides; = 16 means defaults only fill when empty.
+    <VehicleStyleCode> carries M2; if that tag is ABSENT the field is probably not valid for the
+    query -- a CONFOUND, not a result, which is what the control tag disambiguates.
+    !! PROVE THE OBSERVATION CHANNEL FIRST -- run any query on the target tenant AS IT STANDS and
+    confirm dex-log shows an outgoing CommSys XML. A practice tenant may have no live provider
+    connection, in which case no request is built and the rig cannot answer anything. Building the
+    question before proving you can see the answer means debugging two unknowns at once.
+    !! AN IMPORT REPLACES THE BUNDLE SET. practice-robsgambellone carries a NOT-OUR-BUILD CA_eSUN
+    config (2 bundles, no RMS); this removes it. A 2026-09-12 before-snapshot is on disk.
+    -Provider defaults to CA_eSUN because the platform routes on the provider NAME and that is what
+    the practice tenant already knows; the CONTENT is a rig, not a CA_eSUN build.
+    Emits 30 PASS / 0 FAIL / 0 WARN through validate.ps1.
+    Usage: .\build_translate_test.ps1 [-Provider <name>] [-OutPath <path>]
+                                      [-InStateValue 16] [-OutOfStateCode PC]
+
   tools/extract_queries.ps1
     Parses metadata XML and extracts all query transactions, fields, and
     combinations into a structured SQVR-ready tracking file.
