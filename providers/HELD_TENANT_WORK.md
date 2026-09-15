@@ -96,6 +96,35 @@ suggest the *recording* step is where this leaks.
   `onscene`, `practice-bertanzini`
 - **All 16 `usx-*` provider tenants are current.** The tenants we test on need nothing.
 
+## ⭐ FIRST ACTIONS AFTER THE 2026-09-14 REBOOT (Rob: "i'll restart and reboot to see if that helps")
+
+A REBOOT kills strictly more than a Claude restart. In order:
+
+1. **START `tools\serve_plans.ps1` — DETACHED.** It is the only process that must be running, and
+   NOTHING below works without it. A reboot kills it and so does an agent background task (the
+   host killed it under memory pressure on 2026-09-14):
+   `Start-Process powershell -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-File','C:\Users\RobSgambellone\.local\bin\USx_Provider_JSON\tools\serve_plans.ps1' -WindowStyle Hidden`
+2. **Verify by CURLING, never by process name or start time** — `/ping`, `/roster`, `/job`,
+   `/build/SC_SLED` should all answer 200. Both of the other checks have produced a wrong answer
+   here within one session (see the two ⚠️ notes below).
+3. `tools\install_git_hooks.ps1 -Verify` — `.git\hooks` is not version-controlled.
+4. Nothing else. No watcher should be started until there is a capture or an import to watch.
+
+**WHY THE REBOOT:** three background jobs were killed for low memory on 2026-09-14 (`doctor.ps1`
+in its final section, `report_mission_status` twice, `serve_plans`). **No reported result depended
+on a killed run** — each was either re-run or covered by a standalone run — but the machine was
+paging. If it is still tight after the reboot, run heavy gates ONE AT A TIME, not in parallel.
+
+**THE ONE THING BUILT BUT NOT PROVEN — read before trusting it.** Panel **button 7b (RESCAN)** and
+`GET /roster` were written on 2026-09-14 and **NOBODY HAS CLICKED 7b AGAINST A LIVE PAGE.** What IS
+verified: the JS parses (10/10), the endpoint answers 200 with 1,785 tenants, and the record shape
+was read from `admin_probe.js` rather than guessed (`runList()` returns `deptIds`, and that field
+holds FULL RECORDS — `extractDeptIds` is an alias for `extractDeptRecords`; my first draft used
+`idx.records`, which is undefined, and every diff would have read "0 departments"). What is NOT
+verified: that the diff produces sane numbers on a real index. **STATUS: HYPOTHESIS.** The
+discriminating test is one click with serve_plans up — expect `baseline 1785 → index <n>` and a
+NEW/RENAMED/STATUS/DEPARTED line. If it reads 0 departments, the field name moved again.
+
 ## Environment to restore — SWEPT AND MEASURED 2026-09-14, before a planned Claude restart
 
 - **`tools\serve_plans.ps1` on port 8477 — WAS RUNNING (PID 24248) AND THE RESTART KILLS IT.

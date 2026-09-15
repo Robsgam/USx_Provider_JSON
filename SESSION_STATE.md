@@ -48,58 +48,58 @@ EXCEPTION, and by necessity: it is on no tenant, so its sweep cannot run until i
 **ANY PRIOR JSON IS ONE COMMAND:** `get_provider_version.ps1 -Provider <P> -Version <X.Y>` -- 671
 artifacts, byte-exact. RETRIEVAL, not rebuild: re-running an old script does NOT reproduce it.
 
+## ⭐ RESUMING AFTER THE 2026-09-14 REBOOT? DO THIS FIRST
+
+**START `serve_plans.ps1` DETACHED** (`Start-Process ... -WindowStyle Hidden`; a reboot kills it and
+so does a background task) and **verify by CURLING `/ping /roster /job`, never by process name or
+start time -- both gave a WRONG answer on 09-14.** Ordered list + why: `HELD_TENANT_WORK.md` top.
+**Machine was paging** (3 jobs killed 09-14) -- if still tight, run heavy gates ONE AT A TIME.
+**Panel button 7b (RESCAN) + `GET /roster`: BUILT, NEVER CLICKED -- STATUS: HYPOTHESIS.**
+
 ## ACTIVE: SC_SLED v1.0 -- the 21st provider, BUILT AND GREEN, NEVER IMPORTED
 
 9 QIDMs / 18 combos / 6 QIFs / 80P-0F-0W-1LIM. The 1 LIM is not debt, it NAMES THE OPEN QUESTION:
 Vehicle's two QIDMs co-fire with no toggle. **MEASURED** -- one plate fires `QVRQ.P` AND `QV.P`
-(PlateType/PlateYear prefilled, so QVRQ.P's set collapses to `[Plate]`, EQUAL to QV.P -- the AZ
-`DQPN`/`DQP` shape ordering cannot separate). `QVRQ` IS "SC Vehicle Stolen/Reg", so stolen goes out
-twice; same on Person (`QWDQ` + `QWA.N`). Rob: *"build both ... keep the cards separate for now."*
+(PlateType/PlateYear prefilled, so QVRQ.P collapses to an always-present `[Plate]` = QV.P -- the AZ
+`DQPN`/`DQP` exact collision ordering cannot separate). `QVRQ` IS "SC Vehicle Stolen/Reg", so
+stolen ships twice; same on Person (`QWDQ` + `QWA.N`). Rob: *"build both ... cards separate."*
 ⚠️ **MASKING IS NOT AVAILABLE AND BOTH MECHANISMS ARE DISQUALIFIED -- do not reach for the
 standing rule.** `queriesToDeselect` alone is REFUTED for this shape (NY v2.8: lower-threshold
 query sent twice, higher zero); `autoSelect=$false` has ZERO tenant-proven carriers (only
 TX_TLETS_CCH's 8, PARKED/never-tested; its one observed outcome is CA_eSUN's disabled Send).
 **THE FIRST IMPORT IS THE DISCRIMINATING TEST** -- it also owes AdministrativeMessage (HYPOTHESIS:
-confirm the 5 real entities still render) and NCIC ST-1. SC_SLED is the ONLY provider building a
-standalone `VehicleStolenQuery`; FL/HI/NJ removed theirs. 4 shared-tool blind spots it exposed, all
-fixed + verified by a 21-provider diff (only SC_SLED moved): `dr$` + `BoatHullSerialNumber` in
-`audit_devdoc_combinations`; `Message` in `audit_supported_queries` AND `audit_metadata`, which
-filtered non-`*Query` names out BEFORE comparing so a devdoc-listed transaction read as invented.
-**`audit_tool_portability` printed success after exercising ZERO cells** -- now FAILs; 315 cells.
+confirm the 5 real entities still render) and NCIC ST-1. ONLY provider building a standalone
+`VehicleStolenQuery`; FL/HI/NJ removed theirs. Exposed 5 shared-tool blind spots, all fixed and
+verified by 21-provider before/after diffs where ONLY SC_SLED moved (`dr$`/hull alias, `Message`
+suffix in two gates, and `audit_tool_portability` printing success on ZERO cells). Detail: git.
 
-## ROB'S CALLS, NOT MINE
+## ROB'S CALLS + OPEN FINDINGS -- detail lives in `FINDINGS_REGISTER.md`, do NOT restate it here
 
-- **CA_CONTRA_COSTA JAWS/SuperQuery** -- 4 UNDER / 3 OVER, verbatim in its BUILD_NOTES. Hold the
-  SWEEP, not the import. **LA_LEMS `QB{reg}` vs `BQ{reg}`** -- in LA's registry, not taken.
-- **MINED-KEYREF, 4 EXPOSED** (`_probes/sweep_mined_keyref_shadow.ps1`): eSUN QV.V->4V, QB.H->4V, QB.R->4B; CA_SAN_LUIS_OBISPO QV.V->4V. A rename, not a wire change; both never-tested. eSUN's 228KB tenant export sits in pushed history at `8273a87f` -- removal needs a force-push.
-
-## OPEN FINDINGS -- detail lives in `FINDINGS_REGISTER.md`, do NOT restate it here
-
+- **CA_CONTRA_COSTA JAWS/SuperQuery** -- 4 UNDER / 3 OVER, in its BUILD_NOTES; hold the SWEEP, not the import. **LA_LEMS `QB{reg}` vs `BQ{reg}`** -- in LA's registry, not taken.
 - **194 of 264 registry rows unverifiable** by `audit_registry_currency`; 7 providers at zero checkable rows, and the first row opened by hand there was FALSE.
-- **CA_eSUN v2.2: 2 BUILD_NOTES items deliberately OFF the ticket** -- the 7 validator FAILs the 53 captures REFUTE, and the BirthDate over-permit whose fix collapses the owner-name search.
-- **LIMITATION #41** (HOME state routes a local plate to NLETS) -- paused pending CommSys; 5 providers owe a picklist capture. **CA_VENTURA hollow toggle** needs a TEST_VALUE_OVERRIDE after its capture. **RESWEEP 2026-09-08: 20/20 ENFORCED 0F/0W**; fidelity 426 branches, the only 4 UNDER / 4 OVER are CA_CONTRA_COSTA(Rob(s JAWS call).
+- **CA_eSUN v2.2: 2 BUILD_NOTES items OFF the ticket** (the 7 validator FAILs the 53 captures REFUTE; the BirthDate over-permit whose fix collapses owner-name search). **+2 from 09-14, Rob's call: 10 radiobutton-experiment ORPHANS, and it is the ONLY 1 of 15 ALL-PASS providers with no `DEX_TICKET_ARCHIVE.md`** despite a POSTED marker.
+- **LIMITATION #41** (HOME state routes a local plate to NLETS) -- paused pending CommSys; 5 providers owe a picklist capture. **CA_VENTURA hollow toggle** needs a TEST_VALUE_OVERRIDE after its capture. Portfolio 2026-09-14: **21/21 ENFORCED 741P/0F/0W**; the only 4 UNDER / 4 OVER are CA_CONTRA_COSTA, Rob's JAWS call.
 
 ## THE DEPLOY LOOP IS BUILT AND PROVEN -- and ALL TENANT WORK IS HELD (Rob 2026-09-14)
 
-**RECOVERY RECORD: `providers\HELD_TENANT_WORK.md`. Read it before resuming -- nothing is
-half-applied and the only outstanding action is ONE operator click.** In one line:
-`newarkpd-foundation` (68055618928) runs NJ_NJCJIS v4.16 while ledger AND catalog say v4.17,
-proven five ways. Loop: `emit_import_job.ps1` -> review `providers\IMPORT_JOB.json` -> panel button
-**RUN THE JOB FOR THIS TENANT** -> auto re-export -> `watch_imports.ps1` -> `verify_tenant_import`.
-`deploy_probe.js` is the ONLY file that can write; dry-run by default; 46 mutation cases.
-⚠️ **NEVER hand Rob a console command** -- GUI only. ⚠️ An import **REPLACES** the bundle set.
-⚠️ Still unexplained and worth more than the import: **WHY the 2026-08-20 Newark import did not
-land** when the release line and catalog update from the same pass did. Also held (Rob's calls):
-scoping, `LEDGER_PATCH.md`, `hawaii-dle` LIVE, the batch, Confluence.
+**RECOVERY RECORD: `providers\HELD_TENANT_WORK.md` -- READ IT BEFORE RESUMING.** Nothing is
+half-applied; the only outstanding action is ONE operator click. In one line: `newarkpd-foundation`
+(68055618928) runs NJ_NJCJIS v4.16 while ledger AND catalog say v4.17, proven five ways. Loop:
+`emit_import_job.ps1` -> review `IMPORT_JOB.json` -> panel **RUN THE JOB FOR THIS TENANT** -> auto
+re-export -> `watch_imports.ps1` -> `verify_tenant_import`. `deploy_probe.js` is the ONLY writer;
+dry-run default; 46 mutation cases. ⚠️ **GUI only, never a console command.** ⚠️ An import
+**REPLACES** the bundle set. ⚠️ Unexplained and worth more than the import: **WHY the 2026-08-20
+Newark import did not land.** Held (Rob's): scoping, `LEDGER_PATCH.md`, `hawaii-dle` LIVE, the
+batch, Confluence. **Dallas 67985044065: TX imported by hand 09-14, provider+version UNCONFIRMED
+and the import UNPROVABLE (no `_before`) -- a config pull settles what is installed.**
 
 ## DO NOT RE-RAISE
 
 - `State2`-`State5` multi-state broadcast: OUT OF SCOPE 2026-08-02. OH's `ReasonCode`/`Requestor` =
   the BMVIMS case. CommSys asks HELD. TX_TLETS_CCH testing PARKED. DH NOT SUPPORTED FROM CAD.
   TN `RQ01` + name-component casing CLOSED 08-24.
-- **A keyRef NEVER reaches the wire, nor does `primaryFieldReference`** -- before calling an
-  identity-label difference a defect, ask whether the label ships. **`[FLAG:plan-dedupe-vacuous-
-  tests]` is DONE** (FL/HI/IL/NJ/NY); inflation reads 853 logs / 0 findings.
+- **A keyRef NEVER reaches the wire, nor does `primaryFieldReference`** -- ask whether the label
+  ships. **`[FLAG:plan-dedupe-vacuous-tests]` DONE**; inflation 2026-09-14: 927 logs / 0 findings.
 - **NY DEMOTED-QUALIFIER: CLOSED, not owed** ([KILLED] 2026-09-09; two fixes REJECTED, see
   `FINDINGS_REGISTER.md`). **NJ guardrail mutation: N/A, not stale** -- do NOT re-aim. Both were
   stale-OWED claims IN THIS FILE that invented work -- **measure before believing this file.**
@@ -107,14 +107,14 @@ scoping, `LEDGER_PATCH.md`, `hawaii-dle` LIVE, the batch, Confluence.
 
 ## RULES I BROKE -- READ BEFORE EDITING
 
-- Durable rules live in `usx-tooling` (Steps 6 / 8a): **a registry row only suppresses if its rule
-  name is the string the gate greps**, and **validate every probe against a known answer WITH
-  negative controls**. **A `#`-COMMENTED LINE IS NOT A FINDING.**
-- **NEVER verify a produced file with `Test-Path`** -- compare write times. **REPLACE this file,
-  never append:** it has failed its own 120-line gate six times.
-- **A SAME-LOOKING STRUCTURE ON ANOTHER PROVIDER IS A QUESTION, NEVER A PRECEDENT.** Read that
-  provider's OWN `<Requirements>` FIRST. **A STANDING RULE IS NOT EVIDENCE EITHER** -- 2026-09-14
-  the rule prescribing `autoSelect=false` for VehStolen had ZERO tenant-proven carriers.
-- **AN EXPLANATION IS NOT A MEASUREMENT.** **A GATE THAT MEASURED NOTHING IS NOT A PASS** --
-  `audit_tool_portability` printed success on 0 cells until 2026-09-14.
-- **MY OWN LEDGER/STATE ROWS GO STALE WITHIN HOURS.** Re-read before citing.
+- Durable rules live in `usx-tooling` (6 / 8a): **a registry row suppresses only if its rule name is
+  the string the gate greps**; **validate every probe against a known answer WITH negative
+  controls**. **A `#`-COMMENTED LINE IS NOT A FINDING.** **NEVER verify a produced file with
+  `Test-Path`** -- compare write times, and do not trust a tool's own success line either
+  (09-14: `extract_metadata_reference` printed a summary and wrote nothing without `-OutFile`).
+- **A SAME-LOOKING STRUCTURE ELSEWHERE IS A QUESTION, NEVER A PRECEDENT** -- read that provider's
+  OWN `<Requirements>`. **A STANDING RULE IS NOT EVIDENCE**: 09-14 the rule prescribing
+  `autoSelect=false` for VehStolen had ZERO tenant-proven carriers. **AN EXPLANATION IS NOT A
+  MEASUREMENT** and **A GATE THAT MEASURED NOTHING IS NOT A PASS**. **A RULE ABOUT ONE PROCESS IS A
+  RULE ABOUT THE QUERY** -- the documented `watch_captures` self-match trap bit me on `serve_plans`
+  and I killed a phantom. **MY OWN STATE ROWS GO STALE WITHIN HOURS** -- re-read before citing.
