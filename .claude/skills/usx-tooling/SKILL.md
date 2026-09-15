@@ -101,6 +101,21 @@ a hard parse failure under 5.1 — which surfaces as swallowed `ParserError` tex
   Use plain `@()` arrays with `+=` (these collections are tiny and it is what the rest of the repo
   does), and when a refusal test passes, **confirm the refusal MESSAGE is yours** rather than reading
   only the exit code and the absent file.
+- **NEVER `Set-Content -Encoding ASCII` A FILE THAT CONTAINS NON-ASCII. IT SILENTLY DESTROYS IT.**
+  Measured 2026-09-15: a one-line BUILD-string edit to `ui.js` was written back with
+  `-Encoding ASCII`, and every non-ASCII character in the WHOLE FILE became `?` — **168 lines**
+  (`▸`/`▾` toggle arrows, `⚠`, box-drawing). It was committed and pushed, and **every gate passed**,
+  because `?` is valid JavaScript and valid text: `audit_extension_syntax` parses, `audit_ps51_parse`
+  parses, the pre-commit hook runs both. The damage surfaced only because the mangled arrow happened
+  to be in a string I read back on screen.
+  Two rules, and the first one alone would have prevented it:
+  - **Use the Edit tool for surgical changes.** It rewrites only the matched span and leaves the
+    file's encoding alone. Reserve whole-file `Set-Content` for files you created in that same run.
+  - If you must write a whole file, use `[System.IO.File]::WriteAllText($p, $s, (New-Object
+    System.Text.UTF8Encoding($false)))` — UTF-8, no BOM. Note `-Encoding utf8` under 5.1 adds a BOM,
+    which is its own documented break.
+  **Verify with a byte census, not by eye:** `LC_ALL=C grep -c '[^ -~\t]' <file>` before and after.
+  A changed count is the tell; the rendered text may look fine in a console that mangles it anyway.
 - **PARSE A `Z`-SUFFIXED TIMESTAMP AS UTC, and compare it to `[datetime]::UtcNow`.** A bare
   `[datetime]$x` cast yields an unspecified-kind value; compared against local `Get-Date` on an EDT
   machine, a roster captured four minutes earlier read **`-0.1 days old`**. That is not cosmetic — it

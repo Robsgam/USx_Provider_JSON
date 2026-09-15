@@ -11,8 +11,16 @@
   function el(tag, css, txt) { const e = document.createElement(tag); if (css) e.style.cssText = css; if (txt != null) e.textContent = txt; return e; }
   const BTN = 'display:block;margin:4px 0;width:100%;padding:6px;border:0;border-radius:5px;color:#fff;cursor:pointer;font:12px system-ui;background:#2a8a55';
   const BLU = 'background:#3a66c0'; const RED = 'background:#a33';
+  // The diagnostics toggle is a DIV, not a button, and at #777 with no border it did not read as
+  // clickable -- Rob looked straight past it and reported the buttons as MISSING. Given a border, a
+  // background and a brighter colour it announces itself, and the label now NAMES what is inside so
+  // nobody has to expand it to find out what they are looking for.
+  const DIAGTOG = 'display:block;margin:10px 0 2px;padding:6px 8px;border:1px solid #666;border-radius:5px;'
+    + 'background:#242424;color:#cfc26a;cursor:pointer;font:600 11px system-ui;user-select:none;text-align:left';
+  const DIAG_SHUT = '▸  MORE TOOLS  --  7b rescan / 7 census / 6b manual pull / 1 3 4 5 6';
+  const DIAG_OPEN = '▾  MORE TOOLS -- click to hide';
 
-  // ?? ARM SWITCH (v0.5.0) ????????????????????????????????????????????????????????????????????
+  // ── ARM SWITCH (v0.5.0) ────────────────────────────────────────────────────────────────────
   // WHY THIS EXISTS. Until v0.4.0 the manifest enumerated eight usx-*.mark43.com hosts, so the
   // extension COULD NOT act anywhere else -- the allowlist was the safety. v0.5.0 widened to
   // *.mark43.com (Rob: "open up access to all tenants with the tail end of the url") on the same
@@ -41,11 +49,11 @@
   }
   function requireArmed() {
     if (isArmed()) return true;
-    flash('DISARMED ? click the switch above to arm this tenant first.', '#f77');
+    flash('DISARMED — click the switch above to arm this tenant first.', '#f77');
     return false;
   }
 
-  // ?? PANEL ON/OFF, per tenant, persistent ???????????????????????????????????????????????????
+  // ── PANEL ON/OFF, per tenant, persistent ───────────────────────────────────────────────────
   // Separate from ARM on purpose, because they answer different questions:
   //   UI OFF  = "don't show me this here"   (cosmetic; scripts still loaded, nothing can fire)
   //   DISARMED= "don't let anything act here" (the safety; survives the panel being visible)
@@ -66,7 +74,7 @@
       + 'box-shadow:0 2px 8px rgba(0,0,0,.45);user-select:none');
     d.id = 'usx-launcher';
     d.textContent = 'Ux';
-    d.title = 'USx panel is OFF for ' + location.hostname + (armed ? ' (tenant is ARMED)' : '') + ' ? click to show';
+    d.title = 'USx panel is OFF for ' + location.hostname + (armed ? ' (tenant is ARMED)' : '') + ' — click to show';
     d.onclick = () => { setUiOff(false); d.remove(); tick(); };
     if (document.body) document.body.appendChild(d);
   }
@@ -78,7 +86,7 @@
     const wrap = el('div', 'margin:0 0 8px;padding:6px;border-radius:6px;background:' + (testT ? '#1c2a1c' : '#3a1f1f') + ';border:1px solid ' + (testT ? '#2a8a55' : '#a33'));
     wrap.appendChild(el('div', 'font:11px/1.3 system-ui;color:#ccc;word-break:break-all', location.hostname));
     wrap.appendChild(el('div', 'font:10px system-ui;color:' + (testT ? '#7c7' : '#f99') + ';margin-top:2px',
-      testT ? 'provider TEST tenant' : '? NOT a test tenant ? Foundation or LIVE (customer site)'));
+      testT ? 'provider TEST tenant' : '⚠ NOT a test tenant — Foundation or LIVE (customer site)'));
 
     // Provider line. On a non-usx host nothing in the hostname names the provider, so the operator
     // sets it; it persists per hostname and is what the plan fetch and capture filenames use.
@@ -109,10 +117,10 @@
     function paint() {
       const on = isArmed();
       if (pendingConfirm) {
-        t.textContent = '? CLICK AGAIN TO ARM';
+        t.textContent = '⚠ CLICK AGAIN TO ARM';
         t.style.background = '#c60';
       } else {
-        t.textContent = on ? 'ARMED ?  (click to disarm)' : 'DISARMED  (click to ARM)';
+        t.textContent = on ? 'ARMED ✓  (click to disarm)' : 'DISARMED  (click to ARM)';
         t.style.background = on ? '#2a8a55' : '#666';
       }
     }
@@ -140,15 +148,23 @@
   function build(kind) {
     const p = el('div');
     p.id = 'usx-panel'; p.dataset.kind = kind;
-    p.style.cssText = 'position:fixed;z-index:2147483647;top:12px;left:12px;background:#141414;color:#eee;font:12px/1.4 system-ui;padding:9px 11px;border-radius:9px;box-shadow:0 6px 22px rgba(0,0,0,.5);width:230px;opacity:.94';
+    // max-height + overflow-y ARE LOAD-BEARING, not polish. The panel is position:fixed with no
+    // height limit, so expanding diagnostics grew it PAST THE BOTTOM OF THE VIEWPORT with nothing
+    // to scroll -- the buttons existed, were reachable by code, and were simply off-screen. Rob:
+    // "make sure it doesn't go off the bottom of the screen". calc() keeps the 12px top offset and
+    // a matching bottom gutter; overscroll-behavior stops a scroll at the panel edge from grabbing
+    // the admin page underneath it.
+    p.style.cssText = 'position:fixed;z-index:2147483647;top:12px;left:12px;background:#141414;color:#eee;'
+      + 'font:12px/1.4 system-ui;padding:9px 11px;border-radius:9px;box-shadow:0 6px 22px rgba(0,0,0,.5);'
+      + 'width:230px;opacity:.94;max-height:calc(100vh - 24px);overflow-y:auto;overscroll-behavior:contain';
     const head = el('div', 'display:flex;justify-content:space-between;align-items:center;font-weight:700;margin-bottom:6px');
-    head.appendChild(el('span', null, kind === 'dex' ? 'USx Capture ? dex-log' : (kind === 'admin' ? 'USx Admin ? inventory' : 'USx Driver')));
-    // ? = turn the panel OFF for this tenant, and MAKE IT STICK. Until v0.5.1 this called
+    head.appendChild(el('span', null, kind === 'dex' ? 'USx Capture — dex-log' : (kind === 'admin' ? 'USx Admin — inventory' : 'USx Driver')));
+    // ✕ = turn the panel OFF for this tenant, and MAKE IT STICK. Until v0.5.1 this called
     // p.remove() only, and tick() re-appended the panel on its next 1s pass -- so the close
     // button visibly did nothing. Now it persists a per-host flag and drops a small launcher dot
     // so the panel can always be brought back (Rob 2026-08-13: "can we make the extension
     // toggleable?").
-    const hide = el('span', 'cursor:pointer;color:#888;font-weight:700;padding:0 2px', '?');
+    const hide = el('span', 'cursor:pointer;color:#888;font-weight:700;padding:0 2px', '✕');
     hide.title = 'turn the USx panel off for ' + location.hostname;
     hide.onclick = () => { setUiOff(true); p.remove(); mountLauncher(); };
     head.appendChild(hide); p.appendChild(head);
@@ -159,7 +175,7 @@
     if (kind !== 'admin') { buildArmBlock(p); }
 
     if (kind === 'admin') {
-      // ?? READ-ONLY ADMIN INVENTORY ?????????????????????????????????????????????????????
+      // ── READ-ONLY ADMIN INVENTORY ─────────────────────────────────────────────────────
       // Rob 2026-09-10: "see if we can't get a list of active tenant that have a json
       // imported ... if possible download and ingest the json for reference and cross
       // checking. We can add any feelers and probes to the exsiting extension."
@@ -171,15 +187,15 @@
 
       if (!window.__usxAdminProbe) {
         aStatus.style.color = '#f77';
-        aStatus.textContent = '? admin probe not loaded ? RELOAD the extension (chrome://extensions ? Reload), then refresh this page.';
+        aStatus.textContent = '✖ admin probe not loaded — RELOAD the extension (chrome://extensions → Reload), then refresh this page.';
         p.appendChild(aStatus);
         return p;
       }
 
       p.appendChild(el('div', 'color:#999;font-size:11px;margin:2px 0',
-        'Read-only. Sends GET only ? never imports.'));
+        'Read-only. Sends GET only — never imports.'));
 
-      // ?? STEP 3 CLEANUP (2026-09-11) ??????????????????????????????????????????????????
+      // ── STEP 3 CLEANUP (2026-09-11) ──────────────────────────────────────────────────
       // Rob: "we will need to clean up the extension and remove all diagnostics hooks.
       // maybe not completely but remove the buttons for now."
       //
@@ -200,12 +216,11 @@
       // split that established the export control was safe), and 6 (versions only -- 6b is a
       // strict superset, writing the same aggregate index PLUS the configs).
       const diagWrap = el('div', 'display:none;margin-top:6px;border-top:1px dashed #444;padding-top:6px');
-      const diagToggle = el('div', 'font-size:11px;color:#777;cursor:pointer;margin-top:8px;user-select:none',
-        '? diagnostics (' + 'reconnaissance tools, not needed for the standing workflow)');
+      const diagToggle = el('div', DIAGTOG, DIAG_SHUT);
       diagToggle.onclick = () => {
         const on = diagWrap.style.display === 'none';
         diagWrap.style.display = on ? 'block' : 'none';
-        diagToggle.textContent = (on ? '?' : '?') + ' diagnostics (reconnaissance tools, not needed for the standing workflow)';
+        diagToggle.textContent = on ? DIAG_OPEN : DIAG_SHUT;
       };
 
       // 1. This page's own department (the id is in the URL, so nothing is guessed).
@@ -213,21 +228,21 @@
       if (idFromUrl) {
         const one = el('button', BTN, '1. Read this department (' + idFromUrl + ')');
         one.onclick = async () => {
-          one.disabled = true; aStatus.style.color = '#fa0'; aStatus.textContent = 'reading department ' + idFromUrl + '?';
+          one.disabled = true; aStatus.style.color = '#fa0'; aStatus.textContent = 'reading department ' + idFromUrl + '…';
           try {
             const o = await window.__usxAdminProbe.runOne(idFromUrl);
             const r = (o.results && o.results[0]) || {};
             const st = r.meta ? r.meta.status : '?';
             aStatus.style.color = r.meta && r.meta.ok ? '#7c7' : '#f77';
-            aStatus.textContent = '? HTTP ' + st + ' ? ' + ((r.meta && r.meta.bytes) || 0) + ' bytes ? ' + ((r.tables && r.tables.length) || 0) + ' table(s) ? saved to Downloads'
-              + (r.meta && r.meta.looksLikeLogin ? ' ? LOGIN REDIRECT, not authenticated' : '');
-          } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '? ' + e.message; }
+            aStatus.textContent = '✔ HTTP ' + st + ' · ' + ((r.meta && r.meta.bytes) || 0) + ' bytes · ' + ((r.tables && r.tables.length) || 0) + ' table(s) · saved to Downloads'
+              + (r.meta && r.meta.looksLikeLogin ? ' — LOGIN REDIRECT, not authenticated' : '');
+          } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
           finally { one.disabled = false; }
         };
         diagWrap.appendChild(one);
       }
 
-      // ?? THE JOB SECTION ?????????????????????????????????????????????????????????????
+      // ── THE JOB SECTION ─────────────────────────────────────────────────────────────
       // Rob, 2026-09-15: "i asked you to create the job files in json form so i would not have
       // to do all this manual stuff i would simply point the extension to the job file  can we
       // incorpoartae that and begin to clean up and rename these buttons   i watn somthing m ore
@@ -244,7 +259,7 @@
       jobWrap.appendChild(jobPrimaryHost);
 
       // The tenant list -- DEMOTED to a secondary control, NOT hidden.
-      // ?? This is a deliberate deviation from "rest hidden", and the reason is a dependency:
+      // ⚠️ This is a deliberate deviation from "rest hidden", and the reason is a dependency:
       // the job's tenant set is derived FROM the roster baseline, so a job cut against a stale
       // roster CANNOT contain a tenant created since. Burying the refresh in diagnostics is
       // exactly how that goes unnoticed -- so the job summary below reads rosterAgeDays and
@@ -252,15 +267,15 @@
       // a dependency that cannot rot unseen.
       const lst = el('button', BTN, 'Refresh tenant list (roster diff, ~1 page load)');
       lst.onclick = async () => {
-        lst.disabled = true; aStatus.style.color = '#fa0'; aStatus.textContent = 'reading department list?';
+        lst.disabled = true; aStatus.style.color = '#fa0'; aStatus.textContent = 'reading department list…';
         try {
           const o = await window.__usxAdminProbe.runList();
           const n = o.deptIdCount || 0;
           aStatus.style.color = (o.meta.ok && !o.meta.looksLikeLogin && n > 0) ? '#7c7' : '#f77';
           aStatus.textContent = o.meta.looksLikeLogin
-            ? '? LOGIN REDIRECT ? log into the RMS UI in this tab first.'
-            : '? HTTP ' + o.meta.status + ' ? ' + n + ' tenant(s) found ? saved to Downloads';
-        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '? ' + e.message; }
+            ? '✖ LOGIN REDIRECT — log into the RMS UI in this tab first.'
+            : '✔ HTTP ' + o.meta.status + ' · ' + n + ' tenant(s) found · saved to Downloads';
+        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
         finally { lst.disabled = false; }
       };
       const jobStaleRow = el('div', 'display:none;font-size:11px;color:#fa0;margin:2px 0');
@@ -304,7 +319,7 @@
       idsIn.placeholder = 'comma-separated department ids; blank = use the filter above';
       // Ledger section B, located 2026-09-10. Albany County NY is deliberately absent --
       // it was NOT found in this host's index and I will not invent an id for it.
-      // ?? DEFAULTS TO EMPTY, DELIBERATELY. It used to ship pre-filled with the 11
+      // ⚠️ DEFAULTS TO EMPTY, DELIBERATELY. It used to ship pre-filled with the 11
       // IMPORT_LEDGER section-B dept ids, from when this panel was a ledger-verification tool.
       // That default is HOSTILE to the single-tenant deploy workflow: a page reload silently
       // restores it, so on 2026-09-11 a "pull just usx-fl-fcic" turned into an 11-tenant sweep
@@ -328,7 +343,7 @@
         const lim = parseInt(document.getElementById('usx-admin-lim').value, 10) || 5;
         const sub = document.getElementById('usx-admin-sub').value;
         const st  = document.getElementById('usx-admin-status').value;
-        scan.disabled = true; aStatus.style.color = '#fa0'; aStatus.textContent = 'listing, filtering, then scanning up to ' + lim + '?';
+        scan.disabled = true; aStatus.style.color = '#fa0'; aStatus.textContent = 'listing, filtering, then scanning up to ' + lim + '…';
         try {
           const ids = document.getElementById('usx-admin-ids').value;
           const o = await window.__usxAdminProbe.runScan({ limit: lim, subdomainMatch: sub, statusMatch: st, deptIds: ids });
@@ -338,13 +353,13 @@
           // Report the WHOLE funnel. "5/5 returned a config" hides whether the filter
           // matched 5 of 1785 or 5 of 5 -- and the denominator is the finding.
           aStatus.style.color = (matched > 0 && withCfg > 0) ? '#7c7' : '#f77';
-          aStatus.textContent = '? listed ' + listed + ' ? matched ' + matched + ' ? read ' + withCfg + '/' + (o.results || []).length + ' ? saved to Downloads';
-        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '? ' + e.message; }
+          aStatus.textContent = '✔ listed ' + listed + ' · matched ' + matched + ' · read ' + withCfg + '/' + (o.results || []).length + ' · saved to Downloads';
+        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
         finally { scan.disabled = false; }
       };
       diagWrap.appendChild(scan);
 
-      // ?? EXPORT PROBE (Rob: "exercise the export buttons yourself via the extension") ??
+      // ── EXPORT PROBE (Rob: "exercise the export buttons yourself via the extension") ──
       // TWO buttons, and the split is the safety. Button 4 only LOOKS -- it enumerates every
       // control on a tenant's configuration page and clicks nothing, so it is safe to run
       // on an admin page whose controls are unknown. Button 5 clicks AT MOST ONE control, and only
@@ -365,14 +380,14 @@
       const look = el('button', BTN, '4. Look at the controls (clicks NOTHING)');
       look.onclick = async () => {
         const id = document.getElementById('usx-admin-expid').value.trim();
-        look.disabled = true; aStatus.style.color = '#fa0'; aStatus.textContent = 'enumerating controls on ' + id + '?';
+        look.disabled = true; aStatus.style.color = '#fa0'; aStatus.textContent = 'enumerating controls on ' + id + '…';
         try {
           const o = await window.__usxAdminProbe.runExportLook(id);
           const s = o.controlSummary || {};
           aStatus.style.color = '#7c7';
-          aStatus.textContent = '? ' + (s.total || 0) + ' control(s) ? ' + (s.looksExport || 0) + ' export-ish ? '
-            + (s.looksDestructive || 0) + ' destructive ? ' + (s.clickable || 0) + ' safe to click ? saved';
-        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '? ' + e.message; }
+          aStatus.textContent = '✔ ' + (s.total || 0) + ' control(s) · ' + (s.looksExport || 0) + ' export-ish · '
+            + (s.looksDestructive || 0) + ' destructive · ' + (s.clickable || 0) + ' safe to click · saved';
+        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
         finally { look.disabled = false; }
       };
       diagWrap.appendChild(look);
@@ -380,18 +395,18 @@
       const tryExp = el('button', BTN + ';' + BLU, '5. Try the export (one safe control only)');
       tryExp.onclick = async () => {
         const id = document.getElementById('usx-admin-expid').value.trim();
-        tryExp.disabled = true; aStatus.style.color = '#fa0'; aStatus.textContent = 'trying export on ' + id + '?';
+        tryExp.disabled = true; aStatus.style.color = '#fa0'; aStatus.textContent = 'trying export on ' + id + '…';
         try {
           const o = await window.__usxAdminProbe.runExportTry(id);
           if (!o.clicked) {
             aStatus.style.color = '#fa0';
-            aStatus.textContent = '? nothing was clicked (no control passed both lists). See the saved file.';
+            aStatus.textContent = '— nothing was clicked (no control passed both lists). See the saved file.';
           } else {
-            const got = o.clicked.newText ? (o.clicked.newText.length + ' JSON blob(s) captured') : 'no in-page JSON ? check Downloads for a file';
+            const got = o.clicked.newText ? (o.clicked.newText.length + ' JSON blob(s) captured') : 'no in-page JSON — check Downloads for a file';
             aStatus.style.color = o.clicked.newText ? '#7c7' : '#fa0';
-            aStatus.textContent = '? clicked "' + (o.clicked.control.label || o.clicked.control.tag) + '" ? ' + got;
+            aStatus.textContent = '✔ clicked "' + (o.clicked.control.label || o.clicked.control.tag) + '" · ' + got;
           }
-        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '? ' + e.message; }
+        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
         finally { tryExp.disabled = false; }
       };
       diagWrap.appendChild(tryExp);
@@ -406,7 +421,7 @@
         const ids = document.getElementById('usx-admin-ids').value;
         const n = ids.split(',').filter(s => /^\s*\d+\s*$/.test(s)).length;
         sweep.disabled = true; aStatus.style.color = '#fa0';
-        // ?? THIS LINE SAID "~2s each" AND THAT WAS WRONG BY AN ORDER OF MAGNITUDE.
+        // ⚠️ THIS LINE SAID "~2s each" AND THAT WAS WRONG BY AN ORDER OF MAGNITUDE.
         // probeExportControls runs TWO 12-second budgets back to back (wait-for-table, then
         // watch-after-click), and the second exits early only if a <pre>/<textarea> appears or
         // the page grows 2000+ chars. Measured 2026-09-11: 64 tenants took ~50 min alone, and
@@ -414,18 +429,18 @@
         // suspected the console errors were the cause and they were not -- he was reading this
         // status line. A status string is documentation; a wrong one costs real trust.
         const mins = Math.max(1, Math.round(n * 25 / 60));
-        aStatus.textContent = 'reading versions for ' + n + ' tenant(s)? up to ~' + mins + ' min. Do NOT start a second sweep.';
+        aStatus.textContent = 'reading versions for ' + n + ' tenant(s)… up to ~' + mins + ' min. Do NOT start a second sweep.';
         try {
           const o = await window.__usxAdminProbe.runExportSweepDl({ deptIds: ids });
           const got = (o.results || []).filter(r => r.verdict === 'VERSION-READ').length;
           aStatus.style.color = got === (o.results || []).length ? '#7c7' : '#fa0';
-          aStatus.textContent = '? ' + got + '/' + (o.results || []).length + ' version(s) read ? saved to Downloads';
-        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '? ' + e.message; }
+          aStatus.textContent = '✔ ' + got + '/' + (o.results || []).length + ' version(s) read · saved to Downloads';
+        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
         finally { sweep.disabled = false; }
       };
       diagWrap.appendChild(sweep);
 
-      // ?? THE INVENTORY PULL: same sweep, but KEEP THE CONFIGS ????????????????????????
+      // ── THE INVENTORY PULL: same sweep, but KEEP THE CONFIGS ────────────────────────
       // Rob 2026-09-11: "i want you to scan and pull all the jsons so we have an actual record
       // of what is where." Button 6 reads each config and throws it away; this one writes one
       // file per tenant. It is the baseline for the whole import-automation goal -- you cannot
@@ -434,26 +449,26 @@
       pull.onclick = async () => {
         const ids = document.getElementById('usx-admin-ids').value;
         const n = ids.split(',').filter(s => /^\s*\d+\s*$/.test(s)).length;
-        if (!n) { aStatus.style.color = '#f77'; aStatus.textContent = '? no dept ids in the box above'; return; }
+        if (!n) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ no dept ids in the box above'; return; }
         // ~250KB each. Say the real number BEFORE writing 15MB of customer config to his disk.
         const mb = Math.round(n * 0.25);
         if (!confirm('Pull and SAVE the full configuration JSON for ' + n + ' tenant(s)?\n\n'
-          + '? one file per tenant, ~' + mb + 'MB total into Downloads\n'
-          + '? CUSTOMER CONFIGURATION -- gitignored on ingest, never committed\n'
-          + '? READ-ONLY: clicks only Export JSON, never Import\n'
-          + '? up to ~' + Math.max(1, Math.round(n * 25 / 60)) + ' min. Do not start a second sweep.')) return;
+          + '· one file per tenant, ~' + mb + 'MB total into Downloads\n'
+          + '· CUSTOMER CONFIGURATION -- gitignored on ingest, never committed\n'
+          + '· READ-ONLY: clicks only Export JSON, never Import\n'
+          + '· up to ~' + Math.max(1, Math.round(n * 25 / 60)) + ' min. Do not start a second sweep.')) return;
         window.__usxAdminAbort = false;
         pull.disabled = true; sweep.disabled = true; stopPull.style.display = 'block'; aStatus.style.color = '#fa0';
-        aStatus.textContent = 'pulling ' + n + ' config(s)?';
+        aStatus.textContent = 'pulling ' + n + ' config(s)…';
         try {
           const o = await window.__usxAdminProbe.runExportSweepDl({ deptIds: ids, pullConfigs: true });
           const got = (o.results || []).filter(r => r.verdict === 'VERSION-READ').length;
           const mixed = (o.results || []).filter(r => r.mixedVersions).length;
           aStatus.style.color = (o.configsFailed ? '#f77' : '#7c7');
-          aStatus.textContent = '? ' + (o.configsSaved || 0) + ' config(s) saved, ' + (o.configsFailed || 0)
-            + ' failed ? ' + got + '/' + (o.results || []).length + ' version(s) read'
-            + (mixed ? ' ? ' + mixed + ' tenant(s) carry MIXED versions' : '');
-        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '? ' + e.message; }
+          aStatus.textContent = '✔ ' + (o.configsSaved || 0) + ' config(s) saved, ' + (o.configsFailed || 0)
+            + ' failed · ' + got + '/' + (o.results || []).length + ' version(s) read'
+            + (mixed ? ' · ' + mixed + ' tenant(s) carry MIXED versions' : '');
+        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
         finally { pull.disabled = false; sweep.disabled = false; stopPull.style.display = 'none'; stopPull.textContent = 'Stop the pull (finishes the current tenant)'; }
       };
       expWrap.appendChild(pull);
@@ -467,7 +482,7 @@
       stopPull.onclick = () => { window.__usxAdminAbort = true; stopPull.textContent = 'stopping after this tenant...'; };
       expWrap.appendChild(stopPull);
 
-      // ?? CAPTURE THE OPEN DIALOG (read-only) ??????????????????????????????????????????
+      // ── CAPTURE THE OPEN DIALOG (read-only) ──────────────────────────────────────────
       // Rob, 2026-09-11: "add the button to capture the dialog elements". This is the
       // measurement that has to precede any import automation. The import dialog only exists
       // in the operator's OWN tab after he clicks Import JSON, so this reads the LIVE document
@@ -491,7 +506,7 @@
       expWrap.appendChild(el('div', 'color:#999;font-size:11px;margin-top:2px',
         'Open the Import JSON dialog FIRST, then click this \u2014 it reads whatever is on screen right now.'));
 
-      // ?? BUTTON 7 -- THE FULL CENSUS: every department, not just the ones we know about ??????????
+      // ── BUTTON 7 -- THE FULL CENSUS: every department, not just the ones we know about ──────────
       // Rob: "scan the entire departments page and visit each configuration page to
       // 1 determine if it has a usx provider installed and download to compare what version".
       // PHASE 1 only -- reads the bundle table for all 1785. Phase 2 (the version, via the
@@ -500,7 +515,7 @@
       // Chunked + resumable + abortable, because this is ~20-25 minutes of page loads and a
       // single end-of-run download would lose the lot to one hiccup at #1700.
       const censusWrap = el('div', 'margin-top:8px;border-top:1px solid #333;padding-top:6px');
-      censusWrap.appendChild(el('div', 'font-size:11px;color:#fc6', 'full census ? ALL departments (phase 1)'));
+      censusWrap.appendChild(el('div', 'font-size:11px;color:#fc6', 'full census — ALL departments (phase 1)'));
       const cRow = el('div', 'display:flex;gap:4px;align-items:center;margin:4px 0');
       cRow.appendChild(el('span', 'font-size:11px;color:#999', 'from:'));
       const cFrom = el('input', 'width:58px;padding:4px;background:#222;color:#eee;border:1px solid #555;border-radius:4px');
@@ -516,13 +531,13 @@
       censusWrap.appendChild(cProg);
 
       const census = el('button', BTN, '7. Scan ALL departments (~20-25 min)');
-      const stopC = el('button', BTN + ';' + RED, '? Stop the census');
+      const stopC = el('button', BTN + ';' + RED, '⏹ Stop the census');
       stopC.style.display = 'none';
 
       census.onclick = async () => {
         window.__usxAdminAbort = false;
         census.disabled = true; stopC.style.display = 'block';
-        aStatus.style.color = '#fa0'; aStatus.textContent = 'census running ? leave this tab open';
+        aStatus.style.color = '#fa0'; aStatus.textContent = 'census running — leave this tab open';
         const t0 = Date.now();
         try {
           const t = await window.__usxAdminProbe.runFullScan({
@@ -537,22 +552,22 @@
             }
           });
           aStatus.style.color = t.aborted ? '#fa0' : '#7c7';
-          aStatus.textContent = (t.aborted ? '? STOPPED after ' : '? census done: ') + t.scanned + '/' + t.indexTotal
-            + ' ? ' + t.withProvider + ' with a provider ? ' + t.unresolved + ' unresolved ? ' + t.errored + ' errored ? '
+          aStatus.textContent = (t.aborted ? '⏹ STOPPED after ' : '✔ census done: ') + t.scanned + '/' + t.indexTotal
+            + ' · ' + t.withProvider + ' with a provider · ' + t.unresolved + ' unresolved · ' + t.errored + ' errored · '
             + t.chunks + ' file(s)';
-        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '? ' + e.message; }
+        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
         finally { census.disabled = false; stopC.style.display = 'none'; }
       };
-      stopC.onclick = () => { window.__usxAdminAbort = true; stopC.textContent = '? stopping after this page?'; };
+      stopC.onclick = () => { window.__usxAdminAbort = true; stopC.textContent = '⏹ stopping after this page…'; };
       censusWrap.appendChild(census);
       censusWrap.appendChild(stopC);
       censusWrap.appendChild(el('div', 'color:#999;font-size:11px;margin-top:2px',
-        'Saves one file per chunk, so a failure costs one chunk. Stopping is safe ? finished chunks are already saved.'));
+        'Saves one file per chunk, so a failure costs one chunk. Stopping is safe — finished chunks are already saved.'));
 
-      // ?? 7b. RESCAN = INDEX DIFF, then census ONLY what moved ?????????????????????????
+      // ── 7b. RESCAN = INDEX DIFF, then census ONLY what moved ─────────────────────────
       // Rob 2026-09-14: "fix up the extension so you can easliy rescan everything and update you
       // tenenat list."
-      // ?? THE WIN IS NOT A FASTER CENSUS, IT IS NOT RUNNING ONE. Button 7 visits all 1,785
+      // ⚠️ THE WIN IS NOT A FASTER CENSUS, IT IS NOT RUNNING ONE. Button 7 visits all 1,785
       // configuration pages (20-25 min) and is the right tool exactly once -- for a bootstrap.
       // The department INDEX is ONE page load and already carries deptId + subdomain + status, so
       // a recurring audit is: read the index, diff it against the committed baseline, and census
@@ -569,7 +584,7 @@
       //   3. A SHORT INDEX IS A TRUNCATED CAPTURE, NOT A MASS DELETION. If the index came back
       //      more than 10% smaller than the baseline, departures are SUPPRESSED and flagged --
       //      a partial page load must never read as tenants being removed.
-      const rescan = el('button', BTN + ';' + BLU, '7b. RESCAN ? refresh the tenant list, census ONLY what changed');
+      const rescan = el('button', BTN + ';' + BLU, '7b. RESCAN — refresh the tenant list, census ONLY what changed');
       const rProg  = el('div', 'font:11px ui-monospace,monospace;color:#7cf;margin:3px 0;min-height:16px');
       const MAX_SHRINK_PCT = 10;
       const RESCAN_CENSUS_CAP = 60;   // above this, report and let the operator decide -- an
@@ -577,7 +592,7 @@
 
       rescan.onclick = async () => {
         rescan.disabled = true; aStatus.style.color = '#fa0';
-        aStatus.textContent = 'reading the department index (one page load)?';
+        aStatus.textContent = 'reading the department index (one page load)…';
         rProg.textContent = '';
         try {
           // 1. BASELINE. A 404 here is a real answer, not a failure to handle silently.
@@ -591,7 +606,7 @@
           // 2. CURRENT INDEX -- one page load, and it is SAVED so ingest_tenant_roster -Update
           //    can absorb exactly what was diffed here rather than a second, different pull.
           const idx = await window.__usxAdminProbe.runList();
-          // ?? THE FIELD IS `deptIds` AND IT HOLDS FULL RECORDS, NOT IDS. `extractDeptIds` is a
+          // ⚠️ THE FIELD IS `deptIds` AND IT HOLDS FULL RECORDS, NOT IDS. `extractDeptIds` is a
           // straight alias for `extractDeptRecords` (admin_probe.js line 158), so each element is
           // { deptId, subdomain, status, analyticsAlias, cadSubdomain }. I first wrote
           // `idx.records || idx.departments` from the shape the name implies -- both undefined,
@@ -602,8 +617,8 @@
 
           if (!baseline || !baseline.tenants || !baseline.tenants.length) {
             aStatus.style.color = '#fa0';
-            aStatus.textContent = '? BOOTSTRAP: ' + cur.length + ' departments read and saved, but NO baseline ('
-              + (baseErr || 'roster empty') + '). Reporting NOTHING as new ? every row would read as a discovery.'
+            aStatus.textContent = '⚠ BOOTSTRAP: ' + cur.length + ' departments read and saved, but NO baseline ('
+              + (baseErr || 'roster empty') + '). Reporting NOTHING as new — every row would read as a discovery.'
               + ' Run: tools\\ingest_tenant_roster.ps1 -Update';
             return;
           }
@@ -628,36 +643,36 @@
           let censusMsg = '';
           if (!toCensus.length) censusMsg = 'nothing new to census';
           else if (toCensus.length > RESCAN_CENSUS_CAP) {
-            censusMsg = toCensus.length + ' new ? ABOVE THE CAP of ' + RESCAN_CENSUS_CAP
+            censusMsg = toCensus.length + ' new — ABOVE THE CAP of ' + RESCAN_CENSUS_CAP
               + ', not auto-censused. Paste the ids into the box above and use button 3.';
           } else {
-            rProg.textContent = 'censusing ' + toCensus.length + ' new tenant(s)?';
+            rProg.textContent = 'censusing ' + toCensus.length + ' new tenant(s)…';
             const o = await window.__usxAdminProbe.runScan({ limit: toCensus.length, deptIds: toCensus.join(',') });
             const withCfg = (o.results || []).filter(r => r.meta && r.meta.ok).length;
             censusMsg = 'censused ' + withCfg + '/' + toCensus.length + ' new (saved to Downloads)';
           }
 
           rProg.textContent =
-              'baseline ' + byIdOld.size + ' ? index ' + byIdNew.size
-            + (truncated ? ('   ? INDEX ' + shrinkPct.toFixed(1) + '% SHORTER ? departures SUPPRESSED (treat as a truncated capture, re-run before believing it)') : '')
-            + '\nNEW ' + added.length + ' ? RENAMED ' + renamed.length + ' ? STATUS ' + statusChanged.length + ' ? DEPARTED ' + departed.length
-            + (added.length ? ('\nnew: ' + added.slice(0, 8).map(a => a.subdomain + '(' + a.deptId + ')').join(', ') + (added.length > 8 ? ' ?' : '')) : '')
-            + (renamed.length ? ('\nrenamed: ' + renamed.slice(0, 5).map(r => r.from + '?' + r.to).join(', ')) : '');
+              'baseline ' + byIdOld.size + ' → index ' + byIdNew.size
+            + (truncated ? ('   ⚠ INDEX ' + shrinkPct.toFixed(1) + '% SHORTER — departures SUPPRESSED (treat as a truncated capture, re-run before believing it)') : '')
+            + '\nNEW ' + added.length + ' · RENAMED ' + renamed.length + ' · STATUS ' + statusChanged.length + ' · DEPARTED ' + departed.length
+            + (added.length ? ('\nnew: ' + added.slice(0, 8).map(a => a.subdomain + '(' + a.deptId + ')').join(', ') + (added.length > 8 ? ' …' : '')) : '')
+            + (renamed.length ? ('\nrenamed: ' + renamed.slice(0, 5).map(r => r.from + '→' + r.to).join(', ')) : '');
 
           const quiet = !added.length && !renamed.length && !statusChanged.length && !departed.length;
           aStatus.style.color = truncated ? '#fa0' : (quiet ? '#7c7' : '#7cf');
-          aStatus.textContent = (quiet ? '? NO CHANGE ? ' : '? ')
-            + byIdNew.size + ' departments read ? ' + censusMsg
-            + ' ? index saved. Absorb with: tools\\ingest_tenant_roster.ps1 -Update';
-        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '? ' + e.message; }
+          aStatus.textContent = (quiet ? '✔ NO CHANGE — ' : '✔ ')
+            + byIdNew.size + ' departments read · ' + censusMsg
+            + ' · index saved. Absorb with: tools\\ingest_tenant_roster.ps1 -Update';
+        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
         finally { rescan.disabled = false; }
       };
       censusWrap.appendChild(rescan);
       censusWrap.appendChild(rProg);
       censusWrap.appendChild(el('div', 'color:#999;font-size:11px;margin-top:2px',
-        '7b is the RECURRING audit ? seconds, not 25 minutes. Use 7 only to bootstrap a host from nothing. '
+        '7b is the RECURRING audit — seconds, not 25 minutes. Use 7 only to bootstrap a host from nothing. '
         + 'Needs serve_plans.ps1 running on 8477 for the baseline; it refuses to guess if that is down.'));
-      // ?? DEPLOY (the ONLY write path in the extension) ????????????????????????????????
+      // ── DEPLOY (the ONLY write path in the extension) ────────────────────────────────
       // Rob, 2026-09-11: "i thought we were automating this". Correct -- the mechanism existed
       // in deploy_probe.js but had no control surface, so the operator was still clicking
       // through the dialog by hand. This is that surface.
@@ -802,7 +817,7 @@
           const r = await window.__usxDeploy.runJob({});
           depReport(r);
 
-          // ?? AUTO-EXPORT THE AFTER. Closing the loop at the proof end. ?????????????????
+          // ── AUTO-EXPORT THE AFTER. Closing the loop at the proof end. ─────────────────
           // Rob's goal, stated twice: "execute the imports, then run an export, then compare the
           // 2 to confirm the json update takes place." Until now the operator had to remember to
           // press 6b afterwards -- and the step that gets skipped is the one that makes the rest
@@ -813,7 +828,7 @@
           // Reuses button 6b's own path scoped to ONE deptId -- admin_probe is GET-only by
           // construction and its export click is allowlist-gated, so nothing new can write here.
           //
-          // ?? IT RETRIES ON THE VERSION LABEL, AND A LABEL IS NOT PROOF. The browser cannot
+          // ⚠️ IT RETRIES ON THE VERSION LABEL, AND A LABEL IS NOT PROOF. The browser cannot
           // hash a bundle the way _bundle_identity.ps1 does, so the label is used ONLY as a
           // "has the platform settled yet" signal -- the real verdict is still the PowerShell
           // content compare. Saying otherwise here would reintroduce exactly the trap the whole
@@ -864,7 +879,7 @@
       depResolve();
       depLoadJob();
 
-      // ?? RUN THE JOB -- the one visible control for the read side ????????????????????
+      // ── RUN THE JOB -- the one visible control for the read side ────────────────────
       // Reads providers\PULL_JOB.json via serve_plans GET /pulljob and runs EXACTLY the tenant
       // set it names. Nothing is typed, nothing is pasted: an 800-character transcription into a
       // textarea is what silently dropped a tenant, and the file is reviewable beforehand.
@@ -881,7 +896,7 @@
       const jobGo = el('button', BTN + ';' + BLU, 'RUN THE JOB');
       const jobStop = el('button', BTN + ';' + RED, 'Stop the job (finishes the current tenant)');
       jobStop.style.display = 'none';
-      jobStop.onclick = () => { window.__usxAdminAbort = true; jobStop.textContent = 'stopping after this tenant?'; };
+      jobStop.onclick = () => { window.__usxAdminAbort = true; jobStop.textContent = 'stopping after this tenant…'; };
 
       let jobData = null;
       const jobLoad = async () => {
@@ -896,10 +911,10 @@
           const rc = jobData.reasonCounts || {};
           const parts = Object.keys(rc).map((k) => rc[k] + ' ' + k);
           jobSummary.textContent = 'job: ' + jobData.jobId + '\n'
-            + ids.length + ' tenants ? ~' + jobData.estMinutes + ' min ? ~' + jobData.estMB + ' MB\n'
+            + ids.length + ' tenants · ~' + jobData.estMinutes + ' min · ~' + jobData.estMB + ' MB\n'
             + parts.join(' / ')
             + (jobData.skippedCount ? '\nskipped ' + jobData.skippedCount + ' (see the job file for the reason)' : '');
-          jobGo.textContent = 'RUN THE JOB ? pull ' + ids.length + ' tenant configs';
+          jobGo.textContent = 'RUN THE JOB — pull ' + ids.length + ' tenant configs';
           jobGo.disabled = false;
           // The staleness surface for the demoted refresh control.
           const age = jobData.rosterAgeDays;
@@ -915,7 +930,7 @@
       };
 
       jobGo.onclick = async () => {
-        // ?? ALWAYS RE-FETCH. The first cut of this cached jobData from the panel-injection
+        // ⚠️ ALWAYS RE-FETCH. The first cut of this cached jobData from the panel-injection
         // jobLoad() and only re-fetched when it was null -- so re-cutting PULL_JOB.json left the
         // button running the PREVIOUS job, and the operator had to know to reload the page.
         // That is the exact defect this whole design exists to prevent: executing something
@@ -925,28 +940,28 @@
         await jobLoad();
         if (!jobData) return;
         const ids = (jobData.deptIds || []);
-        if (!ids.length) { aStatus.style.color = '#f77'; aStatus.textContent = '? job names 0 tenants'; return; }
+        if (!ids.length) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ job names 0 tenants'; return; }
         const rc = jobData.reasonCounts || {};
         const parts = Object.keys(rc).map((k) => rc[k] + ' ' + k).join(' / ');
         if (!confirm('Run pull job ' + jobData.jobId + '?\n\n'
-          + '? ' + ids.length + ' tenant(s): ' + parts + '\n'
-          + '? ~' + jobData.estMB + 'MB into Downloads, up to ~' + jobData.estMinutes + ' min\n'
-          + '? READ-ONLY: clicks only Export JSON, never Import\n'
-          + '? CUSTOMER CONFIGURATION -- gitignored on ingest, never committed')) return;
+          + '· ' + ids.length + ' tenant(s): ' + parts + '\n'
+          + '· ~' + jobData.estMB + 'MB into Downloads, up to ~' + jobData.estMinutes + ' min\n'
+          + '· READ-ONLY: clicks only Export JSON, never Import\n'
+          + '· CUSTOMER CONFIGURATION -- gitignored on ingest, never committed')) return;
         window.__usxAdminAbort = false;
         jobGo.disabled = true; jobStop.style.display = 'block';
         aStatus.style.color = '#fa0';
-        aStatus.textContent = 'running job ' + jobData.jobId + ' ? ' + ids.length + ' config(s)?';
+        aStatus.textContent = 'running job ' + jobData.jobId + ' — ' + ids.length + ' config(s)…';
         try {
           const o = await window.__usxAdminProbe.runExportSweepDl({ deptIds: ids.join(','), pullConfigs: true });
           const got = (o.results || []).filter((r) => r.verdict === 'VERSION-READ').length;
           const mixed = (o.results || []).filter((r) => r.mixedVersions).length;
           aStatus.style.color = (o.configsFailed ? '#f77' : '#7c7');
-          aStatus.textContent = '? ' + (o.configsSaved || 0) + '/' + ids.length + ' config(s) saved, '
-            + (o.configsFailed || 0) + ' failed ? ' + got + ' version(s) read'
-            + (mixed ? ' ? ' + mixed + ' tenant(s) carry MIXED versions' : '')
-            + ' ? now run tools\\ingest_tenant_configs.ps1';
-        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '? ' + e.message; }
+          aStatus.textContent = '✔ ' + (o.configsSaved || 0) + '/' + ids.length + ' config(s) saved, '
+            + (o.configsFailed || 0) + ' failed · ' + got + ' version(s) read'
+            + (mixed ? ' · ' + mixed + ' tenant(s) carry MIXED versions' : '')
+            + ' · now run tools\\ingest_tenant_configs.ps1';
+        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
         finally { jobGo.disabled = false; jobStop.style.display = 'none'; jobStop.textContent = 'Stop the job (finishes the current tenant)'; }
       };
 
@@ -955,7 +970,7 @@
       jobPrimaryHost.appendChild(jobSummary);
       jobLoad();
 
-      // ?? PANEL ORDER ????????????????????????????????????????????????????????????????
+      // ── PANEL ORDER ────────────────────────────────────────────────────────────────
       // JOB first (the read side), then DEPLOY (the write side -- also job-file driven, which
       // is why it stays visible rather than moving to diagnostics: it is the same pattern, and
       // burying the write path while Newark sits one click from done would be a regression, not
@@ -990,8 +1005,8 @@
       const batchStatus = el('div', 'font:11px system-ui;color:#fa0;margin:2px 0;min-height:14px'); batchStatus.id = 'usx-batch-status'; p.appendChild(batchStatus);
       const cnt = el('div', 'margin-bottom:8px;color:#7cf', 'Captured so far: 0'); cnt.id = 'usx-cnt'; p.appendChild(cnt);
 
-      // PRIMARY action ? the normal post-Run-Plan loop (scope to today + the queued batch).
-      const fetchBatch = el('button', BTN, '? Fetch results');
+      // PRIMARY action — the normal post-Run-Plan loop (scope to today + the queued batch).
+      const fetchBatch = el('button', BTN, '⚡ Fetch results');
       fetchBatch.onclick = () => { if (!requireArmed()) return;
         let n = 0; try { n = JSON.parse(localStorage.getItem('__usx_batch') || '[]').length; } catch(e) {}
         const today = new Date().toISOString().slice(0,10);
@@ -1002,7 +1017,7 @@
       };
       p.appendChild(fetchBatch);
 
-      // RESET QUEUE ? a panel button, not a console call.
+      // RESET QUEUE — a panel button, not a console call.
       // Rob 2026-09-02: "not doing your commadn line stuuff just running the query from the gui",
       // then "put the manifest reset button in the panel". The reset existed only as
       // __usxManifestReset() in the console, which is unusable under the GUI-only rule -- so in
@@ -1015,7 +1030,7 @@
       // CROSS-VERSION, still holding v1.1 entries during the v2.0 sweep.
       // Deliberately sits DIRECTLY UNDER Fetch and is only enabled when the queue is non-empty:
       // this is the button you want at the exact moment Fetch reports a partial capture.
-      const resetBatch = el('button', BTN + ';' + RED, '?? Reset queue');
+      const resetBatch = el('button', BTN + ';' + RED, '🧹 Reset queue');
       resetBatch.id = 'usx-reset-batch';
       resetBatch.title = 'Clear the queued Run Plan entries. Anything not yet captured must be re-driven.';
       // TWO-CLICK IN-PANEL CONFIRM, NOT window.confirm(). Fixed 2026-09-09.
@@ -1036,14 +1051,14 @@
         const n = (() => { try { return JSON.parse(localStorage.getItem('__usx_batch') || '[]').length; } catch (e) { return 0; } })();
         resetBatch.dataset.pending = resetPending ? '1' : '0';
         resetBatch.textContent = resetPending
-          ? '? CLICK AGAIN to drop ' + n + ' queued'
-          : '?? Reset queue' + (n ? ' (' + n + ')' : '');
+          ? '⚠ CLICK AGAIN to drop ' + n + ' queued'
+          : '🧹 Reset queue' + (n ? ' (' + n + ')' : '');
         resetBatch.style.background = resetPending ? '#c60' : '#a33';
       };
       resetBatch.onclick = () => {
         let prior = [];
         try { prior = JSON.parse(localStorage.getItem('__usx_batch') || '[]'); } catch (e) {}
-        if (!prior.length) { resetPending = false; resetPaint(); flash('Queue is already empty ? nothing to reset.'); return; }
+        if (!prior.length) { resetPending = false; resetPaint(); flash('Queue is already empty — nothing to reset.'); return; }
         const summary = {};
         for (const e of prior) { const k = e.entity + '/' + e.comboKeyRef; summary[k] = (summary[k] || 0) + 1; }
         const lines = Object.keys(summary).sort().map((k) => k + ' x' + summary[k]).join(', ');
@@ -1051,22 +1066,22 @@
           // Arm the confirm and SHOW what would be lost, in the panel where it cannot be suppressed.
           resetPending = true; resetPaint();
           flash('Drop ' + prior.length + ' queued: ' + lines + '. Uncaptured queries become unrecoverable and must be re-driven. Click again to confirm.', '#fa0');
-          setTimeout(() => { if (resetPending) { resetPending = false; resetPaint(); flash('Reset cancelled ? queue untouched.', '#7c7'); } }, 6000);
+          setTimeout(() => { if (resetPending) { resetPending = false; resetPaint(); flash('Reset cancelled — queue untouched.', '#7c7'); } }, 6000);
           return;
         }
         resetPending = false;
         localStorage.removeItem('__usx_batch');
         resetPaint();
-        flash('Queue reset ? ' + prior.length + ' entr' + (prior.length === 1 ? 'y' : 'ies') + ' dropped. Re-drive anything you still need.');
+        flash('Queue reset — ' + prior.length + ' entr' + (prior.length === 1 ? 'y' : 'ies') + ' dropped. Re-drive anything you still need.');
         console.warn('%c[USx-UI]', 'color:#c60;font-weight:bold', 'queue reset, dropped:', summary);
       };
       p.appendChild(resetBatch);
 
-      // Everything else is a fallback ? tucked under a disclosure so the default view stays clean.
+      // Everything else is a fallback — tucked under a disclosure so the default view stays clean.
       const more = el('details', 'margin-top:6px');
       const sum = el('summary', 'cursor:pointer;color:#9cf;font:12px system-ui;list-style:none;user-select:none;padding:2px 0', 'More capture options'); more.appendChild(sum);
 
-      // Custom range ? same API fetch, manual pages/since.
+      // Custom range — same API fetch, manual pages/since.
       more.appendChild(el('div', 'color:#aaa;font-size:11px;margin:6px 0 2px', 'Custom range'));
       const bulkWrap = el('div', 'margin:2px 0;color:#ccc');
       const pages = el('input', 'width:42px'); pages.id = 'usx-pages'; pages.type = 'number'; pages.value = '1'; pages.title = 'list pages (~20 queries each)';
@@ -1079,23 +1094,23 @@
 
       more.appendChild(el('div', 'border-top:1px solid #333;margin:8px 0 4px'));
 
-      // Click-capture fallback ? for when the API fetch returns nothing.
+      // Click-capture fallback — for when the API fetch returns nothing.
       more.appendChild(el('div', 'color:#aaa;font-size:11px;margin-bottom:2px', 'Click-capture (if fetch finds nothing)'));
       const rawWrap = el('label', 'display:block;margin:2px 0;color:#ccc');
       const raw = el('input'); raw.type = 'checkbox'; raw.id = 'usx-raw'; raw.checked = true;
       rawWrap.appendChild(raw); rawWrap.appendChild(document.createTextNode(' Recover existing entries too')); more.appendChild(rawWrap);
-      const w = el('button', BTN + ';' + BLU, '? Start click-capture'); w.id = 'usx-watch';
+      const w = el('button', BTN + ';' + BLU, '▶ Start click-capture'); w.id = 'usx-watch';
       w.onclick = () => { if (!requireArmed()) return; if (window.__usxWatchTimer) { window.__usxCaptureWatchStop(); } else { window.__usxCaptureWatch(document.getElementById('usx-raw').checked); } };
       more.appendChild(w);
-      const s = el('button', BTN + ';' + BLU, '? Stop & download'); s.onclick = () => { if (!requireArmed()) return; window.__usxCaptureWatchStop(); }; more.appendChild(s);
+      const s = el('button', BTN + ';' + BLU, '⬇ Stop & download'); s.onclick = () => { if (!requireArmed()) return; window.__usxCaptureWatchStop(); }; more.appendChild(s);
       const o = el('button', BTN + ';' + BLU, 'Capture open popup'); o.onclick = () => { if (!requireArmed()) return; window.__usxCaptureOpen(); }; more.appendChild(o);
       more.appendChild(el('div', 'color:#999;font-size:11px;margin:4px 0', 'Turn on, then click each row\'s "View request and return". Page through freely.'));
 
       more.appendChild(el('div', 'border-top:1px solid #333;margin:8px 0 4px'));
-      const r = el('button', BTN + ';' + RED, '? Clear captured'); r.onclick = () => window.__usxCaptureWatchReset(); more.appendChild(r);
+      const r = el('button', BTN + ';' + RED, '✕ Clear captured'); r.onclick = () => window.__usxCaptureWatchReset(); more.appendChild(r);
       p.appendChild(more);
 
-      p.appendChild(el('div', 'margin-top:8px;color:#999;font-size:11px', 'After Run Plan on universal-search, click ? Fetch results ? a JSON downloads; import with tools\\import_captured_tests.ps1.'));
+      p.appendChild(el('div', 'margin-top:8px;color:#999;font-size:11px', 'After Run Plan on universal-search, click ⚡ Fetch results — a JSON downloads; import with tools\\import_captured_tests.ps1.'));
     } else {
       // Status line shows loaded plan info (declared first -- both load paths write to it)
       const planStatus = el('div', 'font:11px system-ui;color:#7cf;margin:2px 0;min-height:14px'); planStatus.id = 'usx-plan-status';
@@ -1106,7 +1121,7 @@
         const count = Array.isArray(tests) ? tests.length : '?';
         const entities = Array.isArray(tests) ? [...new Set(tests.map(t => t.entity).filter(Boolean))] : [];
         planStatus.style.color = '#7cf';
-        planStatus.textContent = `? ${sourceName} ? ${count} tests`;
+        planStatus.textContent = `✔ ${sourceName} — ${count} tests`;
         const sel = document.getElementById('usx-ent'); sel.innerHTML = '';
         entities.forEach((e, i) => { const o = document.createElement('option'); o.value = e; o.textContent = e; if (i === 0) o.selected = true; sel.appendChild(o); });
         window.__usxLoadedPlan = planObj;
@@ -1116,9 +1131,9 @@
       // http://localhost:8477 -- localhost is exempt from mixed-content blocking). Provider is
       // derived from the tenant hostname, so one button works on every tenant.
       const prov = window.__usxLib ? window.__usxLib.providerFromHost() : 'UNKNOWN';
-      const repoBtn = el('button', BTN, '? Load plan from repo');
+      const repoBtn = el('button', BTN, '⟳ Load plan from repo');
       repoBtn.onclick = async () => { if (!requireArmed()) return;
-        planStatus.style.color = '#fa0'; planStatus.textContent = `fetching plan for ${prov}?`;
+        planStatus.style.color = '#fa0'; planStatus.textContent = `fetching plan for ${prov}…`;
         try {
           const r = await fetch(`http://localhost:8477/plan/${prov}`);
           if (!r.ok) throw new Error((await r.json()).error || r.status);
@@ -1126,14 +1141,14 @@
           applyPlan(planObj, `repo plan ${prov} v${planObj.version || '?'}`);
         } catch (e) {
           planStatus.style.color = '#f77';
-          planStatus.textContent = `? repo load failed (${e.message}) ? is tools\\serve_plans.ps1 running? Use ?? below.`;
+          planStatus.textContent = `✖ repo load failed (${e.message}) — is tools\\serve_plans.ps1 running? Use 📂 below.`;
         }
       };
       p.appendChild(repoBtn);
 
-      // Manual file picker ? kept for testing / one-off plans.
+      // Manual file picker — kept for testing / one-off plans.
       const fileRow = el('div', 'margin:4px 0');
-      const fileLbl = el('label', 'display:block;padding:6px;border:1px dashed #555;border-radius:5px;color:#aaa;font:11px system-ui;cursor:pointer;text-align:center', '?? Load TEST_PLAN JSON (manual)?');
+      const fileLbl = el('label', 'display:block;padding:6px;border:1px dashed #555;border-radius:5px;color:#aaa;font:11px system-ui;cursor:pointer;text-align:center', '📂 Load TEST_PLAN JSON (manual)…');
       const fileIn = el('input'); fileIn.type = 'file'; fileIn.accept = '.json'; fileIn.style.cssText = 'display:none';
       fileLbl.appendChild(fileIn);
       fileRow.appendChild(fileLbl);
@@ -1144,20 +1159,20 @@
         const r = new FileReader();
         r.onload = (ev) => {
           try { applyPlan(JSON.parse(ev.target.result), f.name.replace(/^.*[/\\]/,'')); }
-          catch (e) { planStatus.style.color='#f77'; planStatus.textContent = '? parse error: ' + e.message; }
+          catch (e) { planStatus.style.color='#f77'; planStatus.textContent = '✖ parse error: ' + e.message; }
         };
         r.readAsText(f);
       };
       // Run ALL (auto entity switching) PARKED 2026-07-02 by user decision -- "we are
       // trying too much"; the proven flow is semi-automatic: pick entity, Run Plan, repeat,
       // one Fetch at the end. __usxRunAll stays available from the console for later.
-      const ent = el('select', 'width:100%;margin:4px 0;padding:5px;box-sizing:border-box;background:#222;color:#eee;border:1px solid #555;border-radius:4px'); ent.id = 'usx-ent'; const entPlaceholder = document.createElement('option'); entPlaceholder.value = ''; entPlaceholder.textContent = '? load plan first ?'; entPlaceholder.disabled = true; entPlaceholder.selected = true; ent.appendChild(entPlaceholder); p.appendChild(ent);
+      const ent = el('select', 'width:100%;margin:4px 0;padding:5px;box-sizing:border-box;background:#222;color:#eee;border:1px solid #555;border-radius:4px'); ent.id = 'usx-ent'; const entPlaceholder = document.createElement('option'); entPlaceholder.value = ''; entPlaceholder.textContent = '— load plan first —'; entPlaceholder.disabled = true; entPlaceholder.selected = true; ent.appendChild(entPlaceholder); p.appendChild(ent);
       const runStatus = el('div', 'font:11px system-ui;color:#fa0;margin:2px 0;min-height:14px'); runStatus.id = 'usx-run-status'; p.appendChild(runStatus);
-      const run = el('button', BTN, '? Run Plan');
+      const run = el('button', BTN, '▶ Run Plan');
       run.onclick = async () => { if (!requireArmed()) return;
         const plan = window.__usxLoadedPlan;
-        if (!plan) { flash('Load a TEST_PLAN JSON file first (?? button above).'); return; }
-        if (typeof window.__usxRunPlan !== 'function') { flash('__usxRunPlan not found ? make sure the extension loaded on this page (reload).'); return; }
+        if (!plan) { flash('Load a TEST_PLAN JSON file first (📂 button above).'); return; }
+        if (typeof window.__usxRunPlan !== 'function') { flash('__usxRunPlan not found — make sure the extension loaded on this page (reload).'); return; }
         const entity = (document.getElementById('usx-ent').value || '').trim();
         const tests = (plan.tests || []).filter(t => (t.kind === 'combo' || t.kind === 'any' || t.kind === 'any-field' || t.kind === 'guardrail') && (!entity || t.entity === entity));
         if (!tests.length) { flash('No submittable tests found for entity "' + entity + '". Check the entity name (case-sensitive, e.g. Vehicle).'); return; }
@@ -1169,26 +1184,26 @@
           flash('The ' + (entity || 'selected') + ' form is not on screen (field "' + firstFill.fieldId + '" not found). Click the ' + entity + ' entity tab first, then Run Plan.');
           return;
         }
-        runStatus.style.color = '#fa0'; runStatus.textContent = `Running ${tests.length} tests for ${entity || 'all'}?`;
+        runStatus.style.color = '#fa0'; runStatus.textContent = `Running ${tests.length} tests for ${entity || 'all'}…`;
         run.disabled = true;
         try {
           const results = await window.__usxRunPlan(plan, entity || undefined);
           const ok = results ? results.filter(r => r.sent && r.sent.ok).length : 0;
-          runStatus.style.color = '#7cf'; runStatus.textContent = `Done: ${ok}/${tests.length} submitted. Go to dex-log ? Bulk Fetch.`;
+          runStatus.style.color = '#7cf'; runStatus.textContent = `Done: ${ok}/${tests.length} submitted. Go to dex-log → Bulk Fetch.`;
         } catch (e) {
           runStatus.style.color = '#f77'; runStatus.textContent = 'Error: ' + e.message;
         } finally { run.disabled = false; }
       };
       p.appendChild(run);
 
-      // Picklist scope ? fetches the repo scope and dumps the CURRENT entity's dropdown
+      // Picklist scope — fetches the repo scope and dumps the CURRENT entity's dropdown
       // options (render the entity form, pick it in the dropdown above, click).
-      const scopeBtn = el('button', BTN + ';' + BLU, '?? Scope picklists (current entity)');
+      const scopeBtn = el('button', BTN + ';' + BLU, '🔍 Scope picklists (current entity)');
       const scopeStatus = el('div', 'font:11px system-ui;color:#fa0;margin:2px 0;min-height:14px');
       scopeBtn.onclick = async () => { if (!requireArmed()) return;
         const entity = (document.getElementById('usx-ent').value || '').trim();
         if (!entity) { flash('Load the plan first (entity list comes from it), render the entity form, then click.'); return; }
-        scopeStatus.textContent = `scoping ${entity}?`;
+        scopeStatus.textContent = `scoping ${entity}…`;
         try {
           if (!window.__usxLoadedScope) {
             const r = await fetch(`http://localhost:8477/scope/${prov}`);
@@ -1197,15 +1212,15 @@
           }
           const res = await window.__usxScopePicklists(window.__usxLoadedScope, entity);
           scopeStatus.style.color = '#7cf';
-          scopeStatus.textContent = res ? `? ${entity}: ${res.fields.length} dropdown(s) dumped + downloaded` : `no selects for ${entity}`;
-        } catch (e) { scopeStatus.style.color = '#f77'; scopeStatus.textContent = '? ' + e.message; }
+          scopeStatus.textContent = res ? `✔ ${entity}: ${res.fields.length} dropdown(s) dumped + downloaded` : `no selects for ${entity}`;
+        } catch (e) { scopeStatus.style.color = '#f77'; scopeStatus.textContent = '✖ ' + e.message; }
       };
       p.appendChild(scopeBtn);
       p.appendChild(scopeStatus);
 
-      p.appendChild(el('div', 'margin-top:6px;color:#999;font-size:11px', '0. Run tools\\watch_captures.ps1 + tools\\serve_plans.ps1 once  1. ? Load plan  2. Pick entity  3. Run Plan (or ?? Scope)  4. Fetch results'));
+      p.appendChild(el('div', 'margin-top:6px;color:#999;font-size:11px', '0. Run tools\\watch_captures.ps1 + tools\\serve_plans.ps1 once  1. ⟳ Load plan  2. Pick entity  3. Run Plan (or 🔍 Scope)  4. Fetch results'));
 
-      // ?? RND-71625: the warning-icon / blocking check ????????????????????????????????????
+      // ── RND-71625: the warning-icon / blocking check ────────────────────────────────────
       // GUI, not a console command. Rob, 2026-09-09: "can you build a button or something for
       // this" -- and he was right twice over, because "translate console names into GUI buttons
       // rather than echoing them" is a standing directive I had been ignoring by handing over
@@ -1219,7 +1234,7 @@
       // about a warning icon, which is the opposite of what the switch is for. The label says
       // read-only so the difference is visible rather than assumed.
       const awWrap = el('details', 'margin-top:8px;border-top:1px solid #333;padding-top:6px');
-      const awSum = el('summary', 'cursor:pointer;color:#fc6;font:12px system-ui;list-style:none;user-select:none;padding:2px 0', 'RND-71625 ? warning-icon check (read-only)');
+      const awSum = el('summary', 'cursor:pointer;color:#fc6;font:12px system-ui;list-style:none;user-select:none;padding:2px 0', 'RND-71625 — warning-icon check (read-only)');
       awWrap.appendChild(awSum);
 
       const awStatus = el('div', 'font:11px system-ui;color:#fa0;margin:4px 0;min-height:14px');
@@ -1228,7 +1243,7 @@
       const trigs = window.__usxAuthTriggers || null;
       if (!trigs) {
         awTrig.disabled = true;
-        const o = document.createElement('option'); o.textContent = '? authwatch.js not loaded ?'; awTrig.appendChild(o);
+        const o = document.createElement('option'); o.textContent = '— authwatch.js not loaded —'; awTrig.appendChild(o);
       } else {
         // control-normal first: the baseline must be the default, because a run with no control
         // to compare against cannot conclude anything (README: "Run it TWICE per surface").
@@ -1262,13 +1277,13 @@
       let awProbe;   // declared here: awRun's handler disables it, and relying on var-hoisting
                      // (or worse, an implicit global) for that is how a panel button silently
                      // stops being re-enabled after a failed run.
-      const awRun = el('button', BTN, '? Watch + download record');
+      const awRun = el('button', BTN, '▶ Watch + download record');
       awRun.onclick = async () => {
-        if (!window.__usxAuthWatch) { awStatus.style.color = '#f77'; awStatus.textContent = '? authwatch.js not loaded ? reload the extension.'; return; }
+        if (!window.__usxAuthWatch) { awStatus.style.color = '#f77'; awStatus.textContent = '✖ authwatch.js not loaded — reload the extension.'; return; }
         awRun.disabled = true; awProbe.disabled = true;
         const secs = parseInt(awSecs.value, 10);
         awStatus.style.color = '#fa0';
-        awStatus.textContent = '? watching ' + secs + 's? an absence is only reported after the FULL window.';
+        awStatus.textContent = '● watching ' + secs + 's… an absence is only reported after the FULL window.';
         try {
           const rec = await window.__usxAuthWatch({ trigger: awTrig.value, seconds: secs });
           const v = rec.verdict;
@@ -1284,26 +1299,26 @@
           let extra = '';
           if (!v.usxEntryPointFound) {
             colour = '#f77';
-            extra = ' ? NO Universal Search on this page, so this run is NOT evidence about the icon.';
+            extra = ' — NO Universal Search on this page, so this run is NOT evidence about the icon.';
           } else if (v.matchesRnd71625RmsSymptom) {
             colour = '#fa0';
-            extra = ' ? matches the RND-71625 RMS symptom. Compare against a control-normal run.';
+            extra = ' — matches the RND-71625 RMS symptom. Compare against a control-normal run.';
           } else if (!v.queriesLabelFound) {
             colour = '#f77';
-            extra = ' ? the "Queries" label was never found, so the icon probe had nothing to anchor to.';
+            extra = ' — the "Queries" label was never found, so the icon probe had nothing to anchor to.';
           }
           awStatus.style.color = colour;
-          awStatus.textContent = '? ' + v.surface + ' [' + awTrig.value + '] ' + bits.join(' ? ') + extra;
+          awStatus.textContent = '✔ ' + v.surface + ' [' + awTrig.value + '] ' + bits.join(' · ') + extra;
         } catch (e) {
           awStatus.style.color = '#f77';
-          awStatus.textContent = '? ' + e.message;
+          awStatus.textContent = '✖ ' + e.message;
         } finally { awRun.disabled = false; awProbe.disabled = false; }
       };
       awWrap.appendChild(awRun);
 
       awProbe = el('button', BTN + ';' + BLU, 'Probe now (no download)');
       awProbe.onclick = () => {
-        if (!window.__usxAuthProbe) { awStatus.style.color = '#f77'; awStatus.textContent = '? authwatch.js not loaded ? reload the extension.'; return; }
+        if (!window.__usxAuthProbe) { awStatus.style.color = '#f77'; awStatus.textContent = '✖ authwatch.js not loaded — reload the extension.'; return; }
         // Pass the selected trigger: an unlabelled snapshot cannot be interpreted at all, because
         // "Send disabled" means BLOCKED under tc10-sim-off and ORDINARY EMPTY FORM under control.
         const s = window.__usxAuthProbe({ trigger: awTrig.value });
@@ -1311,37 +1326,37 @@
         const byColour = warnIcon.filter((i) => i.warnishBy === 'colour').length;
         awStatus.style.color = s.warnIconPresent ? '#7c7' : '#fa0';
         awStatus.textContent = 'snapshot ' + s.surface.name + ' [' + awTrig.value + ']: icon ' +
-          (s.warnIconPresent ? 'YES' + (byColour ? ' (by COLOUR only ? no aria/title/semantic class)' : '') : 'no') +
-          ' ? notice ' + (s.noticePresent ? 'YES' : 'no') +
-          ' ? Send ' + (s.send.present ? (s.send.disabled ? 'disabled' : 'enabled') : 'absent') +
-          ' ? checkboxes ' + s.checkboxes.disabled + '/' + s.checkboxes.total + ' disabled' +
-          ' ? USx here ' + (s.entryPoint.found ? 'yes' : 'NO') +
-          ' ? instantaneous, and Send/checkbox state is only meaningful NEXT TO A CONTROL RUN.';
+          (s.warnIconPresent ? 'YES' + (byColour ? ' (by COLOUR only — no aria/title/semantic class)' : '') : 'no') +
+          ' · notice ' + (s.noticePresent ? 'YES' : 'no') +
+          ' · Send ' + (s.send.present ? (s.send.disabled ? 'disabled' : 'enabled') : 'absent') +
+          ' · checkboxes ' + s.checkboxes.disabled + '/' + s.checkboxes.total + ' disabled' +
+          ' · USx here ' + (s.entryPoint.found ? 'yes' : 'NO') +
+          ' — instantaneous, and Send/checkbox state is only meaningful NEXT TO A CONTROL RUN.';
       };
       awWrap.appendChild(awProbe);
 
       // HOVER THE ICON. Its own button, because the message is the half of the ticket that was
       // unreachable: the icon carries no title and no aria-label, so its text exists only in a
       // tooltip portal that is absent from the DOM until the icon is hovered.
-      const awHover = el('button', BTN + ';' + BLU, '?? Hover the icon ? read its message');
+      const awHover = el('button', BTN + ';' + BLU, '🔍 Hover the icon → read its message');
       awHover.onclick = async () => {
-        if (!window.__usxAuthHover) { awStatus.style.color = '#f77'; awStatus.textContent = '? authwatch.js is stale ? RELOAD the extension (chrome://extensions ? Reload).'; return; }
+        if (!window.__usxAuthHover) { awStatus.style.color = '#f77'; awStatus.textContent = '✖ authwatch.js is stale — RELOAD the extension (chrome://extensions → Reload).'; return; }
         awHover.disabled = true;
-        awStatus.style.color = '#fa0'; awStatus.textContent = '? hovering each icon near "Queries:"?';
+        awStatus.style.color = '#fa0'; awStatus.textContent = '● hovering each icon near "Queries:"…';
         try {
           const hits = await window.__usxAuthHover();
           const msgs = hits.reduce((a, h) => a.concat((h && h.tooltipText) || []), []);
           awStatus.style.color = msgs.length ? '#7c7' : '#fa0';
           awStatus.textContent = msgs.length
-            ? '? message found: ' + msgs.map((m) => '"' + m + '"').join(' / ')
-            : '? no tooltip appeared on hover. Not proof of none: it may need a real pointer, or the text may live somewhere these selectors do not reach.';
-        } catch (e) { awStatus.style.color = '#f77'; awStatus.textContent = '? ' + e.message; }
+            ? '✔ message found: ' + msgs.map((m) => '"' + m + '"').join(' / ')
+            : '— no tooltip appeared on hover. Not proof of none: it may need a real pointer, or the text may live somewhere these selectors do not reach.';
+        } catch (e) { awStatus.style.color = '#f77'; awStatus.textContent = '✖ ' + e.message; }
         finally { awHover.disabled = false; }
       };
       awWrap.appendChild(awHover);
       awWrap.appendChild(awStatus);
       awWrap.appendChild(el('div', 'color:#999;font-size:11px;margin-top:2px',
-        'Pick what you have ALREADY set up, then Watch. Do the CONTROL (E) too ? without it, a disabled Send button cannot be told from an ordinary empty form.'));
+        'Pick what you have ALREADY set up, then Watch. Do the CONTROL (E) too — without it, a disabled Send button cannot be told from an ordinary empty form.'));
       p.appendChild(awWrap);
     }
     return p;
@@ -1367,7 +1382,7 @@
     let p = document.getElementById('usx-panel');
     if (!want) { if (p) p.remove(); unmountLauncher(); return; }
     // Panel switched off for this tenant: show only the launcher dot. This check must come BEFORE
-    // the re-append below -- that append is what silently defeated the old ? button.
+    // the re-append below -- that append is what silently defeated the old ✕ button.
     if (isUiOff()) { if (p) p.remove(); mountLauncher(); return; }
     unmountLauncher();
     if (p && p.dataset.kind !== want) { p.remove(); p = null; }
@@ -1388,18 +1403,18 @@
         rb.style.opacity = queued === 0 ? '0.45' : '1';
         rb.style.cursor = queued === 0 ? 'default' : 'pointer';
         // DO NOT repaint while a two-click confirm is armed -- this timer would otherwise erase
-        // the "? CLICK AGAIN" cue and leave the operator staring at an ordinary-looking button
+        // the "⚠ CLICK AGAIN" cue and leave the operator staring at an ordinary-looking button
         // that is one click from dropping the queue. The handler owns the label in that state.
         if (rb.dataset.pending !== '1') {
-          rb.textContent = queued > 0 ? '?? Reset queue (' + queued + ')' : '?? Reset queue';
+          rb.textContent = queued > 0 ? '🧹 Reset queue (' + queued + ')' : '🧹 Reset queue';
         }
       }
       const w = document.getElementById('usx-watch');
-      if (w) w.textContent = window.__usxWatchTimer ? '? Click-capturing? (click to stop)' : '? Start click-capture';
+      if (w) w.textContent = window.__usxWatchTimer ? '⏹ Click-capturing… (click to stop)' : '▶ Start click-capture';
     }
   }
 
   window.__usxUiTimer = setInterval(tick, 1000);
   tick();
-  console.log('%c[USx-UI]', 'color:#fa0;font-weight:bold', 'control panel injected. BUILD 2026-09-15a -- READ THIS LINE FIRST if a button seems missing. THE READ SIDE IS NOW ONE BUTTON: RUN THE JOB (reads providers\\PULL_JOB.json via serve_plans GET /pulljob and pulls exactly the tenants it names; it RE-FETCHES on every click, so re-cutting the job takes effect without a reload). Refresh tenant list stays visible beside it because the job is DERIVED from the roster -- a stale roster cannot contain a tenant created since. EVERYTHING ELSE MOVED BEHIND the collapsed diagnostics toggle, INCLUDING 7 (full census), 7b (RESCAN) and 6b (PULL THE CONFIGS, now the manual fallback). If you are looking for 7b: click the small grey caret line reading diagnostics. If THIS build string is not what the console shows, the extension did not reload and no amount of clicking will help. Earlier: BUILD 2026-09-11h (THE JOB IS A BUTTON, not a console command -- Rob: "i will not run commands in the console", a standing GUI-ONLY rule I broke by shipping the runner as __usxJob(). The ad-hoc EXECUTE button is GONE with it: that was the decision-assembled-at-the-keyboard path, so the ONLY write path is now generate a job file, read it, press the button. DEPLOY has NO PROVIDER BOX: the provider comes from serve_plans /target/<deptId> -- the recorded intent, not something typed, because a typo there imports the wrong provider and every guard still passes. The panel STATES the resolved target before anything is clicked, and refuses an unrecorded or scope-excluded tenant while the buttons are still cold. Earlier: the DEPLOY section -- dry-run and execute buttons over deploy_probe.js, the only write path; payload fetched from serve_plans /build/<PROVIDER> so it is the repo artifact byte-for-byte. Adds the Capture-this-page form-element button -- read-only live-DOM capture for measuring the import dialog before automating it. STEP 3 CLEANUP: the admin panel now shows only the standing workflow -- 2 list tenants, 6b pull the configs, 7 census. Buttons 1/3/4/5/6 are HIDDEN behind a collapsed diagnostics toggle, not deleted: their handlers read inputs that would throw if removed, and a deleted code path is how the driver died for five days).');
+  console.log('%c[USx-UI]', 'color:#fa0;font-weight:bold', 'control panel injected. BUILD 2026-09-15b -- READ THIS LINE FIRST IF A BUTTON SEEMS MISSING. If the console does not say 2026-09-15b, the extension did not reload and no amount of clicking will help. THE READ SIDE IS ONE BUTTON: RUN THE JOB (reads providers\\PULL_JOB.json via serve_plans GET /pulljob and pulls exactly the tenants it names; it RE-FETCHES on every click, so re-cutting the job needs no reload). Refresh tenant list stays beside it because the job is DERIVED from the roster. EVERYTHING ELSE -- 7 census, 7b RESCAN, 6b manual pull, 1/3/4/5/6 -- is behind the MORE TOOLS bar, which is now a bordered amber control rather than grey text, and the panel scrolls (max-height) instead of running off the bottom of the screen. Earlier: BUILD 2026-09-11h (THE JOB IS A BUTTON, not a console command -- Rob: "i will not run commands in the console", a standing GUI-ONLY rule I broke by shipping the runner as __usxJob(). The ad-hoc EXECUTE button is GONE with it: that was the decision-assembled-at-the-keyboard path, so the ONLY write path is now generate a job file, read it, press the button. DEPLOY has NO PROVIDER BOX: the provider comes from serve_plans /target/<deptId> -- the recorded intent, not something typed, because a typo there imports the wrong provider and every guard still passes. The panel STATES the resolved target before anything is clicked, and refuses an unrecorded or scope-excluded tenant while the buttons are still cold. Earlier: the DEPLOY section -- dry-run and execute buttons over deploy_probe.js, the only write path; payload fetched from serve_plans /build/<PROVIDER> so it is the repo artifact byte-for-byte. Adds the Capture-this-page form-element button -- read-only live-DOM capture for measuring the import dialog before automating it. STEP 3 CLEANUP: the admin panel now shows only the standing workflow -- 2 list tenants, 6b pull the configs, 7 census. Buttons 1/3/4/5/6 are HIDDEN behind a collapsed diagnostics toggle, not deleted: their handlers read inputs that would throw if removed, and a deleted code path is how the driver died for five days).');
 })();
