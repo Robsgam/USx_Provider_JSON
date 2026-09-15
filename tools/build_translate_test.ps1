@@ -154,11 +154,10 @@ $cards = @(
         # LicensePlateNumber / LicensePlateTypeCode / LicensePlateYear / State / VehicleStyleCode
         # ever serialized. VehicleMakeCode NEVER did -- that, not translation, is why round 2's tag
         # vanished. So VEHICLE_MAKE is routed through two tags that provably serialize.
-        @{ id = 'ROW_X2'; cols = @('3','3','3','3'); fields = @(
+        @{ id = 'ROW_X2'; cols = @('4','4','4'); fields = @(
             @{ id = 'FLD_PTYPE'; node = (Sel 'LicensePlateTypeCode' 'Plate Type (present only to satisfy the Vehicle-form convention)' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC' } 'ROW_X2') }
             @{ id = 'FLD_PYEAR'; node = (Inp 'LicensePlateYear' 'Plate Year (same reason)' '4' 'ROW_X2') }
-            @{ id = 'FLD_VMAKE'; node = (Sel 'VehicleMakeCode'  'BASELINE -- pick FORD' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_X2') }
-            @{ id = 'FLD_VMXLT'; node = (Sel 'VehicleMakeXlate' 'TRANSLATE TEST -- pick the SAME make (FORD)' @{ attributeTypeId = 'VEHICLE_MAKE' } 'ROW_X2') }
+            @{ id = 'FLD_VMAKE'; node = (Sel 'VehicleMakeCode'  'DISCRIMINATOR -- pick FORD (same choice as the last run)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_X2') }
         )}
     )}
 )
@@ -189,14 +188,9 @@ $attrs = @(
     # the portfolio builds it today, and LIMITATION #38 says it emits the RAW ATTRIBUTE CODE
     # (CNST_FORD) even though the CONTROL declares codeTypeProvider=NCIC.
     Build-QidmAttribute -Name 'VehicleMakeCode' -Size 24 -SourceField @('VehicleMakeCode') `
-        -TargetField 'VehicleStyleCode' `
+        -TargetField 'VehicleStyleCode' -CodeTypeProvider 'NCIC' `
         -Description 'BASELINE -- code table in, NO attribute codeTypeProvider. Expect the raw code.'
 
-    # THE TEST -- identical code table on the control, but the ATTRIBUTE declares codeTypeProvider.
-    # This is the one combination nobody in the portfolio has ever shipped.
-    Build-QidmAttribute -Name 'VehicleMakeXlate' -Size 24 -SourceField @('VehicleMakeXlate') `
-        -TargetField 'VehicleIdentificationNumber' -CodeTypeProvider 'NCIC' `
-        -Description 'TEST -- code table in, attribute codeTypeProvider=NCIC. Does the code change?'
 )
 
 # ONE combination. The default-override question (M1) is already answered and REFUTED
@@ -205,7 +199,7 @@ $attrs = @(
 $combos = @(
     Build-QidmCombo -KeyReference 'XLATE' -PrimaryFieldReference 'LicensePlateNumber' `
         -Set @('LicensePlateNumber') `
-        -Any @('RegistrationState','LicensePlateTypeCode','LicensePlateYear','VehicleMakeCode','VehicleMakeXlate') `
+        -Any @('RegistrationState','LicensePlateTypeCode','LicensePlateYear','VehicleMakeCode') `
         -State 'In/Out'
 )
 
@@ -239,21 +233,21 @@ Write-ProviderJson -BundleObject $bundle -OutPath $OutPath -Label 'TRANSLATE_TES
 
 Write-Host ''
 Write-Host ''
-Write-Host '  ---- RUN IT: ONE IMPORT, ONE SUBMIT ------------------------------------------'
+Write-Host '  ---- RUN IT: THE DISCRIMINATOR -- ONE IMPORT, ONE SUBMIT ------------------------'
+Write-Host '  WHAT CHANGED vs the last run: the codeTypeProvider moved ONTO the attribute that'
+Write-Host '  targets <VehicleStyleCode>. SAME TAG, SAME code table, SAME selection -- the only'
+Write-Host '  difference is the provider property. Last run that tag carried FARM_FORD, so that'
+Write-Host '  measurement IS the baseline and no second control is needed.'
+Write-Host ''
 Write-Host '  1. Import providers\TRANSLATE_TEST.json (it REPLACES the bundle set).'
-Write-Host '  2. Fill: Plate = TEST123'
-Write-Host '           BASELINE dropdown       -> pick FORD'
-Write-Host '           TRANSLATE TEST dropdown -> pick THE SAME make (FORD)'
-Write-Host '     (State / Plate Type / Plate Year are optional -- ignore them.)'
-Write-Host '  3. Submit, capture, and read these TWO tags:'
-Write-Host '       <VehicleStyleCode>            BASELINE  -- attribute has NO codeTypeProvider'
-Write-Host '       <VehicleIdentificationNumber> TEST      -- attribute HAS codeTypeProvider=NCIC'
+Write-Host '  2. Fill: Plate = TEST123, and pick FORD in the make dropdown.'
+Write-Host '  3. Submit, capture, and read ONE tag: <VehicleStyleCode>'
 Write-Host '  4. Read it:'
-Write-Host '       SAME value in both  -> attribute codeTypeProvider is a NO-OP. Code-to-code'
-Write-Host '                              translation does not exist on the request path.'
-Write-Host '       DIFFERENT values    -> TRANSLATION WORKS. NY many-to-one is viable, and'
-Write-Host '                              LIMITATION #38 (CNST_ prefix, 21 providers) is fixable.'
-Write-Host '       TEST tag ABSENT     -> the attribute provider DROPPED the value. That is a'
-Write-Host '                              silent data-loss finding in its own right.'
+Write-Host '       FARM_FORD  -> the attribute provider is an inert NO-OP. Round 3 absence was the'
+Write-Host '                     VIN tag not serializing, NOT the provider. No data-loss hazard.'
+Write-Host '       ABSENT     -> the attribute provider DROPS the value. Same tag, one variable, so'
+Write-Host '                     this is conclusive: setting codeTypeProvider on an attribute over a'
+Write-Host '                     code-backed control silently discards the officer input.'
+Write-Host '       anything else -> it TRANSLATED after all; report the exact value.'
 Write-Host '===================================================================================='
 Write-Host ''

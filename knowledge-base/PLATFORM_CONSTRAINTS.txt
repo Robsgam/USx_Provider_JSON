@@ -886,6 +886,15 @@ LIMITATION #38: VEHICLE_MAKE attribute codes reach the CommSys wire with a CNST_
   the dex-log response for one VehicleMakeCode query. Note the USx test tenants send
   ORI/Mnemonic=CA1234567 regardless of provider, so a real state response may not be
   obtainable there at all.
+  ⚠️ THE PREFIX IS NOT ALWAYS "CNST_" -- THIS ENTRY'S TITLE OVERSTATES THE PATTERN.
+  Measured 2026-09-15 (docs/evidence/2026-09-15_TRANSLATE_TEST_round3_code_to_code.json):
+  selecting FORD emitted <VehicleStyleCode>FARM_FORD</VehicleStyleCode>, not CNST_FORD.
+  So the rule is NOT "a CNST_ prefix is added" -- it is "THE RAW ATTRIBUTE CODE REACHES
+  THE WIRE, whatever that code happens to be", and the prefix varies per table entry
+  (CNST_ / FARM_ / ...). The defect is therefore WIDER than this entry described: any
+  reasoning that greps for "CNST_" will miss most of it. The parked status is unchanged
+  (Rob 2026-08-03), but a future fix must not be scoped to one prefix.
+
   WHY NO GATE CAUGHT IT (the transferable lesson): no gate validates a wire VALUE
   against its metadata VALUE constraint -- only field PRESENCE and combination
   satisfaction. 6c compares the log to the plan fill-set (which says FORD -> matches),
@@ -1190,3 +1199,49 @@ LIMITATION #43: `requirements.defaults[]` ONLY FILLS AN EMPTY FIELD -- IT NEVER
   its form control. The rig declared it but the second attribute's targetField was never
   placed in a combination's set[]/any[], so it was never in the serialization pool and no
   tag was emitted. Absence there is a RIG DEFECT, not a platform result.
+
+================================================================================
+LIMITATION #44: THERE IS NO CODE-TO-CODE TRANSLATION ON THE COMMSYS REQUEST PATH.
+                The wire carries the SELECTED ATTRIBUTE'S OWN CODE. Nothing in the
+                config can map code set A to code set B, in either direction.
+================================================================================
+  STATUS: LIVE-PROVEN docs/evidence/2026-09-15_TRANSLATE_TEST_round3_code_to_code.json
+  (measured 2026-09-15 on practice-robsgambellone, dept 68908334972; 3 submits, and the
+  earlier rounds are in the two sibling files in the same directory.)
+  RIG: tools/build_translate_test.ps1
+
+  WHAT WAS ASKED, and it is a reasonable product request. Rob, on NY_NYSPIN_EJUSTICE: NY uses
+  CUSTOM NUMERIC in-state plate types and NCIC alpha types out-of-state, so the officer should pick
+  from NY's finer-grained list and MANY NY codes should collapse to ONE NCIC code when the query
+  leaves the state -- "we would have this many to one assoication". Then, decisively:
+  "can you tranalaste from one code type to another rather than a filled in field.  i told you they
+   woudl both be code types".
+
+  THREE MECHANISMS TESTED, ALL REFUTED ON THE WIRE:
+    1. COMBO DEFAULT on a filled field ....... wire kept 16, the default said PC  (LIMITATION #43)
+    2. codeTypeProvider on the FORM CONTROL .. wire carried the raw attribute code (LIMITATION #38,
+                                               16 logs / 4 providers, and re-confirmed here)
+    3. codeTypeProvider on the ATTRIBUTE ..... no-op over free text (16 -> 16); over a code-backed
+                                               control the field did not serialize at all
+  Nothing mapped one code to another under any configuration.
+
+  WHAT THE PLATFORM *DOES* DO, and it is easy to mistake for translation: it resolves the DISPLAY
+  value to the attribute's CODE. Measured in the same captures -- "Georgia" -> GA, "New York" -> NY,
+  "Illinois" -> IL, plate type "AM" -> AM. That is display->code, ONE code system. It is not
+  code->code, and observing it is what makes people assume a mapping layer exists.
+
+  CONSEQUENCE FOR A PROVIDER WHOSE STATE USES A NON-NCIC CODE SET: the only two options are
+    (a) a control whose VALUE IS ALREADY the code the state expects -- a FormInput works and is
+        wire-proven (a typed 16 reached the wire verbatim, three times, in the round-1 captures), or
+    (b) get the state's code table PROVISIONED on the platform and bind a FormSelect to it.
+  There is no third option involving a handler, a default, or a code provider. Do not go looking
+  for one: the UNUSED CommsysGet*CodeRuleHandler family reads as if it might do this and does not
+  (no documented arguments, and #38 shows the resolution path has no mapping step), while
+  IgnoreUserValueRuleHandler is documented FILTER-ONLY.
+
+  ⚠️ ONE SIDE QUESTION LEFT OPEN DELIBERATELY: when codeTypeProvider sat on an attribute over a
+  code-backed control, that field emitted NO TAG. Two variables differed in that run (the provider
+  AND the target tag), so "the provider silently DROPS the value" is PLAUSIBLE, NOT PROVEN -- the
+  tag may simply not serialize on that provider. The discriminator is built and takes one submit
+  (provider moved onto the attribute that targets a tag already measured as serializing). It does
+  not affect this limitation either way: nothing translated in any configuration.
