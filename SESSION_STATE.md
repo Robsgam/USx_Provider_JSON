@@ -5,7 +5,7 @@
 > every number from `portfolio_status.ps1` / `enforce.ps1`, never from memory.
 
 <!-- BEGIN GENERATED: tools\sync_session_state.ps1 -- do not hand-edit below this line -->
-**Last updated:** 2026-09-14 (generated) | **Branch:** `main`
+**Last updated:** 2026-09-15 (generated) | **Branch:** `main`
 
 ## Tenant-test state -- GENERATED, do not hand-edit
 
@@ -48,13 +48,13 @@ EXCEPTION, and by necessity: it is on no tenant, so its sweep cannot run until i
 **ANY PRIOR JSON IS ONE COMMAND:** `get_provider_version.ps1 -Provider <P> -Version <X.Y>` -- 671
 artifacts, byte-exact. RETRIEVAL, not rebuild: re-running an old script does NOT reproduce it.
 
-## ⭐ RESUMING AFTER THE 2026-09-14 REBOOT? DO THIS FIRST
+## ⭐ SERVE_PLANS AND THE JOB FILES -- CHECK THIS FIRST
 
-**START `serve_plans.ps1` DETACHED** (`Start-Process ... -WindowStyle Hidden`; a reboot kills it and
-so does a background task) and **verify by CURLING `/ping /roster /job`, never by process name or
-start time -- both gave a WRONG answer on 09-14.** Ordered list + why: `HELD_TENANT_WORK.md` top.
-**Machine was paging** (3 jobs killed 09-14) -- if still tight, run heavy gates ONE AT A TIME.
-**Panel button 7b (RESCAN) + `GET /roster`: BUILT, NEVER CLICKED -- STATUS: HYPOTHESIS.**
+**`serve_plans.ps1` MUST RUN DETACHED** (`Start-Process ... -WindowStyle Hidden`; a reboot or a
+background task kills it). **VERIFY BY CURLING `/ping /pulljob /job /roster` ON PORT 8477** -- name
+and start time both lied 09-14; on 09-15 I curled the WRONG PORT and got the NO-CONNECT I expected.
+**Machine pages** -- heavy gates ONE AT A TIME, never piped through `Select-String` (buffers to 0).
+**BUILT, NEVER CLICKED -- HYPOTHESIS: panel `RUN THE JOB` (`/pulljob`) + `7b` RESCAN.**
 
 ## ACTIVE: SC_SLED v1.0 -- the 21st provider, BUILT AND GREEN, NEVER IMPORTED
 

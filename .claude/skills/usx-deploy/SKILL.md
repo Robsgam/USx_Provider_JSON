@@ -51,9 +51,15 @@ different decision and needs a human.
 ## Step 2 — CAPTURE THE BEFORE, or there is no proof
 
 ```
-extension button "6b. PULL THE CONFIGS"   with ONLY the target deptId in the box
+tools\emit_pull_job.ps1 -DeptId <target>   # cut a one-tenant pull job
+panel button "RUN THE JOB"                 # reads PULL_JOB.json via GET /pulljob
 tools\ingest_tenant_configs.ps1
 ```
+
+**As of 2026-09-15 the read side is job-file driven too** (Rob: *"i would simply point the extension
+to the job file"*), so the BEFORE no longer depends on typing a deptId into a textarea — which is
+the transcription step that can silently target the wrong tenant. `6b. PULL THE CONFIGS` still
+exists in diagnostics as the manual fallback and still takes typed ids.
 
 ⚠️ **THIS IS THE STEP THAT GETS SKIPPED AND IT IS THE ONE THAT MAKES THE REST MEANINGLESS.**
 `verify_tenant_import.ps1` reports **UNPROVEN** without a before-snapshot, and it deliberately
@@ -145,7 +151,7 @@ unrepresentable. Four assertions added; reverting `modalIsOpen` to the presence-
 ## Step 4 — Export again and PROVE it
 
 ```
-extension button "6b. PULL THE CONFIGS"   again, same single deptId
+panel button "RUN THE JOB"                 again, same one-tenant pull job
 tools\ingest_tenant_configs.ps1
 tools\verify_tenant_import.ps1 -Tenant usx-fl-fcic
 ```

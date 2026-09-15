@@ -92,6 +92,21 @@ a hard parse failure under 5.1 — which surfaces as swallowed `ParserError` tex
   two files were broken.
 - Other traps: `powershell -File` stringifies array args; `.Replace()` on a multi-line block no-ops
   silently on CRLF (**use the Edit tool**); `Set-Content -Encoding utf8` writes a BOM under 5.1.
+- **`@($list)` ON A `System.Collections.Generic.List[object]` THROWS** `ArgumentException: Argument
+  types do not match` — and it throws for an **EMPTY** list too, so the loop body never runs. Measured
+  2026-09-15 writing `emit_pull_job.ps1`, which used `List[object]` and passed one to the shared
+  `Split-TenantsByScope`. **The reason it is in this list rather than being a footnote: the crash
+  exited 1 and wrote no file, which is exactly what the tool's own refusal guards do — so a bug
+  perfectly impersonated two working gates, and both LAW 2 cases "passed" for the wrong reason.**
+  Use plain `@()` arrays with `+=` (these collections are tiny and it is what the rest of the repo
+  does), and when a refusal test passes, **confirm the refusal MESSAGE is yours** rather than reading
+  only the exit code and the absent file.
+- **PARSE A `Z`-SUFFIXED TIMESTAMP AS UTC, and compare it to `[datetime]::UtcNow`.** A bare
+  `[datetime]$x` cast yields an unspecified-kind value; compared against local `Get-Date` on an EDT
+  machine, a roster captured four minutes earlier read **`-0.1 days old`**. That is not cosmetic — it
+  made a `-MaxAgeDays` staleness guard unable to ever fire. Use
+  `[datetime]::Parse($s, [Globalization.CultureInfo]::InvariantCulture,
+  [Globalization.DateTimeStyles]::AdjustToUniversal -bor ...::AssumeUniversal)`.
 
 ## Step 5 — LAW 2: a gate that cannot fail is not a gate
 

@@ -754,6 +754,52 @@ TOOLS
     Usage: .\tools\emit_import_job.ps1 [-DeptId <id[,id]>] [-Provider <NAME>] [-All]
                                        [-DryRunOnly] [-Force] [-TenantDir <dir>] [-OutFile]
 
+  tools/emit_pull_job.ps1
+    THE PULL JOB FILE -- the READ-SIDE TWIN of emit_import_job.ps1, and deliberately the same
+    shape. Rob, 2026-09-15, after pasting a 68-id list into the panel by hand: "i asked you to
+    create the job files in json form so i would not have to do all this manual stuff i would
+    simply point the extension to the job file  can we incorpoartae that and begin to clean up
+    and rename these buttons   i watn somthing m ore usable". Offered three panel layouts he
+    chose ONE JOB BUTTON with everything else hidden.
+    Writes providers\PULL_JOB.json; serve_plans serves it at GET /pulljob; the panel's single
+    RUN THE JOB button pulls exactly the tenants it names. What it replaces was four joins and
+    a transcription -- and the transcription is the part that silently loses a tenant.
+    THE 'why' FIELD IS THE POINT, not decoration, because the three classes have OPPOSITE
+    success conditions: 'baseline' (we hold a config -- UNCHANGED is the GOOD outcome, it means
+    no drift), 'never-pulled' (no config at all -- any content is new information), 'new-tenant'
+    (appeared since the last baseline -- may carry nothing of ours). Without it, "64 unchanged,
+    4 new files" reads as a partial failure instead of as exactly the expected result.
+    TWO TRAPS, BOTH OF WHICH SHIPPED IN THE FIRST DRAFT AND ARE WORTH KEEPING:
+      (1) SCOPING THE DEFAULT SET TO THE CONFIG INVENTORY OMITS THE TENANT YOU MOST WANT. The
+          inventory is what has ALREADY been pulled, so a never-pulled tenant is by definition
+          absent from it -- and that is the interesting case. dallastx-foundation was missing
+          from the first draft's job for exactly this reason. tenant_map.json is the authority
+          for "tenants we track"; the inventory is not.
+      (2) firstSeen CANNOT DETECT A NEW TENANT. The roster was bootstrapped in one pass, so all
+          1,788 rows share a firstSeen; and cutting the job after an -Update makes a
+          firstSeen > capturedAt test match zero rows. Either way it answers wrongly, so new
+          tenants are passed EXPLICITLY via -Include (which ingest_tenant_roster.ps1 already
+          prints a ready-to-paste list for). A detector that silently returns nothing is worse
+          than a parameter.
+    ALSO MEASURED HERE: a crash can impersonate a working guard. The first draft used
+    List[object] collections, and @($list) on one throws "Argument types do not match" on this
+    engine (even when EMPTY, so the loop body never runs) -- the resulting crash inside
+    Split-TenantsByScope exited 1 and wrote no file, which is indistinguishable from the
+    refusals working. Use plain arrays. Both refusals were then re-proven WITH A NEGATIVE
+    CONTROL (same stale-roster replica + a generous -MaxAgeDays must PASS).
+    FIVE REFUSALS: empty job; missing or 0-tenant roster; DEACTIVATED tenants; tenant_scope.json
+    exclusions (via the SHARED _tenant_scope.ps1, never re-implemented) -- all of which land in
+    'skipped' WITH A REASON so the denominator is auditable; and a stale roster is RECORDED
+    (rosterCapturedAt/rosterAgeDays) so the panel can warn instead of silently pulling a list
+    that cannot contain a tenant created yesterday. Parse capturedAt AS UTC: a bare [datetime]
+    cast compared against local Get-Date read "-0.1 days old", which would make -MaxAgeDays a
+    guard that can never fire.
+    IT ASSERTS NOTHING ABOUT WHAT IS INSTALLED -- that is ingest_tenant_configs.ps1 (content
+    hash) and audit_tenant_provenance.ps1 (which historical build that hash is). Keeping those
+    separate is why a pull can be safely re-run.
+    Usage: .\tools\emit_pull_job.ps1 [-DeptId <id[,id]>] [-Include <id[,id]>] [-BaselineOnly]
+                                     [-MaxAgeDays <n>] [-RosterPath <file>] [-OutFile] [-Quiet]
+
   tools/watch_imports.ps1
     WAIT FOR THE AFTER-EXPORT AND PROVE THE IMPORT, WITHOUT BEING ASKED. Closes Rob's loop:
     "execute the imports, then run an export, then compare the 2 to confirm the json update
@@ -1145,7 +1191,7 @@ TOOLS
     provenance: which BUILD each bundle IS), and providers/<P>/ (repo current).
     !! FOUR REFUSALS:
        1. "NEVER PULLED" IS NOT "NO PROVIDER". A tenant with no config on disk has not been
-          shown to be empty -- nobody looked. It prints the deptId to paste into button 6b and
+          shown to be empty -- nobody looked. It prints the deptId to pull -- feed it to emit_pull_job.ps1 -DeptId (or paste into 6b) and
           the ingest command, so the gap is closable rather than merely noted.
        2. A LABEL IS NEVER REPORTED AS A VERSION. Label and content appear side by side PER
           BUNDLE and are never collapsed into one "tenant version" -- that field is the bug
@@ -1217,7 +1263,7 @@ TOOLS
     count. For the 32 tenants carrying a provider bundle that is NOT one of our builds the
     content IS the finding; a matching byte count is a fingerprint, not an answer to "what is
     actually deployed there".
-    Reads the extension's per-tenant usx_tenant_config_*.json (panel button 6b), writes each
+    Reads the extension's per-tenant usx_tenant_config_*.json (panel: RUN THE JOB, or 6b as the manual fallback), writes each
     payload into the GITIGNORED _versions\tenant_exports\, and emits a METADATA-ONLY inventory
     at providers\TENANT_CONFIG_INVENTORY.json.
     !! A BYTE COMPARE CANNOT VERIFY AN IMPORT. The platform re-serializes: a 246KB tenant export
@@ -1359,7 +1405,16 @@ TOOLS
       GET /build/<P>               the deploy payload, repo artifact byte-for-byte
       GET /target/<deptId>         which provider that tenant is SUPPOSED to run (intent, not
                                    install); explicit-map -> usx-subdomain -> 409 REFUSE
-      GET /job                     providers/IMPORT_JOB.json, the reviewed import job
+      GET /job                     providers/IMPORT_JOB.json, the reviewed import job (WRITE side)
+      GET /pulljob                 providers/PULL_JOB.json, the reviewed config-pull job (READ
+                                   side, added 2026-09-15), run by the panel's RUN THE JOB button.
+                                   A SEPARATE ROUTE, NOT A MODE ON /job, ON PURPOSE: the two jobs
+                                   authorise DIFFERENT ACTS -- /job authorises WRITES to a tenant,
+                                   this authorises READS only. One endpoint serving both would mean
+                                   a single browser-side parsing mistake could run an import where
+                                   an export was intended, and no downstream guard tells them apart
+                                   by shape. Separate routes make that confusion unrepresentable.
+                                   404s (naming emit_pull_job.ps1) rather than pulling "everything".
       GET /roster                  tools/config/tenant_roster.json -- THE COMMITTED TENANT
                                    BASELINE (added 2026-09-14). Exists so the panel's button 7b
                                    can DIFF the department index instead of re-censusing 1,785

@@ -227,8 +227,30 @@
         diagWrap.appendChild(one);
       }
 
-      // 2. The tenant list.
-      const lst = el('button', BTN + ';' + BLU, '2. List all tenants + department ids');
+      // ── THE JOB SECTION ─────────────────────────────────────────────────────────────
+      // Rob, 2026-09-15: "i asked you to create the job files in json form so i would not have
+      // to do all this manual stuff i would simply point the extension to the job file  can we
+      // incorpoartae that and begin to clean up and rename these buttons   i watn somthing m ore
+      // usable" -- and, choosing between three layouts, he picked ONE JOB BUTTON with everything
+      // else hidden.
+      //
+      // jobPrimaryHost is a placeholder appended FIRST so RUN THE JOB renders above the refresh
+      // control, even though the button is constructed much further down this file (its summary
+      // renderer needs helpers defined later). Declaring jobWrap up here and filling it in two
+      // places is deliberate: referencing a `const` declared below from this line would be a
+      // TDZ ReferenceError -- valid JavaScript, so the syntax gate could not catch it.
+      const jobWrap = el('div', 'margin-top:4px');
+      const jobPrimaryHost = el('div');
+      jobWrap.appendChild(jobPrimaryHost);
+
+      // The tenant list -- DEMOTED to a secondary control, NOT hidden.
+      // ⚠️ This is a deliberate deviation from "rest hidden", and the reason is a dependency:
+      // the job's tenant set is derived FROM the roster baseline, so a job cut against a stale
+      // roster CANNOT contain a tenant created since. Burying the refresh in diagnostics is
+      // exactly how that goes unnoticed -- so the job summary below reads rosterAgeDays and
+      // surfaces this control with a warning when the baseline is old. One primary button, and
+      // a dependency that cannot rot unseen.
+      const lst = el('button', BTN, 'Refresh tenant list (roster diff, ~1 page load)');
       lst.onclick = async () => {
         lst.disabled = true; aStatus.style.color = '#fa0'; aStatus.textContent = 'reading department list…';
         try {
@@ -241,9 +263,9 @@
         } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
         finally { lst.disabled = false; }
       };
-      p.appendChild(lst);
-      p.appendChild(el('div', 'color:#7c7;font-size:11px;margin-top:4px',
-        'STANDING WORKFLOW: 2 list tenants (roster diff) -- 6b pull the configs -- 7 census, for NEW tenants only.'));
+      const jobStaleRow = el('div', 'display:none;font-size:11px;color:#fa0;margin:2px 0');
+      jobWrap.appendChild(jobStaleRow);
+      jobWrap.appendChild(lst);
 
       // 3. Bounded bundle sweep. BOUNDED ON PURPOSE: a demo host may carry hundreds of
       // departments, and an unbounded per-department loop is the one thing here that could
@@ -842,13 +864,108 @@
       depResolve();
       depLoadJob();
 
-      p.appendChild(censusWrap);
+      // ── RUN THE JOB -- the one visible control for the read side ────────────────────
+      // Reads providers\PULL_JOB.json via serve_plans GET /pulljob and runs EXACTLY the tenant
+      // set it names. Nothing is typed, nothing is pasted: an 800-character transcription into a
+      // textarea is what silently dropped a tenant, and the file is reviewable beforehand.
+      //
+      // IT REFUSES RATHER THAN GUESSES, in three ways, because each alternative is a wrong answer
+      // that looks like a right one:
+      //   * serve_plans down        -> say so. Falling back to the textarea would run a DIFFERENT,
+      //                                unreviewed tenant set under the same button.
+      //   * no job file             -> name the tool that writes one. Never pull "everything".
+      //   * 0 deptIds in the job    -> refuse. emit_pull_job cannot write this, but the browser
+      //                                must not trust that; a 0-tenant sweep that reports success
+      //                                is the vacuous pass.
+      const jobSummary = el('div', 'font-size:11px;color:#999;margin:2px 0;white-space:pre-line');
+      const jobGo = el('button', BTN + ';' + BLU, 'RUN THE JOB');
+      const jobStop = el('button', BTN + ';' + RED, 'Stop the job (finishes the current tenant)');
+      jobStop.style.display = 'none';
+      jobStop.onclick = () => { window.__usxAdminAbort = true; jobStop.textContent = 'stopping after this tenant…'; };
+
+      let jobData = null;
+      const jobLoad = async () => {
+        jobGo.disabled = true;
+        try {
+          const r = await fetch('http://localhost:8477/pulljob', { cache: 'no-store' });
+          if (r.status === 404) { jobSummary.textContent = 'no PULL_JOB.json -- generate one with tools\\emit_pull_job.ps1'; return; }
+          if (!r.ok) { jobSummary.textContent = 'GET /pulljob -> HTTP ' + r.status; return; }
+          jobData = await r.json();
+          const ids = (jobData.deptIds || []);
+          if (!ids.length) { jobSummary.textContent = 'job names 0 tenants -- refusing to run it'; jobData = null; return; }
+          const rc = jobData.reasonCounts || {};
+          const parts = Object.keys(rc).map((k) => rc[k] + ' ' + k);
+          jobSummary.textContent = 'job: ' + jobData.jobId + '\n'
+            + ids.length + ' tenants · ~' + jobData.estMinutes + ' min · ~' + jobData.estMB + ' MB\n'
+            + parts.join(' / ')
+            + (jobData.skippedCount ? '\nskipped ' + jobData.skippedCount + ' (see the job file for the reason)' : '');
+          jobGo.textContent = 'RUN THE JOB — pull ' + ids.length + ' tenant configs';
+          jobGo.disabled = false;
+          // The staleness surface for the demoted refresh control.
+          const age = jobData.rosterAgeDays;
+          if (typeof age === 'number' && age >= 2) {
+            jobStaleRow.style.display = 'block';
+            jobStaleRow.textContent = 'roster baseline is ' + age + ' days old -- a tenant created since CANNOT be in this job. '
+              + 'Refresh below, then re-cut the job.';
+          } else { jobStaleRow.style.display = 'none'; }
+        } catch (e) {
+          jobSummary.textContent = 'serve_plans not reachable on 8477 (' + e.message + ') -- start tools\\serve_plans.ps1. '
+            + 'Refusing to fall back to the dept-id box: that would run an unreviewed tenant set.';
+        }
+      };
+
+      jobGo.onclick = async () => {
+        if (!jobData) { await jobLoad(); if (!jobData) return; }
+        const ids = (jobData.deptIds || []);
+        if (!ids.length) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ job names 0 tenants'; return; }
+        const rc = jobData.reasonCounts || {};
+        const parts = Object.keys(rc).map((k) => rc[k] + ' ' + k).join(' / ');
+        if (!confirm('Run pull job ' + jobData.jobId + '?\n\n'
+          + '· ' + ids.length + ' tenant(s): ' + parts + '\n'
+          + '· ~' + jobData.estMB + 'MB into Downloads, up to ~' + jobData.estMinutes + ' min\n'
+          + '· READ-ONLY: clicks only Export JSON, never Import\n'
+          + '· CUSTOMER CONFIGURATION -- gitignored on ingest, never committed')) return;
+        window.__usxAdminAbort = false;
+        jobGo.disabled = true; jobStop.style.display = 'block';
+        aStatus.style.color = '#fa0';
+        aStatus.textContent = 'running job ' + jobData.jobId + ' — ' + ids.length + ' config(s)…';
+        try {
+          const o = await window.__usxAdminProbe.runExportSweepDl({ deptIds: ids.join(','), pullConfigs: true });
+          const got = (o.results || []).filter((r) => r.verdict === 'VERSION-READ').length;
+          const mixed = (o.results || []).filter((r) => r.mixedVersions).length;
+          aStatus.style.color = (o.configsFailed ? '#f77' : '#7c7');
+          aStatus.textContent = '✔ ' + (o.configsSaved || 0) + '/' + ids.length + ' config(s) saved, '
+            + (o.configsFailed || 0) + ' failed · ' + got + ' version(s) read'
+            + (mixed ? ' · ' + mixed + ' tenant(s) carry MIXED versions' : '')
+            + ' · now run tools\\ingest_tenant_configs.ps1';
+        } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
+        finally { jobGo.disabled = false; jobStop.style.display = 'none'; jobStop.textContent = 'Stop the job (finishes the current tenant)'; }
+      };
+
+      jobPrimaryHost.appendChild(jobGo);
+      jobPrimaryHost.appendChild(jobStop);
+      jobPrimaryHost.appendChild(jobSummary);
+      jobLoad();
+
+      // ── PANEL ORDER ────────────────────────────────────────────────────────────────
+      // JOB first (the read side), then DEPLOY (the write side -- also job-file driven, which
+      // is why it stays visible rather than moving to diagnostics: it is the same pattern, and
+      // burying the write path while Newark sits one click from done would be a regression, not
+      // a cleanup). The census and export-sweep reconnaissance move INTO diagnostics.
+      p.appendChild(jobWrap);
       p.appendChild(depWrap);
-      p.appendChild(expWrap);
+      diagWrap.appendChild(censusWrap);
+      diagWrap.appendChild(expWrap);
       diagWrap.insertBefore(el('div', 'font-size:11px;color:#888;margin-bottom:4px',
-        'Reconnaissance that has served its purpose, kept rather than deleted. ' +
+        'Everything the job button does not need. Kept, never deleted -- a one-character break in ' +
+        'these scripts once killed the driver and capture tools for five days. ' +
         '1 single-read | 3 bounded bundle sweep (superseded by 7) | 4 look-only + 5 click-one ' +
-        '(the safety split that proved the export control safe) | 6 versions only (6b is a superset). ' +
+        '(the safety split that proved the export control safe) | 6 versions only (6b is a superset) | ' +
+        '6b PULL THE CONFIGS -- the MANUAL FALLBACK for the job button, takes typed dept ids | ' +
+        '7 full census | 7b rescan (diff the index, census only what moved). ' +
+        'Numbers are kept deliberately: the knowledge base and SESSION_STATE reference these ' +
+        'controls BY NUMBER (7b is tracked there as built-but-never-clicked), so renaming them ' +
+        'would silently invalidate nine documents. ' +
         'The inputs in here are still read by those handlers, so removing them would throw, not degrade.'),
         diagWrap.firstChild);
       p.appendChild(diagToggle);

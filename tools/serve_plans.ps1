@@ -23,7 +23,8 @@ param([int]$Port = 8477)
 $providersDir = Join-Path $PSScriptRoot '..\providers'
 $listener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Loopback, $Port)
 try { $listener.Start() } catch { Write-Error "Port $Port busy? $_"; exit 1 }
-Write-Host "[SERVE] plan server on http://localhost:$Port  (/plan/<PROVIDER>, /scope/<PROVIDER>)" -ForegroundColor Cyan
+Write-Host "[SERVE] plan server on http://localhost:$Port" -ForegroundColor Cyan
+Write-Host "[SERVE] routes: /ping /plan/<P> /scope/<P> /build/<P> /target/<deptId> /job /pulljob /roster" -ForegroundColor DarkCyan
 
 function Send-Http($stream, [int]$code, [string]$body, [string]$ctype = 'application/json') {
     # 409 was sent by three code paths while absent from this table, so every refusal went out as
@@ -241,6 +242,27 @@ while ($true) {
                 Send-Http $stream 200 (Get-Content $jobPath -Raw)
             }
             else { Send-Http $stream 404 '{"error":"no providers\\IMPORT_JOB.json -- generate one with tools\\emit_import_job.ps1"}' }
+        }
+        elseif ($urlPath -match '^/pulljob/?$') {
+            # /pulljob -- THE PULL JOB FILE, the read-side twin of /job.
+            # Written by tools\emit_pull_job.ps1, read by the USx panel's RUN THE JOB button.
+            # Rob 2026-09-15: "i asked you to create the job files in json form so i would not have
+            # to do all this manual stuff i would simply point the extension to the job file".
+            # WHY THIS EXISTS AS A SEPARATE ROUTE rather than a mode on /job: the two jobs authorise
+            # DIFFERENT ACTS. /job authorises WRITES to a tenant; this authorises READS only. Serving
+            # them from one endpoint would mean a single parsing mistake in the browser could run an
+            # import where an export was intended, and no guard downstream distinguishes them by
+            # shape. Separate routes make that confusion unrepresentable.
+            # Re-read per request so re-cutting the job takes effect without restarting the server.
+            $pullPath = Join-Path $providersDir 'PULL_JOB.json'
+            if (Test-Path $pullPath) {
+                $pj = Get-Content $pullPath -Raw
+                $pc = 0
+                try { $pc = (($pj | ConvertFrom-Json).tenantCount) } catch { }
+                Write-Host "[SERVE] /pulljob -> PULL_JOB.json ($pc tenants)" -ForegroundColor Cyan
+                Send-Http $stream 200 $pj
+            }
+            else { Send-Http $stream 404 '{"error":"no providers\\PULL_JOB.json -- generate one with tools\\emit_pull_job.ps1"}' }
         }
         elseif ($urlPath -match '^/roster/?$') {
             # /roster -- THE COMMITTED TENANT BASELINE, so the browser can DIFF instead of censusing.

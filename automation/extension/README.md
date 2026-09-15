@@ -364,22 +364,48 @@ work on. Caught by reading `tick()` before shipping, not by discovering it on th
 Rob, 2026-09-11: *"we will need to clean up the extension and remove all diagnostics hooks.
 maybe not completely but remove the buttons for now."*
 
-**Three buttons are visible — the standing workflow, and nothing else:**
+**The read side is now ONE button, driven by a job file (2026-09-15).** Rob: *"i asked you to
+create the job files in json form so i would not have to do all this manual stuff i would simply
+point the extension to the job file ... i watn somthing m ore usable"* — offered three layouts, he
+chose **one job button with everything else hidden**. This mirrors the write side, which has worked
+that way since 2026-09-11: a tool writes a reviewable file, `serve_plans` serves it, a button
+executes only what it says.
 
 | Button | Does | Feeds |
 |---|---|---|
-| **2. List all tenants + department ids** | GETs `/departments` — **ONE page load** for all 1,785 | `ingest_tenant_roster.ps1` → new tenants / renames / status changes |
-| **6b. PULL THE CONFIGS for the dept ids above** | clicks each tenant's own **Export JSON**, **one file per tenant** | `ingest_tenant_configs.ps1` → the baseline, and the BEFORE for any import |
-| **7. Scan ALL departments** (+ Stop) | reads the bundle table for every department, chunked and abortable | `ingest_tenant_scan.ps1` → presence census, for **new** tenants only |
+| **RUN THE JOB** (+ Stop) | reads `PULL_JOB.json` via `GET /pulljob` and pulls **exactly** the tenants it names — clicks each tenant's own **Export JSON** | `ingest_tenant_configs.ps1` → the baseline, and the BEFORE for any import |
+| **Refresh tenant list** | GETs `/departments` — **ONE page load** for all 1,788 | `ingest_tenant_roster.ps1` → new tenants / renames / status changes |
+| **RUN THE JOB FOR THIS TENANT** (DEPLOY) | reads `IMPORT_JOB.json` via `GET /job` — the **write** path | `verify_tenant_import.ps1` |
 
-**Five buttons are HIDDEN behind a collapsed `▸ diagnostics` toggle — hidden, NOT deleted:**
+**Nothing is typed into RUN THE JOB, and it REFUSES rather than guesses.** `serve_plans` down → it
+says so and **does not** fall back to the dept-id box, because that would run a different,
+unreviewed tenant set under the same button. No job file → it names `emit_pull_job.ps1`. A job
+naming 0 tenants → refused, because a 0-tenant sweep reporting success is the vacuous pass.
+
+⚠️ **`Refresh tenant list` is deliberately NOT hidden, and that is a considered deviation from
+"rest hidden".** The job's tenant set is *derived from* the roster baseline, so a job cut against a
+stale roster cannot contain a tenant created since — burying the refresh is precisely how that goes
+unnoticed. The job summary reads `rosterAgeDays` and raises a warning above this control once the
+baseline is 2+ days old. One primary button; a dependency that cannot rot unseen.
+
+⚠️ **The diagnostics buttons KEEP their numbers (`6b`, `7`, `7b`) on purpose.** Nine documents —
+including `SESSION_STATE.md`, which tracks **7b** as built-but-never-clicked — reference these
+controls *by number*. Renaming controls that now sit behind a toggle would silently invalidate all
+nine for cosmetic gain. **`6b` is the manual fallback** for RUN THE JOB and still takes typed ids.
+
+**The rest are HIDDEN behind a collapsed `▸ diagnostics` toggle — hidden, NOT deleted.** As of
+2026-09-15 that includes the census and the manual config pull, which the job button replaced as
+the everyday path:
 
 | Button | Why it is no longer part of the workflow |
 |---|---|
 | **1. Read this department** | single-page read; the census and the pull both supersede it |
-| **3. Scan bundles for that many tenants** | bounded sweep, superseded by 7 (which covers all 1,785 with coverage accounting) |
+| **3. Scan bundles for that many tenants** | bounded sweep, superseded by 7 (which covers all 1,788 with coverage accounting) |
 | **4. Look at the controls** / **5. Try the export** | the look-then-click safety split that ESTABLISHED the export control was safe to click. Its job is done; it is how we knew 6b would not delete a bundle |
 | **6. Version catalogue** | versions only — **6b is a strict superset**, writing the same aggregate index PLUS the configs |
+| **6b. PULL THE CONFIGS** | **the MANUAL FALLBACK** for RUN THE JOB — still takes typed dept ids, and still carries its own Stop control. Use it when you deliberately want a set the job file does not name |
+| **7. Scan ALL departments** (+ Stop) | full presence census, ~20-25 min. Superseded for routine use by **7b**, which diffs the index and censuses only what moved |
+| **7b. RESCAN** | needs `serve_plans` for `GET /roster`; refuses to guess if it is down. **Still never clicked — STATUS: HYPOTHESIS** |
 
 ⚠️ **WHY HIDDEN AND NOT REMOVED — two independent reasons.**
 1. A one-character break in these scripts once killed the driver AND capture tools for **five
