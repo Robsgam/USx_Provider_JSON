@@ -180,7 +180,41 @@ $vehForm = [PSCustomObject]@{
 # that was the tag, not the mechanism. Both probes now use tags known to come out.
 $attrs = @(
     Build-QidmAttribute -Name 'LicensePlateNumber' -Size 10 -SourceField @('LicensePlateNumber')
-    Build-QidmAttribute -Name 'State' -Size 2 -SourceField @('RegistrationState') -TargetField 'State' -CodeTypeProvider 'NCIC'
+    # ROUND 4 -- CommsysResultAttributeMappingRuleHandler ON THE REQUEST PATH.
+    # Rob pushed back with the handler's own documentation: "Maps a raw code (e.g., NCIC code) to a
+    # display value using the attributes table ... Input {"addressstatecode":"CA"} -> Output
+    # "California"", with attributeType + codeTypeSource on the attribute. He is right that I
+    # dismissed it on CLASSIFICATION rather than measurement: the registry calls it a RESULT handler
+    # and all 189 uses in the portfolio are on QUERYRESULTDATAMAPPING -- ZERO on a request QIDM. That
+    # makes it UNTESTED on the request path, not impossible.
+    #
+    # THE TEST NEEDS NO NEW CODE TABLE, which is why STATE is the subject: the STATE attribute table
+    # already maps code GA <-> display "Georgia", and three captures on this exact rig/tag/selection
+    # measured the wire carrying GA. So ONE variable changes and the baseline is already recorded.
+    #   wire "Georgia" -> THE HANDLER RUNS ON THE REQUEST PATH. Rob's design is viable: provision a
+    #                     table shaped code = NY numeric / display = NCIC code, and 16/17/18 all
+    #                     carrying display PC gives many-to-one for free.
+    #   wire GA        -> the handler is inert on the request path; it is response-only after all.
+    #   tag absent     -> it ran and returned null (the doc says null when the code is not found).
+    #
+    # Hand-written rather than Build-QidmAttribute because that helper exposes -CodeTypeProvider but
+    # NOT attributeType / codeTypeSource, which are the two properties this handler reads. Build-Qidm
+    # accepts hand-written attribute objects by design.
+    [PSCustomObject]@{
+        name        = 'State'
+        rule        = [PSCustomObject]@{ function = 'CommsysResultAttributeMappingRuleHandler' }
+        size        = 20
+        sourceField = @('RegistrationState')
+        targetField = 'State'
+        # codeTypeProvider STAYS. AP #1: an attributeTypeId control without it sends the internal
+        # NUMERIC ROW ID instead of the code -- so this property is the "emit the code" switch, not
+        # a translator. That is also why it read as inert in round 3: it was doing its real job.
+        # Keeping it means the baseline (GA) still holds and the RULE is the only new variable.
+        codeTypeProvider = 'NCIC'
+        attributeType    = 'STATE'
+        codeTypeSource   = 'NCIC'
+        description = 'ROUND 4 -- does CommsysResultAttributeMappingRuleHandler run on the REQUEST path? Baseline: GA.'
+    }
     Build-QidmAttribute -Name 'LicensePlateTypeCode' -Size 2 -SourceField @('LicensePlateTypeCode')
     Build-QidmAttribute -Name 'LicensePlateYear' -Size 4 -SourceField @('LicensePlateYear')
 
@@ -233,21 +267,24 @@ Write-ProviderJson -BundleObject $bundle -OutPath $OutPath -Label 'TRANSLATE_TES
 
 Write-Host ''
 Write-Host ''
-Write-Host '  ---- RUN IT: THE DISCRIMINATOR -- ONE IMPORT, ONE SUBMIT ------------------------'
-Write-Host '  WHAT CHANGED vs the last run: the codeTypeProvider moved ONTO the attribute that'
-Write-Host '  targets <VehicleStyleCode>. SAME TAG, SAME code table, SAME selection -- the only'
-Write-Host '  difference is the provider property. Last run that tag carried FARM_FORD, so that'
-Write-Host '  measurement IS the baseline and no second control is needed.'
+Write-Host '  ---- RUN IT: ROUND 4 -- ONE IMPORT, ONE SUBMIT ---------------------------------'
+Write-Host '  THE QUESTION: does CommsysResultAttributeMappingRuleHandler run on the REQUEST'
+Write-Host '  path? All 189 uses in the portfolio are response-side QRDMs; ZERO are on a request'
+Write-Host '  QIDM. So it is UNTESTED there, not impossible.'
+Write-Host ''
+Write-Host '  NO NEW CODE TABLE IS NEEDED: the STATE table already maps code GA <-> display'
+Write-Host '  "Georgia", and 3 earlier captures on this same rig/tag/selection measured GA on the'
+Write-Host '  wire. One variable changes (the rule) and the baseline is already recorded.'
 Write-Host ''
 Write-Host '  1. Import providers\TRANSLATE_TEST.json (it REPLACES the bundle set).'
-Write-Host '  2. Fill: Plate = TEST123, and pick FORD in the make dropdown.'
-Write-Host '  3. Submit, capture, and read ONE tag: <VehicleStyleCode>'
+Write-Host '  2. Fill: Plate = TEST123, State = Georgia. (Ignore the other fields.)'
+Write-Host '  3. Submit, capture, and read ONE tag: <State>'
 Write-Host '  4. Read it:'
-Write-Host '       FARM_FORD  -> the attribute provider is an inert NO-OP. Round 3 absence was the'
-Write-Host '                     VIN tag not serializing, NOT the provider. No data-loss hazard.'
-Write-Host '       ABSENT     -> the attribute provider DROPS the value. Same tag, one variable, so'
-Write-Host '                     this is conclusive: setting codeTypeProvider on an attribute over a'
-Write-Host '                     code-backed control silently discards the officer input.'
-Write-Host '       anything else -> it TRANSLATED after all; report the exact value.'
+Write-Host '       Georgia  -> THE HANDLER RUNS ON THE REQUEST PATH. Your design is viable:'
+Write-Host '                   provision a table shaped code = NY numeric / display = NCIC code,'
+Write-Host '                   and 16/17/18 all carrying display PC gives many-to-one for free.'
+Write-Host '       GA       -> inert on the request path; it really is response-only.'
+Write-Host '       ABSENT   -> it RAN and returned null (the doc says null when code not found),'
+Write-Host '                   which still proves it executes -- just that the lookup missed.'
 Write-Host '===================================================================================='
 Write-Host ''

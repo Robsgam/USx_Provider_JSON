@@ -1888,12 +1888,18 @@
                                                                       },
                                                                       {
                                                                           "name":  "State",
-                                                                          "size":  2,
+                                                                          "rule":  {
+                                                                                       "function":  "CommsysResultAttributeMappingRuleHandler"
+                                                                                   },
+                                                                          "size":  20,
                                                                           "sourceField":  [
                                                                                               "RegistrationState"
                                                                                           ],
                                                                           "targetField":  "State",
-                                                                          "codeTypeProvider":  "NCIC"
+                                                                          "codeTypeProvider":  "NCIC",
+                                                                          "attributeType":  "STATE",
+                                                                          "codeTypeSource":  "NCIC",
+                                                                          "description":  "ROUND 4 -- does CommsysResultAttributeMappingRuleHandler run on the REQUEST path? Baseline: GA."
                                                                       },
                                                                       {
                                                                           "name":  "LicensePlateTypeCode",
