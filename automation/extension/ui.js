@@ -915,7 +915,15 @@
       };
 
       jobGo.onclick = async () => {
-        if (!jobData) { await jobLoad(); if (!jobData) return; }
+        // ⚠️ ALWAYS RE-FETCH. The first cut of this cached jobData from the panel-injection
+        // jobLoad() and only re-fetched when it was null -- so re-cutting PULL_JOB.json left the
+        // button running the PREVIOUS job, and the operator had to know to reload the page.
+        // That is the exact defect this whole design exists to prevent: executing something
+        // other than the file that was reviewed. Found 2026-09-15 when a 68-tenant job was
+        // replaced by a 4-tenant one and the panel still held the old set.
+        // serve_plans already re-reads the file per request, so this costs one localhost GET.
+        await jobLoad();
+        if (!jobData) return;
         const ids = (jobData.deptIds || []);
         if (!ids.length) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ job names 0 tenants'; return; }
         const rc = jobData.reasonCounts || {};
