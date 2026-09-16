@@ -6,3 +6,35 @@
 v1.0 (2026-09-14)
   CHANGED: Initial standup
   REASON:  New provider onboarding
+
+--- 2026-09-16 -- ROB'S RULING ON THE VEHICLE CO-FIRE. NO BUILD CHANGE. ---
+  Rob: "lets check the veh reg and veh stolen co fire  not sure what teh spec is but for now lets
+  build it that way"
+
+  CHECKED, and the answer is a MEASUREMENT off the emitted v1.0, not a restatement of the note
+  that was already in the file. One plate fill (LicensePlateNumber=ABC1234, State=NJ) fires BOTH
+  Vehicle QIDMs:
+
+    SC_SLED_VehicleRegistrationQuery -> QVRQ.P
+        set[LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear]  any[RegistrationState]
+        wire: LicensePlateNumber, LicensePlateTypeCode=PC, LicensePlateYear=2024, State
+    SC_SLED_VehicleStolenQuery       -> QV.P
+        set[LicensePlateNumber]  any[VehicleIdentificationNumber, RegistrationState, VehicleMakeCode]
+        wire: LicensePlateNumber, VehicleIdentificationNumber, VehicleMakeCode, State
+
+  CORRECTION TO THE EXISTING NOTE: the two are NOT the same request. CLAUDE.md and SESSION_STATE
+  both say "QV.P set[Plate] equals QVRQ.P once PlateType/PlateYear are form-prefilled ... so the
+  stolen check goes out twice". The CO-FIRE is real and confirmed; the claim of equality is not --
+  QVRQ.P carries PlateType+PlateYear, QV.P carries VIN+MakeCode. What duplicates is the STOLEN
+  CHECK specifically, because QVRQ is the COMPOUND key ("SC Vehicle Stolen/Reg"), so a stolen
+  check rides inside QVRQ and again as the standalone QV.
+
+  RULING: BUILD IT THAT WAY -- both queries stay, the co-fire stays, nothing is masked. That is
+  what v1.0 already does, so there is NO JSON CHANGE, NO VERSION BUMP, and the test package is not
+  archived. The action here is to record the decision so the 1 LIMITATION stops reading as an open
+  blocker: it is now an ACCEPTED design pending SC's corrected docs, which Rob has requested.
+  Masking remains unavailable anyway -- queriesToDeselect is refuted for this shape (NY v2.8) and
+  autoSelect=$false has zero tenant-proven carriers.
+
+  STILL OWED once the corrected SC docs land: re-adjudicate the reg/stolen split against the new
+  authority. The co-fire is the SYMPTOM of the compound keys, not a separate defect.

@@ -3110,6 +3110,25 @@ GRADUATION
   saying what it answers (sweep_dead_fill.ps1, adjudicate_state_gate.ps1). That is how
   a throwaway becomes reviewed infrastructure instead of being re-derived next month.
 
+_temp_scratch.ps1 -- ONE OWNER FOR THROWAWAY SCRATCH DIRECTORIES
+  New-UsxScratch <Prefix> / Remove-UsxScratch <Path>. Three tools create a GUID-named
+  scratch dir under %TEMP% and delete it in a `finally` -- audit_extension_syntax
+  (usx_jsyntax_), audit_deploy_guards (usxdeployguard_), probe_pull_verdict
+  (usx_pullverdict_).
+  !! A `finally` IS PRE-EMPTED BY A KILL. usx-tooling Step 5c already records this, and
+  on 2026-09-16 a measurement found 17 abandoned usx_* dirs holding 303 MB -- four from
+  audit_extension_syntax alone, which runs on every doctor pass AND in the pre-commit
+  hook at ~7 MB a time. Unbounded by construction: the cleanup only runs on the happy
+  path and the sad path is what leaves the litter.
+  So New-UsxScratch SWEEPS ON THE WAY IN -- each run removes its predecessors' abandoned
+  dirs before creating its own. A killed run still leaves one; it just does not survive
+  the NEXT run. That is what a `finally` cannot give you.
+  !! THE AGE CUTOFF (-MaxAgeHours, default 2) IS LOAD-BEARING: doctor invokes these gates
+  while the pre-commit hook may be running one too, so removing every matching sibling
+  would delete a CONCURRENT run's scratch. Cleanup failures are swallowed by design -- a
+  housekeeping error must never fail the gate that called it.
+  DISK, NOT RAM. Found while investigating a memory kill and is NOT the cause of one.
+
 probe_pull_verdict.ps1 -- LAW 2 FOR THE CONFIG-PULL VERDICT (composed into doctor.ps1)
   Does the panel REFUSE to show success when a config pull produced nothing? Until
   2026-09-16 both pull buttons coloured themselves `o.configsFailed ? red : green`, and

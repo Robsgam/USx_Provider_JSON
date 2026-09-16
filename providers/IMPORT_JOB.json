@@ -12,31 +12,56 @@
                    "expectBundlesNow is re-checked against the live page before writing; if the tenant changed since this job was cut the row is REFUSED, not overwritten.",
                    "A CLICKED verdict is not proof. verify_tenant_import.ps1 is."
                ],
-    "jobId":  "job-20260912-215904",
-    "createdAt":  "2026-09-12T21:59:04.1939425-04:00",
-    "repoCommit":  "b48cef4c",
+    "jobId":  "job-20260916-131158",
+    "createdAt":  "2026-09-16T13:11:58.7757911-04:00",
+    "repoCommit":  "da7b6a2d",
     "dryRunOnly":  false,
     "forced":  false,
     "targetCount":  1,
     "targets":  [
                     {
-                        "deptId":  "68055618928",
-                        "subdomain":  "newarkpd-foundation",
-                        "url":  "https://newarkpd-foundation.mark43.com/rms/api/support/admin/departments/configurations/68055618928",
-                        "provider":  "NJ_NJCJIS",
-                        "toVersion":  "4.17",
-                        "fromVersion":  "4.16",
+                        "deptId":  "73046844870",
+                        "subdomain":  "usx-sc-sled",
+                        "url":  "https://usx-sc-sled.mark43.com/rms/api/support/admin/departments/configurations/73046844870",
+                        "provider":  "SC_SLED",
+                        "providerSource":  "usx-subdomain",
+                        "toVersion":  "1.0",
+                        "fromVersion":  null,
                         "notOurBuild":  false,
-                        "tenantStatus":  "TestTEST",
+                        "tenantStatus":  "TEST",
                         "liveConfirmed":  false,
                         "expectBundlesNow":  [
-                                                 "ENTITIES",
-                                                 "NJ_NJCJIS",
-                                                 "RMS"
+
                                              ],
+                        "expectEmpty":  true,
+                        "expectNoBundlesNamed":  [
+                                                     "AZ_AZDPS",
+                                                     "CA_CLETS",
+                                                     "CA_CLETS_OCATS",
+                                                     "CA_CONTRA_COSTA",
+                                                     "CA_eSUN",
+                                                     "CA_SAN_LUIS_OBISPO",
+                                                     "CA_VENTURA_COUNTY",
+                                                     "FL_FCIC",
+                                                     "HI_HCJDC_OFML",
+                                                     "IL_LEADS_OFML",
+                                                     "LA_LEMS",
+                                                     "MD_METERS",
+                                                     "NJ_NJCJIS",
+                                                     "NM_NMLETS_OFML",
+                                                     "NY_NYSPIN_EJUSTICE",
+                                                     "OH_LEADS",
+                                                     "OR_LEDS",
+                                                     "SC_SLED",
+                                                     "TN_TIES",
+                                                     "TX_TLETS",
+                                                     "TX_TLETS_CCH"
+                                                 ],
+                        "emptyTenant":  true,
                         "willChange":  [
                                            "ENTITIES",
-                                           "NJ_NJCJIS"
+                                           "RMS",
+                                           "SC_SLED"
                                        ],
                         "done":  false
                     }

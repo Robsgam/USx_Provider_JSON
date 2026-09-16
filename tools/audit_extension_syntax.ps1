@@ -59,8 +59,12 @@ Emit "Parser: $browser"
 $files = @(Get-ChildItem -Path $Path -Filter '*.js' -File | Sort-Object Name)
 if ($files.Count -eq 0) { Emit "[FAIL] 0 .js files found -- nothing was checked, which is not a pass."; exit 1 }
 
-$work = Join-Path $env:TEMP ("usx_jsyntax_" + [guid]::NewGuid().ToString('N').Substring(0,8))
-New-Item -ItemType Directory -Path $work -Force | Out-Null
+# Sweeps abandoned siblings before creating its own -- the `finally` below only runs on the happy
+# path, and a killed run is exactly the case that leaves litter. This gate runs on every doctor
+# pass AND in the pre-commit hook at ~7 MB a time, so it was the biggest single accumulator:
+# 4 abandoned dirs found on 2026-09-16.
+. "$PSScriptRoot\_temp_scratch.ps1"
+$work = New-UsxScratch 'usx_jsyntax_' -Quiet:$Quiet
 try {
   $sb = New-Object System.Text.StringBuilder
   [void]$sb.AppendLine('<!doctype html><title>PENDING</title><body><pre id="out"></pre><script>')

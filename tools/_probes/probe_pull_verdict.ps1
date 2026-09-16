@@ -159,8 +159,9 @@ var CASES = [
 function mk(n, verdict) { var a = []; for (var i = 0; i < n; i++) { a.push({ verdict: verdict }); } return a; }
 '@
 
-$work = Join-Path $env:TEMP ("usx_pullverdict_" + [guid]::NewGuid().ToString('N').Substring(0, 8))
-New-Item -ItemType Directory -Path $work -Force | Out-Null
+# Sweeps abandoned siblings first; the `finally` below is pre-empted by a kill.
+. "$repo\tools\_temp_scratch.ps1"
+$work = New-UsxScratch 'usx_pullverdict_' -Quiet:$Quiet
 try {
     $sb = New-Object System.Text.StringBuilder
     [void]$sb.AppendLine('<!doctype html><title>PENDING</title><body><pre id="out"></pre><script>')

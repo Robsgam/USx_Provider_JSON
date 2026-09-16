@@ -174,48 +174,31 @@ while ($true) {
             # exactly the wrong provider on the one tenant we deployed to first. Intent comes from the
             # record; the install is what we are correcting.
             $deptId = $Matches[1]
-            $mapPath = Join-Path $PSScriptRoot 'config\tenant_map.json'
-            if (-not (Test-Path $mapPath)) {
-                Send-Http $stream 404 '{"error":"tenant_map.json not found"}'
+            # RESOLUTION LIVES IN `_tenant_intent.ps1`, NOT HERE. It was inline until 2026-09-16,
+            # when `emit_import_job.ps1` needed the identical answer to cut a job for a tenant with
+            # nothing installed. Two implementations would be worse than either: the job file could
+            # name one provider while this endpoint named another, and `deploy_probe.js` refuses on
+            # exactly that disagreement -- so the failure mode is debugging both at once with the
+            # real answer in neither. ENGINEERING_STANDARD 4.4.
+            # The extraction was proven equivalent BEFORE being wired in: the module's verdict was
+            # compared against this LIVE endpoint for all 66 tenant_map rows, case-sensitively and
+            # including every refusal. 66 AGREE / 0 DIFFER.
+            . "$PSScriptRoot\_tenant_intent.ps1"
+            $it = Resolve-TenantIntent -DeptId $deptId -ProvidersDir $providersDir
+            if (-not $it.found) {
+                Write-Host "[SERVE] /target/$deptId -> not in tenant_map; refusing" -ForegroundColor Red
+                Send-Http $stream 404 ('{"error":"' + ($it.error -replace '"', "'") + '"}')
                 continue
             }
-            # Re-read per request on purpose: a stale in-memory copy is exactly how a server started
-            # yesterday served pre-change data for a day (the /build endpoint, 2026-09-11).
-            $map = Get-Content $mapPath -Raw | ConvertFrom-Json
-            $row = @($map.tenants | Where-Object { $_.deptId -eq $deptId })
-            if ($row.Count -ne 1) {
-                Write-Host "[SERVE] /target/$deptId -> $($row.Count) matching tenant rows; refusing" -ForegroundColor Red
-                Send-Http $stream 404 ('{"error":"deptId ' + $deptId + ' is not in tenant_map.json (' + $row.Count + ' rows matched) -- it cannot be a deploy target until it is recorded"}')
-                continue
-            }
-            $t = $row[0]
-            $sub = [string]$t.subdomain
-            $intended = $null; $src = $null
-            if ($t.PSObject.Properties.Name -contains 'intendedProvider' -and $t.intendedProvider) {
-                $intended = [string]$t.intendedProvider; $src = 'explicit-map'
-            }
-            elseif ($sub -like 'usx-*') {
-                $derived = ($sub -replace '^usx-', '') -replace '-', '_'
-                # CANONICALISE THE CASING OFF DISK. The derived string is upper-case, so CA_eSUN comes
-                # out "CA_ESUN" -- which Test-Path happily accepts on Windows and which would then be
-                # compared, character by character, against the "CA_eSUN" written inside the bundles.
-                # A case-insensitive filesystem hides this until something does a string compare.
-                $dirs = @(Get-ChildItem $providersDir -Directory -ErrorAction SilentlyContinue)
-                $hit = @($dirs | Where-Object { $_.Name -eq $derived })
-                if ($hit.Count -ne 1) { $hit = @($dirs | Where-Object { $_.Name -like "${derived}_*" -and (Test-Path (Join-Path $_.FullName 'scripts')) }) }
-                if ($hit.Count -eq 1) { $intended = $hit[0].Name; $src = 'usx-subdomain' }
-                elseif ($hit.Count -gt 1) {
-                    $names = ($hit | ForEach-Object { $_.Name }) -join ', '
-                    Send-Http $stream 409 ('{"error":"subdomain ' + $sub + ' is ambiguous","candidates":"' + $names + '"}')
-                    continue
-                }
-            }
-            if (-not $intended) {
+            $sub = $it.subdomain
+            if (-not $it.provider) {
                 Write-Host "[SERVE] /target/$deptId ($sub) -> NO RECORDED INTENT; refusing" -ForegroundColor Red
-                Send-Http $stream 409 ('{"error":"no recorded intended provider for ' + $sub + ' (' + $deptId + ')","fix":"record intendedProvider on its tenant_map.json row -- the deploy target is a decision, not something to type at the keyboard"}')
+                Send-Http $stream 409 ('{"error":"' + ($it.error -replace '"', "'") + '"}')
                 continue
             }
-            $installed = @($t.bundles | ForEach-Object { $_.name }) -join ','
+            $intended = $it.provider; $src = $it.source
+            $t = [pscustomobject]@{ class = $it.class; status = $it.status }
+            $installed = @($it.installedBundles) -join ','
             $excl = ''
             try {
                 . (Join-Path $PSScriptRoot '_tenant_scope.ps1')

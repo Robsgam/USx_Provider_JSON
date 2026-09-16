@@ -173,6 +173,67 @@ foreach ($f in $files) {
     }
 }
 
+# ---- A TENANT WITH NOTHING INSTALLED IS INVISIBLE ABOVE, AND IT IS THE OBVIOUS IMPORT ----------
+# The loop above walks _versions\tenant_exports -- the pulled CONFIGS -- so a tenant carrying no
+# provider bundle at all has no file to iterate and cannot become a target. That is the fourth
+# consumer of one root cause: tenant_map.json is read by 8 tools and written by none, so the 4
+# usx-* tenants with nothing installed were missing from the pull job, from 3 reports, and from
+# here. And here it bites hardest: an EMPTY tenant is the one that most obviously needs an import.
+#
+# Only an EXPLICIT -DeptId reaches this path. Never -All and never -Provider: sweeping empty
+# tenants into a batch is how a first-ever deploy happens by accident.
+#
+# THE PROVIDER COMES FROM THE RECORD, NOT FROM AN INSTALL -- there is no install to read. That is
+# `Resolve-TenantIntent`, the same module serve_plans' /target uses, so the job file and /target
+# cannot disagree (deploy_probe refuses on exactly that disagreement).
+if ($DeptId -and -not $All -and -not $Provider) {
+    . "$PSScriptRoot\_tenant_intent.ps1"
+    $seen = @($targets | ForEach-Object { $_.deptId })
+    foreach ($id in $wanted) {
+        if ($seen -contains $id) { continue }
+        $onDisk = @($files | Where-Object { ($_.BaseName -replace '^.*_(\d+)$', '$1') -eq $id })
+        if ($onDisk.Count -gt 0) { continue }   # it HAS a config; the loop above already judged it
+
+        $it = Resolve-TenantIntent -DeptId $id
+        if (-not $it.provider) { $skipped += ('{0} -- {1}' -f $id, $it.error); continue }
+        if (-not $repoVer.ContainsKey($it.provider)) { $skipped += ('{0} -- no repo build for {1}' -f $id, $it.provider); continue }
+
+        # Everything the repo build carries is NEW here, because the tenant carries nothing.
+        $allBundles = @($repoHash.Keys | Where-Object { $_ -like ('{0}|*' -f $it.provider) } |
+                        ForEach-Object { $_.Split('|')[1] } | Select-Object -Unique)
+        $st = if ($status.ContainsKey($id)) { $status[$id] } else { "$($it.status)" }
+        $sd = if ($subOf.ContainsKey($id))  { $subOf[$id]  } else { "$($it.subdomain)" }
+
+        $targets += [ordered]@{
+            deptId           = $id
+            subdomain        = $sd
+            url              = 'https://{0}.mark43.com/rms/api/support/admin/departments/configurations/{1}' -f $sd, $id
+            provider         = $it.provider
+            providerSource   = $it.source          # 'usx-subdomain' or 'explicit-map' -- never an install
+            toVersion        = $repoVer[$it.provider]
+            fromVersion      = $null
+            notOurBuild      = $false              # nothing is installed, so nothing foreign is installed
+            tenantStatus     = $st
+            liveConfirmed    = $false
+            expectBundlesNow = @()
+            # ⚠️ expectBundlesNow=[] MAKES THE PRE-FLIGHT VACUOUS ON ITS OWN. bundlePreflight
+            # collects `table td, table th`, so an empty tenant still yields HEADER cells: the
+            # not-loaded check passes, the missing-bundle check compares an empty list to an empty
+            # list, and the guard returns OK while asserting NOTHING. These two fields convert that
+            # into a real assertion -- the page must contain none of our provider names.
+            expectEmpty          = $true
+            expectNoBundlesNamed = @($repoVer.Keys | Sort-Object)
+            emptyTenant      = $true
+            # EVERY bundle of the repo build is new here. This was COMPUTED and then never assigned
+            # in the first cut, so the job told the operator "changes:" and listed nothing -- on the
+            # one import where the answer is "all of them".
+            willChange       = $allBundles
+            done             = $false
+        }
+        Say ('  [note] {0} ({1}) carries NO config -- target built from the RECORD ({2} via {3}), every bundle is new' -f $sd, $id, $it.provider, $it.source)
+    }
+}
+
 if ($targets.Count -eq 0) {
     Say '  [FAIL] the job would be EMPTY -- nothing matched, or everything matched is already current.'
     foreach ($s in ($skipped | Select-Object -First 12)) { Say ('     skipped: {0}' -f $s) }
@@ -218,7 +279,10 @@ Say '  TENANT                         DEPT           FROM        -> TO          
 Say '  ----------------------------------------------------------------------------------------'
 foreach ($t in $targets) {
     Say ('  {0,-30} {1,-14} {2,-11} -> {3,-11} {4}' -f $t.subdomain, $t.deptId,
-         $(if ($t.fromVersion) { 'v' + $t.fromVersion } else { 'NOT-OURS' }), ('v' + $t.toVersion), ($t.willChange -join ', '))
+         $(if ($t.fromVersion) { 'v' + $t.fromVersion }
+           elseif ($t.emptyTenant) { '(nothing)' }   # NOT "NOT-OURS": nothing is installed, so
+           else { 'NOT-OURS' }),                     # nothing FOREIGN is installed either
+         ('v' + $t.toVersion), ($t.willChange -join ', '))
 }
 if ($live.Count -gt 0) {
     Say ''

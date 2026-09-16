@@ -534,10 +534,45 @@
     });
     return cells;
   }
-  function bundlePreflight(expected, docArg) {
+  // Takes the whole TARGET, not just the expected list, because the EMPTY-tenant case cannot be
+  // expressed as a list -- see below.
+  function bundlePreflight(t, docArg) {
+    const expected = (t && t.expectBundlesNow) || [];
     const cells = bundleNamesOnPage(docArg);
     if (!cells.length) { return 'no table cells on this page -- cannot confirm the tenant is still in the state the job was cut against'; }
-    const missing = (expected || []).filter(n => !cells.some(c => c === n || c.indexOf(n) >= 0));
+
+    // ── A TENANT WITH NOTHING INSTALLED ──────────────────────────────────────────────────────
+    // ⚠️ `expectBundlesNow: []` PASSES THIS GUARD WHILE ASSERTING NOTHING, which is worse than
+    // failing. bundleNamesOnPage collects `table td, table th`, so an empty tenant still yields
+    // the table's HEADER cells: the not-loaded check passes, then `missing` compares an empty
+    // list against an empty list, both later tests are false, and the function returns OK having
+    // checked precisely nothing. A gate that cannot fail is not a gate (LAW 2), and this one
+    // guards the only write path in the project.
+    //
+    // The empty state cannot be asserted as "these bundles are present" -- there are none. It has
+    // to be asserted NEGATIVELY: none of OUR provider names may appear on the page. The vocabulary
+    // comes from the job (`expectNoBundlesNamed`, written from the repo's own provider list) so
+    // this file carries no hardcoded roster to go stale.
+    if (t && t.expectEmpty) {
+      if (expected.length) {
+        return 'the job marks this tenant EMPTY yet also lists expectBundlesNow [' + expected.join(', ') +
+               '] -- contradictory, so the row is refused rather than guessed at';
+      }
+      const vocab = (t.expectNoBundlesNamed || []);
+      if (!vocab.length) {
+        return 'the job says this tenant is EMPTY but supplied no expectNoBundlesNamed vocabulary to ' +
+               'check that against -- refusing rather than passing vacuously';
+      }
+      const found = vocab.filter(n => cells.some(c => c === n || c.indexOf(n) >= 0));
+      if (found.length) {
+        return 'the job was cut against a tenant with NOTHING installed, but this page already carries [' +
+               found.join(', ') + '] -- it has CHANGED since the job was cut, so this row is refused ' +
+               'rather than overwritten';
+      }
+      return null;
+    }
+
+    const missing = expected.filter(n => !cells.some(c => c === n || c.indexOf(n) >= 0));
     if (missing.length === (expected || []).length && missing.length > 0) {
       return 'none of the job expected bundles [' + expected.join(', ') + '] appear on this page -- either the table has not loaded or this is not the tenant the job describes';
     }
@@ -571,7 +606,7 @@
     if (tgt.scopeExcluded) { throw new Error('tenant is EXCLUDED by tenant_scope.json: ' + tgt.scopeExcluded); }
 
     if (!opts.skipBundlePreflight && !job.skipBundlePreflight) {
-      const p = bundlePreflight(t.expectBundlesNow, opts.doc);
+      const p = bundlePreflight(t, opts.doc);
       if (p) { throw new Error('PRE-FLIGHT: ' + p); }
     }
     if (/LIVE/i.test(String(t.tenantStatus || '')) && t.liveConfirmed !== true) {

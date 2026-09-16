@@ -60,8 +60,10 @@ if (-not $browser) {
 }
 Say ("  parser: {0}" -f $browser)
 
-$work = Join-Path $env:TEMP ('usxdeployguard_' + [guid]::NewGuid().ToString('N').Substring(0,8))
-New-Item -ItemType Directory -Path $work -Force | Out-Null
+# Sweeps abandoned siblings first: the cleanup at the end of this file is pre-empted by a kill,
+# so the only reliable moment to remove a previous run's litter is on the way IN.
+. "$PSScriptRoot\_temp_scratch.ps1"
+$work = New-UsxScratch 'usxdeployguard_' -Quiet:$Quiet
 Copy-Item $deployJs (Join-Path $work 'deploy_probe.js')
 # usx_lib is referenced only inside dl(), which the guard tests never reach; a stub keeps the
 # page from erroring on load without pretending the real thing is present.
@@ -258,12 +260,40 @@ $html = @"
   // Safeguard 2 from the usx-deploy skill -- "re-export and confirm the BEFORE still matches the
   // plan; abort the row if it changed" -- which is the one that stops us overwriting somebody
   // else's concurrent change. The harness page carries a bundle table mirroring the real one.
+  // bundlePreflight takes the whole TARGET as of 2026-09-16: the EMPTY-tenant case cannot be
+  // expressed as a list of expected bundles, because there are none.
   assert('preflight: the expected bundle set is present -> proceed',
-         D.bundlePreflight(['ENTITIES', 'FL_FCIC', 'RMS']), null);
+         D.bundlePreflight({ expectBundlesNow: ['ENTITIES', 'FL_FCIC', 'RMS'] }), null);
   assert('preflight: a bundle the job recorded is GONE -> refuse (the tenant changed)',
-         D.bundlePreflight(['ENTITIES', 'FL_FCIC', 'RMS', 'CA_eSUN']) === null, false);
+         D.bundlePreflight({ expectBundlesNow: ['ENTITIES', 'FL_FCIC', 'RMS', 'CA_eSUN'] }) === null, false);
   assert('preflight: NONE of the expected bundles present -> refuse (wrong page, or table not loaded)',
-         D.bundlePreflight(['NJ_NJCJIS']) === null, false);
+         D.bundlePreflight({ expectBundlesNow: ['NJ_NJCJIS'] }) === null, false);
+
+  // ── THE EMPTY TENANT: the first-ever import, where there is nothing to compare against ──────
+  // usx-sc-sled carries NO provider bundle at all, which is what makes it the safest first
+  // subject -- and also what made the old guard VACUOUS: `expectBundlesNow: []` sailed through
+  // every check while asserting nothing, because bundleNamesOnPage collects table HEADERS so the
+  // not-loaded test passes and an empty list has no missing members. A guard that cannot fail is
+  // not a guard, and this one sits on the only write path in the project.
+  //
+  // THE HARNESS PAGE IS NOT EMPTY -- it carries ENTITIES/FL_FCIC/RMS. That is exactly why it can
+  // test this: a job claiming "this tenant is empty" run against THIS page MUST be refused.
+  assert('preflight EMPTY: job says nothing installed, but the page carries bundles -> refuse',
+         D.bundlePreflight({ expectEmpty: true, expectBundlesNow: [],
+                             expectNoBundlesNamed: ['FL_FCIC', 'SC_SLED'] }) === null, false);
+  assert('preflight EMPTY: the refusal NAMES what it found, so the operator can see why',
+         /already carries \[FL_FCIC\]/.test(String(D.bundlePreflight({ expectEmpty: true,
+                             expectBundlesNow: [], expectNoBundlesNamed: ['FL_FCIC', 'SC_SLED'] }))), true);
+  // THE POSITIVE CONTROL. Without it a guard that refused every empty job would score perfectly.
+  // Vocabulary that genuinely does not appear on the page must PROCEED.
+  assert('preflight EMPTY: page carries none of the named bundles -> proceed (control)',
+         D.bundlePreflight({ expectEmpty: true, expectBundlesNow: [],
+                             expectNoBundlesNamed: ['NM_NMLETS_OFML', 'OR_LEDS'] }), null);
+  assert('preflight EMPTY: no vocabulary supplied -> refuse rather than pass vacuously',
+         D.bundlePreflight({ expectEmpty: true, expectBundlesNow: [], expectNoBundlesNamed: [] }) === null, false);
+  assert('preflight EMPTY: a job that is BOTH empty and lists expected bundles is contradictory -> refuse',
+         D.bundlePreflight({ expectEmpty: true, expectBundlesNow: ['ENTITIES'],
+                             expectNoBundlesNamed: ['SC_SLED'] }) === null, false);
 
   // ── THE BATCH SEAM: every DOM read must work against a DOCUMENT THAT IS NOT THIS ONE ────
   // Rob, 2026-09-11: "i want the process to be able to eventually say update all fl_fcic tenants
@@ -299,9 +329,9 @@ $html = @"
   assert('seam: modalIsOpen works on the iframe modal',
          D.modalIsOpen(imodal), true);
   assert('seam: bundlePreflight reads the IFRAME table, not this page',
-         D.bundlePreflight(['ENTITIES', 'NJ_NJCJIS', 'RMS'], idoc), null);
+         D.bundlePreflight({ expectBundlesNow: ['ENTITIES', 'NJ_NJCJIS', 'RMS'] }, idoc), null);
   assert('seam: bundlePreflight against the iframe REFUSES this page bundles (proves it is not reading document)',
-         D.bundlePreflight(['FL_FCIC'], idoc) === null, false);
+         D.bundlePreflight({ expectBundlesNow: ['FL_FCIC'] }, idoc) === null, false);
 
   check('operator abort',         function(){ window.__usxDeployAbort = true; }, true);
   window.__usxDeployAbort = false;

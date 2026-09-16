@@ -39,11 +39,10 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 **MISSION** -- headline count deliberately NOT restated: it read "13 of 20" and went stale the moment
 SC_SLED became the 21st. **Derive live: `report_mission_status.ps1`.** Owed per that tool 2026-09-14:
 **test 5** (CA_CONTRA_COSTA BLOCKED on Rob's JAWS call; CA_SAN_LUIS_OBISPO, CA_VENTURA, LA_LEMS
-sweep-ready, CA_VENTURA owes a picklist capture for its hollow toggle; **SC_SLED now BLOCKED too --
-awaiting corrected SC docs, see its section**) and **jira 2** (CA_CLETS_OCATS DEX-980; CA_eSUN
-DEX-1312/1313 owes a v3.3 release line). TX_TLETS_CCH is PARKED. So 3 of the 5 are actionable.
-**A never-tested provider is owed a SWEEP, not an import** (Rob 2026-09-09) -- SC_SLED was the one
-EXCEPTION (on no tenant, so its sweep needed an import first); that is now MOOT while it is blocked.
+sweep-ready, CA_VENTURA owes a picklist capture; **SC_SLED sweep HELD on the docs -- but its IMPORT
+is wanted, see its section**) and **jira 2** (CA_CLETS_OCATS DEX-980; CA_eSUN DEX-1312/1313 owes a
+v3.3 release line). TX_TLETS_CCH is PARKED. **A never-tested provider is owed a SWEEP, not an
+import** (Rob 09-09) -- SC_SLED is the EXCEPTION twice over: on no tenant, and now the deploy pilot.
 **SDSO LIVE runs eSUN v1.0 vs repo v3.3** -- Rob's call. Handover: `USX_PROJECT_GUIDE.pdf`.
 **ANY PRIOR JSON IS ONE COMMAND:** `get_provider_version.ps1 -Provider <P> -Version <X.Y>` -- 671
 artifacts, byte-exact. RETRIEVAL, not rebuild: re-running an old script does NOT reproduce it.
@@ -57,20 +56,20 @@ and start time both lied 09-14; on 09-15 I curled the WRONG PORT and got the NO-
 **`RUN THE JOB` + `7b` RESCAN are PROVEN, not hypotheses** (09-15: 1790 indexed / 2 new / 4s). ⚠️ **PANEL
 COLOURS CHANGED 09-16:** a pull that got NOTHING reads RED, partial AMBER, green only if all accounted.
 
-## SC_SLED v1.0 -- BUILT AND GREEN, but ⛔ BLOCKED: WAITING ON UPDATED SC DOCS (Rob 2026-09-15)
+## SC_SLED v1.0 -- IMPORT IT (to prove the deploy path); DO NOT SWEEP IT (Rob 2026-09-16)
 
-**DO NOT IMPORT OR SWEEP IT YET.** Rob has asked SC/CommSys for corrected docs because *"the combos
-between veh reg adn veh stolen seem mixed and contrary to every other provider meta data"* -- so the
-AUTHORITY is suspect, and the reg/stolen split is built on it. Importing now would test a build
-derived from a doc we expect to change. The co-fire below is the SYMPTOM of that fusion, not a
-separate bug: `QVRQ`/`QWDQ`/`QBBQ` are COMPOUND keys ("SC Vehicle Stolen/Reg") and no other
-provider fuses the two. Re-adjudicate the whole Vehicle/Person split when the docs land.
-9 QIDMs / 18 combos / 6 QIFs / 80P-0F-0W-1LIM. The 1 LIM NAMES the open question: Vehicle's two
-QIDMs co-fire with no toggle -- **MEASURED**, one plate fires `QVRQ.P` AND `QV.P` so stolen ships
-twice; same on Person (`QWDQ` + `QWA.N`). ⚠️ **MASKING IS NOT AVAILABLE:** `queriesToDeselect`
-REFUTED for this shape (NY v2.8); `autoSelect=$false` has ZERO tenant-proven carriers. Also owed
-once unblocked: AdministrativeMessage (HYPOTHESIS) and NCIC ST-1. ONLY provider building a
-standalone `VehicleStolenQuery`; FL/HI/NJ removed theirs. Detail: git.
+⚠️ **THE HOLD NARROWED, IT DID NOT LIFT.** SC docs are still suspect (*"the combos between veh reg
+adn veh stolen seem mixed"*) so the SWEEP waits -- testing wire correctness against an authority we
+expect to change is the thing worth avoiding. But the IMPORT is now wanted, and it does not depend
+on the combos being right: it proves the EXTENSION DEPLOY PATH before Newark. `usx-sc-sled` carries
+NOTHING, so there is nothing to clobber. `QVRQ`/`QWDQ`/`QBBQ` are COMPOUND keys; re-adjudicate the
+whole Vehicle/Person split when the docs land.
+9 QIDMs / 18 combos / 6 QIFs / 80P-0F-0W-1LIM. ⚠️ **CO-FIRE IS NOW ROB'S ACCEPTED DESIGN, NOT AN
+OPEN QUESTION** (09-16: *"not sure what teh spec is but for now lets build it that way"*) -- so the
+1 LIM is a recorded decision. Re-measured off v1.0: one plate fires `QVRQ.P` AND `QV.P` but they are
+**NOT the same request** (Plate+Type+Year vs Plate+VIN+Make) -- the "QV.P equals QVRQ.P" line
+elsewhere is WRONG; what duplicates is the STOLEN CHECK, `QVRQ` being compound. No JSON change, no
+bump. Masking still unavailable. **DEPLOY ARMED for `usx-sc-sled`** (73046844870, `IMPORT_JOB.json`).
 
 ## ROB'S CALLS + OPEN FINDINGS -- detail lives in `FINDINGS_REGISTER.md`, do NOT restate it here
 
