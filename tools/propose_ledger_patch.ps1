@@ -383,8 +383,28 @@ if ($unproven.Count -gt 0) {
 }
 
 if ($disagree.Count -eq 0 -and $missing.Count -eq 0 -and $noversion.Count -eq 0 -and $nocell.Count -eq 0) {
-    Say '  NOTHING TO PROPOSE -- every content-proven tenant already agrees with the ledger.'
-    Say '  (That is a real result, not an empty run: the denominator is printed above.)'
+    # !! "EVERY TENANT AGREES" OFF A DENOMINATOR OF ZERO IS NOT AGREEMENT -- it is silence, and
+    # this branch used to print the agreement sentence either way. ENGINEERING_STANDARD 4.3:
+    # "found nothing" and "never looked" must not print the same line. The denominator WAS printed
+    # two lines above, so a careful reader could catch it, but the headline asserted the opposite
+    # of what a 0 means and the headline is what gets quoted.
+    # Found 2026-09-16 running this against usx-sc-sled right after its v1.7 import: that tenant's
+    # Export JSON yields nothing (CLICKED-BUT-NO-JSON), so 0 tenants were content-proven, and the
+    # tool reported "every content-proven tenant already agrees" on a provider that is ABSENT FROM
+    # THE LEDGER ENTIRELY -- which audit_lifecycle was simultaneously reporting as a GAP. Two gates,
+    # same fact, opposite headlines. Same defect class as the emit_import_job empty-job message
+    # fixed the same day.
+    if ($proven -eq 0) {
+        Say '  NOTHING EXAMINED -- 0 tenants were CONTENT-PROVEN against a repo build, so this run'
+        Say '  says NOTHING about whether the ledger is right. It is not an agreement, it is silence.'
+        Say '  CAUSE is almost always that no tenant config is on disk to hash: pull first (extension'
+        Say '  button 6b, then ingest_tenant_configs.ps1). A tenant whose Export JSON returns nothing'
+        Say '  (CLICKED-BUT-NO-JSON) can NEVER be content-proven -- for those, the ledger has to be'
+        Say '  reasoned from the deploy record and the live bundle table, which this tool cannot read.'
+    } else {
+        Say '  NOTHING TO PROPOSE -- every content-proven tenant already agrees with the ledger.'
+        Say ('  (That is a real result, not an empty run: {0} of {1} examined tenant(s) were content-proven and compared.)' -f $proven, $examined)
+    }
 }
 
 Say '===================================================================================='
