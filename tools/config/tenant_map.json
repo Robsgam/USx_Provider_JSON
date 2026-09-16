@@ -846,7 +846,12 @@
       "ledgerName": null,
       "class": "usx-fleet",
       "status": "TEST",
-      "bundles": [],
+      "bundles": [
+        { "name": "ENTITIES", "platformCounter": "596" },
+        { "name": "SC_SLED", "platformCounter": "1" },
+        { "name": "RMS", "platformCounter": "70" }
+      ],
+      "_bundlesMeasured": "2026-09-16T17:47:33Z -- read from the LIVE bundle table (extension button 1, usx_admin_one_73046844870). This row said bundles:[] until the import landed; 0 -> 3 with exactly the payload's names IS the proof the import worked, because the Export JSON path is broken on this tenant (CLICKED-BUT-NO-JSON on all 3 pulls, 2 of them AFTER the import). platformCounter is the PLATFORM's counter, never our version -- our version rides in the bundle description.",
       "_whyAdded": "Added by hand 2026-09-16 so GET /target/73046844870 can resolve. It returned 404 -- not 409 -- because the deptId was absent from this file entirely, and the row lookup runs BEFORE the usx-subdomain derivation, correctly: the row is the record that the tenant exists at all. This file is read by 8 tools and written by none, which is the same gap that made the pull job and 3 reports miss the 4 usx tenants carrying no config.",
       "_whyNoIntendedProvider": "DELIBERATE. No intendedProvider is recorded, so /target must resolve SC_SLED via the usx-subdomain derivation -- which is the path that has to be proven before it is trusted on a foundation tenant. Recording it explicitly here would bypass the very mechanism this deploy is meant to test. bundles is EMPTY because nothing has ever been installed on this tenant; that is the measured state, not a placeholder."
     },
