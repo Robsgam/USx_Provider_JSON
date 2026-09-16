@@ -35,7 +35,7 @@ $repoRoot    = Split-Path (Split-Path $providerDir -Parent) -Parent
 . (Join-Path $repoRoot 'tools\_build_provider_helpers.ps1')
 
 $providerName = 'SC_SLED'
-$Version      = '1.1'
+$Version      = '1.2'
 $currentYear  = (Get-Date).Year.ToString()
 
 Write-Host ''
@@ -477,12 +477,12 @@ $boatQuery = Build-Qidm -ProviderName $providerName -Query 'BoatQuery' `
 #     needed." So the card is hosted on Vehicle and the open questions stay in #46 unasked.
 # =====================================================================
 $amAttrs = @(
-    Build-QidmAttribute -Name 'FreeText'         -Size 501 -SourceField @('FreeText')
-    Build-QidmAttribute -Name 'DestinationCode'  -Size 9   -SourceField @('DestinationCode')
-    Build-QidmAttribute -Name 'DestinationCode2' -Size 9   -SourceField @('DestinationCode2')
-    Build-QidmAttribute -Name 'DestinationCode3' -Size 9   -SourceField @('DestinationCode3')
-    Build-QidmAttribute -Name 'DestinationCode4' -Size 9   -SourceField @('DestinationCode4')
-    Build-QidmAttribute -Name 'DestinationCode5' -Size 9   -SourceField @('DestinationCode5')
+    Build-QidmAttribute -Name 'FreeText'         -Size 501 -SourceField @('FreeTextAM')
+    Build-QidmAttribute -Name 'DestinationCode'  -Size 9   -SourceField @('DestinationCodeAM')
+    Build-QidmAttribute -Name 'DestinationCode2' -Size 9   -SourceField @('DestinationCode2AM')
+    Build-QidmAttribute -Name 'DestinationCode3' -Size 9   -SourceField @('DestinationCode3AM')
+    Build-QidmAttribute -Name 'DestinationCode4' -Size 9   -SourceField @('DestinationCode4AM')
+    Build-QidmAttribute -Name 'DestinationCode5' -Size 9   -SourceField @('DestinationCode5AM')
 )
 # ⚠️ DEVDOC AND METADATA DISAGREE HERE AND METADATA WINS. The devdoc marks DestinationCode as
 # MANDATORY ("M/C/O  M O O O O M") and lists combination 1 as
@@ -491,16 +491,19 @@ $amAttrs = @(
 # authority), so DestinationCode is built as an optional -- and the label carries the devdoc's
 # expectation so the officer is not misled by a form that would accept a message with no recipient.
 $amCombos = @(
+    # set[]/any[] hold SOURCEFIELDS (form fieldIds), so they carry the v1.2 AM suffix;
+    # primaryFieldReference holds the ATTRIBUTE name, which does not. Mixing those two namespaces
+    # is the mistake this line is shaped to avoid.
     Build-QidmCombo -KeyReference 'AM' -PrimaryFieldReference 'FreeText' `
-        -Set @('FreeText') `
-        -Any @('DestinationCode','DestinationCode2','DestinationCode3','DestinationCode4','DestinationCode5')
+        -Set @('FreeTextAM') `
+        -Any @('DestinationCodeAM','DestinationCode2AM','DestinationCode3AM','DestinationCode4AM','DestinationCode5AM')
 )
-        # v1.1: TargetEntity moved 'AdministrativeMessage' -> 'Vehicle'. A QIDM's targetEntity must
-        # name an entity the platform RENDERS, or its form never appears and the query is
-        # unreachable (LIMITATION #46). Vehicle now hosts the AM card; see the Vehicle layout for
-        # why Vehicle and why that choice is a weak tiebreak rather than a principle.
+# v1.2: TargetEntity is 'Article' -- a RECOGNISED record kind, which is what makes this form render
+# AT ALL (LIMITATION #46: an unrecognised value is silently dropped). It gets its OWN TAB because
+# tabs are keyed by QUERYINPUTFORM rather than by entity (CAPABILITY #47, LIVE-PROVEN).
+# It is NOT a claim that this searches for a person.
 $amQuery = Build-Qidm -ProviderName $providerName -Query 'AdministrativeMessage' `
-    -TargetEntity 'Vehicle' -QueryLabel 'Administrative Message' `
+    -TargetEntity 'Article' -QueryLabel 'Administrative Message' `
     -Attributes $amAttrs -Combinations $amCombos `
     -Description 'AdministrativeMessage -- AM. Free text to up to five destination ORIs; the only non-search transaction SC declares as Basic. v1.1: hosted as a CARD ON THE VEHICLE QIF. Its own entity did NOT render (LIMITATION #46, measured on the first import) -- a correctly-formed sixth targetEntity is silently dropped. It is not a vehicle search; Vehicle is simply the entity with room, and the move to any other of the five is one line. Metadata makes only FreeText mandatory while the devdoc marks DestinationCode mandatory; metadata is field authority, so the destination codes are optional and the label carries the expectation.'
 
@@ -546,52 +549,15 @@ $vehLayout = MakeLayouts @(
             )}
         )
     }
-    # ---- ADMINISTRATIVE MESSAGE, NOW A CARD ON *VEHICLE* (v1.1) ---------------------------------
-    # !! IT WAS ITS OWN ENTITY AT v1.0 AND THAT DOES NOT RENDER -- LIMITATION #46, measured on the
-    # first import: Rob "i did not see a admin card  doublecheck your work". The build was CORRECT
-    # (ENTITIES first, QIF present, all three order arrays naming it, payload read-back byte-exact)
-    # and the platform silently dropped the sixth entity anyway. All 21 providers use exactly
-    # Person/Vehicle/Firearm/Article/Boat; AdministrativeMessage had one carrier and it vanished.
-    #
-    # A CARD LIVES INSIDE AN ENTITY, so the only way to make this reachable is to hang it on one of
-    # the five. WHY VEHICLE, and it is a weak tiebreak rather than a principle:
-    #   - Vehicle had the most room (1 card / 7 controls); Person is already 3 cards / 20.
-    #   - Rob's own direction was to DECROWD Person ("try moving wanted person off as well"), so
-    #     adding a fourth Person card would push the opposite way. Moving WantedPerson off is not
-    #     available either -- same limitation, there is no sixth entity to move it to.
-    #   - The fields (FreeText / DestinationCode1-5) collide with nothing on any entity, so
-    #     isolation is free wherever it goes.
-    # Semantically an admin message is NOT a vehicle search, and nobody should pretend otherwise.
-    # Rob 2026-09-16: "build it and we can iterate as needed" -- this is a ONE-LINE move to any
-    # other entity (change which layout array the card sits in, and the QIDM's TargetEntity).
-    #
-    # NO ROUTING RISK, checked rather than assumed: the AM combination requires FreeText, which
-    # appears on no other card, so a plate/VIN fill cannot fire it; and the Vehicle combinations
-    # require plate or VIN, which appear on no AM row, so an AM fill cannot fire them. Two QIDMs on
-    # targetEntity=Vehicle is already the shipped state (VehicleRegistration + VehicleStolen) and
-    # LIMITATION #2 is one QIDM per (targetEntity, QUERY) -- AdministrativeMessage is a third,
-    # distinct query.
-    @{
-        id    = 'CARD_AM'
-        title = 'ADMINISTRATIVE MESSAGE -- FREE TEXT TO UP TO FIVE AGENCIES (not a vehicle search)'
-        rows  = @(
-            @{ id = 'ROW_AM_1'; cols = @('12'); fields = @(
-                @{ id = 'FreeText_Input'; node = Inp 'FreeText' 'Message (required, up to 501 characters)' '501' 'ROW_AM_1' }
-            )}
-            @{ id = 'ROW_AM_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'DestinationCode_Input';  node = Inp 'DestinationCode' 'Destination ORI (devdoc expects at least one)' '9' 'ROW_AM_2' }
-                @{ id = 'DestinationCode2_Input'; node = Inp 'DestinationCode2' 'Destination ORI 2 (optional)' '9' 'ROW_AM_2' }
-                @{ id = 'DestinationCode3_Input'; node = Inp 'DestinationCode3' 'Destination ORI 3 (optional)' '9' 'ROW_AM_2' }
-            )}
-            @{ id = 'ROW_AM_3'; cols = @('4','4'); fields = @(
-                @{ id = 'DestinationCode4_Input'; node = Inp 'DestinationCode4' 'Destination ORI 4 (optional)' '9' 'ROW_AM_3' }
-                @{ id = 'DestinationCode5_Input'; node = Inp 'DestinationCode5' 'Destination ORI 5 (optional)' '9' 'ROW_AM_3' }
-            )}
-        )
-    }
+    # ---- v1.2: THE AM CARD IS GONE FROM VEHICLE. IT HAS ITS OWN TAB AGAIN. ----------------------
+    # CAPABILITY #47 (LIVE-PROVEN 2026-09-16): TABS ARE KEYED BY QUERYINPUTFORM, NOT BY ENTITY.
+    # Measured -- 8 forms produced 8 tabs, three of them sharing targetEntity='Person'. So the
+    # v1.1 compromise of bolting an administrative message onto the Vehicle search was unnecessary.
+    # Rob: "i want it compeltely seperated" -- now achievable, see the AM form below.
+    # The block that used to sit here is deleted rather than commented out.
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle -- 2 cards. Card 1: Registration QVRQ.P (plate+type+year) / QVRQ.V (VIN), Stolen QV.P (plate) / QV.VM (VIN+make), Plate>VIN guardrails on both VIN paths. Card 2: ADMINISTRATIVE MESSAGE (v1.1) -- hosted here because a sixth targetEntity does not render (LIMITATION #46), NOT because it is a vehicle search. Its combination needs FreeText, which no vehicle card carries, so the two cannot co-fire.'
+    description  = 'Vehicle -- 1 card. Registration QVRQ.P (plate+type+year) / QVRQ.V (VIN), Stolen QV.P (plate) / QV.VM (VIN+make). Plate>VIN guardrails on both VIN paths. (v1.1 briefly hosted the Administrative Message card here; v1.2 moved it to its own tab per CAPABILITY #47.)'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'
@@ -753,21 +719,72 @@ $boatForm = [PSCustomObject]@{
     targetEntity = 'Boat'
 }
 
-# ---- THE SIXTH ENTITY IS GONE (v1.1) -------------------------------------------------------------
-# v1.0 built `ENTITY_AdministrativeMessage` with targetEntity='AdministrativeMessage', ordered LAST
-# on the theory that if the platform ignored an unknown entity the five real ones would still place.
-# THE FIVE DID PLACE. THE SIXTH DID NOT RENDER AT ALL -- LIMITATION #46, measured on the first
-# automated import. The card now lives on the Vehicle QIF (see the Vehicle layout above) and this
-# form and its order entry are removed rather than left as a harmless-looking no-op: a
-# QUERYINPUTFORM that renders nothing is exactly the artifact that reads like coverage.
+# ---- ADMINISTRATIVE MESSAGE -- ITS OWN TAB (v1.2) -----------------------------------------------
+# THE VERSION HISTORY OF THIS ONE FORM IS THE WHOLE LESSON:
+#   v1.0  its own QIF with targetEntity='AdministrativeMessage'  -> DID NOT RENDER (LIMITATION #46:
+#         an UNRECOGNISED targetEntity value is silently dropped; 8 candidate names later tested,
+#         all 8 rejected)
+#   v1.1  a second CARD on the Vehicle QIF                        -> rendered, but Rob: "this is
+#         just a card on the veh page.   i want it compeltely seperated"
+#   v1.2  its own QIF again, this time declaring targetEntity='Person' -- A VALUE THE PLATFORM
+#         RECOGNISES -- which gives it its own TAB. CAPABILITY #47, LIVE-PROVEN: tabs are keyed by
+#         QUERYINPUTFORM, not by entity. 8 forms produced 8 tabs, three of them sharing 'Person'.
+#         Evidence: docs\evidence\ENTITY_PROBE_RESULT_2026-09-16.txt
+#
+# !! targetEntity='Article' IS A DECLARATION OF RECORD KIND, NOT A CLAIM THAT THIS SEARCHES FOR AN
+# ARTICLE. It is invisible to the officer -- the TAB reads 'Administrative Message'. The value was
+# chosen on COLLISION RISK alone:
+#   - NOT 'Person': LIMITATION #28 -- a second QIF on an entity BREAKS codeTypeProvider
+#     reverse-lookup for that entity, and SC_SLED's three codeTypeProvider controls (SexCode,
+#     SexCodeDR, raceCode) are ALL on Person. The v1.2 first attempt targeted Person and the
+#     validator FAILED it on exactly this. That is the gate doing its job.
+#   - Article carries NO codeTypeProvider control and is the SMALLEST pool in the build
+#     (1 card / 2 fields / 1 combo), so there is the least to interact with.
+#
+# !! THE FIELD POOL IS SHARED ACROSS QIFs ON ONE ENTITY -- CONFIRMED, not a guess: LIMITATION #26,
+# root-caused in #28 from three FL_FCIC tests against a single-QIF control. So AM-SUFFIXED FIELD
+# IDS ARE LOAD-BEARING, not tidiness: LIMITATION #1 makes the wire a UNION across every matching
+# combination, and unique ids are what stop an Article fill from satisfying or over-sending into
+# this form. Same reason DriverHistory uses DH-suffixes. Do NOT "simplify" these names.
+$amLayout = MakeLayouts @(
+    @{
+        id    = 'CARD_AM'
+        title = 'ADMINISTRATIVE MESSAGE -- FREE TEXT TO UP TO FIVE AGENCIES'
+        rows  = @(
+            @{ id = 'ROW_AM_1'; cols = @('12'); fields = @(
+                @{ id = 'FreeTextAM_Input'; node = Inp 'FreeTextAM' 'Message (required, up to 501 characters)' '501' 'ROW_AM_1' }
+            )}
+            @{ id = 'ROW_AM_2'; cols = @('4','4','4'); fields = @(
+                @{ id = 'DestinationCodeAM_Input';  node = Inp 'DestinationCodeAM' 'Destination ORI (devdoc expects at least one)' '9' 'ROW_AM_2' }
+                @{ id = 'DestinationCode2AM_Input'; node = Inp 'DestinationCode2AM' 'Destination ORI 2 (optional)' '9' 'ROW_AM_2' }
+                @{ id = 'DestinationCode3AM_Input'; node = Inp 'DestinationCode3AM' 'Destination ORI 3 (optional)' '9' 'ROW_AM_2' }
+            )}
+            @{ id = 'ROW_AM_3'; cols = @('4','4'); fields = @(
+                @{ id = 'DestinationCode4AM_Input'; node = Inp 'DestinationCode4AM' 'Destination ORI 4 (optional)' '9' 'ROW_AM_3' }
+                @{ id = 'DestinationCode5AM_Input'; node = Inp 'DestinationCode5AM' 'Destination ORI 5 (optional)' '9' 'ROW_AM_3' }
+            )}
+        )
+    }
+)
+$amForm = [PSCustomObject]@{
+    description  = 'Administrative Message -- ITS OWN TAB (v1.2). Declares targetEntity=Person because tabs are keyed by QUERYINPUTFORM, not by entity (CAPABILITY #47, LIVE-PROVEN: 8 forms -> 8 tabs, three sharing Person). That value is a recognised record kind, NOT a claim this searches for a person. All controls are AM-suffixed so no field can be shared with the real Person tab -- whether two forms on one entity share a field pool is unmeasured, and LIMITATION #1 makes a shared pool a live over-send risk.'
+    label        = 'Administrative Message'
+    layout       = $amLayout
+    name         = 'ENTITY_AdministrativeMessage'
+    type         = 'QUERYINPUTFORM'
+    targetEntity = 'Article'
+}
 
 # =====================================================================
 # 13. ENTITIES BUNDLE -- must be bundle #1 or the forms do not render (AZ v2.0).
-#     FIVE entities, because that is what the platform renders (LIMITATION #46).
+#     SIX FORMS, FIVE DISTINCT ENTITIES. `Person` appears TWICE in the order array on purpose --
+#     once for the real Person tab and once for the Administrative Message tab. That is what
+#     CAPABILITY #47 measured working (the probe listed Person four times and got four tabs).
+#     AM goes LAST so the five familiar tabs keep their established positions.
 # =====================================================================
-$entityOrder = @('Vehicle','Person','Firearm','Article','Boat')
+$entityOrder = @('Vehicle','Person','Firearm','Article','Boat','Article')
 $entitiesBundle = Build-EntitiesBundle `
-    -Configurations @($vehicleForm, $personForm, $firearmForm, $articleForm, $boatForm) `
+    -Configurations @($vehicleForm, $personForm, $firearmForm, $articleForm, $boatForm, $amForm) `
     -DefaultOrder $entityOrder -CadOrder $entityOrder -FrOrder $entityOrder
 
 # =====================================================================

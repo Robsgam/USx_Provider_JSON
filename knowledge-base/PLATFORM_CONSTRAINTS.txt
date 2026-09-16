@@ -1384,16 +1384,80 @@ LIMITATION #46: A QUERYINPUTFORM WHOSE `targetEntity` IS NOT ONE OF THE FIVE KNO
   is indistinguishable from a correct build until a human looks at the page. That is LAW 1 (the
   form comes first) meeting the limit of static checking.
 
-  CONSEQUENCE FOR THE BUILD MODEL: a transaction that is not about one of the five subjects has no
-  entity of its own to live on. It must become a CARD on one of the five, or be registered as
-  devdoc-combo-unbuilt. `queryLabel` "Administrative Message" is listed in CLAUDE.md's queryLabel
-  table, which is consistent with this: a queryLabel names a QUERY CHECKBOX inside an entity's
-  card, never a card of its own.
+  SCOPE -- READ THIS BEFORE DRAWING A CONCLUSION FROM THE ABOVE. This limitation is about the
+  targetEntity **VALUE** being unrecognised. It is NOT a cap on the number of tabs, and the first
+  version of this entry wrongly implied that it was. **SEE CAPABILITY #47: MORE THAN FIVE TABS ARE
+  AVAILABLE TODAY** -- tabs are keyed by QUERYINPUTFORM, not by entity, so a transaction that is
+  not about one of the five subjects CAN have its own separate tab by reusing a known entity value.
+  Everything this entry originally concluded ("it must become a CARD on one of the five", "move
+  WantedPersonQuery onto its own entity is not available") was WRONG and has been deleted rather
+  than softened. Rob drove the correction twice: "there has to be a way to have more than 5" and
+  then "are you sure you are testing this correctly  i feel like 5 is arbitraty". He was right
+  both times.
 
-  ⚠️ ONE ALTERNATIVE NOT YET ELIMINATED, and it is cheap: a stale RMS client cache. A hard reload
-  of the form page settles it. Until that is done this entry is LIVE-OBSERVED, not LIVE-PROVEN.
-  If a reload DOES show the card, this limitation is wrong and must be deleted, not softened.
+  The stale-client-cache alternative is ELIMINATED: the probe imports rendered their control tabs
+  on the same page in the same session, so the client was reading fresh configuration.
 
-  ALSO REFUTED BY THE SAME MEASUREMENT: "move WantedPersonQuery onto its own entity" (Rob's
-  2026-09-16 request) is not available either. A sixth entity does not render, so WantedPerson can
-  only be reorganised WITHIN Person's cards.
+--------------------------------------------------------------------------------------------------
+CAPABILITY #47 (NOT a limitation): TABS ARE KEYED BY QUERYINPUTFORM, NOT BY ENTITY --
+  SO MORE THAN FIVE TABS ARE AVAILABLE TODAY, AND ANY TRANSACTION CAN HAVE ITS OWN.
+  STATUS: LIVE-PROVEN docs/evidence/ENTITY_PROBE_RESULT_2026-09-16.txt -- measured on usx-sc-sled (73046844870) via
+  `build_entity_probe.ps1 -DuplicateEntityTest` -> `ENTITY_PROBE_DUP.json`.
+
+  THE MEASUREMENT. Eight QUERYINPUTFORMs were declared: the five known entities, plus THREE MORE
+  that all target `Person` with distinct `name` and `label` values --
+      ENTITY_PersonAlpha   / label 'Person Alpha (dup-entity probe)'
+      ENTITY_PersonBravo   / label 'Person Bravo (dup-entity probe)'
+      ENTITY_PersonCharlie / label 'Person Charlie (dup-entity probe)'
+  `order.default` listed `Person` FOUR times, deliberately un-deduplicated.
+  RESULT, Rob reading the rendered page: **"8 tabs showing"**. All eight forms became tabs.
+
+  SO THE RENDER UNIT IS THE FORM. A QUERYINPUTFORM gets a tab; `targetEntity` says what KIND of
+  record that form searches for, not how many tabs exist. Reusing a known entity value across
+  several forms is legal and each form is its own tab.
+
+  WHY THIS WAS NOT FOUND EARLIER, and it is a pure blind spot rather than a hard problem:
+  21 of 21 providers ship EXACTLY ONE QIF PER ENTITY. Nobody had ever declared two, so the
+  repo had 21 identical data points and zero information about the alternative. Surveying our own
+  builds could not have found this (ENGINEERING_STANDARD 4.5 -- practice is not spec), and 66
+  DEPLOYED tenant configs could not either, because they are all built the same way.
+
+  ⚠️ IT DOES NOT CONTRADICT LIMITATION #46 -- the two answer different questions:
+      #46  an UNRECOGNISED targetEntity VALUE renders nothing. Eight candidate names were tested
+           in one import (Organization, Location, Incident, Property, Case, Address, Message,
+           AdministrativeMessage) and ALL EIGHT failed. That still holds.
+      #47  the NUMBER of tabs is not bounded by the entity set, because tabs are per-FORM.
+  Together: you may have as many tabs as you like; each one must declare an entity the platform
+  recognises.
+
+  ⚠️ TWO PRE-EXISTING LIMITATIONS GOVERN THIS AND BOTH WERE ALREADY IN THIS FILE. I wrote "the
+  field pool is not yet measured" here and that was WRONG -- it is measured and root-caused:
+    LIMITATION #26  the field pool IS SHARED across QIFs on the same entity
+    LIMITATION #28  therefore a SECOND QIF on an entity BREAKS codeTypeProvider reverse-lookup
+                    for that entity -- CONFIRMED on FL_FCIC v2.0/v2.3/v2.4, three tests, with a
+                    single-QIF control (v2.2) that worked on the same instance. Its stated design
+                    constraint: "To use codeTypeProvider reverse-lookup, each entity must have
+                    exactly ONE QIF."
+  So the repo ALREADY KNEW multi-QIF entities were possible -- #28 is a limitation ABOUT them --
+  and this capability is better described as REDISCOVERED than discovered. The lesson is mine: I
+  surveyed builds and deployed configs for evidence and did not grep the constraints file for the
+  mechanism, which is the check CLAUDE.md's Source Authority table exists to force.
+
+  CONSEQUENCE FOR PICKING THE HOST ENTITY -- this is the real design rule:
+    - a second QIF must go on an entity with NO codeTypeProvider control, or #28 breaks that
+      entity's reverse-lookup. SC_SLED v1.2's first attempt used Person and the VALIDATOR FAILED
+      IT, naming SexCodeDR -- all three of SC_SLED's codeTypeProvider controls are on Person.
+      It was rehosted on Article (no codeTypeProvider, smallest pool: 1 card / 2 fields / 1 combo).
+    - GIVE THE NEW TAB'S CONTROLS UNIQUE FIELD IDS. Because #26 makes the pool shared and
+      LIMITATION #1 makes the wire a union across every matching combination, unique ids are what
+      stop a fill on the host entity's tab from satisfying or over-sending into the new one.
+      SC_SLED v1.2 uses an AM suffix, the same device DriverHistory uses with DH.
+
+  ⚠️ ALSO UNMEASURED: whether `label` drives the tab CAPTION. Eight tabs appeared and the three
+  duplicates carried distinct labels, so they were distinguishable -- but which property the
+  caption comes from was not read back. Verify before relying on a specific caption.
+
+  CONSEQUENCE: a transaction that is not about one of the five subjects -- SC_SLED's
+  AdministrativeMessage is the live case -- can have its OWN TAB, which is what Rob asked for
+  ("i want it compeltely seperated"). It does not have to be a card bolted onto Vehicle, and
+  WantedPersonQuery CAN be moved off Person onto a tab of its own.

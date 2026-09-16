@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: SC_SLED
-  Source: SC_SLED_v1.1.json
-  Generated: 2026-09-16 14:48
+  Source: SC_SLED_v1.2.json
+  Generated: 2026-09-16 15:28
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -14,7 +14,7 @@ VALIDATOR RESULTS
 
 === PHASE 1: Bundle Structure ===
   [PASS] bundles array present (3 bundles)
-  [PASS] Bundle 'ENTITIES': 5 configurations
+  [PASS] Bundle 'ENTITIES': 6 configurations
   [PASS] Bundle 'SC_SLED': 12 configurations
   [PASS] Bundle 'RMS': 6 configurations
   [PASS] ENTITIES bundle is first
@@ -22,14 +22,15 @@ VALIDATOR RESULTS
   [PASS] ENTITIES order is nested object with 'default' key
 
 === PHASE 2: Entity QIFs ===
-  [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
+  [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat, Article
   [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
-  [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 16 fieldIds
+  [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 10 fieldIds
   [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
   [PASS] QIF 'ENTITY_Person' -> Person : 34 fieldIds
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 7 fieldIds
   [PASS] QIF 'ENTITY_Article' -> Article : 5 fieldIds
   [PASS] QIF 'ENTITY_Boat' -> Boat : 6 fieldIds
+  [PASS] QIF 'ENTITY_AdministrativeMessage' -> Article : 9 fieldIds
 
 === PHASE 3: QIDM Validation ===
   [PASS] QIDM 'SC_SLED_VehicleRegistrationQuery' -> Vehicle : 7 attrs, 2 combos
@@ -55,22 +56,21 @@ VALIDATOR RESULTS
   [PASS] QIDM 'SC_SLED_ArticleSingleQuery' -> Article : 2 attrs, 1 combos
   [PASS] QIDM 'SC_SLED_BoatQuery' -> Boat : 3 attrs, 2 combos
   [PASS] QIDM 'SC_SLED_BoatQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
-  [PASS] QIDM 'SC_SLED_AdministrativeMessage' -> Vehicle : 6 attrs, 1 combos
+  [PASS] QIDM 'SC_SLED_AdministrativeMessage' -> Article : 6 attrs, 1 combos
   [PASS] RMS Person QIDM 'RMS Person Search query' has registrationState attr
   [PASS] RMS Vehicle QIDM 'RMS Vehicle search query' has RegistrationState in combo any[]
 
 === PHASE 4: AutoSelect & Cross-Reference ===
-  [PASS] Article : 1 QIDMs, 1 QIF(s)
+  [PASS] Article : 2 QIDMs, 2 QIF(s)
   [PASS] Person: 3 QIDMs co-fire with autoSelect=true + queriesToDeselect on SINGLE QIF
          SC_SLED_DriverLicenseQuery (query=DriverLicenseQuery, deselect=)
          SC_SLED_DriverRegistrationQuery (query=DriverRegistrationQuery, deselect=DriverLicenseQuery)
          SC_SLED_WantedPersonQuery (query=WantedPersonQuery, deselect=)
   [PASS] Person : 3 QIDMs, 1 QIF(s)
-  [LIMITATION] Vehicle: 3 QIDMs have autoSelect=true on a SINGLE QIF without queriesToDeselect -- co-fire lacks toggle control
+  [LIMITATION] Vehicle: 2 QIDMs have autoSelect=true on a SINGLE QIF without queriesToDeselect -- co-fire lacks toggle control
          SC_SLED_VehicleRegistrationQuery (query=VehicleRegistrationQuery)
          SC_SLED_VehicleStolenQuery (query=VehicleStolenQuery)
-         SC_SLED_AdministrativeMessage (query=AdministrativeMessage)
-  [PASS] Vehicle : 3 QIDMs, 1 QIF(s)
+  [PASS] Vehicle : 2 QIDMs, 1 QIF(s)
   [PASS] Boat : 1 QIDMs, 1 QIF(s)
   [PASS] Firearm : 1 QIDMs, 1 QIF(s)
 
@@ -107,7 +107,7 @@ VALIDATOR RESULTS
   [PASS] QIDM 'SC_SLED_AdministrativeMessage' combo 'AM': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 78 PASS / 0 FAIL / 0 WARN / 1 LIMITATION
+  RESULTS: 79 PASS / 0 FAIL / 0 WARN / 1 LIMITATION
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
 
   1 known limitation(s) -- documented, no action needed.

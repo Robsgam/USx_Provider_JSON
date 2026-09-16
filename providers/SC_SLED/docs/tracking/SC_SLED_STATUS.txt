@@ -1,19 +1,19 @@
 ﻿================================================================
   STATUS: SC_SLED
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-  Version: v1.1
+  Version: v1.2
   Updated: 2026-09-16
 ================================================================
 
 CURRENT STATE
 =============
   Phase: 1 COMPLETE (QIDM confirmation) -- layout built in the same pass
-  JSON: SC_SLED_v1.1.json  --  78P/0F/0W/1LIM
-  Score: 78P/0F/0W/1LIM  (BASE 78P/0F/0W/1LIM)
-  Import: v1.0 IMPORTED to usx-sc-sled (73046844870) 2026-09-16 -- the FIRST automated import in the project, proven by the bundle table going 0 -> 3 (ENTITIES/SC_SLED/RMS). v1.1 NOT YET IMPORTED. NOTE: that tenant's Export JSON returns no config (CLICKED-BUT-NO-JSON), so no content hash or version string can be read from it -- the bundle NAMES are the evidence.
+  JSON: SC_SLED_v1.2.json  --  79P/0F/0W/1LIM
+  Score: 79P/0F/0W/1LIM  (BASE 79P/0F/0W/1LIM)
+  Import: v1.0 IMPORTED to usx-sc-sled (73046844870) 2026-09-16 -- the FIRST automated import in the project, proven by the bundle table going 0 -> 3 (ENTITIES/SC_SLED/RMS). v1.1 was never imported; v1.2 NOT YET IMPORTED. NOTE: that tenant's Export JSON returns no config (CLICKED-BUT-NO-JSON), so no content hash or version string can be read from it -- the bundle NAMES are the evidence.
   USx tenant test: NOT STARTED (0 of 5 entities)
 
-  9 QIDMs / 18 combinations / 5 QIFs (v1.1 -- was 6; the AdministrativeMessage entity does not render, LIMITATION #46, and its card now sits on Vehicle).
+  9 QIDMs / 18 combinations / 6 QIFs = SIX TABS (v1.2). AdministrativeMessage has its OWN TAB, declaring targetEntity='Article' -- tabs are keyed by QUERYINPUTFORM, not by entity (CAPABILITY #47). Article, not Person, because LIMITATION #28 breaks codeTypeProvider reverse-lookup on a second QIF and all three such controls are on Person.
   First ground-up provider since the toolchain changed; first build authored with
   the Build-Qidm / Build-QidmAttribute / Build-QidmCombo helpers.
 

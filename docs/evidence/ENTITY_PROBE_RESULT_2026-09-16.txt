@@ -1,0 +1,91 @@
+==================================================================================================
+  ENTITY / TAB PROBE -- RESULT RECORD
+  usx-sc-sled  (deptId 73046844870)      2026-09-16
+==================================================================================================
+
+WHAT WAS BEING SETTLED
+  Whether a Universal Search form can have more than the five familiar tabs, and if so how.
+  It started as SC_SLED's AdministrativeMessage not appearing after the first automated import
+  (Rob: "i did not see a admin card  doublecheck your work"), and it took THREE rounds because the
+  first two were badly designed. Recording all three, because the design errors are the lesson.
+
+  Rob's two challenges are what forced each redesign:
+    "there has to be a way to have more than 5  this is just a card on the veh page.
+     i want it compeltely seperated"
+    "are you sure you are testing this correctly  i feel like 5 is arbitraty"
+  He was right both times.
+
+--------------------------------------------------------------------------------------------------
+ROUND 0 -- SC_SLED v1.0, the accidental experiment
+  BUILT: a sixth QUERYINPUTFORM, targetEntity='AdministrativeMessage', ordered LAST in all three
+         order arrays.
+  VERIFIED CORRECT AFTER THE FACT: ENTITIES was bundle [0]; the QIF existed with 1 card / 6
+         fields; all three order arrays named it; the tenant provably received that exact payload
+         (read-back byte-exact 1,139,262 bytes; bundle table 0 -> 3).
+  RESULT: the five real tabs rendered, in order. The sixth did NOT appear.
+  READ: an unrecognised targetEntity value renders nothing, silently. Blast radius zero.
+
+--------------------------------------------------------------------------------------------------
+ROUND 1 -- ENTITY_PROBE.json -- 13 forms, 8 candidate ENTITY NAMES
+  BUILT: five known entities as controls + 8 candidates, each its own QUERYINPUTFORM with a
+         uniquely-labelled control and a minimal QIDM; all 13 in all three order arrays.
+  CANDIDATES: Organization, Location, Incident, Property, Case, Address, Message,
+              AdministrativeMessage (the last as a NEGATIVE control -- it had to stay absent).
+  RESULT (Rob): "1-5 only appear".  All eight rejected, including Organization.
+
+  !! THIS ROUND WAS OVER-READ AT FIRST and the overclaim was reverted before it was committed.
+  I began writing "the entity set is closed at five". It does not support that, for two reasons
+  Rob's challenge exposed:
+    1. THE FIVE CONTROLS DO NOT CONTROL FOR THE HYPOTHESIS. They render because the platform
+       already knows them. They prove the import was processed -- nothing about whether a
+       correctly-configured NEW entity would fail.
+    2. EIGHT GUESSED NAMES, EACH UNDER-CONFIGURED. Each candidate got a QIF + a minimal QIDM.
+       Real entities also carry RMS-side QIDMs (only Vehicle and Person have those) and a results
+       layout. If a tab needs more than that, every candidate fails REGARDLESS OF NAME.
+  WHAT ROUND 1 ACTUALLY PROVES, narrowly: those 8 names, configured that way, do not render.
+
+--------------------------------------------------------------------------------------------------
+ROUND 2 -- ENTITY_PROBE_DUP.json -- THE TEST THAT ANSWERED IT
+  DESIGN: remove the guessing entirely. Every entity value used is one the platform demonstrably
+          accepts, so a failure cannot be blamed on an unknown name.
+  BUILT: 8 QUERYINPUTFORMs --
+            ENTITY_Person / Vehicle / Firearm / Article / Boat     (the five, controls)
+            ENTITY_PersonAlpha    targetEntity=Person  label='Person Alpha (dup-entity probe)'
+            ENTITY_PersonBravo    targetEntity=Person  label='Person Bravo (dup-entity probe)'
+            ENTITY_PersonCharlie  targetEntity=Person  label='Person Charlie (dup-entity probe)'
+         order.default listed Person FOUR TIMES, deliberately un-deduplicated -- collapsing it
+         would have been pre-deciding the answer.
+         Validator: 42 PASS / 0 FAIL / 4 WARN (the WARNs are the deliberately minimal forms).
+
+  RESULT (Rob, reading the rendered page):  ****  "8 tabs showing"  ****
+
+  CONCLUSION -- TABS ARE KEYED BY QUERYINPUTFORM, NOT BY ENTITY.
+  All eight forms became tabs. `targetEntity` declares what KIND of record a form searches for;
+  it does not bound how many tabs exist. Recorded as CAPABILITY #47.
+
+--------------------------------------------------------------------------------------------------
+WHY NOBODY FOUND THIS EARLIER
+  21 of 21 providers ship EXACTLY ONE QIF PER ENTITY -- measured. Nobody had ever declared two, so
+  the repo held 21 identical data points and ZERO information about the alternative. Neither
+  surveying our own builds nor surveying all 66 deployed tenant configurations could have found
+  it, because every one of them is built the same way. That is the shape of a blind spot rather
+  than a hard problem, and it is exactly why "18 of 20 providers do X" is not evidence about X.
+
+--------------------------------------------------------------------------------------------------
+STILL UNMEASURED -- DO NOT ASSUME EITHER WAY
+  1. THE FIELD POOL. Do two forms sharing targetEntity='Person' share one field pool for
+     combination matching? It matters because LIMITATION #1 makes the wire a UNION across every
+     matching combination: a shared pool means a fill on one tab could satisfy a combination
+     belonging to another, or over-send. DISCRIMINATING TEST: fill a field on tab A only and read
+     whether a query whose combination lives on tab B fires or picks the value up.
+     UNTIL ANSWERED: isolate by construction -- give a new tab's controls field ids that appear
+     nowhere else (the DH-suffix pattern already used for DriverHistory).
+  2. THE TAB CAPTION. Eight tabs appeared and the three duplicates carried distinct labels, so
+     they were distinguishable, but which property the caption is read from was not captured.
+
+ARTIFACTS
+  providers\ENTITY_PROBE.json          round 1, 13 forms / 8 candidate names
+  providers\ENTITY_PROBE_DUP.json      round 2, 8 forms / 3 duplicate-Person forms
+  tools\build_entity_probe.ps1         builds both (-DuplicateEntityTest selects round 2)
+  tools\_probes\probe_entity_universe.ps1   the 66-deployed-config survey
+  docs\evidence\usx_deploy_73046844870_*_CLICKED.json   the round-0 import that started it

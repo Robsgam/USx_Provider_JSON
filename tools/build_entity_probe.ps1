@@ -58,7 +58,38 @@ param(
         'AdministrativeMessage'   # the one already REFUTED at SC_SLED v1.0 -- kept as a NEGATIVE
                                   # control: it must stay absent, or the v1.0 finding was wrong
     ),
-    [string]$OutPath
+    [string]$OutPath,
+
+    # ROUND 2 -- THE BETTER-DESIGNED TEST. Rob, after round 1 returned "1-5 only appear":
+    # "are you sure you are testing this correctly  i feel like 5 is arbitraty".
+    #
+    # He was right, and round 1 had TWO holes I did not control for:
+    #   1. THE FIVE CONTROLS DO NOT CONTROL FOR THE HYPOTHESIS. They render because the platform
+    #      ALREADY KNOWS them. That proves the import was processed; it says nothing about whether
+    #      a correctly-configured NEW entity would fail.
+    #   2. ROUND 1 GUESSED EIGHT NAMES and gave each only a QIF + a minimal QIDM. Real entities
+    #      also carry RMS-side QIDMs (only Vehicle and Person have those) and a results layout.
+    #      If a tab needs more than that, EVERY candidate fails REGARDLESS OF NAME -- and reading
+    #      that as "the set is closed" is the too-narrow-detector trap (usx-tooling 8a).
+    # So round 1 proved something much narrower than I claimed: those 8 names, configured that
+    # way, do not render.
+    #
+    # -DuplicateEntityTest removes the guessing ENTIRELY. It declares the five known entities and
+    # then THREE EXTRA QUERYINPUTFORMs that ALSO target `Person`, each with a distinct name and
+    # label. Every value involved is one the platform demonstrably accepts, so a failure cannot be
+    # blamed on an unknown name:
+    #   HYPOTHESIS A -- tabs are keyed by ENTITY  -> ONE Person tab (extra forms merge or are
+    #                                                dropped), and the tab count really is bounded
+    #                                                by the entity set
+    #   HYPOTHESIS B -- tabs are keyed by QIF     -> FOUR Person-ish tabs, and "more than 5 tabs"
+    #                                                is available TODAY using known entity values
+    # B is what Rob wants: a completely separate tab for the administrative message without
+    # needing a new entity at all.
+    # CLAUDE.md hints at B but does not settle it -- "QUERYINPUTFORM belongs ONLY in the ENTITIES
+    # bundle. Adding it to any other bundle causes duplicate entity form CARDS." That is about a
+    # form in the WRONG bundle producing cards; two forms in the RIGHT bundle targeting one entity
+    # has never been tried.
+    [switch]$DuplicateEntityTest
 )
 
 $ErrorActionPreference = 'Stop'
@@ -83,9 +114,11 @@ Write-Host '====================================================================
 
 # One form per entity. A single text control, LABELLED WITH THE ENTITY NAME so the rendered page
 # is self-describing: whatever tab appears, its field says which candidate produced it.
-function New-ProbeForm([string]$entity, [bool]$isControl) {
-    $tag = ($entity -replace '[^A-Za-z0-9]', '')
-    $role = if ($isControl) { 'CONTROL -- this tab MUST appear' } else { 'CANDIDATE -- does this tab appear?' }
+function New-ProbeForm([string]$entity, [bool]$isControl, [string]$suffix) {
+    $tag = ($entity -replace '[^A-Za-z0-9]', '') + $suffix
+    $role = if ($isControl) { 'CONTROL -- this tab MUST appear' }
+            elseif ($suffix) { "DUPLICATE-ENTITY CANDIDATE $suffix -- a SECOND form on Person; does it get its OWN tab?" }
+            else { 'CANDIDATE -- does this tab appear?' }
     $layout = MakeLayouts @(
         @{
             id    = ('CARD_' + $tag)
@@ -99,7 +132,9 @@ function New-ProbeForm([string]$entity, [bool]$isControl) {
     )
     return [PSCustomObject]@{
         description  = "Entity probe -- targetEntity='$entity'. $role"
-        label        = $entity
+        # A DISTINCT label on each duplicate: if tabs are keyed by QIF rather than by entity, the
+        # caption is the thing that would tell them apart on screen.
+        label        = $(if ($suffix) { "Person $suffix (dup-entity probe)" } else { $entity })
         layout       = $layout
         name         = ('ENTITY_' + $tag)
         type         = 'QUERYINPUTFORM'
@@ -109,8 +144,8 @@ function New-ProbeForm([string]$entity, [bool]$isControl) {
 
 # A minimal QIDM per entity so each form is a structurally complete configuration rather than an
 # orphan -- an unwired form is a second variable, and this probe tests exactly one thing.
-function New-ProbeQidm([string]$entity) {
-    $tag = ($entity -replace '[^A-Za-z0-9]', '')
+function New-ProbeQidm([string]$entity, [string]$suffix) {
+    $tag = ($entity -replace '[^A-Za-z0-9]', '') + $suffix
     $attrs = @(Build-QidmAttribute -Name ($tag + 'ProbeField') -Size 30 -SourceField @($tag + 'ProbeField'))
     $combos = @(Build-QidmCombo -KeyReference ('PROBE' + $tag) -PrimaryFieldReference ($tag + 'ProbeField') -Set @($tag + 'ProbeField'))
     return Build-Qidm -ProviderName $providerName -Query ($tag + 'ProbeQuery') `
@@ -120,20 +155,34 @@ function New-ProbeQidm([string]$entity) {
 }
 
 $all = @()
-foreach ($e in $KNOWN5)     { $all += [pscustomobject]@{ Entity = $e; Control = $true } }
-foreach ($e in $Candidates) {
-    if ($KNOWN5 -contains $e) { Write-Host ("  [skip] '$e' is one of the five -- already a control") -ForegroundColor DarkGray; continue }
-    $all += [pscustomobject]@{ Entity = $e; Control = $false }
+foreach ($e in $KNOWN5) { $all += [pscustomobject]@{ Entity = $e; Control = $true; Suffix = '' } }
+
+if ($DuplicateEntityTest) {
+    # THREE extra forms, all targeting `Person` -- a value the platform demonstrably accepts, so a
+    # failure here cannot be blamed on an unknown name. Distinct `name` and `label` on each.
+    foreach ($s in @('Alpha','Bravo','Charlie')) {
+        $all += [pscustomobject]@{ Entity = 'Person'; Control = $false; Suffix = $s }
+    }
+} else {
+    foreach ($e in $Candidates) {
+        if ($KNOWN5 -contains $e) { Write-Host ("  [skip] '$e' is one of the five -- already a control") -ForegroundColor DarkGray; continue }
+        $all += [pscustomobject]@{ Entity = $e; Control = $false; Suffix = '' }
+    }
 }
 
 $forms = @(); $qidms = @()
 foreach ($row in $all) {
-    $forms += New-ProbeForm $row.Entity $row.Control
-    $qidms += New-ProbeQidm $row.Entity
+    $forms += New-ProbeForm $row.Entity $row.Control $row.Suffix
+    $qidms += New-ProbeQidm $row.Entity $row.Suffix
 }
 
 # CONTROLS FIRST in every order array -- preserves the zero-blast-radius property measured at
 # SC_SLED v1.0, where the five rendered correctly despite a sixth unknown member being present.
+# In -DuplicateEntityTest this deliberately lists `Person` FOUR TIMES. The order array names
+# ENTITIES, so if the platform de-duplicates it we learn that too -- and if tabs turn out to be
+# keyed by QIF rather than by this array, the duplicates are harmless either way. Listing each
+# form's entity once per form is the honest attempt; silently de-duplicating it here would be me
+# pre-deciding the answer.
 $order = @($all | ForEach-Object { $_.Entity })
 
 $entitiesBundle = Build-EntitiesBundle -Configurations $forms `

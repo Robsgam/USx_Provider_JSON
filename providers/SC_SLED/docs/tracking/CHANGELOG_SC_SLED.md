@@ -2,9 +2,14 @@
 
 Auto-generated from `SC_SLED_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.1** | Generated: 2026-09-16
+Current: **v1.2** | Generated: 2026-09-16
 
 ---
+
+## v1.2 -- 2026-09-16 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v1.1 -- 2026-09-16 -- AdministrativeMessage rehosted onto Vehicle -- the sixth entity does not render
 
