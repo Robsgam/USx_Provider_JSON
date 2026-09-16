@@ -300,6 +300,24 @@ if ($DeptId -and -not $All -and -not $Provider) {
 if ($targets.Count -eq 0) {
     Say '  [FAIL] the job would be EMPTY -- nothing matched, or everything matched is already current.'
     foreach ($s in ($skipped | Select-Object -First 12)) { Say ('     skipped: {0}' -f $s) }
+    # !! NAME THE ONE CAUSE THE MESSAGE ABOVE ACTIVELY MISDESCRIBES.
+    # The empty-tenant path is deliberately gated on `-DeptId AND NOT -All AND NOT -Provider`
+    # (sweeping configless tenants into a batch is how a first-ever deploy happens by accident).
+    # So `-DeptId <id> -Provider <NAME>` for a tenant with no config on disk DISABLES that branch
+    # and lands here -- and "nothing matched, or everything matched is already current" is then
+    # false in both halves: something matched, and it is not current. Cost 2026-09-16: a cut of the
+    # SC_SLED v1.7 job read as "already current" on a tenant three versions behind. The guard is
+    # right; only the diagnosis was missing. ENGINEERING_STANDARD 4.3 is about telling "found
+    # nothing" from "never looked" -- this is the third case, "was not allowed to look".
+    if ($wanted.Count -gt 0 -and ($Provider -or $All)) {
+        $noCfg = @($wanted | Where-Object { $id2 = $_
+            @($files | Where-Object { ($_.BaseName -replace '^.*_(\d+)$', '$1') -eq $id2 }).Count -eq 0 })
+        if ($noCfg.Count -gt 0) {
+            Say ('         CAUSE: {0} has no config on disk, and the configless-tenant path is DISABLED by -Provider/-All' -f ($noCfg -join ', '))
+            Say '         Re-run with -DeptId ALONE. The provider then comes from the record (Resolve-TenantIntent),'
+            Say '         which is the same authority serve_plans /target uses -- so the job and /target cannot disagree.'
+        }
+    }
     Say '         "nothing to do" and "the tool found nothing" must not look the same, so this FAILs.'
     exit 1
 }
