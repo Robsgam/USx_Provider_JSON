@@ -134,7 +134,16 @@ foreach ($f in $files) {
     $sig  = if ($ours) { $null } else { Get-DevSignal $sub $st }
 
     $rows += [pscustomobject]@{
-        Sub = $sub; Dept = $dept; Status = ($st -replace '^(Live|Test|Training|Deactivated)', ''); Provider = $pn
+        # The roster now stores the CANONICAL platform enum, so no de-mangling here.
+        # ⚠️ This read `-replace '^(Live|Test|Training|Deactivated)', ''` until 2026-09-16, to strip
+        # the visible LABEL the scraper glued in front of the enum (`TESTTEST` -> `TEST`). That was
+        # wrong twice over: it only covered 4 of the 10 statuses (`MIGRATEDMIGRATED` and
+        # `DEPARTMENT_CURRENTLY_BEING_SETUP`-doubled sailed through), and now that
+        # `ingest_tenant_roster.ps1` canonicalises on the way in it would BLANK the status outright
+        # -- PowerShell's `-replace` is case-insensitive, so `TEST` -> ``, and the LIVE highlighting
+        # downstream keys off `Status -match 'LIVE'`, i.e. LIVE tenants would silently stop being
+        # flagged. Normalisation belongs to the one tool that WRITES the roster, not to each reader.
+        Sub = $sub; Dept = $dept; Status = $st; Provider = $pn
         Ours = $ours; Version = $(if ($lbl) { $lbl.Version } else { $null })
         RepoVer = $(if ($repoVer.ContainsKey($pn)) { $repoVer[$pn] } else { $null })
         Current = $isCurrent; DevSignal = $sig
@@ -167,7 +176,7 @@ if (Test-Path $rosterPathG) {
         if ($haveSubs.ContainsKey("$($rt.deptId)")) { continue }
         $rows += [pscustomobject]@{
             Sub = "$($rt.subdomain)"; Dept = "$($rt.deptId)"
-            Status = ("$($rt.status)" -replace '^(Live|Test|Training|Deactivated)', '')
+            Status = "$($rt.status)"                      # canonical enum, see the note above
             Provider = '(nothing installed)'
             Ours = $false; Version = $null; RepoVer = $null
             Current = $false; DevSignal = $null

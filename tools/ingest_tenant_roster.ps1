@@ -53,6 +53,67 @@ $rosterPath = Join-Path $PSScriptRoot 'config\tenant_roster.json'
 $lines = @()
 function Say([string]$s) { $script:lines += $s; if (-not $Quiet) { Write-Host $s } }
 
+# `Set-Content -Encoding ASCII` replaces EVERY non-ASCII character with a literal `?`, silently.
+# This report enumerates subdomains and statuses scraped off a live page, so it is exactly the kind
+# of file that can carry one -- and on 2026-09-15 that same call destroyed 168 lines of ui.js while
+# every gate stayed green, because `?` is valid in the target language. UTF-8 without BOM: 5.1's
+# `-Encoding utf8` ADDS a BOM, 7's does not, so the encoding must not depend on the engine.
+function Write-Report([string]$p) {
+    if (-not $p) { return }
+    [System.IO.File]::WriteAllText($p, (($script:lines -join "`r`n") + "`r`n"), (New-Object System.Text.UTF8Encoding($false)))
+}
+
+# ---- CANONICAL STATUS ---------------------------------------------------------------------------
+# THE STATUS CELL IS TWO VALUES CONCATENATED AND ONLY ONE OF THEM IS STABLE.
+# The departments table renders each status as a VISIBLE LABEL immediately followed by the MACHINE
+# ENUM, and `textContent` (what the scraper reads) returns both run together:
+#
+#     Pre-Prod CutoverPRE_PROD_CUTOVER      Being Set UpDEPARTMENT_CURRENTLY_BEING_SETUP
+#     Setup FailureDEPARTMENT_SETUP_FAILURE ParallelPARALLEL_PROCESSING
+#     TESTTEST                              LIVELIVE                    MIGRATEDMIGRATED
+#
+# The bottom row looks like a doubling bug and is the SAME shape: for those statuses the label IS
+# the enum, so label+enum reads as the word twice.
+#
+# !! THE LABEL IS RENDER-TIMING DEPENDENT, AND THAT IS THE ACTUAL DEFECT. Two captures of the SAME
+# platform on 2026-09-15 disagree: at 14:43 the friendly labels had resolved (`Pre-Prod Cutover`),
+# at 22:36 they had not and fell back to the raw enum (`PRE_PROD_CUTOVER`). Diffing the raw strings
+# reported **74 STATUS CHANGES on a platform where nothing had changed** -- exactly the tenants
+# whose friendly label differs from its enum (43 BEING_SETUP + 22 SETUP_FAILURE + 9 PRE_PROD_CUTOVER
+# + 2 PARALLEL_PROCESSING, less the 2 rows absent from the older capture). MEASURED, not estimated:
+# the other six statuses produced zero false changes because their label equals their enum.
+#
+# So: KEEP THE ENUM, DISCARD THE LABEL. The enum is the trailing [A-Z][A-Z0-9_]* run; when that run
+# is an exact doubling (label == enum) it is halved. Both render states converge on ONE value, which
+# is the whole point -- a diff that flips on a render race is not a diff.
+#
+# The label is deliberately NOT stored. It is the prettier string, and storing a value that
+# flickers between captures is what created this defect; a display name belongs in a display map.
+$knownStatuses = @(
+    'LIVE', 'TEST', 'TRAINING', 'DEACTIVATED', 'MIGRATED', 'RESETTING',
+    'DEPARTMENT_CURRENTLY_BEING_SETUP', 'DEPARTMENT_SETUP_FAILURE',
+    'PRE_PROD_CUTOVER', 'PARALLEL_PROCESSING'
+)
+
+function Get-CanonicalTenantStatus([string]$raw) {
+    $s = "$raw".Trim()
+    # The index prints an em-dash for an empty cell. Storing that glyph means every consumer has to
+    # know it means "blank", and a BOM-less read under 5.1 mangles it.
+    if ($s -eq '' -or $s -eq [string][char]0x2014 -or $s -eq '-') { return '' }
+    $enum = $s
+    # -cmatch, NOT -match. PowerShell's `-match` is CASE-INSENSITIVE, so `[A-Z]` happily matches
+    # lower case and the trailing-caps run swallowed the label too: `TestTEST` resolved to
+    # `TestTEST` and the fix reported 1,788 status changes instead of 0 on its first run.
+    if ($s -cmatch '([A-Z][A-Z0-9_]*)$') { $enum = $Matches[1] }
+    if ($enum.Length -gt 1 -and $enum.Length % 2 -eq 0) {
+        $half = $enum.Length / 2
+        # -ceq: case-SENSITIVE. Both halves are upper-case here, and a case-insensitive compare
+        # would halve a legitimately mixed-case value.
+        if ($enum.Substring(0, $half) -ceq $enum.Substring($half)) { $enum = $enum.Substring(0, $half) }
+    }
+    return $enum
+}
+
 Say ''
 Say '===================================================================================='
 Say '  TENANT ROSTER DIFF -- what changed on the platform since the last baseline'
@@ -68,7 +129,7 @@ if (-not $src -or -not (Test-Path $src)) {
     Say '  [FAIL] no usx_admin_departments_*.json found.'
     Say '         0 rows examined -- this run says NOTHING about the platform.'
     Say '         Run extension button "2. List all tenants + department ids" first (ONE page load).'
-    if ($OutFile) { $lines | Set-Content $OutFile -Encoding ASCII }
+    Write-Report $OutFile
     exit 1
 }
 
@@ -79,7 +140,7 @@ Say ("  captured   : {0}   host: {1}" -f $idx.capturedAt, $idx.host)
 Say ("  rows       : {0}" -f $rows.Count)
 if ($rows.Count -eq 0) {
     Say '  [FAIL] the index parsed but carries 0 departments -- refusing to diff against nothing.'
-    if ($OutFile) { $lines | Set-Content $OutFile -Encoding ASCII }
+    Write-Report $OutFile
     exit 1
 }
 
@@ -91,11 +152,27 @@ foreach ($r in $rows) {
     # has to know it means "blank", and a BOM-less read under 5.1 mangles it. Normalize here.
     $blankish = { param($v) $t = "$v".Trim(); if ($t -eq '' -or $t -eq [char]0x2014 -or $t -eq '-') { '' } else { $t } }
     $now[$id] = [ordered]@{
-        deptId = $id; subdomain = (& $blankish $r.subdomain); status = (& $blankish $r.status)
+        deptId = $id; subdomain = (& $blankish $r.subdomain)
+        status = (Get-CanonicalTenantStatus $r.status)
         analyticsAlias = (& $blankish $r.analyticsAlias); cadSubdomain = (& $blankish $r.cadSubdomain)
     }
 }
 Say ("  distinct deptIds: {0}" -f $now.Count)
+
+# THE STATUS CENSUS IS PRINTED EVERY RUN, and an unrecognised value is NAMED rather than coerced.
+# `Get-CanonicalTenantStatus` keeps a trailing all-caps run it does not recognise, so a NEW platform
+# status arrives intact and visible instead of being silently mangled into something plausible.
+# ENGINEERING_STANDARD 4.3: "found nothing" and "never looked" must not print the same line.
+$stCensus = @{}
+foreach ($id in $now.Keys) { $k = $now[$id].status; if (-not $k) { $k = '(blank)' }; $stCensus[$k] = 1 + [int]$stCensus[$k] }
+Say ('  statuses   : {0} distinct -- {1}' -f $stCensus.Count,
+     ((@($stCensus.Keys | Sort-Object { -$stCensus[$_] } | ForEach-Object { '{0} {1}' -f $_, $stCensus[$_] })) -join ' | '))
+$unknownSt = @($stCensus.Keys | Where-Object { $_ -ne '(blank)' -and $knownStatuses -notcontains $_ })
+if ($unknownSt.Count -gt 0) {
+    Say ('  [NOTE] {0} status value(s) NOT in this tool''s known set: {1}' -f $unknownSt.Count, ($unknownSt -join ', '))
+    Say '         Not an error -- the platform may have added a status. Kept verbatim, never coerced.'
+    Say '         If it looks like a label glued to an enum, add it to $knownStatuses and re-read the cell.'
+}
 
 # ---------------------------------------------------------------- the baseline
 $bootstrap = -not (Test-Path $rosterPath)
@@ -114,7 +191,7 @@ if ($bootstrap) {
     Say '  real. No findings are reported on a bootstrap run, by design.'
     if (-not $Update) {
         Say '  Re-run with -Update to write the first baseline.'
-        if ($OutFile) { $lines | Set-Content $OutFile -Encoding ASCII }
+        Write-Report $OutFile
         exit 0
     }
 }
@@ -128,8 +205,13 @@ if (-not $bootstrap) {
         if ("$($b.subdomain)" -ne $now[$id].subdomain) {
             $renamed += [pscustomobject]@{ deptId = $id; From = "$($b.subdomain)"; To = $now[$id].subdomain }
         }
-        if ("$($b.status)" -ne $now[$id].status) {
-            $statusChanged += [pscustomobject]@{ deptId = $id; Sub = $now[$id].subdomain; From = "$($b.status)"; To = $now[$id].status }
+        # !! NORMALIZE BOTH SIDES. The baseline on disk may predate the canonical-status fix, and
+        # comparing a canonical value against a stored raw one would report a STATUS CHANGE for
+        # every tenant on the platform -- 1,790 of them -- the instant the fix landed. That would be
+        # the same class of false alarm this tool already refuses for bootstraps and renames.
+        $bStatus = Get-CanonicalTenantStatus "$($b.status)"
+        if ($bStatus -ne $now[$id].status) {
+            $statusChanged += [pscustomobject]@{ deptId = $id; Sub = $now[$id].subdomain; From = $bStatus; To = $now[$id].status }
         }
     }
     foreach ($id in $base.Keys) { if (-not $now.ContainsKey($id)) { $gone += $base[$id] } }
@@ -186,7 +268,9 @@ if ($statusChanged.Count -gt 0) {
 if ($gone.Count -gt 0) {
     Say ''
     Say '  ---- NO LONGER LISTED -----------------------------------------------------------'
-    foreach ($g in ($gone | Sort-Object { $_.subdomain })) { Say ('  {0,-16} {1,-34} was {2}' -f $g.deptId, $g.subdomain, $g.status) }
+    # Baseline-side values, so canonicalise for display too -- an un-migrated roster would otherwise
+    # print `was TESTTEST` here while every other line in the report reads `TEST`.
+    foreach ($g in ($gone | Sort-Object { $_.subdomain })) { Say ('  {0,-16} {1,-34} was {2}' -f $g.deptId, $g.subdomain, (Get-CanonicalTenantStatus "$($g.status)")) }
 }
 
 # ---------------------------------------------------------------- write
@@ -210,7 +294,8 @@ if ($Update) {
             'METADATA ONLY -- never any configuration content.',
             'deptId is the join key. A subdomain change on an existing deptId is a RENAME, not a new tenant.',
             'A bootstrap run reports NO findings: with no baseline every tenant reads as new.',
-            'A read-only run does not move this baseline; -Update does.'
+            'A read-only run does not move this baseline; -Update does.',
+            'status is the CANONICAL PLATFORM ENUM (TEST / LIVE / PRE_PROD_CUTOVER / ...). The page renders a visible LABEL glued to the enum and the label is render-timing dependent, so the label is discarded: keeping it reported 74 status changes on a platform where nothing changed.'
         )
         capturedAt = "$($idx.capturedAt)"
         host       = "$($idx.host)"
@@ -233,5 +318,5 @@ if ($Update) {
 
 Say '===================================================================================='
 Say ''
-if ($OutFile) { $lines | Set-Content -Path $OutFile -Encoding ASCII }
+Write-Report $OutFile
 exit 0
