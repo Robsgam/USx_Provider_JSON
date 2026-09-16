@@ -1,45 +1,36 @@
-# TEST_VALUE_OVERRIDES.txt -- fieldId=value  OR  <Entity>.fieldId=value (entity-scoped wins)
+# TEST_VALUE_OVERRIDES -- SC_SLED
 #
-# SC_SLED, created 2026-09-14. WHY THIS FILE EXISTS HERE: emit_test_plan reported 15 fields with
-# "no test value (unmapped in Get-TestValue)", and THREE OF THEM ARE MANDATORY set[] FIELDS --
-# QWA.OCA/OriginatingAgencyCaseNumber, QWA.P/LicensePlateStateCode and AM/FreeText. A mandatory
-# field with no test value is not cosmetic: the driver fills nothing, the tenant correctly keeps
-# Send DISABLED, and the test never transmits. That is the OH_LEADS defect test_phase2 step [2]
-# FILLABILITY was rewritten to catch (50 tests / 2 BLANK / 7 UNSATISFIED, reported as
-# "PRE-FLIGHT CLEAR" by the check that only grepped two marker strings).
+# Synthetic fill values for fields the shared resolver has no default for. Format: fieldId=value,
+# '#' comments, read by tools\_combo_value_resolver.ps1 (Get-ComboValueOverrides) for both
+# emit_test_plan.ps1 and generate_test_matrix.ps1.
 #
-# EVERY VALUE BELOW IS WITHIN ITS METADATA maxLen -- read from SC_SLED_METADATA_REFERENCE.txt, not
-# guessed. Exceeding maxLen is its own defect class (the CA_SAN_LUIS_OBISPO OLN 20-vs-17 case).
-
-# --- Person / DriverRegistrationQuery -------------------------------------------------------
-# DR-suffixed State. SC is the home state; the DR card has no separate in/out keyRef split, so a
-# home-state value does not change which combination fires.
-Person.RegistrationStateDR=SC
-
-# --- Person / WantedPersonQuery -------------------------------------------------------------
-# OCA = the originating agency's own case number (maxLen 20). MANDATORY on QWA.OCA.
-Person.OriginatingAgencyCaseNumber=SC2026-000147
-# The plate's state, distinct from RegistrationState (maxLen 2). MANDATORY on QWA.P.
-Person.LicensePlateStateCode=SC
-# FBI number, maxLen 9. Optional on QWA.N.
-Person.FBINumber=123456AB7
-# Miscellaneous number, maxLen 15. Optional on QWA.N.
-Person.MiscellaneousNumber=MISC2026000147
-# Expanded-name-search indicator, ALPHABETIC maxLen 1. 'Y' broadens the name match; using Y rather
-# than N on purpose so the flag is OBSERVABLE on the wire -- an N here would be indistinguishable
-# from the field being dropped, which is audit_log_inflation's "competing fields prove nothing".
-Person.ExpandedNameSearchCode=Y
-
-# --- AdministrativeMessage ------------------------------------------------------------------
-# ⚠️ AdministrativeMessage is the ONE non-search transaction here and is STATUS: HYPOTHESIS --
-# the first import must confirm the 5 real entities still render alongside it. These values let
-# the plan be FILLABLE; they do not make the card proven.
-# FreeText is MANDATORY, maxLen 501. Deliberately self-identifying so a message that actually
-# reaches SLED is obviously a test and not an operational broadcast.
-AdministrativeMessage.FreeText=USX AUTOMATED CONFIGURATION TEST - NO ACTION REQUIRED - DISREGARD
-# Destination ORIs, maxLen 9 each. SC ORIs are 9 characters (SC + 7).
-AdministrativeMessage.DestinationCode=SC0320000
-AdministrativeMessage.DestinationCode2=SC0320100
-AdministrativeMessage.DestinationCode3=SC0320200
-AdministrativeMessage.DestinationCode4=SC0320300
-AdministrativeMessage.DestinationCode5=SC0320400
+# WHY THIS FILE EXISTS. Rob 2026-09-16: "make sure we have all the combos represented in the test
+# skill." Measured answer at v1.5: 15 of 18 built combinations had a plan test and THREE did not.
+# One cause was here -- a mandatory field with NO test value produces NO test at all, so the
+# combination silently disappears from the plan and `audit_test_coverage` reports it as 0 logs
+# forever. The provider can then never reach ALL-PASS, and nothing in the plan says why.
+# emit_test_plan DOES print the reason by name ("'OriginatingAgencyCaseNumber' has no test value
+# (unmapped in Get-TestValue)") -- it was simply an orphaned finding nobody consumed, the same
+# shape CLAUDE.md records for the PHASE 2 fillability check.
+#
+# ⚠️ THE FIX IS TEST DATA, NOT A BUILD CHANGE. Do not "fix" an unmapped field by editing the JSON.
+#
+# --- QWA.OCA : WantedPerson by name + originating agency case number ---------------------------
+# Without this the fill degraded to Name only, matched QWA.N instead (which is legal -- QWA.N is
+# set[NameLast,NameFirst]), and emit_test_plan dropped QWA.OCA as "its fill fires QWA.N instead".
+# That reason was TRUE of the incomplete fill and FALSE of the combination: QWA.OCA is ordered
+# BEFORE QWA.N and is strictly more specific, so a complete fill reaches it.
+# Devdoc size 20, free text.
+OriginatingAgencyCaseNumber=SC2026001234
+#
+# --- QWA.P : WantedPerson by wanted-vehicle plate --------------------------------------------
+# set[LicensePlateNumber, LicensePlateStateCode]. The state code is MANDATORY in that pair, and at
+# v1.3 it became a TYPE-IN rather than a dropdown (LIMITATION #28 -- see the build script), so a
+# synthetic value is needed here rather than a picklist selection.
+# 'SC' is the in-state code and keeps the test on the provider's own state.
+LicensePlateStateCode=SC
+#
+# --- AM : AdministrativeMessage ----------------------------------------------------------------
+# set[FreeText]. The devdoc caps it at 501 characters; a short readable string is enough to prove
+# the tag transmits, and a 501-char filler would make the captured log unreadable for no gain.
+FreeText=USX TEST MESSAGE - PLEASE DISREGARD

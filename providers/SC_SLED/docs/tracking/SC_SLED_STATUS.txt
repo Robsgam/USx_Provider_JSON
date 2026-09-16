@@ -1,16 +1,16 @@
 ﻿================================================================
   STATUS: SC_SLED
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-  Version: v1.4
+  Version: v1.5
   Updated: 2026-09-16
 ================================================================
 
 CURRENT STATE
 =============
   Phase: 1 COMPLETE (QIDM confirmation) -- layout built in the same pass
-  JSON: SC_SLED_v1.4.json  --  79P/0F/2W/1LIM
+  JSON: SC_SLED_v1.5.json  --  79P/0F/2W/1LIM
   Score: 79P/0F/2W/1LIM  (BASE 79P/0F/2W/1LIM)  -- the 2 WARNs are Option A, deliberate
-  Import: v1.0 IMPORTED to usx-sc-sled (73046844870) 2026-09-16 -- the FIRST automated import in the project, proven by the bundle table going 0 -> 3 (ENTITIES/SC_SLED/RMS). v1.1/v1.2/v1.3 were never imported; v1.4 NOT YET IMPORTED. NOTE: that tenant's Export JSON returns no config (CLICKED-BUT-NO-JSON), so no content hash or version string can be read from it -- the bundle NAMES are the evidence.
+  Import: v1.0 IMPORTED to usx-sc-sled (73046844870) 2026-09-16 -- the FIRST automated import in the project, proven by the bundle table going 0 -> 3 (ENTITIES/SC_SLED/RMS). v1.1/v1.2/v1.3 were never imported. v1.4 WAS imported 2026-09-16 (counters moved ENTITIES 600->601, SC_SLED 3->4). v1.5 -- tab reorder -- NOT YET IMPORTED. NOTE: that tenant's Export JSON returns no config (CLICKED-BUT-NO-JSON), so no content hash or version string can be read from it -- the bundle NAMES are the evidence.
   USx tenant test: NOT STARTED (0 of 5 entities)
 
   9 QIDMs / 18 combinations / 7 QIFs = SEVEN TABS (v1.3). Wanted Person and Administrative Message each have their OWN TAB; Person is down to 2 cards / 10 fields. AdministrativeMessage has its OWN TAB, declaring targetEntity='Article' -- tabs are keyed by QUERYINPUTFORM, not by entity (CAPABILITY #47). Article, not Person, because LIMITATION #28 breaks codeTypeProvider reverse-lookup on a second QIF and all three such controls are on Person.

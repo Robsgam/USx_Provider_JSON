@@ -118,6 +118,34 @@ function Get-FiringKeyRef($entQidms, $formData) {
     return $null
 }
 
+# ⚠️ FIRST-MATCH IS PER QIDM, NOT PER ENTITY -- AND Get-FiringKeyRef ABOVE CANNOT EXPRESS THAT.
+# It walks EVERY QIDM on the entity and returns the FIRST match it finds anywhere, which models
+# "one query fires per entity". The platform does not work that way: it evaluates EACH QIDM
+# independently and fires one combination from each. SC_SLED proves it -- test_commsys shows a
+# single plate fill firing QVRQ.P (VehicleRegistrationQuery) AND QV.P (VehicleStolenQuery), and
+# after v1.6 an OLN fill fires QWDQ (DriverLicenseQuery) AND DQ.RN (DriverRegistrationQuery).
+#
+# WHAT THE CONFLATION COST: emit_test_plan asked "what fires for this fill?", got the winner from
+# whichever QIDM happened to be walked first, saw it differ from the combo it was building a test
+# for, and DROPPED the test as "its fill fires QVRQ.P instead, so this combo never runs". QV.P and
+# QV.VM therefore had NO plan test on a provider that demonstrably sends them -- 16 of 18
+# combinations planned, and the two missing ones were exactly the co-fire Rob had just ruled on
+# ("we must fulfill the query combo  we don't chase teh message key  we send the query").
+#
+# Get-FiringKeyRef is LEFT UNTOUCHED on purpose: it is shared with test_commsys and
+# run_test_matrix, audit_simulator_parity exists to keep those two on one path, and its
+# entity-wide answer is still the right one for "what is the headline query for this fill".
+# This function answers the narrower question the plan actually needs.
+function Get-FiringKeyRefForQidm($qidm, $formData) {
+    $filled = Get-SimFilledRefs $qidm $formData
+    foreach ($c in $qidm.combinations) {
+        if (Test-ComboMatches $c $filled $formData) {
+            if ($c.keyReference) { return $c.keyReference } else { return $c.keyRef }
+        }
+    }
+    return $null
+}
+
 function Test-ComboConditionsCore($conds, $formData) {
     $r = @{ ok = $true; failures = @(); poisoned = $false; poisonDesc = '' }
     $conds = @($conds)

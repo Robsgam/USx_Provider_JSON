@@ -2,14 +2,34 @@
 
 Auto-generated from `SC_SLED_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.4** | Generated: 2026-09-16
+Current: **v1.5** | Generated: 2026-09-16
 
 ---
 
-## v1.4 -- 2026-09-16 -- Pipeline rebuild
+## v1.5 -- 2026-09-16 -- Pipeline rebuild
 
 **CHANGED:** Rebuilt via pipeline.ps1
 **REASON:** Scheduled rebuild
+
+## v1.4 -- 2026-09-16 -- The AM field suffix comes back OFF -- it was never needed and it broke a gate
+
+**CHANGED:** FreeTextAM / DestinationCode1-5AM renamed back to FreeText / DestinationCode1-5, in the
+         form controls and the QIDM sourceFields alike. Nothing else. 79P/0F/2W/1LIM unchanged.  
+**REASON:**  v1.2 suffixed these ids as belt-and-braces against LIMITATION #26's shared field pool.
+         IT PROTECTED AGAINST NOTHING: Article's own controls are ArticleSerialNumber and  
+         ArticleTypeCode, so there was never a name in common with FreeText/DestinationCode -- the  
+         pool was already disjoint by construction.  
+         AND IT COST A BLOCKING GATE. `audit_devdoc_combinations` compares the devdoc's field  
+         names against the combination's SOURCEFIELDS, canonicalised by `Get-CanonicalToken`,  
+         which strips the established isolation suffixes `dh$` / `cch$` / `dr$` -- not `am$`. So  
+         `freetextam` stopped matching the devdoc's `FreeText` and enforce reported  
+         "AdministrativeMessage #1 is devdoc-listed but UNBUILT: mandatory field(s) FreeText,  
+         DestinationCode wired nowhere" on a provider that builds it.  
+         THE OTHER FIX WAS REJECTED ON PURPOSE: adding `am$` to that canonicaliser would widen a  
+         shared function feeding a BLOCKING gate across all 21 providers, and `am$` is a much  
+         riskier string to strip globally than `dh`/`dr`. Widening a portfolio-wide canonicaliser  
+         to accommodate one provider's unnecessary cosmetic choice is the wrong trade. Use a  
+         suffix here only if a REAL collision appears, and add `am$` in the same change.  
 
 ## v1.3 -- 2026-09-16 -- WANTED PERSON GETS ITS OWN TAB -- and three dropdowns became type-ins to pay for it
 

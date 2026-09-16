@@ -1,4 +1,4 @@
-SC_SLED v1.4 -- TEST MATRIX
+SC_SLED v1.5 -- TEST MATRIX
 ==================================================
 Generated: 2026-09-16
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -23,14 +23,9 @@ Person (2 cards, 18 fields):
     ROW 2: NameLastDR [Inp 30], NameFirstDR [Inp 30], NameMiddleDR [Inp 30]
     ROW 3: NameSuffixDR [Inp 30], BirthDateDR [FormDate], SexCodeDR [Sel SEX], ImageIndicatorDR [Sel YES_NO_UNKNOWN/NCIC, Y]
 
-Firearm (1 card, 21 fields):
-  CARD_WP_ID (WANTED PERSON -- BY NCIC NUMBER, CASE NUMBER, NAME, OR VEHICLE):
-    ROW 1: NCICNumber [Inp 10], OriginatingAgencyCaseNumber [Inp 20]
-    ROW 2: NameLast [Inp 30], NameFirst [Inp 30], NameMiddle [Inp 30], NameSuffix [Inp 10]
-    ROW 3: BirthDate [FormDate], SexCode [Inp 1], raceCode [Inp 1], OperatorLicenseNumber [Inp 20]
-    ROW 4: SocialSecurityNumber [Inp 9], FBINumber [Inp 9], MiscellaneousNumber [Inp 15], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
-    ROW 5: ExpandedNameSearchCode [Inp 1], ExpandedBirthDateSearchCode [Inp 1], RelatedHitSearchIndicator [Inp 1]
-    ROW 6: LicensePlateNumber [Inp 10], LicensePlateStateCode [Inp 2], VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE]
+Firearm (1 card, 4 fields):
+  CARD_GUN (FIREARM -- BY SERIAL NUMBER):
+    serialNumber [Inp 11], GunMake [Sel NCIC_FIREARM_MAKE/NCIC], GunModel [Inp 4], GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC]
 
 Article (1 card, 6 fields):
   CARD_AM (ADMINISTRATIVE MESSAGE -- FREE TEXT TO UP TO FIVE AGENCIES):
@@ -128,33 +123,33 @@ ENTITY 4: FIREARM (14 tests -- 1 card, 6 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-24  Firearm     QW+A.P             LicensePlateNumber=TEST123, LicensePl... [    ]
+24  Firearm     QW+A.P                                              [    ]
               Expected: WantedPersonQuery fires (QWA.P)
 25  Firearm     QW+A.P             + ImageIndicator, RelatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-26  Firearm     QW+A.VM            VehicleIdentificationNumber=1HGCM8263... [    ]
+26  Firearm     QW+A.VM                                             [    ]
               Expected: WantedPersonQuery fires (QWA.VM)
 27  Firearm     QW+A.VM            + ImageIndicator, RelatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-28  Firearm     QW+A.NCIC          NCICNumber=X123456789            [    ]
+28  Firearm     QW+A.NCIC                                           [    ]
               Expected: WantedPersonQuery fires (QWA.NCIC)
 29  Firearm     QW+A.NCIC          + ImageIndicator, RelatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-30  Firearm     QW+A.OCA           NameLast=DOE, NameFirst=JOHN, Origina... [    ]
+30  Firearm     QW+A.OCA                                            [    ]
               Expected: WantedPersonQuery fires (QWA.OCA)
 31  Firearm     QW+A.OCA           + ExpandedNameSearchCode, ImageIndicator, RelatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-32  Firearm     QW+A.N             NameLast=DOE, NameFirst=JOHN     [    ]
+32  Firearm     QW+A.N                                              [    ]
               Expected: WantedPersonQuery fires (QWA.N)
 33  Firearm     QW+A.N             + BirthDate, SexCode, raceCode, FBINumber [    ]
               Expected: any[] fields present in XML output.
-34  Firearm     QG+serialNumber                                     [    ]
+34  Firearm     QG+serialNumber    serialNumber=GUN12345            [    ]
               Expected: GunQuery fires (QG)
 35  Firearm     QG+serialNumber    + GunMake, GunModel, GunCaliber [    ]
               Expected: any[] fields present in XML output.
-36  Firearm     Guardrail: QWA.NCIC>QWA.N  NCICNumber=X123456789, NameLast=DOE, ... [    ]
+36  Firearm     Guardrail: QWA.NCIC>QWA.N                                   [    ]
               Expected: WantedPersonQuery fires (QWA.NCIC). LastName+FirstName absent from XML.
-37  Firearm     Guardrail: QWA.OCA>QWA.N  OriginatingAgencyCaseNumber=TEST, Nam... [    ]
+37  Firearm     Guardrail: QWA.OCA>QWA.N                                   [    ]
               Expected: WantedPersonQuery fires (QWA.OCA). LastName+FirstName absent from XML.
 
 ENTITY 5: ARTICLE (3 tests -- 1 card, 2 combos)
@@ -182,4 +177,4 @@ COMBO COVERAGE (18/18):
   BoatQuery: 2/2 -- T19(BQ.H), T21(BQ.R)
   AdministrativeMessage: 1/1 -- T39(AM)
 
-IMPORT FILE: SC_SLED_v1.4.json
+IMPORT FILE: SC_SLED_v1.5.json

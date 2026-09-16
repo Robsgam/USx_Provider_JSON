@@ -35,7 +35,7 @@ $repoRoot    = Split-Path (Split-Path $providerDir -Parent) -Parent
 . (Join-Path $repoRoot 'tools\_build_provider_helpers.ps1')
 
 $providerName = 'SC_SLED'
-$Version      = '1.4'
+$Version      = '1.6'
 $currentYear  = (Get-Date).Year.ToString()
 
 Write-Host ''
@@ -283,31 +283,56 @@ $dlQuery = Build-Qidm -ProviderName $providerName -Query 'DriverLicenseQuery' `
 #    ONE-DIRECTIONAL queriesToDeselect: the opt-in query deselects the default, never both ways --
 #    mutual queriesToDeselect deadlocks into an error popup.
 # =====================================================================
+# ---- v1.6: DRIVER REGISTRATION NOW CO-FIRES WITH DRIVER LICENSE ---------------------------------
+# Rob 2026-09-16: "lets co fire driver reg and driver license since they are idnetical combos".
+#
+# WHAT CHANGED AND WHY IT IS SOUND. Through v1.5 this query was ISOLATED from DriverLicenseQuery by
+# DR-suffixed fieldIds on their own card, because metadata gives BOTH transactions a keyRef of `DQ`
+# with IDENTICAL mandatory sets -- a collision ordering cannot separate. That reasoning was about
+# telling them APART. Rob's call is that they should not be told apart at all: they are the same
+# search, so ONE fill should send BOTH queries.
+#
+# So every sourceField here now points at the SHARED Driver License controls, the DR-suffixed
+# controls and their whole card are deleted, and `-QueriesToDeselect @('DriverLicenseQuery')` is
+# GONE -- that deselect was the specific thing preventing the co-fire.
+#
+# THE MECHANISM IS ALREADY PROVEN ON THIS PROVIDER, not assumed: Vehicle carries
+# VehicleRegistrationQuery and VehicleStolenQuery on ONE entity and ONE card, and test_commsys
+# shows a single plate fill firing QVRQ.P AND QV.P. LIMITATION #2 is one QIDM per
+# (targetEntity, QUERY) -- DriverLicenseQuery and DriverRegistrationQuery are DIFFERENT queries, so
+# two QIDMs on Person is legal exactly as two on Vehicle is.
+#
+# CONSEQUENCE TO EXPECT ON THE WIRE: an OLN fill now sends TWO queries (DL `DQ` + DR `DQ.RO`), and a
+# name+DOB fill sends two (DL name path + DR `DQ.RN`). That is the intent, and it is the same shape
+# as the Vehicle reg/stolen co-fire Rob already ruled on. The synthetic keyRefs DQ.RN/DQ.RO are KEPT
+# because a keyRef never reaches the wire -- they exist only so our own tooling can name the two
+# branches apart.
+# ALSO: Person drops to ONE card, so it keeps exactly one QIF and its codeTypeProvider
+# reverse-lookup (LIMITATION #28) stays intact.
 $drAttrs = @(
-    Build-QidmAttribute -Name 'OperatorLicenseNumber' -Size 20 -SourceField @('OperatorLicenseNumberDR')
-    Build-QidmAttribute -Name 'Name' -Size 30 -SourceField @('NameLastDR','NameFirstDR','NameMiddleDR','NameSuffixDR') `
+    Build-QidmAttribute -Name 'OperatorLicenseNumber' -Size 20 -SourceField @('OperatorLicenseNumber')
+    Build-QidmAttribute -Name 'Name' -Size 30 -SourceField @('NameLast','NameFirst','NameMiddle','NameSuffix') `
         -Rule ([PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ', ' ', ' ') })
-    Build-QidmAttribute -Name 'BirthDate' -Size 8 -SourceField @('BirthDateDR') `
+    Build-QidmAttribute -Name 'BirthDate' -Size 8 -SourceField @('BirthDate') `
         -Rule ([PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') })
-    Build-QidmAttribute -Name 'SexCode' -Size 1 -SourceField @('SexCodeDR') -CodeTypeProvider 'NIBRS'
-    Build-QidmAttribute -Name 'ImageIndicator' -Size 1 -SourceField @('ImageIndicatorDR')
-    Build-QidmAttribute -Name 'State' -Size 2 -SourceField @('RegistrationStateDR') -TargetField 'State' -CodeTypeProvider 'NCIC'
+    Build-QidmAttribute -Name 'SexCode' -Size 1 -SourceField @('SexCode') -CodeTypeProvider 'NIBRS'
+    Build-QidmAttribute -Name 'ImageIndicator' -Size 1 -SourceField @('ImageIndicator')
+    Build-QidmAttribute -Name 'State' -Size 2 -SourceField @('RegistrationState') -TargetField 'State' -CodeTypeProvider 'NCIC'
 )
 $drCombos = @(
     Build-QidmCombo -KeyReference 'DQ.RN' -PrimaryFieldReference 'Name' `
-        -Set @('BirthDateDR','NameLastDR','NameFirstDR') `
-        -Any @('RegistrationStateDR','SexCodeDR') `
+        -Set @('BirthDate','NameLast','NameFirst') `
+        -Any @('RegistrationState','SexCode') `
         # NO ImageIndicator default -- same metadata asymmetry as DriverLicenseQuery's name path.
     Build-QidmCombo -KeyReference 'DQ.RO' -PrimaryFieldReference 'OperatorLicenseNumber' `
-        -Set @('OperatorLicenseNumberDR') `
-        -Any @('ImageIndicatorDR','RegistrationStateDR') `
+        -Set @('OperatorLicenseNumber') `
+        -Any @('ImageIndicator','RegistrationState') `
         -Defaults @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
 )
 $drQuery = Build-Qidm -ProviderName $providerName -Query 'DriverRegistrationQuery' `
     -TargetEntity 'Person' -QueryLabel 'Driver Registration' `
     -Attributes $drAttrs -Combinations $drCombos `
-    -QueriesToDeselect @('DriverLicenseQuery') `
-    -Description 'DriverRegistrationQuery -- DQ.RN (name + DOB), DQ.RO (OLN). ISOLATED from DriverLicenseQuery with DR-suffixed fieldIds AND synthetic keyRefs: metadata gives BOTH transactions a keyRef of DQ, and their OLN combos have IDENTICAL mandatory sets, which ordering cannot separate. Note SexCode is OPTIONAL here and MANDATORY on the DriverLicense name combo -- the devdoc lists it as mandatory for both; metadata is field authority.'
+    -Description 'DriverRegistrationQuery -- DQ.RN (name + DOB), DQ.RO (OLN). v1.6: CO-FIRES with DriverLicenseQuery on Rob''s call ("they are idnetical combos"), sharing the SAME Driver License controls. Through v1.5 it was isolated with DR-suffixed fieldIds and a queriesToDeselect, because metadata gives both transactions keyRef DQ with identical mandatory sets; that was solving telling-them-apart, which is no longer wanted. An OLN fill now sends both queries, the same shape as the proven Vehicle reg/stolen co-fire. Synthetic keyRefs kept: a keyRef never reaches the wire, they only let our tooling name the branches. SexCode is OPTIONAL here and MANDATORY on the DriverLicense name combo -- the devdoc lists it mandatory for both; metadata is field authority.'
 
 # =====================================================================
 # 6. PERSON -- WantedPersonQuery
@@ -540,7 +565,7 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('6','3','3'); fields = @(
-                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN (plate takes priority if both are entered)' '20' 'ROW_VEH_2' }
+                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_2' }
                 @{ id = 'VehicleMakeCode_Input';            node = Sel 'VehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE' } 'ROW_VEH_2' }
                 @{ id = 'vehicleYear_Input';                node = Inp 'vehicleYear' 'Vehicle Year (optional)' '4' 'ROW_VEH_2' }
             )}
@@ -572,7 +597,7 @@ $vehicleForm = [PSCustomObject]@{
 $perLayout = MakeLayouts @(
     @{
         id    = 'CARD_PER_DL'
-        title = 'DRIVER LICENSE -- BY OLN, OR BY NAME + DOB + SEX'
+        title = 'DRIVER LICENSE + DRIVER REGISTRATION -- BY OLN, OR BY NAME + DOB + SEX (both queries are sent)'
         rows  = @(
             @{ id = 'ROW_DL_1'; cols = @('6','6'); fields = @(
                 @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_DL_1' }
@@ -591,30 +616,9 @@ $perLayout = MakeLayouts @(
             )}
         )
     }
-    @{
-        id    = 'CARD_PER_DR'
-        title = 'DRIVER REGISTRATION -- SEPARATE QUERY, ITS OWN FIELDS'
-        rows  = @(
-            @{ id = 'ROW_DR_1'; cols = @('6','6'); fields = @(
-                @{ id = 'OperatorLicenseNumberDR_Input'; node = Inp 'OperatorLicenseNumberDR' 'OLN' '20' 'ROW_DR_1' }
-                @{ id = 'RegistrationStateDR_Input';     node = Sel 'RegistrationStateDR' 'State (leave blank for SC)' @{ attributeTypeId = 'STATE' } 'ROW_DR_1' }
-            )}
-            @{ id = 'ROW_DR_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'NameLastDR_Input';   node = Inp 'NameLastDR' 'Last Name' '30' 'ROW_DR_2' }
-                @{ id = 'NameFirstDR_Input';  node = Inp 'NameFirstDR' 'First Name' '30' 'ROW_DR_2' }
-                @{ id = 'NameMiddleDR_Input'; node = Inp 'NameMiddleDR' 'Middle Name' '30' 'ROW_DR_2' }
-            )}
-            @{ id = 'ROW_DR_3'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'NameSuffixDR_Input';     node = Inp 'NameSuffixDR' 'Suffix' '30' 'ROW_DR_3' }
-                @{ id = 'BirthDateDR_Input';      node = Dt  'BirthDateDR' 'Date of Birth' 'ROW_DR_3' }
-                @{ id = 'SexCodeDR_Input';        node = Sel 'SexCodeDR' 'Sex (optional)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DR_3' }
-                @{ id = 'ImageIndicatorDR_Input'; node = Sel 'ImageIndicatorDR' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_DR_3' }
-            )}
-        )
-    }
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person -- 2 cards (v1.3, was 3). Driver License (QWDQ name / DQ OLN) and Driver Registration (DQ.RN / DQ.RO, DR-suffixed and isolated because metadata gives both transactions keyRef DQ with identical OLN sets). WANTED PERSON MOVED TO ITS OWN TAB (see the wpForm block) -- which is also why Person still has exactly ONE QIF and its SexCode/SexCodeDR dropdowns keep working.'
+    description  = 'Person -- ONE card (v1.6). It feeds BOTH DriverLicenseQuery (QWDQ name / DQ OLN) and DriverRegistrationQuery (DQ.RN / DQ.RO), which now CO-FIRE off the same controls on Rob request -- they are the same search and metadata gives both transactions keyRef DQ with identical mandatory sets. v1.5 and earlier isolated them on a second DR-suffixed card with a queriesToDeselect; that card and those fields are gone. Wanted Person is its own TAB (see wpForm). One QIF means Person keeps its codeTypeProvider reverse-lookup intact (LIMITATION #28).'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'
@@ -662,10 +666,10 @@ $wpLayout = MakeLayouts @(
         id    = 'CARD_WP_ID'
         title = 'WANTED PERSON -- BY NCIC NUMBER, CASE NUMBER, NAME, OR VEHICLE'
         rows  = @(
-            @{ id = 'ROW_WP_1'; cols = @('6','6'); fields = @(
-                @{ id = 'NCICNumber_Input';                  node = Inp 'NCICNumber' 'NCIC Number (searched alone, takes priority)' '10' 'ROW_WP_1' }
-                @{ id = 'OriginatingAgencyCaseNumber_Input';  node = Inp 'OriginatingAgencyCaseNumber' 'Originating Agency Case Number (with last name)' '20' 'ROW_WP_1' }
-            )}
+            # ROW ORDER, Rob 2026-09-16: "on eanted lets move the name row to the top  dob line to
+            # 2nd  and top row down 2". So: Name first, DOB/Sex/Race/OLN second, and the original
+            # top row (NCIC + case number) moves down to third. Nothing but sequence changed --
+            # same rows, same fields, same ids, so no routing or wiring is affected.
             @{ id = 'ROW_WP_N'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'WPNameLast_Input';   node = Inp 'NameLast' 'Last Name' '30' 'ROW_WP_N' }
                 @{ id = 'WPNameFirst_Input';  node = Inp 'NameFirst' 'First Name' '30' 'ROW_WP_N' }
@@ -677,6 +681,10 @@ $wpLayout = MakeLayouts @(
                 @{ id = 'WPSexCode_Input';   node = Inp 'SexCode' 'Sex -- type M, F or U (optional)' '1' 'ROW_WP_2' }
                 @{ id = 'raceCode_Input';    node = Inp 'raceCode' 'Race -- type W, B, I, A or U (optional)' '1' 'ROW_WP_2' }
                 @{ id = 'WPOperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN (optional)' '20' 'ROW_WP_2' }
+            )}
+            @{ id = 'ROW_WP_1'; cols = @('6','6'); fields = @(
+                @{ id = 'NCICNumber_Input';                  node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_WP_1' }
+                @{ id = 'OriginatingAgencyCaseNumber_Input';  node = Inp 'OriginatingAgencyCaseNumber' 'Originating Agency Case Number (with last name)' '20' 'ROW_WP_1' }
             )}
             @{ id = 'ROW_WP_3'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'SocialSecurityNumber_Input'; node = Inp 'SocialSecurityNumber' 'SSN (optional)' '9' 'ROW_WP_3' }
@@ -690,9 +698,9 @@ $wpLayout = MakeLayouts @(
                 @{ id = 'RelatedHitSearchIndicator_Input';   node = Inp 'RelatedHitSearchIndicator' 'Related Hit Search (optional)' '1' 'ROW_WP_4' }
             )}
             @{ id = 'ROW_WP_5'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'WP_LicensePlateNumber_Input';    node = Inp 'LicensePlateNumber' 'Plate Number (wanted vehicle -- needs plate state)' '10' 'ROW_WP_5' }
+                @{ id = 'WP_LicensePlateNumber_Input';    node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_WP_5' }
                 @{ id = 'LicensePlateStateCode_Input';    node = Inp 'LicensePlateStateCode' 'Plate State -- type the 2-letter code' '2' 'ROW_WP_5' }
-                @{ id = 'WP_VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN (wanted vehicle -- needs make)' '20' 'ROW_WP_5' }
+                @{ id = 'WP_VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_WP_5' }
                 @{ id = 'WP_VehicleMakeCode_Input';       node = Sel 'VehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE' } 'ROW_WP_5' }
             )}
         )
@@ -739,7 +747,7 @@ $artLayout = MakeLayouts @(
         title = 'ARTICLE -- SERIAL NUMBER AND TYPE ARE BOTH REQUIRED'
         rows  = @(
             @{ id = 'ROW_ART_1'; cols = @('6','6'); fields = @(
-                @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number (required)' '20' 'ROW_ART_1' }
+                @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number' '20' 'ROW_ART_1' }
                 @{ id = 'ArticleTypeCode_Input';     node = Sel 'ArticleTypeCode' 'Article Type (required)' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
             )}
         )
@@ -853,9 +861,29 @@ $amForm = [PSCustomObject]@{
 #     CAPABILITY #47 measured working (the probe listed Person four times and got four tabs).
 #     AM goes LAST so the five familiar tabs keep their established positions.
 # =====================================================================
-$entityOrder = @('Vehicle','Person','Firearm','Article','Boat','Firearm','Article')
+# TAB ORDER, Rob 2026-09-16: "veh per wanted person firearm articel boat admin mesage  in that order".
+#
+# ⚠️ THE ORDER ARRAY LISTS ENTITY NAMES, AND TWO PAIRS OF TABS SHARE AN ENTITY -- so `Firearm`
+# and `Article` each appear TWICE and the array ALONE cannot say which form takes which slot:
+#     position 1 Vehicle        -> $vehicleForm
+#     position 2 Person         -> $personForm
+#     position 3 Firearm  (1st) -> $wpForm        <- Wanted Person
+#     position 4 Firearm  (2nd) -> $firearmForm
+#     position 5 Article  (1st) -> $articleForm
+#     position 6 Boat           -> $boatForm
+#     position 7 Article  (2nd) -> $amForm        <- Administrative Message
+#
+# [Likely] duplicates resolve by the order of the CONFIGURATIONS array, so that array is now in the
+# SAME sequence as this one -- which makes the mapping above hold if the assumption is right.
+# STATUS: HYPOTHESIS. CAPABILITY #47 proved 8 forms give 8 TABS, but nobody recorded what ORDER
+# they appeared in, so the tie-break rule for a duplicated entity name is UNMEASURED. Do not write
+# it down as fact until the rendered page is read.
+# DISCRIMINATING TEST: import and read the tab strip. If Wanted Person and Firearm are swapped, the
+# tie-break is something other than configuration order -- try reordering ONLY the configurations
+# array next, since this one is already in the requested sequence.
+$entityOrder = @('Vehicle','Person','Firearm','Firearm','Article','Boat','Article')
 $entitiesBundle = Build-EntitiesBundle `
-    -Configurations @($vehicleForm, $personForm, $firearmForm, $articleForm, $boatForm, $wpForm, $amForm) `
+    -Configurations @($vehicleForm, $personForm, $wpForm, $firearmForm, $articleForm, $boatForm, $amForm) `
     -DefaultOrder $entityOrder -CadOrder $entityOrder -FrOrder $entityOrder
 
 # =====================================================================

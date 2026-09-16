@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: SC_SLED
-  Source: SC_SLED_v1.4.json
-  Generated: 2026-09-16 16:40
+  Source: SC_SLED_v1.5.json
+  Generated: 2026-09-16 17:07
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: SC_SLED_v1.4
+ CAD AUDIT: SC_SLED_v1.5
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -83,7 +83,6 @@ CAD AUDIT
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] age: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] GunMake: in QIF, not in CAD list (provider-specific)
     [INFO] NCICNumber: in QIF, not in CAD list (provider-specific)
     [INFO] OriginatingAgencyCaseNumber: in QIF, not in CAD list (provider-specific)
     [INFO] SexCode: in QIF, not in CAD list (provider-specific)
@@ -98,6 +97,7 @@ CAD AUDIT
     [INFO] LicensePlateStateCode: in QIF, not in CAD list (provider-specific)
     [INFO] VehicleIdentificationNumber: in QIF, not in CAD list (provider-specific)
     [INFO] VehicleMakeCode: in QIF, not in CAD list (provider-specific)
+    [INFO] GunMake: in QIF, not in CAD list (provider-specific)
   Article:
     [INFO] serialNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] articleTypeCode: in QIF as 'ArticleTypeCode' (PascalCase USx fieldIds)
@@ -138,7 +138,7 @@ CAD AUDIT
     [PASS] Vehicle CAD_DISPATCH: CONTEXT_INFO_CARD with unit + event
     [PASS] Person QIF 'ENTITY_Person': CAD_DISPATCH layout exists
     [PASS] Person CAD_DISPATCH: CONTEXT_INFO_CARD with unit + event
-    [PASS] Firearm QIF 'ENTITY_Firearm': CAD_DISPATCH layout exists
+    [PASS] Firearm QIF 'ENTITY_WantedPerson': CAD_DISPATCH layout exists
     [PASS] Firearm CAD_DISPATCH: CONTEXT_INFO_CARD with unit + event
     [PASS] Article QIF 'ENTITY_Article': CAD_DISPATCH layout exists
     [PASS] Article CAD_DISPATCH: CONTEXT_INFO_CARD with unit + event
@@ -148,7 +148,7 @@ CAD AUDIT
 --- CHECK 3: FIRST_RESPONDER Layout Variant ---
     [PASS] Vehicle QIF 'ENTITY_Vehicle': FIRST_RESPONDER layout exists
     [PASS] Person QIF 'ENTITY_Person': FIRST_RESPONDER layout exists
-    [PASS] Firearm QIF 'ENTITY_Firearm': FIRST_RESPONDER layout exists
+    [PASS] Firearm QIF 'ENTITY_WantedPerson': FIRST_RESPONDER layout exists
     [PASS] Article QIF 'ENTITY_Article': FIRST_RESPONDER layout exists
     [PASS] Boat QIF 'ENTITY_Boat': FIRST_RESPONDER layout exists
 

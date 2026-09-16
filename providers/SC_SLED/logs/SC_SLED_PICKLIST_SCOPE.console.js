@@ -2,7 +2,7 @@
 // Then render each entity form and run its line (one at a time; each downloads one file):
 var scope = {
     "provider":  "SC_SLED",
-    "version":  "1.4",
+    "version":  "1.5",
     "note":  "Paste as scope; render each entity form; __usxScopePicklists(scope, \u0027\u003cEntity\u003e\u0027). One download per entity.",
     "fields":  [
                    {
@@ -79,6 +79,22 @@ var scope = {
                    },
                    {
                        "entity":  "Firearm",
+                       "fieldId":  "ImageIndicator",
+                       "label":  "NCIC Image",
+                       "codeTypeCategory":  "YES_NO_UNKNOWN",
+                       "codeTypeSource":  "NCIC",
+                       "attributeTypeId":  ""
+                   },
+                   {
+                       "entity":  "Firearm",
+                       "fieldId":  "VehicleMakeCode",
+                       "label":  "Vehicle Make",
+                       "codeTypeCategory":  "",
+                       "codeTypeSource":  "",
+                       "attributeTypeId":  "VEHICLE_MAKE"
+                   },
+                   {
+                       "entity":  "Firearm",
                        "fieldId":  "GunMake",
                        "label":  "Make (optional)",
                        "codeTypeCategory":  "NCIC_FIREARM_MAKE",
@@ -108,23 +124,7 @@ var scope = {
                        "codeTypeCategory":  "",
                        "codeTypeSource":  "",
                        "attributeTypeId":  "STATE"
-                   },
-                   {
-                       "entity":  "Firearm",
-                       "fieldId":  "ImageIndicator",
-                       "label":  "NCIC Image",
-                       "codeTypeCategory":  "YES_NO_UNKNOWN",
-                       "codeTypeSource":  "NCIC",
-                       "attributeTypeId":  ""
-                   },
-                   {
-                       "entity":  "Firearm",
-                       "fieldId":  "VehicleMakeCode",
-                       "label":  "Vehicle Make",
-                       "codeTypeCategory":  "",
-                       "codeTypeSource":  "",
-                       "attributeTypeId":  "VEHICLE_MAKE"
                    }
                ]
 };
-console.log('%c[USx-SCOPE] scope loaded: SC_SLED v1.4 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Boat')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')");
+console.log('%c[USx-SCOPE] scope loaded: SC_SLED v1.5 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Boat')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')");

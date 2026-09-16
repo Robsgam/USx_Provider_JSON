@@ -445,7 +445,19 @@ function Get-FillKey($fills) {
 # When the fill reroutes, expectedKeyRef becomes the combo that ACTUALLY fires and
 # reroutedFrom records the combo the test cannot reach -- so the plan never asserts a
 # falsehood and the condition is visible BEFORE anyone spends a tenant test on it.
-function Resolve-ExpectedKeyRef($entQidms, $fills, $entDefaults, $structuralKr) {
+# $OwnerQidm is OPTIONAL and it changes WHICH QUESTION THIS ANSWERS:
+#   omitted  -> "what is the headline query for this fill", walking every QIDM on the entity
+#   supplied -> "what does THIS QIDM fire for this fill", which is what a per-combination test
+#               needs, because first-match is PER QIDM and not per entity.
+# ⚠️ WITHOUT IT, A CO-FIRE READS AS A SHADOW. Rob 2026-09-16 ruled that SC_SLED's Vehicle
+# reg/stolen pair should co-fire, and after v1.6 the two driver queries co-fire too. The
+# entity-wide walk returned whichever QIDM came first, the caller saw it differ from the combo it
+# was building a test for, and DROPPED that test as "its combo never runs" -- so QV.P and QV.VM had
+# no plan test on a provider that demonstrably sends them (16 of 18 combinations planned).
+# Scoping to the owning QIDM keeps GENUINE within-QIDM shadow detection working -- a combo really
+# shadowed by an earlier sibling still resolves to that sibling and is still dropped, which is the
+# FL_FCIC Boat case the drop logic was written for.
+function Resolve-ExpectedKeyRef($entQidms, $fills, $entDefaults, $structuralKr, $OwnerQidm = $null) {
     $fd = @{}
     foreach ($f in @($fills)) { if ($f -and $f.fieldId) { $fd[$f.fieldId] = $f.value } }
     if ($entDefaults) {
@@ -458,7 +470,8 @@ function Resolve-ExpectedKeyRef($entQidms, $fills, $entDefaults, $structuralKr) 
     # TENANT will not actually fire. On AZ_AZDPS v3.6 that removed every test for ACWL/DQPN/DQP --
     # the whole driver-licence photo feature -- and mispredicted the name searches it kept.
     foreach ($k in $script:PlatformFed.Keys) { if (-not $fd.ContainsKey($k)) { $fd[$k] = $script:PlatformFed[$k] } }
-    $sim = Get-SimFiringKeyRef $entQidms $fd
+    $sim = if ($OwnerQidm) { Get-FiringKeyRefForQidm $OwnerQidm $fd }
+           else            { Get-SimFiringKeyRef $entQidms $fd }
     if ($sim) { return $sim }
     return $structuralKr
 }
@@ -488,7 +501,7 @@ foreach ($ent in $entities) {
             # Trust: flag any set[] field we couldn't resolve a value for (under-fill risk).
             foreach ($sn in $setNames) { Note-IfUnresolved "$ent $kr set[]" (Resolve-FieldId $sn $q $fieldIds) (Get-TestValue (Resolve-FieldId $sn $q $fieldIds) $isOOS) }
             $n++
-            $expKr = Resolve-ExpectedKeyRef $entQidms $fills $formDefaultsByEntity[$ent] $kr
+            $expKr = Resolve-ExpectedKeyRef $entQidms $fills $formDefaultsByEntity[$ent] $kr $q
             $t0 = [ordered]@{
                 n = $n; entity = $ent; query = $q.query; comboKeyRef = $kr
                 expectedKeyRef = $expKr; kind = 'combo'; tier = 'Full'; fills = $fills
@@ -530,7 +543,7 @@ foreach ($ent in $entities) {
                         $script:ToggleStats.anyField++
                         $n++
                         $afFills = @(@($fills)) + @([ordered]@{ fieldId = $ff; value = "$val" })
-                        $afKr = Resolve-ExpectedKeyRef $entQidms $afFills $entFormDefaults $kr
+                        $afKr = Resolve-ExpectedKeyRef $entQidms $afFills $entFormDefaults $kr $q
                         $tAf = [ordered]@{
                             n = $n; entity = $ent; query = $q.query; comboKeyRef = $kr
                             expectedKeyRef = $afKr; kind = 'any-field'; tier = 'Full'
@@ -593,7 +606,7 @@ foreach ($ent in $entities) {
                 }
                 if (@($anyFills).Count -gt @($fills).Count) {
                     $n++
-                    $anyKr = Resolve-ExpectedKeyRef $entQidms $anyFills $entFormDefaults $kr
+                    $anyKr = Resolve-ExpectedKeyRef $entQidms $anyFills $entFormDefaults $kr $q
                     $tAny = [ordered]@{
                         n = $n; entity = $ent; query = $q.query; comboKeyRef = $kr
                         expectedKeyRef = $anyKr; kind = 'any'; tier = 'Full'; fills = $anyFills
@@ -847,7 +860,28 @@ foreach ($t in $tests) {
     if ($sigFills.Count -eq 0) { $sigFills = @($t.fills | ForEach-Object { "$($_.fieldId)=$($_.value)" }) }
     $sig = "$($t.entity)|" + ((@($sigFills) | Sort-Object) -join '&')
     if ($seenFill.ContainsKey($sig)) {
-        $dupes.Add("$($t.comboKeyRef)$(if($t.anyField){"_af_$($t.anyField)"}) [$($t.kind)] -- byte-identical fill to $($seenFill[$sig])")
+        # ⚠️ SAY WHICH KIND OF DUPLICATE THIS IS. When the twin belongs to a DIFFERENT QIDM, the
+        # fill is identical but the two combinations are NOT alternatives -- they CO-FIRE, so the
+        # ONE submit that stays in the plan sends BOTH queries. Dropping the second test is still
+        # right (re-typing the same fill proves nothing twice), but the old message read as "this
+        # combination cannot be tested", which is how QV.P/QV.VM came to look like a coverage gap
+        # on a provider that demonstrably sends them.
+        # Rob 2026-09-16 settled the principle: "we must fulfill the query combo  we don't chase
+        # teh message key  we send the query." The obligation is that the combination's field set
+        # is fulfilled and the QUERY goes out -- not that a log exists FILED UNDER its keyRef. The
+        # keyRef never reaches the wire. So coverage for the co-fired twin arrives from the
+        # CAPTURE of that single submit, which carries both queries' XML, and
+        # import_captured_tests attributes logs by wire CONTENT rather than by plan name.
+        $twin = $seenFill[$sig]
+        $twinQuery = $null
+        foreach ($k in $kept2) {
+            $kn = "$($k.comboKeyRef)$(if($k.anyField){"_af_$($k.anyField)"})"
+            if ($kn -eq $twin) { $twinQuery = $k.query; break }
+        }
+        $why = if ($twinQuery -and $twinQuery -ne $t.query) {
+                   "CO-FIRES with $twin ($twinQuery) on one identical submit -- both queries go on the wire, so coverage comes from that capture, NOT from a separate test"
+               } else { "byte-identical fill to $twin (same query -- re-typing it proves nothing twice)" }
+        $dupes.Add("$($t.comboKeyRef)$(if($t.anyField){"_af_$($t.anyField)"}) [$($t.kind)] -- $why")
         continue
     }
     $seenFill[$sig] = "$($t.comboKeyRef)$(if($t.anyField){"_af_$($t.anyField)"})"

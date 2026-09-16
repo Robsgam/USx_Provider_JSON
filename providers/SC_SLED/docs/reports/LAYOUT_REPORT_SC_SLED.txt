@@ -1,19 +1,19 @@
 ﻿================================================================
   Build Report: SC_SLED
-  Source: SC_SLED_v1.4.json
-  Generated: 2026-09-16 16:40
+  Source: SC_SLED_v1.5.json
+  Generated: 2026-09-16 17:07
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== SC_SLED_v1.4.json ===
+=== SC_SLED_v1.5.json ===
 QIFs: 7
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=4
   Person | entity=Person | qidm= | cards=2 fields=10
+  Wanted Person | entity=Firearm | qidm= | cards=1 fields=18
   Firearm | entity=Firearm | qidm= | cards=1 fields=2
   Article | entity=Article | qidm= | cards=1 fields=1
   Boat | entity=Boat | qidm= | cards=1 fields=2
-  Wanted Person | entity=Firearm | qidm= | cards=1 fields=18
   Administrative Message | entity=Article | qidm= | cards=1 fields=6
 QIDMs: 9
   SC_SLED_VehicleRegistrationQuery | attrs=7 combos=2 autoSelect=True
@@ -76,33 +76,6 @@ LAYOUT DETAIL
         SexCodeDR (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
         ImageIndicatorDR (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
 
-=== Firearm ===
-  name=ENTITY_Firearm | entity=Firearm | qidm=
-  [default]
-    CARD "CARD_GUN"
-      ROW ROW_GUN_1 [3 3 3 3]
-        serialNumber (Text | maxLen=11)
-        GunMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NCIC)
-        GunModel (Text | maxLen=4)
-        GunCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NCIC)
-
-=== Article ===
-  name=ENTITY_Article | entity=Article | qidm=
-  [default]
-    CARD "CARD_ART"
-      ROW ROW_ART_1 [6 6]
-        ArticleSerialNumber (Text | maxLen=20)
-        ArticleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
-
-=== Boat ===
-  name=ENTITY_Boat | entity=Boat | qidm=
-  [default]
-    CARD "CARD_BOAT"
-      ROW ROW_BOAT_1 [4 4 4]
-        BoatHullIdNumber (Text | maxLen=20)
-        RegistrationNumber (Text | maxLen=8)
-        RegistrationState (Dropdown | attributeTypeId=STATE)
-
 === Wanted Person ===
   name=ENTITY_WantedPerson | entity=Firearm | qidm=
   [default]
@@ -134,6 +107,33 @@ LAYOUT DETAIL
         LicensePlateStateCode (Text | maxLen=2)
         VehicleIdentificationNumber (Text | maxLen=20)
         VehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE)
+
+=== Firearm ===
+  name=ENTITY_Firearm | entity=Firearm | qidm=
+  [default]
+    CARD "CARD_GUN"
+      ROW ROW_GUN_1 [3 3 3 3]
+        serialNumber (Text | maxLen=11)
+        GunMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NCIC)
+        GunModel (Text | maxLen=4)
+        GunCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NCIC)
+
+=== Article ===
+  name=ENTITY_Article | entity=Article | qidm=
+  [default]
+    CARD "CARD_ART"
+      ROW ROW_ART_1 [6 6]
+        ArticleSerialNumber (Text | maxLen=20)
+        ArticleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
+
+=== Boat ===
+  name=ENTITY_Boat | entity=Boat | qidm=
+  [default]
+    CARD "CARD_BOAT"
+      ROW ROW_BOAT_1 [4 4 4]
+        BoatHullIdNumber (Text | maxLen=20)
+        RegistrationNumber (Text | maxLen=8)
+        RegistrationState (Dropdown | attributeTypeId=STATE)
 
 === Administrative Message ===
   name=ENTITY_AdministrativeMessage | entity=Article | qidm=

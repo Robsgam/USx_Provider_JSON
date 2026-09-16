@@ -2,6 +2,37 @@
   BUILD NOTES: SC_SLED
   Created: 2026-09-14
 ================================================================
+v1.5  2026-09-16  TAB ORDER set to the sequence Rob asked for
+  CHANGED: Nothing but ordering. No field, combination, attribute or QIDM touched.
+           `$entityOrder`     : Vehicle, Person, Firearm, Firearm, Article, Boat, Article
+           `-Configurations`  : vehicleForm, personForm, wpForm, firearmForm, articleForm,
+                                boatForm, amForm   (moved wpForm up from 6th to 3rd)
+           79P/0F/2W/1LIM unchanged.
+  REASON:  Rob 2026-09-16: "we need to reorder the tabs  veh per wanted person firearm articel boat
+           admin mesage  in that order please".
+
+  ⚠️ THE ORDER ARRAY LISTS ENTITY NAMES AND TWO PAIRS OF TABS SHARE AN ENTITY, so `Firearm` and
+  `Article` each appear TWICE and the array ALONE cannot say which form takes which slot:
+      1 Vehicle        -> vehicleForm
+      2 Person         -> personForm
+      3 Firearm  (1st) -> wpForm        <- Wanted Person
+      4 Firearm  (2nd) -> firearmForm
+      5 Article  (1st) -> articleForm
+      6 Boat           -> boatForm
+      7 Article  (2nd) -> amForm        <- Administrative Message
+  [Likely] duplicates resolve by the CONFIGURATIONS order, so that array is now in the same
+  sequence and the mapping above holds IF that assumption is right.
+
+  STATUS: HYPOTHESIS -- and this is a NEW unknown created by CAPABILITY #47, not covered by it.
+  #47 proved 8 forms produce 8 TABS; nobody recorded what ORDER they came out in, so the tie-break
+  rule for a duplicated entity name is UNMEASURED. The probe's own order array listed `Person` four
+  times and the observation was a COUNT ("8 tabs showing"), not a sequence.
+  DISCRIMINATING TEST: import and read the tab strip. If Wanted Person and Firearm appear swapped
+  -- or Administrative Message lands next to Article instead of last -- the tie-break is something
+  other than configuration order, and the next thing to try is reordering ONLY the configurations
+  array, since `$entityOrder` is already in the requested sequence.
+  Do not write the tie-break rule into the KB until the rendered strip has been read.
+
 v1.4  2026-09-16  The AM field suffix comes back OFF -- it was never needed and it broke a gate
   CHANGED: FreeTextAM / DestinationCode1-5AM renamed back to FreeText / DestinationCode1-5, in the
            form controls and the QIDM sourceFields alike. Nothing else. 79P/0F/2W/1LIM unchanged.
