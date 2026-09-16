@@ -184,14 +184,36 @@ function Test-TokenWired([string]$devTok, $wiredSet) {
 function Get-DevdocCombinations([string]$txtPath) {
     $raw = [System.IO.File]::ReadAllLines($txtPath)
 
-    # 1. the Basic Queries Supported list bounds which query sections are in scope
+    # 1. the Basic list bounds which transaction sections are in scope.
+    #
+    # !! THE HEADING IS NOT STANDARDISED. Measured 2026-09-16: SC_SLED and CA_CLETS_OCATS say
+    # "Basic Query Transactions", NJ_NJCJIS and TX_TLETS say "Basic Queries Supported". This regex
+    # matched only the second spelling, so $basic came back EMPTY for the first two. It had no
+    # functional consequence at the time ONLY because $basic was returned and never consumed --
+    # which is worse than a bug, it is a dead field that reads like a working one. It is now LIVE
+    # (step 2 uses it as the heading vocabulary), so the spelling matters.
+    # usx-metadata Step 0 already warned about exactly this: "search for both, and confirm by
+    # reading the section, not by the header matching."
+    #
+    # !! AND A BASIC TRANSACTION NEED NOT END IN "Query". SC_SLED's AdministrativeMessage does not,
+    # and requiring the suffix dropped it SILENTLY -- 18 items across 8 queries, `0 FAIL`, no
+    # mention of the 9th transaction anywhere. This tool's own header promises it "FAILS LOUDLY if
+    # it cannot find a Possible Combinations line for a query", but AdministrativeMessage never
+    # became "a query" in this list, so the loud guard had nothing to fire about. A guard cannot
+    # protect a case it never recognised. Same shape as the NJ heading-layout incident that left
+    # PHASE 2p reporting [PASS] over nine invisible blocks for months.
+    #
+    # The name pattern here is DELIBERATELY WIDER than elsewhere and it is SAFE because it is
+    # bounded twice: it only applies INSIDE the Basic block, and that block ends at the first
+    # `Field Name` / `Possible Combinations` line. Step 2 then trusts ONLY these names, so no
+    # stray capitalised word in the body can become a heading.
     $basic = @(); $inBasic = $false
     for ($i = 0; $i -lt $raw.Count; $i++) {
-        if ($raw[$i] -match '^\s*Basic Quer(y|ies) Supported') { $inBasic = $true; continue }
+        if ($raw[$i] -match '^\s*Basic Quer(y|ies)\s+(Supported|Transactions)') { $inBasic = $true; continue }
         if ($inBasic) {
-            if ($raw[$i] -match '^\s*([A-Z][A-Za-z0-9]*Query)\s*$') { $basic += $Matches[1] }
             # the list ends once a Field Name / Possible-Combinations block starts
-            elseif ($raw[$i] -match '^\s*(Field Name|Possible Combinations)') { break }
+            if ($raw[$i] -match '^\s*(Field Name|Possible Combinations)') { break }
+            if ($raw[$i] -match '^\s*([A-Z][A-Za-z0-9]{3,})\s*$') { $basic += $Matches[1] }
         }
     }
 
@@ -210,6 +232,14 @@ function Get-DevdocCombinations([string]$txtPath) {
         if ($raw[$i] -match '^\s*([A-Z][A-Za-z0-9]*Query)\s*$' -or
             $raw[$i] -match '^\s*([A-Z][A-Za-z0-9]*Query)\s{2,}\S') {
             $heads += [pscustomobject]@{ Line = $i; Name = $Matches[1] }
+            continue
+        }
+        # A Basic transaction whose name does NOT end in "Query" (SC_SLED's AdministrativeMessage).
+        # Matched ONLY against $basic -- the devdoc's own list from step 1 -- so the vocabulary is
+        # supplied by the document rather than by a pattern that could swallow any capitalised
+        # word in the body. Without this the transaction is invisible and nothing says so.
+        if ($raw[$i] -match '^\s*([A-Z][A-Za-z0-9]{3,})\s*$' -or $raw[$i] -match '^\s*([A-Z][A-Za-z0-9]{3,})\s{2,}\S') {
+            if ($basic -contains $Matches[1]) { $heads += [pscustomobject]@{ Line = $i; Name = $Matches[1] } }
         }
     }
 
@@ -223,7 +253,12 @@ function Get-DevdocCombinations([string]$txtPath) {
         # the line often wraps; glue following lines until the next blank/heading
         $text = $raw[$i]
         $j = $i + 1
-        while ($j -lt $raw.Count -and $raw[$j].Trim() -ne '' -and $raw[$j] -notmatch '^\s*[A-Z][A-Za-z0-9]*Query\s*$' -and $raw[$j] -notmatch 'Possible Combinations|^\s*Field Name') {
+        # The terminator must also stop at a non-"Query" Basic heading, or a wrapped combination
+        # line would glue the NEXT transaction's text onto this one.
+        while ($j -lt $raw.Count -and $raw[$j].Trim() -ne '' -and
+               $raw[$j] -notmatch '^\s*[A-Z][A-Za-z0-9]*Query\s*$' -and
+               -not ($raw[$j] -match '^\s*([A-Z][A-Za-z0-9]{3,})\s*$' -and $basic -contains $Matches[1]) -and
+               $raw[$j] -notmatch 'Possible Combinations|^\s*Field Name') {
             $text += ' ' + $raw[$j]; $j++
         }
         $text = $text -replace '^.*?Possible Combinations\s*(\(fields within the square brackets are optional\))?\s*',''
@@ -339,7 +374,14 @@ function Invoke-One([string]$jsonPath, [string]$provName, [string]$provDir) {
             if ($c.name -match '^RMS' -or $c.name -match 'Results$') { continue }
             # QIDM name is "<PROVIDER>_<TransactionQuery>"; recover the query name
             $q = $c.name -replace "^$([regex]::Escape($provName))_",''
-            if ($q -notmatch 'Query$') { continue }
+            # !! THE FOURTH PLACE THIS SUFFIX WAS ASSUMED, and the decisive one: SC_SLED's
+            # AdministrativeMessage was dropped from the BUILT side too, so fixing only the devdoc
+            # parser changed nothing -- the comparison needs both sides to see it.
+            # The filter cannot simply be removed: AUTH also carries `combinations`, and it is this
+            # test that keeps it out. So the escape hatch is bounded by the devdoc's OWN Basic list
+            # ($dd.Basic, parsed above) -- AUTH/QMF never appear there, a real Basic transaction
+            # always does.
+            if ($q -notmatch 'Query$' -and @($dd.Basic) -notcontains $q) { continue }
             if (-not $built.ContainsKey($q)) {
                 $built[$q] = [pscustomobject]@{ Wired = (New-Object 'System.Collections.Generic.HashSet[string]'); Sets = @() }
             }
