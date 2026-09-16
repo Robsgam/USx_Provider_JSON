@@ -634,11 +634,32 @@ if ($pairingsConfig) {
 Out ""
 OutColor "--- CHECK 5: Field Type Consistency ---" Yellow
 
+# A row may now be SCOPED to specific providers via an optional `providers` array, and that is
+# what keeps a narrow adjudication from blunting a portfolio gate.
+#
+# WHY IT WAS ADDED (2026-09-16, SC_SLED v1.4). SC_SLED builds raceCode and SexCode as FormInput
+# where 9 and 20 other providers build FormSelect -- NOT because SC's metadata says so, but because
+# LIMITATION #28 breaks codeTypeProvider reverse-lookup once a field sits on a two-QIF entity, and
+# WantedPersonQuery moved to its own tab. Without the trade the platform sends an internal numeric
+# row id instead of the code (AP #1). So the divergence is deliberate and correct HERE.
+# An UNSCOPED row would have said "a FormInput Sex is fine" to ALL 21 providers, silencing a
+# genuine accidental FormInput anywhere else in the portfolio -- exactly the suppression-too-wide
+# failure usx-tooling Step 6 warns about ("a registration that costs coverage and buys nothing is
+# worse than none"). The `purposeCodeDH` row records the mirror-image incident: one unscoped field
+# blocked EVERY provider.
+# Rows WITHOUT `providers` keep their old portfolio-wide meaning, so nothing existing changes.
 $divergencePath = Join-Path $PSScriptRoot "config\accepted_field_divergences.json"
 $acceptedDivergences = @()
+$scopedDivergences = @{}     # fieldId -> @(provider names) ; only those providers are excused
 if (Test-Path $divergencePath) {
     $divConfig = Get-Content $divergencePath -Raw | ConvertFrom-Json
-    $acceptedDivergences = @($divConfig.fields | ForEach-Object { $_.fieldId })
+    foreach ($row in @($divConfig.fields)) {
+        $fid = [string]$row.fieldId
+        $acceptedDivergences += $fid
+        if ($row.PSObject.Properties.Name -contains 'providers' -and @($row.providers).Count -gt 0) {
+            $scopedDivergences[$fid] = @($row.providers | ForEach-Object { [string]$_ })
+        }
+    }
 }
 
 # Build map: fieldId -> { type -> providerList }
@@ -688,7 +709,22 @@ foreach ($fid in ($fieldTypeMap.Keys | Sort-Object)) {
             $parts += "$t in $provList"
         }
         if ($fid -in $acceptedDivergences) {
-            Info "${fid}: $($parts -join ' but ') (accepted divergence)"
+            if ($scopedDivergences.ContainsKey($fid)) {
+                # SCOPED row: excuse it only if every provider on the MINORITY side is named.
+                # The majority type is inferred by provider count, so the row does not have to
+                # restate which type is "normal" -- and a NEW provider drifting to the odd type
+                # still FAILs, which is the whole point of scoping it.
+                $ordered   = @($types | Sort-Object { $typeMap[$_].Count } -Descending)
+                $minority  = @($ordered | Select-Object -Skip 1 | ForEach-Object { $typeMap[$_] } | ForEach-Object { $_ })
+                $unexcused = @($minority | Where-Object { $_ -notin $scopedDivergences[$fid] } | Sort-Object -Unique)
+                if ($unexcused.Count -eq 0) {
+                    Info "${fid}: $($parts -join ' but ') (accepted divergence, SCOPED to $($scopedDivergences[$fid] -join ','))"
+                } else {
+                    Fail "${fid}: $($parts -join ' but ') -- the accepted divergence is SCOPED to $($scopedDivergences[$fid] -join ','), so $($unexcused -join ',') is NOT excused"
+                }
+            } else {
+                Info "${fid}: $($parts -join ' but ') (accepted divergence)"
+            }
         } else {
             Fail "${fid}: $($parts -join ' but ')"
         }

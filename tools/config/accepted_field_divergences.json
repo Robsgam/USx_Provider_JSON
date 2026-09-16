@@ -25,6 +25,18 @@
       "fieldId": "relatedSearchHitIndicator",
       "reason": "Alternate casing of RelatedHitSearchIndicator used by some CA providers.",
       "types": ["FormInput", "FormSelect"]
+    },
+    {
+      "fieldId": "raceCode",
+      "providers": ["SC_SLED"],
+      "reason": "SCOPED TO SC_SLED ONLY -- everywhere else a FormInput raceCode is still a FAIL. This is NOT a 'both are valid' row like the ones above: it is a capability we GAVE UP, on purpose, and the row exists so the reason survives. SC_SLED v1.3 moved WantedPersonQuery to its OWN TAB at Rob's request ('now move wanted person to its own tab' / 'start with option A  we can work backwards if we have to'), which is possible because tabs are keyed by QUERYINPUTFORM not by entity (CAPABILITY #47). But LIMITATION #28 breaks codeTypeProvider reverse-lookup for any entity carrying two QIFs, and AP #1 says the consequence is the platform transmitting its INTERNAL NUMERIC ROW ID instead of the code -- silently wrong Race data to SLED, which is worse than a clumsier control. So raceCode is a FormInput here with the valid values in its label ('type W, B, I, A or U'), and its codeTypeProvider is removed from the wpAttrs attribute only. TO WORK BACKWARDS: move the card back onto Person and restore Sel + codeTypeProvider; that is the v1.2 shape.",
+      "types": ["FormInput", "FormSelect"]
+    },
+    {
+      "fieldId": "SexCode",
+      "providers": ["SC_SLED"],
+      "reason": "SCOPED TO SC_SLED ONLY -- a FormInput SexCode on any of the other 20 providers is still a FAIL, which matters because this is the single most widely-built control in the portfolio. Same cause as the raceCode row: the WantedPerson tab puts SexCode on a two-QIF entity, LIMITATION #28 kills its reverse-lookup, and AP #1 makes the untranslated value an internal numeric id on the wire. Label carries the values ('type M, F or U'). NOTE that SC_SLED ALSO builds SexCode as a FormSelect WITH codeTypeProvider on its Person tab (Driver License card) and that one is UNAFFECTED -- Person still has exactly ONE QIF -- so this provider legitimately contains both shapes and the divergence is intra-provider as well as cross-provider.",
+      "types": ["FormInput", "FormSelect"]
     }
   ]
 }

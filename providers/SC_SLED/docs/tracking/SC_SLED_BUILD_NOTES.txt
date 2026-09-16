@@ -2,6 +2,45 @@
   BUILD NOTES: SC_SLED
   Created: 2026-09-14
 ================================================================
+v1.4  2026-09-16  The AM field suffix comes back OFF -- it was never needed and it broke a gate
+  CHANGED: FreeTextAM / DestinationCode1-5AM renamed back to FreeText / DestinationCode1-5, in the
+           form controls and the QIDM sourceFields alike. Nothing else. 79P/0F/2W/1LIM unchanged.
+  REASON:  v1.2 suffixed these ids as belt-and-braces against LIMITATION #26's shared field pool.
+           IT PROTECTED AGAINST NOTHING: Article's own controls are ArticleSerialNumber and
+           ArticleTypeCode, so there was never a name in common with FreeText/DestinationCode -- the
+           pool was already disjoint by construction.
+           AND IT COST A BLOCKING GATE. `audit_devdoc_combinations` compares the devdoc's field
+           names against the combination's SOURCEFIELDS, canonicalised by `Get-CanonicalToken`,
+           which strips the established isolation suffixes `dh$` / `cch$` / `dr$` -- not `am$`. So
+           `freetextam` stopped matching the devdoc's `FreeText` and enforce reported
+           "AdministrativeMessage #1 is devdoc-listed but UNBUILT: mandatory field(s) FreeText,
+           DestinationCode wired nowhere" on a provider that builds it.
+           THE OTHER FIX WAS REJECTED ON PURPOSE: adding `am$` to that canonicaliser would widen a
+           shared function feeding a BLOCKING gate across all 21 providers, and `am$` is a much
+           riskier string to strip globally than `dh`/`dr`. Widening a portfolio-wide canonicaliser
+           to accommodate one provider's unnecessary cosmetic choice is the wrong trade. Use a
+           suffix here only if a REAL collision appears, and add `am$` in the same change.
+
+  ⚠️ HOW IT GOT SHIPPED IN v1.2 AT ALL -- a process failure, not a build one. I committed v1.2
+  calling it clean on the strength of the VALIDATOR (79P/0F/0W) and never completed an
+  `enforce -Provider SC_SLED` run on it. The devdoc-combination gate lives in enforce PHASE 2p, not
+  in the validator, so the break was invisible to the thing I checked. It surfaced only when v1.3's
+  enforce finally ran. "The validator passed" is not "enforce passed", and I have the rule written
+  down in two places.
+
+  ALSO IN THIS VERSION, from the same enforce run -- the CROSS-PROVIDER consequence of v1.3's
+  Option A, which I had not anticipated:
+      [FAIL] raceCode: FormInput in SC_SLED but FormSelect in 9 providers
+      [FAIL] SexCode:  FormInput in SC_SLED but FormSelect in 20 providers
+  `audit_cross_provider` CHECK 5 enforces field-type consistency portfolio-wide, so making those
+  two controls type-ins on one provider blocked the whole audit. Registered in
+  tools\config\accepted_field_divergences.json -- but SCOPED, which needed a tool change:
+  that registry keyed on fieldId ALONE, so an unscoped row would have told all 21 providers a
+  FormInput SexCode is fine and silenced a genuine accident anywhere else. CHECK 5 now honours an
+  optional `providers` array and FAILS any unlisted provider on the minority side. Proven both
+  ways: scoped to SC_SLED it reports INFO and the audit PASSES; deliberately mis-scoped to TN_TIES
+  it FAILS naming SC_SLED as not excused. Rows without `providers` keep their old meaning.
+
 v1.3  2026-09-16  WANTED PERSON GETS ITS OWN TAB -- and three dropdowns became type-ins to pay for it
   CHANGED: 1. `CARD_PER_WANTED` REMOVED from the Person QIF. Person: 3 cards/20 fields -> 2/10.
            2. `ENTITY_WantedPerson` added as its own QUERYINPUTFORM, targetEntity='Firearm'.

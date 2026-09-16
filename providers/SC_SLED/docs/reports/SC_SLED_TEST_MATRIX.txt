@@ -1,4 +1,4 @@
-SC_SLED v1.3 -- TEST MATRIX
+SC_SLED v1.4 -- TEST MATRIX
 ==================================================
 Generated: 2026-09-16
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -34,9 +34,9 @@ Firearm (1 card, 21 fields):
 
 Article (1 card, 6 fields):
   CARD_AM (ADMINISTRATIVE MESSAGE -- FREE TEXT TO UP TO FIVE AGENCIES):
-    ROW 1: FreeTextAM [Inp 501]
-    ROW 2: DestinationCodeAM [Inp 9], DestinationCode2AM [Inp 9], DestinationCode3AM [Inp 9]
-    ROW 3: DestinationCode4AM [Inp 9], DestinationCode5AM [Inp 9]
+    ROW 1: FreeText [Inp 501]
+    ROW 2: DestinationCode [Inp 9], DestinationCode2 [Inp 9], DestinationCode3 [Inp 9]
+    ROW 3: DestinationCode4 [Inp 9], DestinationCode5 [Inp 9]
 
 Boat (1 card, 3 fields):
   CARD_BOAT (BOAT -- BY HULL ID, OR BY REGISTRATION NUMBER):
@@ -163,9 +163,9 @@ ENTITY 5: ARTICLE (3 tests -- 1 card, 2 combos)
 --  ----------  --------------------------------------------------  ------
 38  Article     QA+Serial                                           [    ]
               Expected: ArticleSingleQuery fires (QA)
-39  Article     AM+AM              FreeTextAM=TEST                  [    ]
+39  Article     AM+AM              FreeText=TEST                    [    ]
               Expected: AdministrativeMessage fires (AM)
-40  Article     AM+AM              + DestinationCodeAM, DestinationCode2AM, DestinationCode3AM, DestinationCode4AM [    ]
+40  Article     AM+AM              + DestinationCode, DestinationCode2, DestinationCode3, DestinationCode4 [    ]
               Expected: any[] fields present in XML output.
 
 ================================================================================
@@ -182,4 +182,4 @@ COMBO COVERAGE (18/18):
   BoatQuery: 2/2 -- T19(BQ.H), T21(BQ.R)
   AdministrativeMessage: 1/1 -- T39(AM)
 
-IMPORT FILE: SC_SLED_v1.3.json
+IMPORT FILE: SC_SLED_v1.4.json

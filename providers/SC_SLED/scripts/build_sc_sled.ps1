@@ -35,7 +35,7 @@ $repoRoot    = Split-Path (Split-Path $providerDir -Parent) -Parent
 . (Join-Path $repoRoot 'tools\_build_provider_helpers.ps1')
 
 $providerName = 'SC_SLED'
-$Version      = '1.3'
+$Version      = '1.4'
 $currentYear  = (Get-Date).Year.ToString()
 
 Write-Host ''
@@ -477,12 +477,12 @@ $boatQuery = Build-Qidm -ProviderName $providerName -Query 'BoatQuery' `
 #     needed." So the card is hosted on Vehicle and the open questions stay in #46 unasked.
 # =====================================================================
 $amAttrs = @(
-    Build-QidmAttribute -Name 'FreeText'         -Size 501 -SourceField @('FreeTextAM')
-    Build-QidmAttribute -Name 'DestinationCode'  -Size 9   -SourceField @('DestinationCodeAM')
-    Build-QidmAttribute -Name 'DestinationCode2' -Size 9   -SourceField @('DestinationCode2AM')
-    Build-QidmAttribute -Name 'DestinationCode3' -Size 9   -SourceField @('DestinationCode3AM')
-    Build-QidmAttribute -Name 'DestinationCode4' -Size 9   -SourceField @('DestinationCode4AM')
-    Build-QidmAttribute -Name 'DestinationCode5' -Size 9   -SourceField @('DestinationCode5AM')
+    Build-QidmAttribute -Name 'FreeText'         -Size 501 -SourceField @('FreeText')
+    Build-QidmAttribute -Name 'DestinationCode'  -Size 9   -SourceField @('DestinationCode')
+    Build-QidmAttribute -Name 'DestinationCode2' -Size 9   -SourceField @('DestinationCode2')
+    Build-QidmAttribute -Name 'DestinationCode3' -Size 9   -SourceField @('DestinationCode3')
+    Build-QidmAttribute -Name 'DestinationCode4' -Size 9   -SourceField @('DestinationCode4')
+    Build-QidmAttribute -Name 'DestinationCode5' -Size 9   -SourceField @('DestinationCode5')
 )
 # ⚠️ DEVDOC AND METADATA DISAGREE HERE AND METADATA WINS. The devdoc marks DestinationCode as
 # MANDATORY ("M/C/O  M O O O O M") and lists combination 1 as
@@ -495,8 +495,8 @@ $amCombos = @(
     # primaryFieldReference holds the ATTRIBUTE name, which does not. Mixing those two namespaces
     # is the mistake this line is shaped to avoid.
     Build-QidmCombo -KeyReference 'AM' -PrimaryFieldReference 'FreeText' `
-        -Set @('FreeTextAM') `
-        -Any @('DestinationCodeAM','DestinationCode2AM','DestinationCode3AM','DestinationCode4AM','DestinationCode5AM')
+        -Set @('FreeText') `
+        -Any @('DestinationCode','DestinationCode2','DestinationCode3','DestinationCode4','DestinationCode5')
 )
 # v1.2: TargetEntity is 'Article' -- a RECOGNISED record kind, which is what makes this form render
 # AT ALL (LIMITATION #46: an unrecognised value is silently dropped). It gets its OWN TAB because
@@ -800,26 +800,39 @@ $boatForm = [PSCustomObject]@{
 #     (1 card / 2 fields / 1 combo), so there is the least to interact with.
 #
 # !! THE FIELD POOL IS SHARED ACROSS QIFs ON ONE ENTITY -- CONFIRMED, not a guess: LIMITATION #26,
-# root-caused in #28 from three FL_FCIC tests against a single-QIF control. So AM-SUFFIXED FIELD
-# IDS ARE LOAD-BEARING, not tidiness: LIMITATION #1 makes the wire a UNION across every matching
-# combination, and unique ids are what stop an Article fill from satisfying or over-sending into
-# this form. Same reason DriverHistory uses DH-suffixes. Do NOT "simplify" these names.
+# root-caused in #28 from three FL_FCIC tests against a single-QIF control. LIMITATION #1 then makes
+# the wire a UNION across every matching combination, so a name shared with the host entity could
+# cross-satisfy or over-send.
+#
+# ⚠️ v1.2 SUFFIXED THESE FIELDS (FreeTextAM, DestinationCodeAM...) AND v1.4 TOOK THE SUFFIX BACK OFF.
+# It was never needed, and it cost a BLOCKING gate. Article's own controls are ArticleSerialNumber
+# and ArticleTypeCode -- there is NO name in common with FreeText/DestinationCode1-5, so the pool is
+# already disjoint by construction and the suffix protected against nothing.
+# What it DID do: `audit_devdoc_combinations` compares the devdoc's field names against the
+# combination's SOURCEFIELDS, canonicalised by `Get-CanonicalToken`, which strips the established
+# isolation suffixes `dh$` / `cch$` / `dr$` -- not `am$`. So `freetextam` no longer matched the
+# devdoc's `FreeText` and enforce reported "AdministrativeMessage #1 is devdoc-listed but UNBUILT:
+# mandatory field(s) FreeText, DestinationCode wired nowhere" on a provider that builds it.
+# The alternative fix was adding `am$` to that canonicaliser -- REJECTED: it is shared by a BLOCKING
+# gate across all 21 providers, and `am$` is a far riskier string to strip globally than `dh`/`dr`.
+# Widening a shared canonicaliser to accommodate one provider's unnecessary cosmetic choice is the
+# wrong trade. USE A SUFFIX HERE ONLY IF A REAL COLLISION APPEARS, and add `am$` at the same time.
 $amLayout = MakeLayouts @(
     @{
         id    = 'CARD_AM'
         title = 'ADMINISTRATIVE MESSAGE -- FREE TEXT TO UP TO FIVE AGENCIES'
         rows  = @(
             @{ id = 'ROW_AM_1'; cols = @('12'); fields = @(
-                @{ id = 'FreeTextAM_Input'; node = Inp 'FreeTextAM' 'Message (required, up to 501 characters)' '501' 'ROW_AM_1' }
+                @{ id = 'FreeText_Input'; node = Inp 'FreeText' 'Message (required, up to 501 characters)' '501' 'ROW_AM_1' }
             )}
             @{ id = 'ROW_AM_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'DestinationCodeAM_Input';  node = Inp 'DestinationCodeAM' 'Destination ORI (devdoc expects at least one)' '9' 'ROW_AM_2' }
-                @{ id = 'DestinationCode2AM_Input'; node = Inp 'DestinationCode2AM' 'Destination ORI 2 (optional)' '9' 'ROW_AM_2' }
-                @{ id = 'DestinationCode3AM_Input'; node = Inp 'DestinationCode3AM' 'Destination ORI 3 (optional)' '9' 'ROW_AM_2' }
+                @{ id = 'DestinationCode_Input';  node = Inp 'DestinationCode' 'Destination ORI (devdoc expects at least one)' '9' 'ROW_AM_2' }
+                @{ id = 'DestinationCode2_Input'; node = Inp 'DestinationCode2' 'Destination ORI 2 (optional)' '9' 'ROW_AM_2' }
+                @{ id = 'DestinationCode3_Input'; node = Inp 'DestinationCode3' 'Destination ORI 3 (optional)' '9' 'ROW_AM_2' }
             )}
             @{ id = 'ROW_AM_3'; cols = @('4','4'); fields = @(
-                @{ id = 'DestinationCode4AM_Input'; node = Inp 'DestinationCode4AM' 'Destination ORI 4 (optional)' '9' 'ROW_AM_3' }
-                @{ id = 'DestinationCode5AM_Input'; node = Inp 'DestinationCode5AM' 'Destination ORI 5 (optional)' '9' 'ROW_AM_3' }
+                @{ id = 'DestinationCode4_Input'; node = Inp 'DestinationCode4' 'Destination ORI 4 (optional)' '9' 'ROW_AM_3' }
+                @{ id = 'DestinationCode5_Input'; node = Inp 'DestinationCode5' 'Destination ORI 5 (optional)' '9' 'ROW_AM_3' }
             )}
         )
     }

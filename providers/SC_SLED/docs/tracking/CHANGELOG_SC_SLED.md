@@ -2,14 +2,33 @@
 
 Auto-generated from `SC_SLED_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.3** | Generated: 2026-09-16
+Current: **v1.4** | Generated: 2026-09-16
 
 ---
 
-## v1.3 -- 2026-09-16 -- Pipeline rebuild
+## v1.4 -- 2026-09-16 -- Pipeline rebuild
 
 **CHANGED:** Rebuilt via pipeline.ps1
 **REASON:** Scheduled rebuild
+
+## v1.3 -- 2026-09-16 -- WANTED PERSON GETS ITS OWN TAB -- and three dropdowns became type-ins to pay for it
+
+**CHANGED:** 1. `CARD_PER_WANTED` REMOVED from the Person QIF. Person: 3 cards/20 fields -> 2/10.
+         2. `ENTITY_WantedPerson` added as its own QUERYINPUTFORM, targetEntity='Firearm'.  
+            SEVEN TABS now. Ordered before Administrative Message.  
+         3. THE NEW TAB IS SELF-CONTAINED: it gained its own Name (Last/First/Middle/Suffix),  
+            BirthDate, SexCode, OperatorLicenseNumber and ImageIndicator controls -- 13 fields  
+            -> 18.  
+         4. THREE CONTROLS CONVERTED Sel -> Inp, and their `-CodeTypeProvider` removed from the  
+            `$wpAttrs` attributes ONLY: raceCode (NIBRS), SexCode (NIBRS), LicensePlateStateCode  
+            (NCIC). Labels now carry the valid values ("type M, F or U" / "type W, B, I, A or U"  
+            / "type the 2-letter code").  
+         Validator 79P/0F/0W/1LIM -> 79P/0F/2W/1LIM.  
+**REASON:**  Rob: "now move wanted person to its own tab", then after being shown the cost: "start
+         with option A  we can work backwards if we have to".  
+         Possible at all because of CAPABILITY #47 -- tabs are keyed by QUERYINPUTFORM, not by  
+         entity. It also delivers the ORIGINAL request behind all of this: Person is decrowded,  
+         halved from 20 fields to 10.  
 
 ## v1.2 -- 2026-09-16 -- ADMINISTRATIVE MESSAGE GETS ITS OWN TAB -- tabs are per-FORM, not per-entity
 
