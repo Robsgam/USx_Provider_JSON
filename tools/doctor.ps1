@@ -227,6 +227,21 @@ try {
 }
 
 Emit ""
+Emit "--- EXTENSION VERSION (a changed extension must announce a new BUILD; audit_extension_version.ps1) ---"
+# Rob 2026-09-16: "next time advance the extnsion version every time you make a change wso we can
+# track it better." The extension reloads BY HAND, so the console BUILD string is the ONLY way to
+# tell "my fix is live" from "the reload silently did not take". Enforced in the pre-commit hook;
+# also shown here because a hook is bypassable with --no-verify and the dashboard is not.
+try {
+    $ev = & powershell -NoProfile -ExecutionPolicy Bypass -File "$tool\audit_extension_version.ps1" *>&1 | Out-String
+    ($ev.TrimEnd() -split "`n") |
+        Where-Object { $_ -notmatch '^=+$' -and $_ -notmatch 'EXTENSION VERSION GATE --' } |
+        ForEach-Object { Emit $_ }
+} catch {
+    Emit "  [WARN] audit_extension_version.ps1 failed: $($_.Exception.Message)"
+}
+
+Emit ""
 Emit "--- CONFIG-PULL VERDICT (a pull that got nothing must not read green; probe_pull_verdict.ps1) ---"
 # The READ path's mirror of the deploy-guard block above. Until 2026-09-16 both config-pull
 # buttons coloured themselves from `configsFailed`, a counter that could only move if the

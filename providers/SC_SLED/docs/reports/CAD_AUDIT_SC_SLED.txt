@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: SC_SLED
-  Source: SC_SLED_v1.2.json
-  Generated: 2026-09-16 15:28
+  Source: SC_SLED_v1.3.json
+  Generated: 2026-09-16 16:26
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: SC_SLED_v1.2
+ CAD AUDIT: SC_SLED_v1.3
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -38,13 +38,13 @@ CAD AUDIT
     [PASS] nameSuffix: in QIF as 'NameSuffix' (PascalCase USx fieldIds)
     [PASS] birthDate: in QIF as 'BirthDate' (PascalCase USx fieldIds)
     [PASS] sexCode: in QIF as 'SexCode' (PascalCase USx fieldIds)
-    [PASS] raceCode: in QIF and CAD list
+    [INFO] raceCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] imageIndicator: in QIF as 'ImageIndicator' (PascalCase USx fieldIds)
     [PASS] registrationState: in QIF as 'RegistrationState' (PascalCase USx fieldIds)
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] relatedHitSearchIndicator: in QIF as 'RelatedHitSearchIndicator' (PascalCase USx fieldIds)
-    [PASS] socialSecurityNumber: in QIF as 'SocialSecurityNumber' (PascalCase USx fieldIds)
+    [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] socialSecurityNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] addressCity: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] addressState: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -66,8 +66,30 @@ CAD AUDIT
     [INFO] BirthDateDR: in QIF, not in CAD list (provider-specific)
     [INFO] SexCodeDR: in QIF, not in CAD list (provider-specific)
     [INFO] ImageIndicatorDR: in QIF, not in CAD list (provider-specific)
+  Firearm:
+    [PASS] serialNumber: in QIF and CAD list
+    [INFO] firearmMake: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] gunCaliber: in QIF as 'GunCaliber' (PascalCase USx fieldIds)
+    [PASS] gunModel: in QIF as 'GunModel' (PascalCase USx fieldIds)
+    [INFO] gunTypeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] imageIndicator: in QIF as 'ImageIndicator' (PascalCase USx fieldIds)
+    [PASS] nameFirst: in QIF as 'NameFirst' (PascalCase USx fieldIds)
+    [PASS] nameLast: in QIF as 'NameLast' (PascalCase USx fieldIds)
+    [PASS] nameMiddle: in QIF as 'NameMiddle' (PascalCase USx fieldIds)
+    [PASS] nameSuffix: in QIF as 'NameSuffix' (PascalCase USx fieldIds)
+    [PASS] birthDate: in QIF as 'BirthDate' (PascalCase USx fieldIds)
+    [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] relatedHitSearchIndicator: in QIF as 'RelatedHitSearchIndicator' (PascalCase USx fieldIds)
+    [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] age: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] GunMake: in QIF, not in CAD list (provider-specific)
     [INFO] NCICNumber: in QIF, not in CAD list (provider-specific)
     [INFO] OriginatingAgencyCaseNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] SexCode: in QIF, not in CAD list (provider-specific)
+    [INFO] raceCode: in QIF, not in CAD list (provider-specific)
+    [INFO] OperatorLicenseNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] SocialSecurityNumber: in QIF, not in CAD list (provider-specific)
     [INFO] FBINumber: in QIF, not in CAD list (provider-specific)
     [INFO] MiscellaneousNumber: in QIF, not in CAD list (provider-specific)
     [INFO] ExpandedNameSearchCode: in QIF, not in CAD list (provider-specific)
@@ -76,24 +98,6 @@ CAD AUDIT
     [INFO] LicensePlateStateCode: in QIF, not in CAD list (provider-specific)
     [INFO] VehicleIdentificationNumber: in QIF, not in CAD list (provider-specific)
     [INFO] VehicleMakeCode: in QIF, not in CAD list (provider-specific)
-  Firearm:
-    [PASS] serialNumber: in QIF and CAD list
-    [INFO] firearmMake: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] gunCaliber: in QIF as 'GunCaliber' (PascalCase USx fieldIds)
-    [PASS] gunModel: in QIF as 'GunModel' (PascalCase USx fieldIds)
-    [INFO] gunTypeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] nameLast: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] birthDate: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] age: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] GunMake: in QIF, not in CAD list (provider-specific)
   Article:
     [INFO] serialNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] articleTypeCode: in QIF as 'ArticleTypeCode' (PascalCase USx fieldIds)
@@ -185,6 +189,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 70 PASS / 0 FAIL / 0 WARN / 85 INFO
+Total: 74 PASS / 0 FAIL / 0 WARN / 85 INFO
 
 

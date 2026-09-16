@@ -29,6 +29,19 @@ rc=0
 if echo "$staged" | grep -q '^automation/extension/.*\.js$'; then
     echo "[pre-commit] extension JS staged -- running audit_extension_syntax.ps1"
     powershell -NoProfile -ExecutionPolicy Bypass -File tools/audit_extension_syntax.ps1 -Quiet || rc=1
+
+    # Rob, 2026-09-16: "next time advance the extnsion version every time you make a change wso we
+    # can track it better." The extension is reloaded BY HAND, so the BUILD string printed to the
+    # console is the ONLY way to tell "my fix is live" from "the reload silently did not take" --
+    # ui.js says exactly that in its own banner. I bumped it correctly on 09-15, did NOT on 09-16,
+    # and the result was a debugging session with one avoidable unknown in it.
+    # The knowledge was present and the HABIT was the defect, which is the case a gate is for.
+    # Fix on failure:  tools\audit_extension_version.ps1 -Bump
+    echo "[pre-commit] extension JS staged -- running audit_extension_version.ps1"
+    powershell -NoProfile -ExecutionPolicy Bypass -File tools/audit_extension_version.ps1 -Staged -Quiet || rc=1
+    if [ $rc -ne 0 ]; then
+        powershell -NoProfile -ExecutionPolicy Bypass -File tools/audit_extension_version.ps1 -Staged 2>&1 | grep -A5 'FAIL'
+    fi
 fi
 
 if echo "$staged" | grep -q '^tools/.*\.ps1$'; then

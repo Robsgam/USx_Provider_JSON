@@ -35,7 +35,7 @@ $repoRoot    = Split-Path (Split-Path $providerDir -Parent) -Parent
 . (Join-Path $repoRoot 'tools\_build_provider_helpers.ps1')
 
 $providerName = 'SC_SLED'
-$Version      = '1.2'
+$Version      = '1.3'
 $currentYear  = (Get-Date).Year.ToString()
 
 Write-Host ''
@@ -321,8 +321,8 @@ $wpAttrs = @(
         -Rule ([PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ', ' ', ' ') })
     Build-QidmAttribute -Name 'BirthDate' -Size 8 -SourceField @('BirthDate') `
         -Rule ([PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') })
-    Build-QidmAttribute -Name 'SexCode' -Size 1 -SourceField @('SexCode') -CodeTypeProvider 'NIBRS'
-    Build-QidmAttribute -Name 'RaceCode' -Size 1 -SourceField @('raceCode') -CodeTypeProvider 'NIBRS'
+    Build-QidmAttribute -Name 'SexCode' -Size 1 -SourceField @('SexCode')   # v1.3 NO codeTypeProvider -- see wpForm
+    Build-QidmAttribute -Name 'RaceCode' -Size 1 -SourceField @('raceCode')   # v1.3 NO codeTypeProvider -- see wpForm
     Build-QidmAttribute -Name 'OperatorLicenseNumber'       -Size 20 -SourceField @('OperatorLicenseNumber')
     Build-QidmAttribute -Name 'SocialSecurityNumber'        -Size 9  -SourceField @('SocialSecurityNumber')
     Build-QidmAttribute -Name 'FBINumber'                   -Size 9  -SourceField @('FBINumber')
@@ -330,7 +330,7 @@ $wpAttrs = @(
     Build-QidmAttribute -Name 'NCICNumber'                  -Size 10 -SourceField @('NCICNumber')
     Build-QidmAttribute -Name 'OriginatingAgencyCaseNumber' -Size 20 -SourceField @('OriginatingAgencyCaseNumber')
     Build-QidmAttribute -Name 'LicensePlateNumber'          -Size 10 -SourceField @('LicensePlateNumber')
-    Build-QidmAttribute -Name 'LicensePlateStateCode'       -Size 2  -SourceField @('LicensePlateStateCode') -CodeTypeProvider 'NCIC'
+    Build-QidmAttribute -Name 'LicensePlateStateCode'       -Size 2  -SourceField @('LicensePlateStateCode')   # v1.3 NO codeTypeProvider -- see wpForm
     Build-QidmAttribute -Name 'VehicleIdentificationNumber' -Size 20 -SourceField @('VehicleIdentificationNumber')
     Build-QidmAttribute -Name 'VehicleMakeCode'             -Size 24 -SourceField @('VehicleMakeCode')
     Build-QidmAttribute -Name 'ImageIndicator'              -Size 1  -SourceField @('ImageIndicator')
@@ -376,7 +376,7 @@ $wpCombos = @(
         ) -Defaults $imgDefault
 )
 $wpQuery = Build-Qidm -ProviderName $providerName -Query 'WantedPersonQuery' `
-    -TargetEntity 'Person' -QueryLabel 'Wanted Person' `
+    -TargetEntity 'Firearm' -QueryLabel 'Wanted Person' `
     -Attributes $wpAttrs -Combinations $wpCombos `
     -Description 'WantedPersonQuery -- QWA.NCIC, QWA.OCA, QWA.P, QWA.VM, QWA.N. All five alternatives declare keyRef QWA in metadata, so all five carry synthetic suffixes. Cross-entity: two combos search by vehicle identifiers on the Person entity. Identifier-priority guardrails keep the broad name search behind the unique handles.'
 
@@ -612,41 +612,99 @@ $perLayout = MakeLayouts @(
             )}
         )
     }
-    @{
-        id    = 'CARD_PER_WANTED'
-        title = 'WANTED PERSON -- NCIC NUMBER, CASE NUMBER, VEHICLE, OR NAME'
-        rows  = @(
-            @{ id = 'ROW_WP_1'; cols = @('6','6'); fields = @(
-                @{ id = 'NCICNumber_Input';                  node = Inp 'NCICNumber' 'NCIC Number (searched alone, takes priority)' '10' 'ROW_WP_1' }
-                @{ id = 'OriginatingAgencyCaseNumber_Input';  node = Inp 'OriginatingAgencyCaseNumber' 'Originating Agency Case Number (with last name)' '20' 'ROW_WP_1' }
-            )}
-            @{ id = 'ROW_WP_2'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'raceCode_Input';             node = Sel 'raceCode' 'Race (optional)' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_WP_2' }
-                @{ id = 'SocialSecurityNumber_Input'; node = Inp 'SocialSecurityNumber' 'SSN (optional)' '9' 'ROW_WP_2' }
-                @{ id = 'FBINumber_Input';            node = Inp 'FBINumber' 'FBI Number (optional)' '9' 'ROW_WP_2' }
-                @{ id = 'MiscellaneousNumber_Input';  node = Inp 'MiscellaneousNumber' 'Miscellaneous Number (optional)' '15' 'ROW_WP_2' }
-            )}
-            @{ id = 'ROW_WP_3'; cols = @('4','4','4'); fields = @(
-                @{ id = 'ExpandedNameSearchCode_Input';      node = Inp 'ExpandedNameSearchCode' 'Expanded Name Search (optional)' '1' 'ROW_WP_3' }
-                @{ id = 'ExpandedBirthDateSearchCode_Input'; node = Inp 'ExpandedBirthDateSearchCode' 'Expanded DOB Search (optional)' '1' 'ROW_WP_3' }
-                @{ id = 'RelatedHitSearchIndicator_Input';   node = Inp 'RelatedHitSearchIndicator' 'Related Hit Search (optional)' '1' 'ROW_WP_3' }
-            )}
-            @{ id = 'ROW_WP_4'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'WP_LicensePlateNumber_Input';    node = Inp 'LicensePlateNumber' 'Plate Number (wanted vehicle -- needs plate state)' '10' 'ROW_WP_4' }
-                @{ id = 'LicensePlateStateCode_Input';    node = Sel 'LicensePlateStateCode' 'Plate State' @{ attributeTypeId = 'STATE' } 'ROW_WP_4' }
-                @{ id = 'WP_VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN (wanted vehicle -- needs make)' '20' 'ROW_WP_4' }
-                @{ id = 'WP_VehicleMakeCode_Input';       node = Sel 'VehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE' } 'ROW_WP_4' }
-            )}
-        )
-    }
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person -- 3 cards (Phase 1). Driver License (QWDQ name / DQ OLN), Driver Registration (DQ.RN / DQ.RO, DR-suffixed and isolated because metadata gives both transactions keyRef DQ with identical OLN sets), Wanted Person (QWA.NCIC / .OCA / .P / .VM / .N, cross-entity on plate and VIN).'
+    description  = 'Person -- 2 cards (v1.3, was 3). Driver License (QWDQ name / DQ OLN) and Driver Registration (DQ.RN / DQ.RO, DR-suffixed and isolated because metadata gives both transactions keyRef DQ with identical OLN sets). WANTED PERSON MOVED TO ITS OWN TAB (see the wpForm block) -- which is also why Person still has exactly ONE QIF and its SexCode/SexCodeDR dropdowns keep working.'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'
     type         = 'QUERYINPUTFORM'
     targetEntity = 'Person'
+}
+
+# ---- WANTED PERSON -- ITS OWN TAB (v1.3) --------------------------------------------------------
+# Rob 2026-09-16: "now move wanted person to its own tab", then on being shown the cost:
+# "start with option A  we can work backwards if we have to".
+# Possible at all because tabs are keyed by QUERYINPUTFORM, not by entity -- CAPABILITY #47,
+# LIVE-PROVEN (8 forms -> 8 tabs). Person drops 3 cards -> 2, the original decrowding request.
+#
+# !! HOST = Firearm, MEASURED NOT GUESSED. LIMITATION #28 breaks codeTypeProvider reverse-lookup on
+# any entity carrying two QIFs, and #26 names the cause as a SHARED FIELD POOL -- so overlap was
+# measured against every candidate. Denominator printed FIRST, because the first run of that probe
+# extracted 0 fields and would have called every host "disjoint" vacuously:
+#     Firearm  7 fields  overlap 0  DISJOINT  <- chosen; also the only single-combo host, so the
+#     Boat     6 fields  overlap 0  DISJOINT     least interaction with LIMITATION #1 union-wire
+#     Article  5 fields  overlap 0  DISJOINT  (already hosts Administrative Message)
+#     Vehicle 10 fields  overlap 3  Plate / VIN / MakeCode -- rejected
+#
+# !! THREE DROPDOWNS BECAME TYPE-INS AND THAT IS THE PRICE OF THE TAB. I told Rob it was one
+# (Race). It is three: this QIDM declares codeTypeProvider on RaceCode (NIBRS), SexCode (NIBRS) AND
+# LicensePlateStateCode (NCIC). The validator had flagged only raceCode because SexCode had not yet
+# been added to this form. On a two-QIF entity all three lose reverse-lookup, and AP #1 says the
+# platform then sends its internal numeric row id instead of the code -- silently wrong Race/Sex/
+# State values to SLED, which is worse than a clumsier control. So all three are FormInputs and
+# their codeTypeProvider is removed from the QIDM attributes.
+#   - labels carry the valid values, so the officer is not guessing at a bare box
+#   - Person's OWN SexCode dropdown is UNTOUCHED: Person still has exactly ONE QIF, so its
+#     reverse-lookup still works. The trade is scoped to this tab.
+# TO WORK BACKWARDS: restore the three to Sel with their codeTypeProvider and move this card back
+# onto Person. That is the v1.2 shape, one revert.
+#
+# !! THE TAB MUST BE SELF-CONTAINED. QWA.N and QWA.OCA search by NAME and the name boxes lived on
+# the Driver License card, shared through the Person entity. The first v1.3 attempt moved the card
+# without them and the validator FAILED: "QWA.OCA / QWA.N: unresolvable set[] fields: NameLast,
+# NameFirst". So this form carries its own Name/DOB/Sex/OLN/Image controls -- the same reasoning
+# that gives DriverHistory its DH-suffixed set.
+# Field ids are deliberately NOT suffixed: pools are per-ENTITY and Firearm shares none of these
+# names, so the QIDM sourceFields need no change.
+$wpLayout = MakeLayouts @(
+    @{
+        id    = 'CARD_WP_ID'
+        title = 'WANTED PERSON -- BY NCIC NUMBER, CASE NUMBER, NAME, OR VEHICLE'
+        rows  = @(
+            @{ id = 'ROW_WP_1'; cols = @('6','6'); fields = @(
+                @{ id = 'NCICNumber_Input';                  node = Inp 'NCICNumber' 'NCIC Number (searched alone, takes priority)' '10' 'ROW_WP_1' }
+                @{ id = 'OriginatingAgencyCaseNumber_Input';  node = Inp 'OriginatingAgencyCaseNumber' 'Originating Agency Case Number (with last name)' '20' 'ROW_WP_1' }
+            )}
+            @{ id = 'ROW_WP_N'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'WPNameLast_Input';   node = Inp 'NameLast' 'Last Name' '30' 'ROW_WP_N' }
+                @{ id = 'WPNameFirst_Input';  node = Inp 'NameFirst' 'First Name' '30' 'ROW_WP_N' }
+                @{ id = 'WPNameMiddle_Input'; node = Inp 'NameMiddle' 'Middle (optional)' '30' 'ROW_WP_N' }
+                @{ id = 'WPNameSuffix_Input'; node = Inp 'NameSuffix' 'Suffix (optional)' '10' 'ROW_WP_N' }
+            )}
+            @{ id = 'ROW_WP_2'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'WPBirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth (optional)' 'ROW_WP_2' }
+                @{ id = 'WPSexCode_Input';   node = Inp 'SexCode' 'Sex -- type M, F or U (optional)' '1' 'ROW_WP_2' }
+                @{ id = 'raceCode_Input';    node = Inp 'raceCode' 'Race -- type W, B, I, A or U (optional)' '1' 'ROW_WP_2' }
+                @{ id = 'WPOperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN (optional)' '20' 'ROW_WP_2' }
+            )}
+            @{ id = 'ROW_WP_3'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'SocialSecurityNumber_Input'; node = Inp 'SocialSecurityNumber' 'SSN (optional)' '9' 'ROW_WP_3' }
+                @{ id = 'FBINumber_Input';            node = Inp 'FBINumber' 'FBI Number (optional)' '9' 'ROW_WP_3' }
+                @{ id = 'MiscellaneousNumber_Input';  node = Inp 'MiscellaneousNumber' 'Miscellaneous Number (optional)' '15' 'ROW_WP_3' }
+                @{ id = 'WPImageIndicator_Input';     node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_WP_3' }
+            )}
+            @{ id = 'ROW_WP_4'; cols = @('4','4','4'); fields = @(
+                @{ id = 'ExpandedNameSearchCode_Input';      node = Inp 'ExpandedNameSearchCode' 'Expanded Name Search (optional)' '1' 'ROW_WP_4' }
+                @{ id = 'ExpandedBirthDateSearchCode_Input'; node = Inp 'ExpandedBirthDateSearchCode' 'Expanded DOB Search (optional)' '1' 'ROW_WP_4' }
+                @{ id = 'RelatedHitSearchIndicator_Input';   node = Inp 'RelatedHitSearchIndicator' 'Related Hit Search (optional)' '1' 'ROW_WP_4' }
+            )}
+            @{ id = 'ROW_WP_5'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'WP_LicensePlateNumber_Input';    node = Inp 'LicensePlateNumber' 'Plate Number (wanted vehicle -- needs plate state)' '10' 'ROW_WP_5' }
+                @{ id = 'LicensePlateStateCode_Input';    node = Inp 'LicensePlateStateCode' 'Plate State -- type the 2-letter code' '2' 'ROW_WP_5' }
+                @{ id = 'WP_VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN (wanted vehicle -- needs make)' '20' 'ROW_WP_5' }
+                @{ id = 'WP_VehicleMakeCode_Input';       node = Sel 'VehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE' } 'ROW_WP_5' }
+            )}
+        )
+    }
+)
+$wpForm = [PSCustomObject]@{
+    description  = 'Wanted Person -- ITS OWN TAB (v1.3), moved off Person on request. QWA.NCIC / .OCA / .P / .VM / .N. Declares targetEntity=Firearm because tabs are keyed by QUERYINPUTFORM not by entity (CAPABILITY #47), and Firearm is the single-combo host whose field ids are fully DISJOINT from this card. Self-contained: it carries its OWN Name/DOB/Sex/OLN/Image controls, because the name-based combos could not reach the Driver License cards once this left Person. Race, Sex and Plate State are TYPE-IN boxes rather than dropdowns -- on a two-QIF entity LIMITATION #28 breaks codeTypeProvider reverse-lookup and the platform would send an internal numeric id instead of the code.'
+    label        = 'Wanted Person'
+    layout       = $wpLayout
+    name         = 'ENTITY_WantedPerson'
+    type         = 'QUERYINPUTFORM'
+    targetEntity = 'Firearm'
 }
 
 # ---- Firearm ------------------------------------------------------------------------------------
@@ -782,9 +840,9 @@ $amForm = [PSCustomObject]@{
 #     CAPABILITY #47 measured working (the probe listed Person four times and got four tabs).
 #     AM goes LAST so the five familiar tabs keep their established positions.
 # =====================================================================
-$entityOrder = @('Vehicle','Person','Firearm','Article','Boat','Article')
+$entityOrder = @('Vehicle','Person','Firearm','Article','Boat','Firearm','Article')
 $entitiesBundle = Build-EntitiesBundle `
-    -Configurations @($vehicleForm, $personForm, $firearmForm, $articleForm, $boatForm, $amForm) `
+    -Configurations @($vehicleForm, $personForm, $firearmForm, $articleForm, $boatForm, $wpForm, $amForm) `
     -DefaultOrder $entityOrder -CadOrder $entityOrder -FrOrder $entityOrder
 
 # =====================================================================

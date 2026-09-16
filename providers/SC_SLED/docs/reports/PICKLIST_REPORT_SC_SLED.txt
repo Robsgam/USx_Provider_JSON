@@ -1,7 +1,7 @@
 ======================================================================
-  PICKLIST / DROPDOWN REPORT: SC_SLED_v1.1
-  Source: SC_SLED_v1.1.json
-  Generated: 2026-09-16 14:48
+  PICKLIST / DROPDOWN REPORT: SC_SLED_v1.3
+  Source: SC_SLED_v1.3.json
+  Generated: 2026-09-16 16:26
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -20,16 +20,16 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
       Config: codeTypeCategory=NCIC_FIREARM_CALIBER, codeTypeSource=NCIC
     GunMake [Make (optional)]
       Config: codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NCIC
+    ImageIndicator [NCIC Image] (default=Y)
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
+    VehicleMakeCode [Vehicle Make]
+      Config: attributeTypeId=VEHICLE_MAKE
 
   Entity: Person
     ImageIndicator [NCIC Image] (default=Y)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
     ImageIndicatorDR [NCIC Image] (default=Y)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
-    LicensePlateStateCode [Plate State]
-      Config: attributeTypeId=STATE
-    raceCode [Race (optional)]
-      Config: attributeTypeId=RACE, codeTypeProvider=NIBRS
     RegistrationState [State (leave blank for SC)]
       Config: attributeTypeId=STATE
     RegistrationStateDR [State (leave blank for SC)]
@@ -38,8 +38,6 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
     SexCodeDR [Sex (optional)]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
-    VehicleMakeCode [Vehicle Make]
-      Config: attributeTypeId=VEHICLE_MAKE
 
   Entity: Vehicle
     LicensePlateTypeCode [Plate Type] (default=PC)
@@ -68,13 +66,6 @@ SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
       SexCode -> SexCode
         codeTypeProvider=NIBRS
       State -> State
-        codeTypeProvider=NCIC
-    Config: SC_SLED_WantedPersonQuery
-      SexCode -> SexCode
-        codeTypeProvider=NIBRS
-      RaceCode -> RaceCode
-        codeTypeProvider=NIBRS
-      LicensePlateStateCode -> LicensePlateStateCode
         codeTypeProvider=NCIC
     Config: SC_SLED_BoatQuery
       State -> State
@@ -122,20 +113,11 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
   QIDM: SC_SLED_DriverRegistrationQuery
     State -> targetField=State, codeTypeProvider=NCIC
 
-  QIDM: SC_SLED_WantedPersonQuery
-    SexCode -> targetField=SexCode, codeTypeProvider=NIBRS
-
-  QIDM: SC_SLED_WantedPersonQuery
-    RaceCode -> targetField=RaceCode, codeTypeProvider=NIBRS
-
-  QIDM: SC_SLED_WantedPersonQuery
-    LicensePlateStateCode -> targetField=LicensePlateStateCode, codeTypeProvider=NCIC
-
   QIDM: SC_SLED_BoatQuery
     State -> targetField=State, codeTypeProvider=NCIC
 
 ======================================================================
   SUMMARY
 ======================================================================
-  Form dropdowns: 16
-  QRDM code type attrs: 19
+  Form dropdowns: 15
+  QRDM code type attrs: 16

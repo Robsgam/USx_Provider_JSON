@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: SC_SLED
-  Source: SC_SLED_v1.1.json
-  Generated: 2026-09-16 14:48
+  Source: SC_SLED_v1.3.json
+  Generated: 2026-09-16 16:26
 ================================================================
 QUERY SIMULATION
 ================
@@ -9,7 +9,7 @@ QUERY SIMULATION
   Seeded form defaults (1): Person.ImageIndicatorDR=Y
 
 ================================================================
-  CommSys Query Simulator -- SC_SLED_v1.1.json
+  CommSys Query Simulator -- SC_SLED_v1.3.json
 ================================================================
 
 --- QIDM: SC_SLED_VehicleRegistrationQuery [Vehicle] ---
@@ -95,7 +95,7 @@ QUERY SIMULATION
     [SKIP] DQ.RN -- missing set: BirthDateDR, NameLastDR, NameFirstDR
     [SKIP] DQ.RO -- missing set: OperatorLicenseNumberDR
 
---- QIDM: SC_SLED_WantedPersonQuery [Person] ---
+--- QIDM: SC_SLED_WantedPersonQuery [Firearm] ---
     Query: WantedPersonQuery  |  Attrs: 18  |  Combos: 5
 
     [FIRES first-match] QWA.NCIC
@@ -105,17 +105,17 @@ QUERY SIMULATION
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
         <MessageKey>QW</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
-        <NCICNumber>W123456789</NCICNumber>
+        <NCICNumber>G123456789</NCICNumber>
         <ImageIndicator>Y</ImageIndicator>
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
     [SKIP] QWA.OCA -- missing set: OriginatingAgencyCaseNumber
     [SKIP] QWA.P -- missing set: LicensePlateNumber, LicensePlateStateCode
     [SKIP] QWA.VM -- missing set: VehicleIdentificationNumber, VehicleMakeCode
-    [SKIP] QWA.N -- conditions failed: NCICNumber NOT_EXISTS [value='W123456789']
+    [SKIP] QWA.N -- conditions failed: NCICNumber NOT_EXISTS [value='G123456789']
 
     >> PLATFORM FIRES: QWA.NCIC (first matching combo)
-    >> UNION POOL (platform serializes): NCICNumber=W123456789, ImageIndicator=Y, RelatedHitSearchIndicator=Y
+    >> UNION POOL (platform serializes): NCICNumber=G123456789, ImageIndicator=Y, RelatedHitSearchIndicator=Y
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
@@ -178,9 +178,9 @@ QUERY SIMULATION
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
---- QIDM: SC_SLED_AdministrativeMessage [Vehicle] ---
+--- QIDM: SC_SLED_AdministrativeMessage [Article] ---
     Query: AdministrativeMessage  |  Attrs: 6  |  Combos: 1
-    [SKIP] AM -- missing set: FreeText
+    [SKIP] AM -- missing set: FreeTextAM
 
 --- QIDM: RMS Person Search query [Person] ---
     Query: Person  |  Attrs: 7  |  Combos: 4

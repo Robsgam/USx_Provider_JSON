@@ -1,18 +1,20 @@
 ﻿================================================================
   Build Report: SC_SLED
-  Source: SC_SLED_v1.1.json
-  Generated: 2026-09-16 14:48
+  Source: SC_SLED_v1.3.json
+  Generated: 2026-09-16 16:26
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== SC_SLED_v1.1.json ===
-QIFs: 5
-  Vehicle | entity=Vehicle | qidm= | cards=2 fields=10
-  Person | entity=Person | qidm= | cards=3 fields=20
+=== SC_SLED_v1.3.json ===
+QIFs: 7
+  Vehicle | entity=Vehicle | qidm= | cards=1 fields=4
+  Person | entity=Person | qidm= | cards=2 fields=10
   Firearm | entity=Firearm | qidm= | cards=1 fields=2
   Article | entity=Article | qidm= | cards=1 fields=1
   Boat | entity=Boat | qidm= | cards=1 fields=2
+  Wanted Person | entity=Firearm | qidm= | cards=1 fields=18
+  Administrative Message | entity=Article | qidm= | cards=1 fields=6
 QIDMs: 9
   SC_SLED_VehicleRegistrationQuery | attrs=7 combos=2 autoSelect=True
   SC_SLED_VehicleStolenQuery | attrs=4 combos=2 autoSelect=True
@@ -43,16 +45,6 @@ LAYOUT DETAIL
         vehicleYear (Text | maxLen=4)
       ROW ROW_VEH_3 [12]
         RegistrationState (Dropdown | attributeTypeId=STATE)
-    CARD "CARD_AM"
-      ROW ROW_AM_1 [12]
-        FreeText (Text | maxLen=501)
-      ROW ROW_AM_2 [4 4 4]
-        DestinationCode (Text | maxLen=9)
-        DestinationCode2 (Text | maxLen=9)
-        DestinationCode3 (Text | maxLen=9)
-      ROW ROW_AM_3 [4 4]
-        DestinationCode4 (Text | maxLen=9)
-        DestinationCode5 (Text | maxLen=9)
 
 === Person ===
   name=ENTITY_Person | entity=Person | qidm=
@@ -83,24 +75,6 @@ LAYOUT DETAIL
         BirthDateDR (FormDate)
         SexCodeDR (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
         ImageIndicatorDR (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
-    CARD "CARD_PER_WANTED"
-      ROW ROW_WP_1 [6 6]
-        NCICNumber (Text | maxLen=10)
-        OriginatingAgencyCaseNumber (Text | maxLen=20)
-      ROW ROW_WP_2 [3 3 3 3]
-        raceCode (Dropdown | attributeTypeId=RACE | codeTypeProvider=NIBRS)
-        SocialSecurityNumber (Text | maxLen=9)
-        FBINumber (Text | maxLen=9)
-        MiscellaneousNumber (Text | maxLen=15)
-      ROW ROW_WP_3 [4 4 4]
-        ExpandedNameSearchCode (Text | maxLen=1)
-        ExpandedBirthDateSearchCode (Text | maxLen=1)
-        RelatedHitSearchIndicator (Text | maxLen=1)
-      ROW ROW_WP_4 [3 3 3 3]
-        LicensePlateNumber (Text | maxLen=10)
-        LicensePlateStateCode (Dropdown | attributeTypeId=STATE)
-        VehicleIdentificationNumber (Text | maxLen=20)
-        VehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE)
 
 === Firearm ===
   name=ENTITY_Firearm | entity=Firearm | qidm=
@@ -128,6 +102,52 @@ LAYOUT DETAIL
         BoatHullIdNumber (Text | maxLen=20)
         RegistrationNumber (Text | maxLen=8)
         RegistrationState (Dropdown | attributeTypeId=STATE)
+
+=== Wanted Person ===
+  name=ENTITY_WantedPerson | entity=Firearm | qidm=
+  [default]
+    CARD "CARD_WP_ID"
+      ROW ROW_WP_1 [6 6]
+        NCICNumber (Text | maxLen=10)
+        OriginatingAgencyCaseNumber (Text | maxLen=20)
+      ROW ROW_WP_N [3 3 3 3]
+        NameLast (Text | maxLen=30)
+        NameFirst (Text | maxLen=30)
+        NameMiddle (Text | maxLen=30)
+        NameSuffix (Text | maxLen=10)
+      ROW ROW_WP_2 [3 3 3 3]
+        BirthDate (FormDate)
+        SexCode (Text | maxLen=1)
+        raceCode (Text | maxLen=1)
+        OperatorLicenseNumber (Text | maxLen=20)
+      ROW ROW_WP_3 [3 3 3 3]
+        SocialSecurityNumber (Text | maxLen=9)
+        FBINumber (Text | maxLen=9)
+        MiscellaneousNumber (Text | maxLen=15)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
+      ROW ROW_WP_4 [4 4 4]
+        ExpandedNameSearchCode (Text | maxLen=1)
+        ExpandedBirthDateSearchCode (Text | maxLen=1)
+        RelatedHitSearchIndicator (Text | maxLen=1)
+      ROW ROW_WP_5 [3 3 3 3]
+        LicensePlateNumber (Text | maxLen=10)
+        LicensePlateStateCode (Text | maxLen=2)
+        VehicleIdentificationNumber (Text | maxLen=20)
+        VehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE)
+
+=== Administrative Message ===
+  name=ENTITY_AdministrativeMessage | entity=Article | qidm=
+  [default]
+    CARD "CARD_AM"
+      ROW ROW_AM_1 [12]
+        FreeTextAM (Text | maxLen=501)
+      ROW ROW_AM_2 [4 4 4]
+        DestinationCodeAM (Text | maxLen=9)
+        DestinationCode2AM (Text | maxLen=9)
+        DestinationCode3AM (Text | maxLen=9)
+      ROW ROW_AM_3 [4 4]
+        DestinationCode4AM (Text | maxLen=9)
+        DestinationCode5AM (Text | maxLen=9)
 
 === RMS QIDMs ===
   RMS Person Search query

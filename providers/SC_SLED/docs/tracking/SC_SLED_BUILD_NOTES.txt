@@ -2,6 +2,71 @@
   BUILD NOTES: SC_SLED
   Created: 2026-09-14
 ================================================================
+v1.3  2026-09-16  WANTED PERSON GETS ITS OWN TAB -- and three dropdowns became type-ins to pay for it
+  CHANGED: 1. `CARD_PER_WANTED` REMOVED from the Person QIF. Person: 3 cards/20 fields -> 2/10.
+           2. `ENTITY_WantedPerson` added as its own QUERYINPUTFORM, targetEntity='Firearm'.
+              SEVEN TABS now. Ordered before Administrative Message.
+           3. THE NEW TAB IS SELF-CONTAINED: it gained its own Name (Last/First/Middle/Suffix),
+              BirthDate, SexCode, OperatorLicenseNumber and ImageIndicator controls -- 13 fields
+              -> 18.
+           4. THREE CONTROLS CONVERTED Sel -> Inp, and their `-CodeTypeProvider` removed from the
+              `$wpAttrs` attributes ONLY: raceCode (NIBRS), SexCode (NIBRS), LicensePlateStateCode
+              (NCIC). Labels now carry the valid values ("type M, F or U" / "type W, B, I, A or U"
+              / "type the 2-letter code").
+           Validator 79P/0F/0W/1LIM -> 79P/0F/2W/1LIM.
+  REASON:  Rob: "now move wanted person to its own tab", then after being shown the cost: "start
+           with option A  we can work backwards if we have to".
+           Possible at all because of CAPABILITY #47 -- tabs are keyed by QUERYINPUTFORM, not by
+           entity. It also delivers the ORIGINAL request behind all of this: Person is decrowded,
+           halved from 20 fields to 10.
+
+           WHY 'Firearm' -- MEASURED, with the denominator printed first because the first run of
+           that probe extracted 0 fields and would have called every host "disjoint" vacuously.
+           LIMITATION #28 breaks codeTypeProvider reverse-lookup on any entity with two QIFs and
+           #26 names the cause as a SHARED FIELD POOL, so overlap against the 13 WP field ids was
+           measured per candidate:
+               Firearm  7 fields  overlap 0  DISJOINT  <- chosen; also the only single-combo host
+               Boat     6 fields  overlap 0  DISJOINT
+               Article  5 fields  overlap 0  DISJOINT  (already hosts Administrative Message)
+               Vehicle 10 fields  overlap 3  Plate / VIN / MakeCode -- rejected
+
+           WHY THREE CONTROLS AND NOT ONE -- I TOLD ROB IT WAS ONE AND THAT WAS WRONG. The
+           WantedPersonQuery QIDM declares codeTypeProvider on RaceCode, SexCode AND
+           LicensePlateStateCode. The validator had flagged only raceCode because SexCode's control
+           was not yet on the form; adding it would have flagged too. On a two-QIF entity all three
+           lose reverse-lookup and AP #1 says the platform then sends its INTERNAL NUMERIC ROW ID
+           instead of the code -- silently wrong Race/Sex/State values to SLED, which is worse than
+           a clumsier control. Rob was told the corrected cost before this shipped.
+           Person's OWN SexCode/SexCodeDR dropdowns are UNTOUCHED: Person still has exactly one
+           QIF, so its reverse-lookup still works. The trade is scoped to the new tab.
+
+  THE 2 WARNs ARE DELIBERATE AND ARE NOT SILENCED:
+      [WARN] ENTITY_WantedPerson SexCode field missing attributeTypeId='SEX'
+      [WARN] ENTITY_WantedPerson SexCode field missing codeTypeProvider='NIBRS'
+  That is precisely the trade above, stated by the gate. Registering them away would hide the one
+  thing worth remembering if we work backwards. Same posture as OH_LEADS' deliberate ImageQuery
+  WARN -- correct signal, not noise.
+
+  ⚠️ STATUS: HYPOTHESIS on the disjoint-pool argument. #28's stated design constraint is absolute
+  ("to use codeTypeProvider reverse-lookup, each entity must have exactly ONE QIF"); the
+  zero-overlap reasoning above is an INFERENCE from its root cause. The remaining codeTypeProvider
+  consumers on Firearm are now NONE, so nothing on that entity is exposed -- but if a future field
+  adds one, it is at risk. DISCRIMINATING TEST on the next import: submit a Wanted Person query
+  with Race and Sex filled and read the wire. Codes mean the inference holds; numeric ids mean #28
+  applies regardless of overlap.
+
+  TO WORK BACKWARDS, as Rob reserved the right to: restore the three controls to `Sel` with their
+  codeTypeProvider and move CARD_PER_WANTED back into the Person QIF. That is the v1.2 shape.
+
+  TWO MISTAKES CAUGHT BY GATES RATHER THAN BY ME, recorded so the pattern is visible:
+    - a `perl` substitution matched in MORE THAN ONE QIDM and stripped codeTypeProvider from
+      DriverLicenseQuery's SexCode as well. The validator caught it ("sends numeric ID (AP #2)")
+      and it was restored by line number. Second time in one session that a global pattern hit an
+      unintended second site -- the first retargeted ENTITY_Person to Article.
+    - an earlier delete never ran because its shell command had a parse error, leaving the Wanted
+      Person card DUPLICATED in both Person and the new form. Caught by counting occurrences
+      before building, not by reading the diff.
+
 v1.2  2026-09-16  ADMINISTRATIVE MESSAGE GETS ITS OWN TAB -- tabs are per-FORM, not per-entity
   CHANGED: 1. The AM card REMOVED from the Vehicle QIF. Vehicle: 2 cards/10 fields -> 1 card/4,
               i.e. back to what it was at v1.0.

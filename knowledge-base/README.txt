@@ -318,6 +318,33 @@ TOOLS
     Usage: .\build_translate_test.ps1 [-Provider <name>] [-OutPath <path>]
                                       [-InStateValue 16] [-OutOfStateCode PC]
 
+  tools/audit_extension_version.ps1   [pre-commit hook + doctor]
+    IF THE EXTENSION CHANGED, ITS BUILD STRING MUST CHANGE. Rob 2026-09-16: "next time advance
+    the extnsion version every time you make a change wso we can track it better."
+    WHY IT IS A GATE AND NOT A NOTE: the extension is reloaded BY HAND in the browser, so the
+    BUILD string printed to the console is the ONLY way to tell "my fix is live" from "the
+    reload silently did not take" -- ui.js says exactly that in its own banner ("READ THIS LINE
+    FIRST IF A BUTTON SEEMS MISSING"). I bumped it correctly on 09-15 and NOT on 09-16, shipping
+    a DEPLOY-button fix with no way to distinguish a stale extension from a broken one. The
+    knowledge was present and the HABIT was the defect, which is precisely the case a gate is
+    for (usx-tooling Step 8: advice without a mechanism does not change behaviour).
+    CHECKS: if any automation/extension/*.js differs from HEAD, the LIVE BUILD token in ui.js
+    must also differ from HEAD.
+    !! IT KEYS ON THE LIVE TOKEN ONLY. ui.js carries SEVERAL "BUILD <stamp>" strings -- the
+    banner keeps retired ones as prose history (2026-09-02b, 2026-09-11h, ...). A naive grep
+    matches those and compares the wrong one, so the pattern is anchored to the line actually
+    printed: "control panel injected. BUILD <stamp>".
+    -Bump advances it (same day -> next letter, new day -> today+'a') and replaces EVERY
+    occurrence, because the banner also says "if the console does not say X" and updating one
+    would send the operator looking for a stamp that no longer exists.
+    !! git WRITES TO STDERR ON SUCCESS ("warning: LF will be replaced by CRLF") and under
+    $ErrorActionPreference='Stop' that becomes a TERMINATING NativeCommandError -- the first
+    version died on a CLEAN tree. Same class as the Edge-stderr trap in
+    audit_extension_syntax.ps1. The preference is relaxed around the native calls only.
+    PROVEN THREE WAYS: clean tree -> PASS exit 0; extension changed without a bump -> FAIL
+    exit 1; -Bump -> advances a->b (2 occurrences) and PASSes.
+    Usage: .\audit_extension_version.ps1 [-Staged] [-Bump]
+
   tools/build_entity_probe.ps1
     CAN THE PLATFORM RENDER MORE THAN FIVE ENTITY TABS? Emits the throwaway
     providers\ENTITY_PROBE.json -- five known entities as CONTROLS plus N candidate
