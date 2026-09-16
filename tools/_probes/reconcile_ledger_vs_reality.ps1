@@ -69,6 +69,39 @@ if (-not (Test-Path $mapPath)) {
 $map = Get-Content $mapPath -Raw | ConvertFrom-Json
 $tenants = @($map.tenants)
 
+# ---- THE usx-* FLEET IS ADDED FROM THE ROSTER, NOT TAKEN ON TRUST FROM THE MAP ----------------
+# Rob, 2026-09-15: "i think you missed all my usx test tenatns from the reports". He was right about
+# FOUR of the twenty. tenant_map.json is NOT maintained by any tool (8 read it, 0 write it) and was
+# generated from a census of tenants that HAD A PROVIDER BUNDLE -- so a provider tenant with NOTHING
+# INSTALLED was never in it, and this report joined on the map and therefore DROPPED it entirely.
+#
+# ⚠️ THAT IS THE VACUOUS-PASS SHAPE IN REPORT FORM: a tenant with nothing deployed and a tenant
+# nobody looked at rendered IDENTICALLY -- as absence. For a PROVIDER tenant that is the worst
+# possible silence, because "empty" is itself the finding (it means no build has ever been
+# installed there). usx-sc-sled, usx-ca-contra-costa, usx-ca-san-louis-obispo and
+# usx-ca-ventura-county all vanished this way.
+#
+# A `usx-*` subdomain is ours BY CONSTRUCTION -- the same authority serve_plans' /target/<deptId>
+# already ranks beside the explicit map -- so the fleet is derived from the roster and cannot rot.
+$rosterPathR = Join-Path $repoRoot 'tools\config\tenant_roster.json'
+if (Test-Path $rosterPathR) {
+    $knownIds = @{}
+    foreach ($t in $tenants) { $knownIds["$($t.deptId)"] = $true }
+    $rosterR = Get-Content $rosterPathR -Raw | ConvertFrom-Json
+    $addedFleet = 0
+    foreach ($rt in @($rosterR.tenants)) {
+        if ("$($rt.subdomain)" -notlike 'usx-*') { continue }
+        if ($knownIds.ContainsKey("$($rt.deptId)")) { continue }
+        $tenants += [pscustomobject]@{
+            subdomain = "$($rt.subdomain)"; deptId = "$($rt.deptId)"
+            ledgerName = $null; class = 'usx-fleet-from-roster'
+            status = "$($rt.status)"; bundles = @()
+        }
+        $addedFleet++
+    }
+    if ($addedFleet -gt 0) { Say ("  [note] {0} usx-* fleet tenant(s) added from the roster -- absent from tenant_map (no bundle at census time)" -f $addedFleet) }
+}
+
 # ---------------------------------------------------------------- input 2: measured versions
 $srcDir = if ($VersionsDir) { $VersionsDir } else { Join-Path $env:USERPROFILE 'Downloads' }
 $vfiles = @(Get-ChildItem $srcDir -Filter 'usx_admin_versions_*.json' -File -ErrorAction SilentlyContinue |
