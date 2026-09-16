@@ -209,6 +209,31 @@ if ($DeptId -and -not $All -and -not $Provider) {
         # plainly that content comparison was unavailable. Names are weaker evidence than a hash
         # and the job admits it rather than implying a diff happened.
         $recorded = @($it.installedBundles | Where-Object { $_ })
+
+        # !! REFUSE TO BUILD A PRE-FLIGHT EXPECTATION OUT OF A *DERIVED* RECORD.
+        # The pre-flight's entire purpose is "confirm the tenant is still in the state the job was
+        # cut against". If the recorded bundle list was never MEASURED -- only inferred from what we
+        # believe an earlier import did -- then the job asserts a tenant state nobody has read, and
+        # `bundlePreflight` will refuse against reality. That is the guard doing its job while the
+        # job file is the thing at fault, which is a confusing and expensive way to fail.
+        #
+        # This happened TWICE on usx-sc-sled on 2026-09-16 and the second time is what earned this
+        # refusal. Its Export JSON returns nothing (CLICKED-BUT-NO-JSON), so the only reading of
+        # that tenant is the LIVE BUNDLE TABLE via extension button 1 -- and after each probe import
+        # I updated the row by INFERENCE instead of asking for one. Rob got
+        # "PRE-FLIGHT: the tenant no longer carries [ENTITY_PROBE]" and a dialog that never opened.
+        # A row whose `_bundlesMeasured` note says DERIVED is not evidence. Ask for the reading.
+        $measuredNote = ''
+        $rowRaw = @((Get-Content (Join-Path $PSScriptRoot 'config\tenant_map.json') -Raw |
+                     ConvertFrom-Json).tenants | Where-Object { "$($_.deptId)" -eq $id })
+        if ($rowRaw.Count -eq 1 -and ($rowRaw[0].PSObject.Properties.Name -contains '_bundlesMeasured')) {
+            $measuredNote = "$($rowRaw[0]._bundlesMeasured)"
+        }
+        if ($recorded.Count -gt 0 -and $measuredNote -match 'DERIVED') {
+            $skipped += ('{0} -- installed bundles are DERIVED, not measured. A pre-flight expectation built from an inference will be refused against the real tenant. Re-read it first: open the tenant configuration page and press extension button 1, then update the tenant_map row from that capture.' -f $id)
+            continue
+        }
+
         if ($recorded.Count -gt 0) {
             $allB = @($repoHash.Keys | Where-Object { $_ -like ('{0}|*' -f $it.provider) } |
                       ForEach-Object { $_.Split('|')[1] } | Select-Object -Unique)
