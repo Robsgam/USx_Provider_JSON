@@ -15,15 +15,25 @@ tr:nth-child(even) td{background:#fafafa}
 @media print{h2{page-break-after:avoid}table{page-break-inside:auto}tr{page-break-inside:avoid}}
 </style></head><body>
 <h1>USx Tenant Groups</h1>
-<p class="sub">Generated 2026-09-15 17:42 by <span class="mono">tools\report_tenant_groups.ps1</span> from 65 pulled tenant configurations. Repo builds indexed: 21 providers.</p>
+<p class="sub">Generated 2026-09-15 21:26 by <span class="mono">tools\report_tenant_groups.ps1</span> from 69 pulled tenant configurations. Repo builds indexed: 21 providers.</p>
 <div class="decide"><b>What this document is for.</b> Scoping is the blocker: <span class="mono">tenant_scope.json</span> ships empty, so every report and every import job still carries tenants already decided against. Mark this up and the exclusions get applied with your reason and the date.</div>
 <div class="note"><b>What is measured and what is guessed.</b> <b>Ours / not ours is MEASURED</b> &mdash; a configuration of ours carries a <span class="mono">Provider configuration for &lt;P&gt; vX.Y</span> stamp in its bundle description, and where the content also hashes equal to the current repo build it is marked CURRENT. Absence of that stamp is <i>evidence</i>, not a gap: it is how Lafayette was confirmed hand-built by engineering. <b>The real-vs-development split in section B is a HEURISTIC</b> &mdash; the only guessed thing here. Each row prints the signal that placed it, so you can correct it by looking rather than by trusting the tool.</div>
 <h2>Summary</h2><table><tr><th>Group</th><th>Count</th><th>Basis</th></tr>
 <tr><td><b>A &mdash; our build</b></td><td>34</td><td>MEASURED: carries our version stamp</td></tr>
 <tr><td><b>B1 &mdash; not ours, looks like a real tenant</b></td><td>10</td><td>measured not-ours; no dev/test signal in the name</td></tr>
 <tr><td><b>B2 &mdash; not ours, looks like development / testing</b></td><td>21</td><td>measured not-ours; HEURISTIC on name + status</td></tr>
+<tr><td><b>A0 &mdash; our tenant, NOTHING installed</b></td><td>4</td><td>MEASURED: <span class="mono">usx-*</span> in the roster, no configuration present at all</td></tr>
 <tr><td>deactivated (not listed)</td><td>0</td><td>platform status; cannot serve queries</td></tr>
 </table>
+<h2>A0. Our tenant, running NOTHING &mdash; 4</h2>
+<p class="sub">A <span class="mono">usx-*</span> subdomain is ours by construction &mdash; the same authority the deploy path uses to resolve a tenant&rsquo;s intended provider. These carry <b>no provider bundle at all</b>, so no config was ever pulled for them and every config-derived report is silent about them by construction. That silence is why this section exists.</p>
+<table><tr><th>Tenant</th><th>Dept id</th><th>Status</th><th>What is installed</th></tr>
+<tr><td class="mono">usx-ca-contra-costa</td><td class="mono">69586006831</td><td>TEST</td><td class="mono">(no config on this tenant)</td></tr>
+<tr><td class="mono">usx-ca-san-louis-obispo</td><td class="mono">69586091660</td><td>TEST</td><td class="mono">(no config on this tenant)</td></tr>
+<tr><td class="mono">usx-ca-ventura-county</td><td class="mono">69510611328</td><td>TEST</td><td class="mono">(no config on this tenant)</td></tr>
+<tr><td class="mono">usx-sc-sled</td><td class="mono">73046844870</td><td>TEST</td><td class="mono">(no config on this tenant)</td></tr>
+</table>
+<div class="note"><b>Empty is a finding, not a blank.</b> It means no build of ours has ever been deployed there &mdash; for a provider test tenant that is the difference between &ldquo;never tested&rdquo; and &ldquo;tested and behind&rdquo;. Not every row is a defect: several are deliberate holds.</div>
 <h2>A. Runs a configuration WE created</h2>
 <p class="sub">Measured from the bundle description, corroborated by content hash against the current repo build.</p>
 <table><tr><th>Tenant</th><th>Dept id</th><th>Status</th><th>Provider</th><th>Version</th><th>vs repo</th></tr>
@@ -97,7 +107,7 @@ tr:nth-child(even) td{background:#fafafa}
 <tr><td class="mono">lyle-demo</td><td class="mono">56768145752</td><td>TEST</td><td class="mono">LA_LEMS</td><td>name matches <b>demo</b></td></tr>
 <tr><td class="mono">reno-nv-demo</td><td class="mono">29967674360</td><td>TRAINING</td><td class="mono">LA_LEMS</td><td>name matches <b>demo</b></td></tr>
 <tr><td class="mono">shelby-demo</td><td class="mono">64975047986</td><td>TRAINING</td><td class="mono">LA_LEMS</td><td>name matches <b>demo</b></td></tr>
-<tr><td class="mono">ccpd-jms-migration-round-1</td><td class="mono">63333802057</td><td>MigratedMIGRATED</td><td class="mono">RecordsArchive</td><td>name matches <b>migration</b></td></tr>
+<tr><td class="mono">ccpd-jms-migration-round-1</td><td class="mono">63333802057</td><td>MIGRATEDMIGRATED</td><td class="mono">RecordsArchive</td><td>name matches <b>migration</b></td></tr>
 <tr><td class="mono">practice-robsgambellone</td><td class="mono">68908334972</td><td>TEST</td><td class="mono">CA_eSUN</td><td>name matches <b>practice</b></td></tr>
 <tr><td class="mono">lafayettela-sherifftraining</td><td class="mono">5107052982</td><td>TRAINING</td><td class="mono">LA_LEMS</td><td>name matches <b>training</b></td></tr>
 </table>

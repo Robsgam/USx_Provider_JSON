@@ -140,20 +140,62 @@ foreach ($f in $files) {
         Current = $isCurrent; DevSignal = $sig
         Bundles = (@($bl | ForEach-Object { '{0}' -f $_.name }) -join ', ')
         Bytes = (Get-Item $f.FullName).Length
+        Empty = $false
+    }
+}
+
+# ---- THE usx-* FLEET WITH NO CONFIG ON DISK MUST STILL APPEAR ----------------------------------
+# This report's own title is "EVERY TENANT WE FOUND, GROUPED FOR A HUMAN TO DECIDE ON" -- but it
+# iterates _versions\tenant_exports, i.e. tenants that HAVE a config file. A provider tenant with
+# NOTHING INSTALLED therefore vanished entirely, and that is the most decision-worthy row there is:
+# empty means no build has ever been deployed there. Rob spotted the same class in
+# LEDGER_VS_REALITY -- "i think you missed all my usx test tenatns from the reports" -- and it was
+# true in this report too: 4 of the 20 usx-* tenants have no config file at all (MEASURED, not
+# assumed -- roster usx-* = 20, export files = 66, missing = ventura / contra-costa /
+# san-louis-obispo / sc-sled).
+# A `usx-*` subdomain is ours BY CONSTRUCTION, the authority serve_plans' /target already uses, so
+# the fleet comes from the ROSTER rather than from tenant_map.json (which no tool maintains and
+# which only ever listed tenants that had a bundle at census time).
+$rosterPathG = Join-Path $PSScriptRoot 'config\tenant_roster.json'
+if (Test-Path $rosterPathG) {
+    $haveSubs = @{}
+    foreach ($r0 in $rows) { $haveSubs["$($r0.Dept)"] = $true }
+    $rosterG = Get-Content $rosterPathG -Raw | ConvertFrom-Json
+    $emptyFleet = 0
+    foreach ($rt in @($rosterG.tenants)) {
+        if ("$($rt.subdomain)" -notlike 'usx-*') { continue }
+        if ($haveSubs.ContainsKey("$($rt.deptId)")) { continue }
+        $rows += [pscustomobject]@{
+            Sub = "$($rt.subdomain)"; Dept = "$($rt.deptId)"
+            Status = ("$($rt.status)" -replace '^(Live|Test|Training|Deactivated)', '')
+            Provider = '(nothing installed)'
+            Ours = $false; Version = $null; RepoVer = $null
+            Current = $false; DevSignal = $null
+            Bundles = '(no config on this tenant)'; Bytes = 0
+            Empty = $true
+        }
+        $emptyFleet++
+    }
+    if ($emptyFleet -gt 0) {
+        Say ('  [note] {0} usx-* fleet tenant(s) carry NO CONFIG -- reported in their own section A0, not omitted' -f $emptyFleet)
     }
 }
 
 $deact = @($rows | Where-Object { $_.Status -match 'DEACTIVATED' })
 if (-not $IncludeDeactivated -and $deact.Count -gt 0) { $rows = @($rows | Where-Object { $_.Status -notmatch 'DEACTIVATED' }) }
 
-$groupA  = @($rows | Where-Object { $_.Ours } | Sort-Object Provider, Sub)
-$notOurs = @($rows | Where-Object { -not $_.Ours })
+# An EMPTY tenant is neither A nor B, and forcing it into either makes that section's stated basis
+# FALSE: A claims "carries our version stamp" (it carries none) and B claims "runs a configuration
+# we did NOT create" (it runs none). It gets its own section, A0.
+$groupE  = @($rows | Where-Object { $_.Empty } | Sort-Object Sub)
+$groupA  = @($rows | Where-Object { $_.Ours -and -not $_.Empty } | Sort-Object Provider, Sub)
+$notOurs = @($rows | Where-Object { -not $_.Ours -and -not $_.Empty })
 $groupB1 = @($notOurs | Where-Object { -not $_.DevSignal } | Sort-Object Sub)
 $groupB2 = @($notOurs | Where-Object { $_.DevSignal } | Sort-Object DevSignal, Sub)
 
-Say ('  {0} tenant(s) | OURS {1} | NOT OURS {2} (real-looking {3} / dev-test {4}) | deactivated {5}{6}' -f
+Say ('  {0} tenant(s) | OURS {1} | NOT OURS {2} (real-looking {3} / dev-test {4}) | EMPTY usx-* {7} | deactivated {5}{6}' -f
      $rows.Count, $groupA.Count, $notOurs.Count, $groupB1.Count, $groupB2.Count, $deact.Count,
-     $(if ($IncludeDeactivated) { ' (included)' } else { ' (excluded)' }))
+     $(if ($IncludeDeactivated) { ' (included)' } else { ' (excluded)' }), $groupE.Count)
 if ($skipped.Count -gt 0) { Say ('  {0} file(s) skipped -- unreadable or no deptId in the name' -f $skipped.Count) }
 
 # ---- HTML --------------------------------------------------------------------------------------
@@ -193,8 +235,28 @@ Add ('<h2>Summary</h2><table><tr><th>Group</th><th>Count</th><th>Basis</th></tr>
 Add ('<tr><td><b>A &mdash; our build</b></td><td>{0}</td><td>MEASURED: carries our version stamp</td></tr>' -f $groupA.Count)
 Add ('<tr><td><b>B1 &mdash; not ours, looks like a real tenant</b></td><td>{0}</td><td>measured not-ours; no dev/test signal in the name</td></tr>' -f $groupB1.Count)
 Add ('<tr><td><b>B2 &mdash; not ours, looks like development / testing</b></td><td>{0}</td><td>measured not-ours; HEURISTIC on name + status</td></tr>' -f $groupB2.Count)
+Add ('<tr><td><b>A0 &mdash; our tenant, NOTHING installed</b></td><td>{0}</td><td>MEASURED: <span class="mono">usx-*</span> in the roster, no configuration present at all</td></tr>' -f $groupE.Count)
 Add ('<tr><td>deactivated (not listed)</td><td>{0}</td><td>platform status; cannot serve queries</td></tr>' -f $deact.Count)
 Add '</table>'
+
+# ---- A0 ----
+# The rows that used to VANISH. This report's title promises every tenant we found, and it was built
+# by walking the pulled-config directory -- so a provider tenant with NOTHING installed was not
+# "reported as empty", it was absent, which on the page reads identically to "not one of ours".
+Add ('<h2>A0. Our tenant, running NOTHING &mdash; {0}</h2>' -f $groupE.Count)
+Add '<p class="sub">A <span class="mono">usx-*</span> subdomain is ours by construction &mdash; the same authority the deploy path uses to resolve a tenant&rsquo;s intended provider. These carry <b>no provider bundle at all</b>, so no config was ever pulled for them and every config-derived report is silent about them by construction. That silence is why this section exists.</p>'
+if ($groupE.Count -gt 0) {
+    Add '<table><tr><th>Tenant</th><th>Dept id</th><th>Status</th><th>What is installed</th></tr>'
+    foreach ($r in $groupE) {
+        $stc = if ($r.Status -match 'LIVE') { '<span class="live">LIVE</span>' } else { HtmlEsc $r.Status }
+        Add ('<tr><td class="mono">{0}</td><td class="mono">{1}</td><td>{2}</td><td class="mono">{3}</td></tr>' -f
+             (HtmlEsc $r.Sub), (HtmlEsc $r.Dept), $stc, (HtmlEsc $r.Bundles))
+    }
+    Add '</table>'
+    Add '<div class="note"><b>Empty is a finding, not a blank.</b> It means no build of ours has ever been deployed there &mdash; for a provider test tenant that is the difference between &ldquo;never tested&rdquo; and &ldquo;tested and behind&rdquo;. Not every row is a defect: several are deliberate holds.</div>'
+} else {
+    Add '<p class="sub">None &mdash; every <span class="mono">usx-*</span> tenant in the roster has a configuration on disk.</p>'
+}
 
 # ---- A ----
 Add '<h2>A. Runs a configuration WE created</h2>'
