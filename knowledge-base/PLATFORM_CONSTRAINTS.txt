@@ -1348,8 +1348,35 @@ LIMITATION #46: A QUERYINPUTFORM WHOSE `targetEntity` IS NOT ONE OF THE FIVE KNO
     - the tenant provably received that exact payload: read-back verified byte for byte
       (1,139,262 bytes after CRLF normalisation) and the bundle table went 0 -> 3
   So this is NOT the "order array must use targetEntity values" rule (CLAUDE.md, Entity Display
-  Order) -- that rule was followed. The value is correct AND UNKNOWN TO THE PLATFORM, and an
-  unknown entity is silently dropped rather than rejected.
+  Order) -- that rule was followed. A correctly-formed sixth entity is silently dropped rather than
+  rejected.
+
+  ⚠️ WHY IT IS FIVE IS **NOT ESTABLISHED**, AND THE FIRST DRAFT OF THIS ENTRY OVERSTATED IT.
+  It said the value was "UNKNOWN TO THE PLATFORM", which is an INFERENCE from 21x5 plus one
+  failure, not a documented rule. Rob asked the obvious question -- "why are we limited to only 5
+  entites/tabs" -- and the honest answer is that NOTHING IN THIS REPO DOCUMENTS AN ENTITY LIST:
+  not the KB, not BUILD_RULES, and not `UNIVERSAL_SEARCH_HANDLERS.txt` (that registry is handlers,
+  and CLAUDE.md's rule to check it before declaring a capability absent does not help here because
+  it has no entity section at all). So "limited to 5" is an OBSERVED CONVENTION plus one refuted
+  attempt -- not a known platform constraint.
+
+  [Likely] THE MECHANISM, stated as reasoning rather than fact: `targetEntity` does not name a TAB,
+  it BINDS the form to an entity type the platform can store and display. Person / Vehicle /
+  Firearm / Article / Boat are the NCIC hot-file and RMS master record types -- Universal Search
+  searches FOR a record of that type, and the QRDM maps the response INTO it. An
+  AdministrativeMessage produces no record, so there is nothing to store, nothing to map, and no
+  results layout to render. Corroborating from inside the repo: `_build_rms_bundle.ps1` defines
+  targetEntity for ONLY `Vehicle` and `Person`, and Gun/Article/Boat/DH have no RMS mapping at all
+  -- so the entity is the RMS side's concept, which is consistent with the list coming from the
+  data model rather than from a UI choice.
+
+  OPEN QUESTIONS FOR CRINGER -- this is a platform question the repo cannot answer:
+    1. Is `targetEntity` a CLOSED enum? If so, what is the authoritative list?
+    2. Is there a registration path for a transaction that yields no record (a message form)?
+    3. Is `AdministrativeMessage` intended as a query WITHIN an entity, or does a separate
+       messaging surface exist for it?
+  Until one of those is answered, do NOT record a numeric cap as platform fact. What is measured is
+  narrow and solid: THIS sixth entity, correctly formed, did not render.
 
   WHY IT COST A BUILD: `validate`, `verify_build`, `render_layout` and `audit_wiring_closure` all
   read the JSON and all passed -- the form is internally consistent, its fields are wired, its QIDM
