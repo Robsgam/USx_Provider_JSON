@@ -2,7 +2,7 @@
 // Then render each entity form and run its line (one at a time; each downloads one file):
 var scope = {
     "provider":  "SC_SLED",
-    "version":  "1.5",
+    "version":  "1.7",
     "note":  "Paste as scope; render each entity form; __usxScopePicklists(scope, \u0027\u003cEntity\u003e\u0027). One download per entity.",
     "fields":  [
                    {
@@ -48,30 +48,6 @@ var scope = {
                    {
                        "entity":  "Person",
                        "fieldId":  "ImageIndicator",
-                       "label":  "NCIC Image",
-                       "codeTypeCategory":  "YES_NO_UNKNOWN",
-                       "codeTypeSource":  "NCIC",
-                       "attributeTypeId":  ""
-                   },
-                   {
-                       "entity":  "Person",
-                       "fieldId":  "RegistrationStateDR",
-                       "label":  "State (leave blank for SC)",
-                       "codeTypeCategory":  "",
-                       "codeTypeSource":  "",
-                       "attributeTypeId":  "STATE"
-                   },
-                   {
-                       "entity":  "Person",
-                       "fieldId":  "SexCodeDR",
-                       "label":  "Sex (optional)",
-                       "codeTypeCategory":  "",
-                       "codeTypeSource":  "",
-                       "attributeTypeId":  "SEX"
-                   },
-                   {
-                       "entity":  "Person",
-                       "fieldId":  "ImageIndicatorDR",
                        "label":  "NCIC Image",
                        "codeTypeCategory":  "YES_NO_UNKNOWN",
                        "codeTypeSource":  "NCIC",
@@ -127,4 +103,4 @@ var scope = {
                    }
                ]
 };
-console.log('%c[USx-SCOPE] scope loaded: SC_SLED v1.5 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Boat')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')");
+console.log('%c[USx-SCOPE] scope loaded: SC_SLED v1.7 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Boat')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')");

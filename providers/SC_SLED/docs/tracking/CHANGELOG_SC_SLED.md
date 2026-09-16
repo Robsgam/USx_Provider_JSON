@@ -2,14 +2,52 @@
 
 Auto-generated from `SC_SLED_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.5** | Generated: 2026-09-16
+Current: **v1.7** | Generated: 2026-09-16
 
 ---
 
-## v1.5 -- 2026-09-16 -- Pipeline rebuild
+## v1.7 -- 2026-09-16 -- OLN>NAME GUARDRAIL ON DriverRegistrationQuery -- the co-fire's missed cost
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:** `DQ.RN` gains `conditions: [{ field: [OperatorLicenseNumber], operator: NOT_EXISTS }]`.
+         One combination, one condition. No field, label, layout, order or attribute change.  
+         Validator 78P/0F/2W/2LIM (unchanged). Registry: +1 row.  
+**REASON:**  v1.6 SHIPPED COMMITTED WITH THREE BLOCKING FAILS AND I CALLED IT DONE OFF THE VALIDATOR.
+         The validator read 78P/0F, the build printed "Validation passed", and the JSON was  
+         committed in d538fbac -- but `enforce` had not been read. It reported:  
+             [FAIL] verify_build -- DQ.RN missing OperatorLicenseNumber NOT_EXISTS  
+                    (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)  
+             [FAIL] DriverRegistrationQuery #1 +[ImageIndicator]        -> not transmitted  
+             [FAIL] DriverRegistrationQuery #1 +[ImageIndicator,State]  -> not transmitted  
+         This is the SECOND time on this provider that "the validator passed" was mistaken for  
+         "enforce passed" (v1.2 was the first). The validator does not run verify_build, the  
+         devdoc-optional gate, or the parity cross-check.  
+
+## v1.6 -- 2026-09-16 -- DRIVER LICENSE + DRIVER REGISTRATION CO-FIRE, plus a label/layout pass
+
+**CHANGED:** 1. CO-FIRE. `CARD_PER_DR` and every DR-suffixed control DELETED. DriverRegistration's
+            attributes and combinations now point at the SHARED Driver License controls, and  
+            `-QueriesToDeselect @('DriverLicenseQuery')` is GONE -- that deselect was the one  
+            thing preventing the co-fire. Person: 2 cards/10 fields -> ONE card. DL card title  
+            now says both queries are sent.  
+         2. HELPER TEXT REMOVED, per request: Vehicle VIN, Wanted VIN, Wanted Plate Number,  
+            Wanted NCIC Number, Article Serial Number.  
+         3. WANTED ROW ORDER: Name first, DOB/Sex/Race/OLN second, NCIC + case number third.  
+            Sequence only -- same rows, same field ids, no wiring touched.  
+         Validator 79P/0F/2W/1LIM -> 78P/0F/2W/2LIM.  
+**REASON:**  Rob 2026-09-16: "on person remove help on vin  lets co fire driver reg and driver license
+         since they are idnetical combos  remove helper on atricle serial  on eanted lets move the  
+         name row to the top  dob line to 2nd  and top row down 2  remove helper on ncic and plat  
+         enumber".  
+
+## v1.5 -- 2026-09-16 -- TAB ORDER set to the sequence Rob asked for
+
+**CHANGED:** Nothing but ordering. No field, combination, attribute or QIDM touched.
+         `$entityOrder`     : Vehicle, Person, Firearm, Firearm, Article, Boat, Article  
+         `-Configurations`  : vehicleForm, personForm, wpForm, firearmForm, articleForm,  
+                              boatForm, amForm   (moved wpForm up from 6th to 3rd)  
+         79P/0F/2W/1LIM unchanged.  
+**REASON:**  Rob 2026-09-16: "we need to reorder the tabs  veh per wanted person firearm articel boat
+         admin mesage  in that order please".  
 
 ## v1.4 -- 2026-09-16 -- The AM field suffix comes back OFF -- it was never needed and it broke a gate
 

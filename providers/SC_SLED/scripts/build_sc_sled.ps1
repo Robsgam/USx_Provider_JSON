@@ -35,7 +35,7 @@ $repoRoot    = Split-Path (Split-Path $providerDir -Parent) -Parent
 . (Join-Path $repoRoot 'tools\_build_provider_helpers.ps1')
 
 $providerName = 'SC_SLED'
-$Version      = '1.6'
+$Version      = '1.7'
 $currentYear  = (Get-Date).Year.ToString()
 
 Write-Host ''
@@ -323,6 +323,23 @@ $drCombos = @(
     Build-QidmCombo -KeyReference 'DQ.RN' -PrimaryFieldReference 'Name' `
         -Set @('BirthDate','NameLast','NameFirst') `
         -Any @('RegistrationState','SexCode') `
+        -Conditions @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' })
+        # OLN>Name GUARDRAIL -- v1.7, and it only became necessary when v1.6 merged the cards.
+        # Through v1.5 this query read DR-SUFFIXED controls, so an OLN typed into the Driver License
+        # card could not reach it. Now it shares those controls, and DQ.RN is ordered FIRST, so an
+        # OLN+Name+DOB fill matched DQ.RN, sent a NAME search, and DISCARDED THE OLN -- DQ.RO never
+        # ran, because only one combination fires per QIDM.
+        #
+        # The alternative fix -- OperatorLicenseNumber in this combo's any[] -- is REFUSED, and the
+        # raw <Requirements> is why (the sanctioned raw-XML exception): DriverRegistrationQuery
+        # keyReference=DQ primaryFieldReference=Name reads Set[BirthDate, Name] with
+        # Any[State..State5, SexCode] and does NOT define OperatorLicenseNumber at all. Adding it
+        # would OVER-PERMIT a field the transaction has no tag for. Note DriverLicenseQuery's QWDQ
+        # DOES carry OLN in its Any[], which is exactly why verify_build flagged only this one.
+        #
+        # NOT_EXISTS is existence-only, so it cannot poison the conditions array (QIDM_REFERENCE 2a),
+        # and it leaves the plain name+DOB search untouched.
+        #
         # NO ImageIndicator default -- same metadata asymmetry as DriverLicenseQuery's name path.
     Build-QidmCombo -KeyReference 'DQ.RO' -PrimaryFieldReference 'OperatorLicenseNumber' `
         -Set @('OperatorLicenseNumber') `

@@ -1,4 +1,4 @@
-SC_SLED v1.5 -- TEST MATRIX
+SC_SLED v1.7 -- TEST MATRIX
 ==================================================
 Generated: 2026-09-16
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -13,15 +13,11 @@ Vehicle (1 card, 7 fields):
     ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
     ROW 3: RegistrationState [Sel STATE]
 
-Person (2 cards, 18 fields):
-  CARD_PER_DL (DRIVER LICENSE -- BY OLN, OR BY NAME + DOB + SEX):
+Person (1 card, 9 fields):
+  CARD_PER_DL (DRIVER LICENSE + DRIVER REGISTRATION -- BY OLN, OR BY NAME + DOB + SEX (both queries are sent)):
     ROW 1: OperatorLicenseNumber [Inp 20], RegistrationState [Sel STATE]
     ROW 2: NameLast [Inp 30], NameFirst [Inp 30], NameMiddle [Inp 30]
     ROW 3: NameSuffix [Inp 30], BirthDate [FormDate], SexCode [Sel SEX], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
-  CARD_PER_DR (DRIVER REGISTRATION -- SEPARATE QUERY, ITS OWN FIELDS):
-    ROW 1: OperatorLicenseNumberDR [Inp 20], RegistrationStateDR [Sel STATE]
-    ROW 2: NameLastDR [Inp 30], NameFirstDR [Inp 30], NameMiddleDR [Inp 30]
-    ROW 3: NameSuffixDR [Inp 30], BirthDateDR [FormDate], SexCodeDR [Sel SEX], ImageIndicatorDR [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Firearm (1 card, 4 fields):
   CARD_GUN (FIREARM -- BY SERIAL NUMBER):
@@ -42,7 +38,7 @@ QIDM SUMMARY (9 QIDMs, 18 combos)
   VehicleRegistrationQuery: 2 combos (QV x2), autoSelect=true
   VehicleStolenQuery: 2 combos (QV x2), autoSelect=true
   DriverLicenseQuery: 2 combos (DQ x1, QW x1), autoSelect=true
-  DriverRegistrationQuery: 2 combos (DQ x2), autoSelect=true, deselects: [DL]
+  DriverRegistrationQuery: 2 combos (DQ x2), autoSelect=true
   WantedPersonQuery: 5 combos (QW x5), autoSelect=true
   GunQuery: 1 combos (QG x1), autoSelect=true
   ArticleSingleQuery: 1 combos (QA x1), autoSelect=true
@@ -58,66 +54,66 @@ Arrangement: ENTITY-GROUPED -- each entity is tested start-to-finish
 (render/negative are manual one-time checks at initial provider build, not in this matrix)
 
 
-ENTITY 1: PERSON (9 tests -- 2 cards, 4 combos)
+ENTITY 1: VEHICLE (9 tests -- 1 card, 4 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
- 1  Person      DQ+OLN             OperatorLicenseNumber=D999888777 [    ]
-              Expected: DriverLicenseQuery fires (DQ)
- 2  Person      DQ+OLN             + ImageIndicator, RegistrationState [    ]
-              Expected: any[] fields present in XML output.
- 3  Person      QW+DQ              SexCode=M, BirthDate=01/15/1990, Name... [    ]
-              Expected: DriverLicenseQuery fires (QWDQ)
- 4  Person      QW+DQ              + RegistrationState             [    ]
-              Expected: any[] fields present in XML output.
- 5  Person      DQ+.RO             OperatorLicenseNumberDR=D999888777 [    ]
-              Expected: DriverRegistrationQuery fires (DQ.RO)
- 6  Person      DQ+.RO             + ImageIndicatorDR, RegistrationStateDR [    ]
-              Expected: any[] fields present in XML output.
- 7  Person      DQ+.RN             BirthDateDR=01/15/1990, NameLastDR=DO... [    ]
-              Expected: DriverRegistrationQuery fires (DQ.RN)
- 8  Person      DQ+.RN             + RegistrationStateDR, SexCodeDR [    ]
-              Expected: any[] fields present in XML output.
- 9  Person      Deselect: DriverRegistration deselects DL.            [    ]
-              Fill both query fields. Check deselect behavior.
-
-ENTITY 2: VEHICLE (9 tests -- 1 card, 4 combos)
-------------------------------------------------------------------------
-#   Entity      Action / Combo                                      Result
---  ----------  --------------------------------------------------  ------
-10  Vehicle     QV+RQ.P            LicensePlateNumber=TEST123, LicensePl... [    ]
+ 1  Vehicle     QV+RQ.P            LicensePlateNumber=TEST123, LicensePl... [    ]
               Expected: VehicleRegistrationQuery fires (QVRQ.P)
-11  Vehicle     QV+RQ.P            + RegistrationState             [    ]
+ 2  Vehicle     QV+RQ.P            + RegistrationState             [    ]
               Expected: any[] fields present in XML output.
-12  Vehicle     QV+RQ.V            VehicleIdentificationNumber=1HGCM8263... [    ]
+ 3  Vehicle     QV+RQ.V            VehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleRegistrationQuery fires (QVRQ.V)
-13  Vehicle     QV+RQ.V            + RegistrationState, vehicleYear [    ]
+ 4  Vehicle     QV+RQ.V            + RegistrationState, vehicleYear [    ]
               Expected: any[] fields present in XML output.
-14  Vehicle     QV+.P              LicensePlateNumber=TEST123       [    ]
+ 5  Vehicle     QV+.P              LicensePlateNumber=TEST123       [    ]
               Expected: VehicleStolenQuery fires (QV.P)
-15  Vehicle     QV+.P              + RegistrationState             [    ]
+ 6  Vehicle     QV+.P              + RegistrationState             [    ]
               Expected: any[] fields present in XML output.
-16  Vehicle     QV+.VM             VehicleIdentificationNumber=1HGCM8263... [    ]
+ 7  Vehicle     QV+.VM             VehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleStolenQuery fires (QV.VM)
-17  Vehicle     Guardrail: QVRQ.P>QVRQ.V  LicensePlateNumber=TEST123, VehicleId... [    ]
+ 8  Vehicle     Guardrail: QVRQ.P>QVRQ.V  LicensePlateNumber=TEST123, VehicleId... [    ]
               Expected: VehicleRegistrationQuery fires (QVRQ.P). VIN absent from XML.
-18  Vehicle     Guardrail: QVRQ.P>QV.VM  LicensePlateNumber=TEST123, VehicleId... [    ]
+ 9  Vehicle     Guardrail: QVRQ.P>QV.VM  LicensePlateNumber=TEST123, VehicleId... [    ]
               Expected: VehicleRegistrationQuery fires (QVRQ.P). VIN+VehicleMakeCode absent from XML.
 
-ENTITY 3: BOAT (5 tests -- 1 card, 2 combos)
+ENTITY 2: BOAT (5 tests -- 1 card, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-19  Boat        QB+BQ.H            BoatHullIdNumber=FL1234AB56H7    [    ]
+10  Boat        QB+BQ.H            BoatHullIdNumber=FL1234AB56H7    [    ]
               Expected: BoatQuery fires (QBBQ.H)
-20  Boat        QB+BQ.H            + RegistrationState             [    ]
+11  Boat        QB+BQ.H            + RegistrationState             [    ]
               Expected: any[] fields present in XML output.
-21  Boat        QB+BQ.R            RegistrationNumber=FL1234AB      [    ]
+12  Boat        QB+BQ.R            RegistrationNumber=FL1234AB      [    ]
               Expected: BoatQuery fires (QBBQ.R)
-22  Boat        QB+BQ.R            + RegistrationState             [    ]
+13  Boat        QB+BQ.R            + RegistrationState             [    ]
               Expected: any[] fields present in XML output.
-23  Boat        Guardrail: QBBQ.H>QBBQ.R  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+14  Boat        Guardrail: QBBQ.H>QBBQ.R  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (QBBQ.H). Reg absent from XML.
+
+ENTITY 3: PERSON (9 tests -- 1 card, 4 combos)
+------------------------------------------------------------------------
+#   Entity      Action / Combo                                      Result
+--  ----------  --------------------------------------------------  ------
+15  Person      DQ+OLN             OperatorLicenseNumber=D999888777 [    ]
+              Expected: DriverLicenseQuery fires (DQ)
+16  Person      DQ+OLN             + ImageIndicator, RegistrationState [    ]
+              Expected: any[] fields present in XML output.
+17  Person      QW+DQ              SexCode=M, BirthDate=01/15/1990, Name... [    ]
+              Expected: DriverLicenseQuery fires (QWDQ)
+18  Person      QW+DQ              + RegistrationState             [    ]
+              Expected: any[] fields present in XML output.
+19  Person      DQ+.RO             OperatorLicenseNumber=D999888777 [    ]
+              Expected: DriverRegistrationQuery fires (DQ.RO)
+20  Person      DQ+.RO             + ImageIndicator, RegistrationState [    ]
+              Expected: any[] fields present in XML output.
+21  Person      DQ+.RN             BirthDate=01/15/1990, NameLast=DOE, N... [    ]
+              Expected: DriverRegistrationQuery fires (DQ.RN)
+22  Person      DQ+.RN             + RegistrationState             [    ]
+              Expected: any[] fields present in XML output.
+23  Person      Guardrail: DQ>DQ.RN  OperatorLicenseNumber=D999888777, Bir... [    ]
+              Expected: DriverLicenseQuery fires (DQ). DOB+LastName+FirstName absent from XML.
 
 ENTITY 4: FIREARM (14 tests -- 1 card, 6 combos)
 ------------------------------------------------------------------------
@@ -158,7 +154,7 @@ ENTITY 5: ARTICLE (3 tests -- 1 card, 2 combos)
 --  ----------  --------------------------------------------------  ------
 38  Article     QA+Serial                                           [    ]
               Expected: ArticleSingleQuery fires (QA)
-39  Article     AM+AM              FreeText=TEST                    [    ]
+39  Article     AM+AM              FreeText=USX TEST MESSAGE - PLEASE DI... [    ]
               Expected: AdministrativeMessage fires (AM)
 40  Article     AM+AM              + DestinationCode, DestinationCode2, DestinationCode3, DestinationCode4 [    ]
               Expected: any[] fields present in XML output.
@@ -167,14 +163,14 @@ ENTITY 5: ARTICLE (3 tests -- 1 card, 2 combos)
 TOTAL: 40 tests
 
 COMBO COVERAGE (18/18):
-  VehicleRegistrationQuery: 2/2 -- T10(RQ.P), T12(RQ.V)
-  VehicleStolenQuery: 2/2 -- T14(.P), T16(.VM)
-  DriverLicenseQuery: 2/2 -- T1(DQ+OLN), T3(QW+DQ)
-  DriverRegistrationQuery: 2/2 -- T5(DQ+.RO), T7(DQ+.RN)
+  VehicleRegistrationQuery: 2/2 -- T1(RQ.P), T3(RQ.V)
+  VehicleStolenQuery: 2/2 -- T5(.P), T7(.VM)
+  DriverLicenseQuery: 2/2 -- T15(DQ+OLN), T17(QW+DQ)
+  DriverRegistrationQuery: 2/2 -- T19(.RO), T21(.RN)
   WantedPersonQuery: 5/5 -- T24(A.P), T26(A.VM), T28(A.NCIC), T30(A.OCA), T32(A.N)
   GunQuery: 1/1 -- T34(serialNumber)
   ArticleSingleQuery: 1/1 -- T38(Serial)
-  BoatQuery: 2/2 -- T19(BQ.H), T21(BQ.R)
+  BoatQuery: 2/2 -- T10(BQ.H), T12(BQ.R)
   AdministrativeMessage: 1/1 -- T39(AM)
 
-IMPORT FILE: SC_SLED_v1.5.json
+IMPORT FILE: SC_SLED_v1.7.json

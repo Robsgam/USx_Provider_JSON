@@ -409,8 +409,33 @@ function Get-GuardrailTests($EntQidms, $FieldIds) {
 # ── Collect QIDMs + QIFs, group by entity ─────────────────────────────────────
 $qidms = Get-CommSysQidms $json
 $qifs  = @($json.bundles.configurations | Where-Object { $_.type -eq 'QUERYINPUTFORM' })
+# ⚠️ AN ENTITY CAN HAVE MORE THAN ONE QUERYINPUTFORM, AND THIS USED TO BE `$qifByEntity[$e] = $qif`
+# -- a plain hashtable assignment, so the LAST QIF on an entity silently EVICTED every earlier one
+# and only its controls were ever seen.
+#
+# WHAT IT COST, measured on SC_SLED v1.7 (7 QIFs over 5 entities, so three entities carry two):
+# `ENTITY_WantedPerson` declares targetEntity='Firearm' (tabs are keyed by QUERYINPUTFORM, not by
+# entity -- CAPABILITY #47) and is SELF-CONTAINED with 20 of its own controls. `ENTITY_Firearm`
+# comes after it and has 4. So the Wanted tab's 20 controls vanished, and the plan emitted
+# **24 lines of "any[X] -- no control on the Firearm form; treated as platform-DERIVED, not typed"**
+# for fields that are visible type-in boxes on the very card the officer uses. Every one of those
+# optionals would have gone UNDRIVEN and therefore UNPROVEN -- the "silently not transmitted" class,
+# arriving through the plan rather than through the build. Same shape on Article, where `ENTITY_AM`
+# followed `ENTITY_Article`.
+#
+# THE UNION IS THE CORRECT MODEL, not a convenience: LIMITATION #26 records that the FIELD POOL IS
+# SHARED across all QIFs on one entity, which is exactly why LIMITATION #28 breaks codeTypeProvider
+# reverse-lookup on a two-QIF entity. A value typed on the Wanted tab is in the pool the entity's
+# QIDMs read. So the fills the driver can supply for an entity = the union of every QIF's controls.
 $qifByEntity = @{}
-foreach ($qif in $qifs) { if ($qif.targetEntity) { $qifByEntity[$qif.targetEntity] = $qif } }
+foreach ($qif in $qifs) {
+    if (-not $qif.targetEntity) { continue }
+    $k = "$($qif.targetEntity)"
+    # PLAIN ARRAY, not List[object]: `@($list)` on a List THROWS "Argument types do not match"
+    # under PowerShell 5.1, which is the engine enforce/pipeline actually run these with.
+    if (-not $qifByEntity.ContainsKey($k)) { $qifByEntity[$k] = @() }
+    $qifByEntity[$k] = @($qifByEntity[$k]) + @($qif)
+}
 
 $entityOrder = @('Vehicle','Person','Firearm','Article','Boat')
 $entities = @($qidms | ForEach-Object { $_.targetEntity } | Select-Object -Unique)
@@ -478,9 +503,22 @@ function Resolve-ExpectedKeyRef($entQidms, $fills, $entDefaults, $structuralKr, 
 
 foreach ($ent in $entities) {
     $script:CurEntity = $ent   # for entity-scoped test-value overrides
-    $fieldIds = Get-QifFieldIds $qifByEntity[$ent]
-    $hiddenIds = @(Get-QifHiddenFieldIds $qifByEntity[$ent])
-    $formDefaultsByEntity[$ent] = Get-QifFormDefaults $qifByEntity[$ent]
+    # UNION across EVERY QIF on this entity -- see the $qifByEntity comment above. The three
+    # accessors take ONE qif each, so they are called per form and merged here rather than being
+    # rewritten: a shared accessor with a new shape is a wider change than this question needs.
+    $entQifs = @($qifByEntity[$ent])
+    $fieldIds  = @()
+    $hiddenIds = @()
+    $entDefaults = [ordered]@{}
+    foreach ($qf in $entQifs) {
+        $fieldIds  += @(Get-QifFieldIds $qf)
+        $hiddenIds += @(Get-QifHiddenFieldIds $qf)
+        $qd = Get-QifFormDefaults $qf
+        foreach ($k in $qd.Keys) { $entDefaults[$k] = $qd[$k] }
+    }
+    $fieldIds  = @($fieldIds  | Select-Object -Unique)
+    $hiddenIds = @($hiddenIds | Select-Object -Unique)
+    $formDefaultsByEntity[$ent] = $entDefaults
     # Exposed to Get-TestValue so a form-shipped value counts as ALREADY-PRESENT rather than as an
     # unresolved field that reroutes the fill and gets the test dropped (see Get-TestValue).
     $script:CurFormDefaults = $formDefaultsByEntity[$ent]

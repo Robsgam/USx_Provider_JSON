@@ -5,7 +5,7 @@
 > every number from `portfolio_status.ps1` / `enforce.ps1`, never from memory.
 
 <!-- BEGIN GENERATED: tools\sync_session_state.ps1 -- do not hand-edit below this line -->
-**Last updated:** 2026-09-15 (generated) | **Branch:** `main`
+**Last updated:** 2026-09-16 (generated) | **Branch:** `main`
 
 ## Tenant-test state -- GENERATED, do not hand-edit
 
@@ -56,20 +56,22 @@ and start time both lied 09-14; on 09-15 I curled the WRONG PORT and got the NO-
 **`RUN THE JOB` + `7b` RESCAN are PROVEN, not hypotheses** (09-15: 1790 indexed / 2 new / 4s). ⚠️ **PANEL
 COLOURS CHANGED 09-16:** a pull that got NOTHING reads RED, partial AMBER, green only if all accounted.
 
-## SC_SLED v1.0 -- IMPORT IT (to prove the deploy path); DO NOT SWEEP IT (Rob 2026-09-16)
+## SC_SLED v1.7 -- IMPORT IT (proves the deploy path); DO NOT SWEEP IT (Rob 2026-09-16)
 
-⚠️ **THE HOLD NARROWED, IT DID NOT LIFT.** SC docs are still suspect (*"the combos between veh reg
-adn veh stolen seem mixed"*) so the SWEEP waits -- testing wire correctness against an authority we
-expect to change is the thing worth avoiding. But the IMPORT is now wanted, and it does not depend
-on the combos being right: it proves the EXTENSION DEPLOY PATH before Newark. `usx-sc-sled` carries
-NOTHING, so there is nothing to clobber. `QVRQ`/`QWDQ`/`QBBQ` are COMPOUND keys; re-adjudicate the
-whole Vehicle/Person split when the docs land.
-9 QIDMs / 18 combos / 6 QIFs / 80P-0F-0W-1LIM. ⚠️ **CO-FIRE IS NOW ROB'S ACCEPTED DESIGN, NOT AN
-OPEN QUESTION** (09-16: *"not sure what teh spec is but for now lets build it that way"*) -- so the
-1 LIM is a recorded decision. Re-measured off v1.0: one plate fires `QVRQ.P` AND `QV.P` but they are
-**NOT the same request** (Plate+Type+Year vs Plate+VIN+Make) -- the "QV.P equals QVRQ.P" line
-elsewhere is WRONG; what duplicates is the STOLEN CHECK, `QVRQ` being compound. No JSON change, no
-bump. Masking still unavailable. **DEPLOY ARMED for `usx-sc-sled`** (73046844870, `IMPORT_JOB.json`).
+⚠️ **IMPORT v1.7, NEVER v1.6.** v1.6 is COMMITTED AND BROKEN (`d538fbac`): 3 blocking enforce FAILs,
+shipped because I read the validator ("Validation passed") and not `enforce` -- 2nd time here, v1.2
+was the 1st. Account: its BUILD_NOTES v1.7 entry. v1.7 enforce exits 0. ⚠️ **THE SWEEP HOLD NARROWED,
+IT DID NOT LIFT** -- docs still suspect (*"the combos between veh reg adn veh stolen seem mixed"*);
+`QVRQ`/`QWDQ`/`QBBQ` are COMPOUND, re-adjudicate the Vehicle/Person split when they land. The import
+does not wait on that. 9 QIDMs / 18 combos / **7 QIFs = 7 TABS** / 78P-0F-2W-2LIM / **65 plan tests**.
+**CO-FIRE IS ROB'S ACCEPTED DESIGN** -- 1 LIM per co-firing entity; the 2 WARNs are the Option A
+trade (WantedPerson `SexCode`), deliberately NOT silenced. A plate fires `QVRQ.P` AND `QV.P` but they
+are **NOT the same request** -- what duplicates is the STOLEN CHECK. Masking unavailable. **ONLY
+provider of 21 with >1 QIF on an entity** (new `probe_multi_qif_entities.ps1`), which is why
+`emit_test_plan`'s QIF-eviction bug hit here alone. ⚠️ **OPEN, NEEDS ROB:** the AM's five
+`DestinationCode` optionals are deliberately UNMAPPED, 5 WARNs left standing -- an AM DELIVERS text to
+the ORI named there, so a guess picks a real SC recipient; self-addressing needs the tenant ORI
+`Build-Auth` reads at runtime. See its `TEST_VALUE_OVERRIDES.txt`.
 
 ## ROB'S CALLS + OPEN FINDINGS -- detail lives in `FINDINGS_REGISTER.md`, do NOT restate it here
 
@@ -85,15 +87,14 @@ half-applied; the only outstanding action is ONE operator click. `newarkpd-found
 runs NJ_NJCJIS v4.16 while ledger AND catalog say v4.17, proven five ways -- and per Rob it stays
 MANUAL. Loop: `emit_import_job.ps1` -> review `IMPORT_JOB.json` -> panel **RUN THE JOB FOR THIS
 TENANT** -> auto re-export -> `watch_imports.ps1` -> `verify_tenant_import`. `deploy_probe.js` is
-the ONLY writer; dry-run default; 46 mutation cases. ⚠️ **GUI only, never a console command.**
-⚠️ An import **REPLACES** the bundle set. ⚠️ Still unexplained and worth more than the import:
-**WHY the 2026-08-20 Newark import did not land.** Held (Rob's): scoping, the batch, Confluence.
+the ONLY writer; dry-run default; 46 mutation cases. ⚠️ **GUI only, never a console command.** ⚠️ An
+import **REPLACES** the bundle set. ⚠️ Still unexplained and worth more than the import: **WHY the
+2026-08-20 Newark import did not land.** Held (Rob's): scoping, the batch, Confluence.
 
 ## DO NOT RE-RAISE
 
 - `State2`-`State5` multi-state broadcast: OUT OF SCOPE 2026-08-02. OH's `ReasonCode`/`Requestor` =
-  the BMVIMS case. CommSys asks HELD. TX_TLETS_CCH testing PARKED. DH NOT SUPPORTED FROM CAD.
-  TN `RQ01` + name-component casing CLOSED 08-24.
+  the BMVIMS case. CommSys asks HELD. TX_TLETS_CCH PARKED. DH NOT FROM CAD. TN `RQ01` + name-casing CLOSED 08-24.
 - **A keyRef NEVER reaches the wire, nor does `primaryFieldReference`** -- ask whether the label
   ships. **`[FLAG:plan-dedupe-vacuous-tests]` DONE**; inflation 2026-09-14: 927 logs / 0 findings.
 - **NY DEMOTED-QUALIFIER: CLOSED, not owed** ([KILLED] 2026-09-09; two fixes REJECTED, see

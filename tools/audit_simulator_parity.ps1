@@ -180,10 +180,10 @@ if ($planFiles.Count -eq 0) {
             $e = "$($t.entity)"
             if (-not $qidmsByEnt.ContainsKey($e)) { continue }
 
-            $expCombo = $null
+            $expCombo = $null; $expQidm = $null
             foreach ($qq in $qidmsByEnt[$e]) {
                 foreach ($cc in @($qq.combinations)) {
-                    if ("$($cc.keyReference)" -eq "$($t.expectedKeyRef)") { $expCombo = $cc; break }
+                    if ("$($cc.keyReference)" -eq "$($t.expectedKeyRef)") { $expCombo = $cc; $expQidm = $qq; break }
                 }
                 if ($expCombo) { break }
             }
@@ -199,7 +199,29 @@ if ($planFiles.Count -eq 0) {
             if ($initByEnt.ContainsKey($e)) {
                 foreach ($k in $initByEnt[$e].Keys) { if (-not $fd.ContainsKey($k)) { $fd[$k] = $initByEnt[$e][$k] } }
             }
-            $sim = Get-FiringKeyRef $qidmsByEnt[$e] $fd
+            # ⚠️ FIRST-MATCH IS PER QIDM, NOT PER ENTITY. `Get-FiringKeyRef` walks EVERY QIDM on the
+            # entity and returns the first match it finds ANYWHERE, which models "one query fires
+            # per entity" -- and the platform does not work that way. It evaluates each QIDM
+            # independently and fires one combination from EACH, so two QIDMs on one entity CO-FIRE.
+            # Measured on SC_SLED: one plate fill sends QVRQ.P (VehicleRegistrationQuery) AND QV.P
+            # (VehicleStolenQuery); one name+DOB+Sex fill sends QWDQ (DriverLicenseQuery) AND DQ.RN
+            # (DriverRegistrationQuery).
+            #
+            # WHAT THE ENTITY-WIDE WALK COST HERE: it reported 4 FAILs on SC_SLED v1.6 -- "plan
+            # expects 'QV.P' but the canonical walk fires 'QVRQ.P'" -- when BOTH fire and the plan
+            # was right. That is this gate asserting a model the provider refutes, and acting on it
+            # would have meant deleting the co-fire tests Rob had just ruled in ("we must fulfill
+            # the query combo  we don't chase teh message key  we send the query").
+            #
+            # So when the plan test's keyRef is traceable to a specific QIDM, ask THAT QIDM what it
+            # fires. The question the gate exists to answer -- "do two independent producers agree
+            # on which combination a fill reaches?" -- is unchanged and is in fact sharper: a
+            # WITHIN-QIDM shadowing error (plan says DQ.RN, that QIDM really fires DQ.RO) still
+            # FAILs. Nothing is lost by narrowing, because a sibling QIDM matching too is a co-fire,
+            # not a steal. Fallback to the entity-wide walk when the owner cannot be identified --
+            # a test whose keyRef is in NO QIDM must not be silently dropped from the denominator.
+            if ($expQidm) { $sim = Get-FiringKeyRefForQidm $expQidm $fd }
+            else          { $sim = Get-FiringKeyRef $qidmsByEnt[$e] $fd }
             if ([string]::IsNullOrWhiteSpace("$sim")) {
                 # INDETERMINATE, not a disagreement: the combo needs a field no static model can
                 # supply -- a platform/handler-populated one with no initialValue that the test

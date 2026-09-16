@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: SC_SLED
-  Source: SC_SLED_v1.5.json
-  Generated: 2026-09-16 17:07
+  Source: SC_SLED_v1.7.json
+  Generated: 2026-09-16 17:51
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -26,7 +26,7 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 10 fieldIds
   [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
-  [PASS] QIF 'ENTITY_Person' -> Person : 21 fieldIds
+  [PASS] QIF 'ENTITY_Person' -> Person : 12 fieldIds
   [WARN] QIF 'ENTITY_WantedPerson' SexCode field missing attributeTypeId='SEX' -- reverse-lookup will not work
     [FIX] In build script: add attributeTypeId='SEX' to the SexCode FormSelect field
   [WARN] QIF 'ENTITY_WantedPerson' SexCode field missing codeTypeProvider='NIBRS' -- dropdown shows wrong values
@@ -66,9 +66,9 @@ VALIDATOR RESULTS
 
 === PHASE 4: AutoSelect & Cross-Reference ===
   [PASS] Article : 2 QIDMs, 2 QIF(s)
-  [PASS] Person: 2 QIDMs co-fire with autoSelect=true + queriesToDeselect on SINGLE QIF
-         SC_SLED_DriverLicenseQuery (query=DriverLicenseQuery, deselect=)
-         SC_SLED_DriverRegistrationQuery (query=DriverRegistrationQuery, deselect=DriverLicenseQuery)
+  [LIMITATION] Person: 2 QIDMs have autoSelect=true on a SINGLE QIF without queriesToDeselect -- co-fire lacks toggle control
+         SC_SLED_DriverLicenseQuery (query=DriverLicenseQuery)
+         SC_SLED_DriverRegistrationQuery (query=DriverRegistrationQuery)
   [PASS] Person : 2 QIDMs, 1 QIF(s)
   [LIMITATION] Vehicle: 2 QIDMs have autoSelect=true on a SINGLE QIF without queriesToDeselect -- co-fire lacks toggle control
          SC_SLED_VehicleRegistrationQuery (query=VehicleRegistrationQuery)
@@ -110,7 +110,7 @@ VALIDATOR RESULTS
   [PASS] QIDM 'SC_SLED_AdministrativeMessage' combo 'AM': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 79 PASS / 0 FAIL / 2 WARN / 1 LIMITATION
+  RESULTS: 78 PASS / 0 FAIL / 2 WARN / 2 LIMITATION
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
 
   Review WARN items -- they may cause runtime issues.

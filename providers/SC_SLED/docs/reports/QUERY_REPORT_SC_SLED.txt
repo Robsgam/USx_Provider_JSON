@@ -1,15 +1,14 @@
 ﻿================================================================
   Build Report: SC_SLED
-  Source: SC_SLED_v1.5.json
-  Generated: 2026-09-16 17:07
+  Source: SC_SLED_v1.7.json
+  Generated: 2026-09-16 17:51
 ================================================================
 QUERY SIMULATION
 ================
 
-  Seeded form defaults (1): Person.ImageIndicatorDR=Y
 
 ================================================================
-  CommSys Query Simulator -- SC_SLED_v1.5.json
+  CommSys Query Simulator -- SC_SLED_v1.7.json
 ================================================================
 
 --- QIDM: SC_SLED_VehicleRegistrationQuery [Vehicle] ---
@@ -92,8 +91,24 @@ QUERY SIMULATION
 
 --- QIDM: SC_SLED_DriverRegistrationQuery [Person] ---
     Query: DriverRegistrationQuery  |  Attrs: 6  |  Combos: 2
-    [SKIP] DQ.RN -- missing set: BirthDateDR, NameLastDR, NameFirstDR
-    [SKIP] DQ.RO -- missing set: OperatorLicenseNumberDR
+    [SKIP] DQ.RN -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
+
+    [FIRES first-match] DQ.RO
+      set: [OperatorLicenseNumber]
+      any: [ImageIndicator, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>DQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <State>NJ</State>
+      </Transaction>
+
+    >> PLATFORM FIRES: DQ.RO (first matching combo)
+    >> UNION POOL (platform serializes): OperatorLicenseNumber=D123456789, ImageIndicator=Y, State=NJ
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: SC_SLED_WantedPersonQuery [Firearm] ---
     Query: WantedPersonQuery  |  Attrs: 18  |  Combos: 5

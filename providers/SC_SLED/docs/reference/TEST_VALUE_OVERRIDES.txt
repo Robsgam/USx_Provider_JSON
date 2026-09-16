@@ -34,3 +34,43 @@ LicensePlateStateCode=SC
 # set[FreeText]. The devdoc caps it at 501 characters; a short readable string is enough to prove
 # the tag transmits, and a 501-char filler would make the captured log unreadable for no gain.
 FreeText=USX TEST MESSAGE - PLEASE DISREGARD
+#
+# --- AM : DestinationCode / DestinationCode2..5 -- DELIBERATELY NOT MAPPED, NEEDS ROB'S CALL ------
+# emit_test_plan WARNs 5x: "Article AM any[]: 'DestinationCodeN' has no test value". That WARN is
+# CORRECT SIGNAL and is being LEFT IN PLACE rather than silenced with a guess.
+#
+# WHY. Every other override in this file is a synthetic string that goes into a SEARCH. An
+# AdministrativeMessage is not a search -- it DELIVERS free text to the ORI(s) named in these
+# fields, into a queue a human at that agency reads. So inventing a 9-character ORI-shaped value
+# does not make a test value; it picks a recipient. Guess wrong and we have sent an unsolicited
+# message to a real South Carolina agency under the tenant's ORI, which no gate can undo.
+#
+# The SELF-ADDRESSED option (send it to the originating agency, so the message lands back in our
+# own queue) is the obviously safe one, and it cannot be written here: `Build-Auth` takes the ORI
+# from the TENANT at runtime, so the build does not know the string. It would have to be read off
+# usx-sc-sled after the import and pasted in.
+#
+# CONSEQUENCE, stated rather than hidden: the AM combination has a plan test for set[FreeText] and
+# will be driven, but its five any[] optionals will NOT be, so nothing proves those tags transmit.
+# That is a real coverage hole in the AM entity and it is the only one in this provider.
+#
+# TO CLOSE IT: read usx-sc-sled's own ORI from the tenant after the v1.7 import, then uncomment and
+# fill the line below. Do NOT populate 2..5 unless multi-destination broadcast is wanted -- the
+# standing 2026-08-02 decision excludes multi-state broadcast (State2..State5) for the same reason.
+# DestinationCode=<usx-sc-sled's own ORI, 9 chars>
+#
+# --- QWA.N / QWA.OCA : the Wanted Person optionals -----------------------------------------------
+# ADDED 2026-09-16, and they were INVISIBLE until the same day. `emit_test_plan` keyed its QIF
+# lookup by targetEntity in a plain hashtable, so `ENTITY_Firearm` (4 controls) EVICTED
+# `ENTITY_WantedPerson` (21 controls) -- both declare targetEntity='Firearm' (CAPABILITY #47) -- and
+# all 24 of the Wanted tab's any[] optionals were reported as "no control on the Firearm form;
+# treated as platform-DERIVED, not typed". They are visible type-in boxes. Plan: 37 -> 61 tests.
+#
+# Sizes and permitted values read from the devdoc WantedPersonQuery M/C/O row, not guessed:
+#   ExpandedNameSearchCode  O size 1   "Y, N, or blank"
+#   FBINumber               O size 9   alphanumeric
+#   MiscellaneousNumber     O size 15  alphanumeric
+# 'Y' is a real toggle test here: the control ships with NO initialValue, so Y differs from default.
+ExpandedNameSearchCode=Y
+FBINumber=123456AB1
+MiscellaneousNumber=MISC0000012345

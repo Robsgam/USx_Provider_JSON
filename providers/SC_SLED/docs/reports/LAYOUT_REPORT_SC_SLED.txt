@@ -1,15 +1,15 @@
 ﻿================================================================
   Build Report: SC_SLED
-  Source: SC_SLED_v1.5.json
-  Generated: 2026-09-16 17:07
+  Source: SC_SLED_v1.7.json
+  Generated: 2026-09-16 17:51
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== SC_SLED_v1.5.json ===
+=== SC_SLED_v1.7.json ===
 QIFs: 7
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=4
-  Person | entity=Person | qidm= | cards=2 fields=10
+  Person | entity=Person | qidm= | cards=1 fields=5
   Wanted Person | entity=Firearm | qidm= | cards=1 fields=18
   Firearm | entity=Firearm | qidm= | cards=1 fields=2
   Article | entity=Article | qidm= | cards=1 fields=1
@@ -62,27 +62,11 @@ LAYOUT DETAIL
         BirthDate (FormDate)
         SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
         ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
-    CARD "CARD_PER_DR"
-      ROW ROW_DR_1 [6 6]
-        OperatorLicenseNumberDR (Text | maxLen=20)
-        RegistrationStateDR (Dropdown | attributeTypeId=STATE)
-      ROW ROW_DR_2 [4 4 4]
-        NameLastDR (Text | maxLen=30)
-        NameFirstDR (Text | maxLen=30)
-        NameMiddleDR (Text | maxLen=30)
-      ROW ROW_DR_3 [3 3 3 3]
-        NameSuffixDR (Text | maxLen=30)
-        BirthDateDR (FormDate)
-        SexCodeDR (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
-        ImageIndicatorDR (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
 
 === Wanted Person ===
   name=ENTITY_WantedPerson | entity=Firearm | qidm=
   [default]
     CARD "CARD_WP_ID"
-      ROW ROW_WP_1 [6 6]
-        NCICNumber (Text | maxLen=10)
-        OriginatingAgencyCaseNumber (Text | maxLen=20)
       ROW ROW_WP_N [3 3 3 3]
         NameLast (Text | maxLen=30)
         NameFirst (Text | maxLen=30)
@@ -93,6 +77,9 @@ LAYOUT DETAIL
         SexCode (Text | maxLen=1)
         raceCode (Text | maxLen=1)
         OperatorLicenseNumber (Text | maxLen=20)
+      ROW ROW_WP_1 [6 6]
+        NCICNumber (Text | maxLen=10)
+        OriginatingAgencyCaseNumber (Text | maxLen=20)
       ROW ROW_WP_3 [3 3 3 3]
         SocialSecurityNumber (Text | maxLen=9)
         FBINumber (Text | maxLen=9)

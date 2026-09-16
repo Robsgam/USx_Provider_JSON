@@ -2,6 +2,139 @@
   BUILD NOTES: SC_SLED
   Created: 2026-09-14
 ================================================================
+v1.7  2026-09-16  OLN>NAME GUARDRAIL ON DriverRegistrationQuery -- the co-fire's missed cost
+  CHANGED: `DQ.RN` gains `conditions: [{ field: [OperatorLicenseNumber], operator: NOT_EXISTS }]`.
+           One combination, one condition. No field, label, layout, order or attribute change.
+           Validator 78P/0F/2W/2LIM (unchanged). Registry: +1 row.
+  REASON:  v1.6 SHIPPED COMMITTED WITH THREE BLOCKING FAILS AND I CALLED IT DONE OFF THE VALIDATOR.
+           The validator read 78P/0F, the build printed "Validation passed", and the JSON was
+           committed in d538fbac -- but `enforce` had not been read. It reported:
+               [FAIL] verify_build -- DQ.RN missing OperatorLicenseNumber NOT_EXISTS
+                      (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
+               [FAIL] DriverRegistrationQuery #1 +[ImageIndicator]        -> not transmitted
+               [FAIL] DriverRegistrationQuery #1 +[ImageIndicator,State]  -> not transmitted
+           This is the SECOND time on this provider that "the validator passed" was mistaken for
+           "enforce passed" (v1.2 was the first). The validator does not run verify_build, the
+           devdoc-optional gate, or the parity cross-check.
+
+           THE DEFECT WAS REAL AND WAS CREATED BY v1.6's CARD MERGE. Through v1.5 this query read
+           DR-SUFFIXED controls, so an OLN typed into the Driver License card could not reach it.
+           v1.6 pointed it at the SHARED controls, and `DQ.RN` is ordered FIRST -- so an
+           OLN + Name + DOB fill matched `DQ.RN`, sent a NAME search, and DISCARDED THE OLN.
+           `DQ.RO` never ran, because only ONE combination fires per QIDM. The officer's strongest
+           identifier was silently dropped. The co-fire itself is unaffected: DriverLicenseQuery
+           still sends its own query off the same fill, and now DriverRegistration sends `DQ.RO`.
+
+           THE OTHER FIX -- putting OperatorLicenseNumber in DQ.RN's any[] -- IS REFUSED, and the
+           raw <Requirements> is why (the sanctioned raw-XML exception):
+               DriverRegistrationQuery  DQ{Name}  Set[BirthDate, Name]
+                                                  Any[State, State2..State5, SexCode]
+           It does not define OperatorLicenseNumber AT ALL. Adding it would OVER-PERMIT a tag the
+           transaction has no slot for. DriverLicenseQuery's `QWDQ` DOES carry OLN in its Any[],
+           which is precisely why verify_build flagged one combo and not the other -- the two
+           transactions are asymmetric in the metadata and the build now matches each one.
+
+  THE TWO ImageIndicator FAILS ARE A REGISTRATION, NOT A FIX -- same adjudication as QWDQ.
+           `DQ{Name}`'s Any[] has no ImageIndicator either; only `DQ{OperatorLicenseNumber}` does,
+           and that is `DQ.RO`, where it is wired with the 'Y' default. The devdoc lists
+           ImageIndicator FLAT across both variants (devdoc = one optional list per query; metadata
+           scopes optionals PER VARIANT). An identical row for DriverLicenseQuery | QWDQ has been in
+           SC_SLED_ACCEPTED_DIVERGENCES.txt since 2026-09-14 and reads [NOTE]; this one was owed the
+           moment the shared NCIC Image control started reaching this query. Row added, verified to
+           clear the FAIL rather than to look like it did.
+
+  ALSO FIXED, SHARED TOOL: `audit_simulator_parity.ps1`'s behavioural cross-check asserted a model
+           this provider refutes. It recomputed each plan test's keyRef with `Get-FiringKeyRef`,
+           which walks EVERY QIDM on the entity and returns the first match ANYWHERE -- i.e. "one
+           query fires per entity". So it reported 4 FAILs of the form "plan expects 'QV.P' but the
+           canonical walk fires 'QVRQ.P'" when BOTH fire and the plan was right. Acting on that
+           would have meant deleting the co-fire tests. It now asks the OWNING QIDM
+           (`Get-FiringKeyRefForQidm`) when the plan's keyRef is traceable to one, falling back to
+           the entity walk otherwise so no test leaves the denominator.
+           MEASURED BOTH WAYS: 1416 tests compared before, 1416 after (0 indeterminate both), and a
+           planted WITHIN-QIDM mismatch on SC_SLED test n=3 still FAILs -- so the narrowing did not
+           blind it.
+
+
+  ALSO FIXED, SHARED TOOL #2: `emit_test_plan.ps1` was EVICTING QUERYINPUTFORMS. Its lookup was
+           `$qifByEntity[$targetEntity] = $qif` -- a plain hashtable -- so on an entity carrying more
+           than one form the LAST one silently discarded every earlier one, and only its controls
+           counted as fillable. THIS PROVIDER IS THE ONLY ONE IN THE PORTFOLIO IT COULD AFFECT and
+           that is measured, not assumed: `tools\_probes\probe_multi_qif_entities.ps1` (new) reports
+           **1 of 21** -- SC_SLED, Firearm = ENTITY_WantedPerson (21 controls) + ENTITY_Firearm (4),
+           Article = ENTITY_Article (2) + ENTITY_AdministrativeMessage (6). Every other provider is
+           one-QIF-per-entity, the standing shape LIMITATION #28 describes.
+           WHAT IT COST HERE: `ENTITY_Firearm` sorts after `ENTITY_WantedPerson`, so all 21 Wanted
+           Person controls vanished and the plan printed **24 lines of "any[X] -- no control on the
+           Firearm form; treated as platform-DERIVED, not typed"** for fields that are visible
+           type-in boxes on the Wanted tab -- every one of those optionals would have gone UNDRIVEN
+           and therefore UNPROVEN. The union is the correct model, not a convenience: LIMITATION #26
+           records that the FIELD POOL IS SHARED across all QIFs on one entity, which is the very
+           fact that makes #28 break codeTypeProvider reverse-lookup here.
+           MEASURED: plan 37 -> 61 tests with all 24 omissions gone, then 61 -> **65** once the
+           recovered optionals got test values. Parity cross-check 1416 -> 1445 compared, 0 disagree.
+           PS 5.1 TRAP HIT ON THE WAY: the first version stored a `List[object]` and `@($list)`
+           THROWS "Argument types do not match" on 5.1, which is the engine enforce actually uses.
+           Plain arrays now.
+
+  TEST VALUES ADDED for the recovered Wanted Person optionals, sizes/values read from the devdoc
+           WantedPersonQuery M/C/O row rather than guessed: `ExpandedNameSearchCode=Y` (O size 1,
+           "Y, N, or blank"; the control ships with no initialValue so Y is a real toggle test),
+           `FBINumber=123456AB1` (O size 9), `MiscellaneousNumber=MISC0000012345` (O size 15).
+
+  ⚠️ ONE COVERAGE HOLE LEFT OPEN ON PURPOSE, AND IT NEEDS ROB: the AdministrativeMessage's five
+           `DestinationCode` optionals have NO test value, and emit_test_plan WARNs 5x about it.
+           That WARN is being LEFT IN rather than silenced. An AM is not a search -- it DELIVERS
+           free text to the ORI(s) named in those fields, into a queue a human at that agency reads.
+           Inventing a 9-character ORI-shaped value does not make a test value, it picks a
+           RECIPIENT, and a wrong guess sends an unsolicited message to a real South Carolina
+           agency under the tenant's ORI. The obviously-safe self-addressed option cannot be written
+           into the build: `Build-Auth` takes the ORI from the TENANT at runtime. To close it, read
+           usx-sc-sled's own ORI after the import and paste it in -- the commented line and the full
+           reasoning are in docs/reference/TEST_VALUE_OVERRIDES.txt. Consequence stated plainly: the
+           AM set[FreeText] path WILL be driven; its five optionals will not, so nothing proves
+           those tags transmit. It is this provider's only such hole.
+
+v1.6  2026-09-16  DRIVER LICENSE + DRIVER REGISTRATION CO-FIRE, plus a label/layout pass
+  CHANGED: 1. CO-FIRE. `CARD_PER_DR` and every DR-suffixed control DELETED. DriverRegistration's
+              attributes and combinations now point at the SHARED Driver License controls, and
+              `-QueriesToDeselect @('DriverLicenseQuery')` is GONE -- that deselect was the one
+              thing preventing the co-fire. Person: 2 cards/10 fields -> ONE card. DL card title
+              now says both queries are sent.
+           2. HELPER TEXT REMOVED, per request: Vehicle VIN, Wanted VIN, Wanted Plate Number,
+              Wanted NCIC Number, Article Serial Number.
+           3. WANTED ROW ORDER: Name first, DOB/Sex/Race/OLN second, NCIC + case number third.
+              Sequence only -- same rows, same field ids, no wiring touched.
+           Validator 79P/0F/2W/1LIM -> 78P/0F/2W/2LIM.
+  REASON:  Rob 2026-09-16: "on person remove help on vin  lets co fire driver reg and driver license
+           since they are idnetical combos  remove helper on atricle serial  on eanted lets move the
+           name row to the top  dob line to 2nd  and top row down 2  remove helper on ncic and plat
+           enumber".
+
+           WHY THE CO-FIRE IS SOUND, not just permitted. Through v1.5 these two were ISOLATED on
+           purpose: metadata gives BOTH transactions a keyRef of `DQ` with IDENTICAL mandatory sets,
+           a collision ordering cannot separate. That reasoning was about telling them APART. Rob's
+           call is that they should not be: same search, one fill, both queries. The mechanism was
+           already PROVEN on this provider -- Vehicle carries reg+stolen on one card and
+           test_commsys shows one plate fill firing QVRQ.P AND QV.P. Verified after the change: an
+           OLN/name fill fires QWDQ (DriverLicenseQuery) AND DQ.RN (DriverRegistrationQuery).
+           LIMITATION #2 is one QIDM per (targetEntity, QUERY) and these are DIFFERENT queries, so
+           two on Person is as legal as two on Vehicle.
+           Person keeps exactly ONE QIF, so its codeTypeProvider reverse-lookup stays intact (#28).
+
+  THE NEW 2nd LIMITATION IS EXPECTED, NOT A REGRESSION:
+      [LIMITATION] Person: 2 QIDMs have autoSelect=true on a SINGLE QIF without queriesToDeselect
+                   -- co-fire lacks toggle control
+  That is the gate describing exactly what was asked for. Vehicle already carried the identical
+  line for reg/stolen. Two LIMITATIONs now, one per co-firing entity.
+
+  ⚠️ VIN AMBIGUITY RESOLVED BY DOING BOTH, and saying so: the request said "on person remove help
+  on vin" but PERSON HAS NO VIN CONTROL. The VINs carrying helper text were Vehicle's ("plate takes
+  priority if both are entered") and Wanted's ("wanted vehicle -- needs make"), so both were
+  stripped rather than guessing which was meant.
+  Checked before trusting the Article edit: the pattern could also have matched FIREARM's serial,
+  but that label was ALREADY bare, so no unintended scope. Verified against the pre-edit backup.
+
 v1.5  2026-09-16  TAB ORDER set to the sequence Rob asked for
   CHANGED: Nothing but ordering. No field, combination, attribute or QIDM touched.
            `$entityOrder`     : Vehicle, Person, Firearm, Firearm, Article, Boat, Article

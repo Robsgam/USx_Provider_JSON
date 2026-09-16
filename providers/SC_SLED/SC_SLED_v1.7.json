@@ -8433,7 +8433,15 @@
                                                                                                  "any":  [
                                                                                                              "RegistrationState",
                                                                                                              "SexCode"
-                                                                                                         ]
+                                                                                                         ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "OperatorLicenseNumber"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    }
+                                                                                                                ]
                                                                                              },
                                                                             "primaryFieldReference":  "Name",
                                                                             "keyReference":  "DQ.RN",
@@ -9048,7 +9056,7 @@
                                                    "targetEntity":  "Article"
                                                }
                                            ],
-                        "description":  "Provider configuration for SC_SLED v1.6 -- South Carolina SLED. 9 Basic transactions, 18 combinations.",
+                        "description":  "Provider configuration for SC_SLED v1.7 -- South Carolina SLED. 9 Basic transactions, 18 combinations.",
                         "name":  "SC_SLED",
                         "type":  "BUNDLE",
                         "provider":  "SC_SLED"

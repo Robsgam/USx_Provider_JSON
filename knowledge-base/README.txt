@@ -3236,3 +3236,28 @@ probe_pull_verdict.ps1 -- LAW 2 FOR THE CONFIG-PULL VERDICT (composed into docto
   exit 1; restored gives 0 wrong and exit 0. The GREEN-CLEAN positive control is required
   to have RUN AND PASSED, because a verdict function returning red unconditionally would
   otherwise score 100%.
+
+probe_multi_qif_entities.ps1 -- WHICH PROVIDERS PUT >1 QUERYINPUTFORM ON ONE ENTITY
+  The DENOMINATOR for any change to per-entity form handling. Answer, measured
+  2026-09-16: 1 of 21 -- SC_SLED, and only SC_SLED. Every other provider is
+  one-QIF-per-entity, which is the standing rule LIMITATION #28 exists to state.
+  SC_SLED's two doubles: Firearm = ENTITY_WantedPerson (21 controls) + ENTITY_Firearm
+  (4), and Article = ENTITY_Article (2) + ENTITY_AdministrativeMessage (6). Both are
+  deliberate -- tabs are keyed by QUERYINPUTFORM, not by entity (CAPABILITY #47).
+  WHY IT EXISTS: emit_test_plan.ps1 kept its QIF lookup in a plain hashtable keyed by
+  targetEntity, so the LAST form on an entity silently EVICTED the earlier ones and only
+  its controls counted as fillable. On SC_SLED that discarded all 21 Wanted Person
+  controls and emitted 24 lines of "any[X] -- no control on the Firearm form; treated as
+  platform-DERIVED, not typed" for fields that are visible type-in boxes. Fixed to union
+  across every QIF (LIMITATION #26: the field pool IS shared across QIFs on one entity,
+  which is the same fact that makes #28 break codeTypeProvider reverse-lookup). Plan went
+  37 -> 61 tests, and 61 -> 65 once the recovered optionals got test values. This probe is
+  what makes "the other 20 providers cannot be affected" a measurement, not an assertion.
+  !! WRITTEN AFTER MY OWN HAND-ROLLED VERSION HUNG TWICE, for ~10 minutes each, looking
+  exactly like a slow sweep over 21 large JSONs. It called
+  `Get-ProviderRootJson -Provider $p` and omitted the MANDATORY -ProvDir, so PowerShell
+  PROMPTED ON STDIN and blocked forever with stdin not a console. Get-ProbeJsonPath cannot
+  be called wrong; that is the entire point of the harness (usx-tooling 8). Two further
+  slips the harness did not cover and the header now records: the dot-source from
+  tools/_probes/ needs `..\_probe.ps1`, and Get-ProbeProviders returns -NoEnumerate, so
+  `foreach ($p in Get-ProbeProviders)` iterates ONCE over the whole array -- assign first.

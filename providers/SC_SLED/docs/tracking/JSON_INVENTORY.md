@@ -10,7 +10,7 @@ modules have moved).
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| SC_SLED_v1.5.json | v1.5 | Current | 79P/0F/2W/1LIM. |
+| SC_SLED_v1.7.json | v1.7 | Current | 78P/0F/2W/2LIM. |
 ## History
 
 | Version | File | Date | Notes |
@@ -21,11 +21,23 @@ modules have moved).
 
 
 
+
+
+## v1.7 (2026-09-16)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| SC_SLED_v1.7.json | v1.7 | Current | 78P/0F/2W/2LIM. |
+## v1.6 (2026-09-16)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| SC_SLED_v1.6.json | v1.6 | Superseded | 78P/0F/2W/2LIM. |
 ## v1.5 (2026-09-16)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| SC_SLED_v1.5.json | v1.5 | Current | 79P/0F/2W/1LIM. |
+| SC_SLED_v1.5.json | v1.5 | Superseded | 79P/0F/2W/1LIM. |
 ## v1.4 (2026-09-16)
 
 | File | Version | Status | Notes |

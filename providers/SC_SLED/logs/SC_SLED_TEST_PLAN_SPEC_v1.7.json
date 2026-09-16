@@ -1,0 +1,2451 @@
+﻿{
+    "provider":  "SC_SLED",
+    "version":  "1.7",
+    "derivedFrom":  "devdoc + metadata (NOT the built JSON)",
+    "note":  "expectedKeyRef=NO-FIRE means the devdoc allows this fill but no built combo matches -- the driver should submit it and the sweep should record that nothing was sent. UNREACHABLE means a devdoc field has no form control at all.",
+    "testCount":  87,
+    "tests":  [
+                  {
+                      "n":  1,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "specSource":  "devdoc ArticleSingleQuery #1",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "QA",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "ArticleSerialNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleSerialNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleTypeCode",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  2,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "specSource":  "devdoc BoatQuery #1",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "BoatHullSerialNumber"
+                                        ],
+                      "fills":  [
+
+                                ]
+                  },
+                  {
+                      "n":  3,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "specSource":  "devdoc BoatQuery #1",
+                      "optionalsAdded":  [
+                                             "RegistrationNumber"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "BoatHullSerialNumber"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  4,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "specSource":  "devdoc BoatQuery #1",
+                      "optionalsAdded":  [
+                                             "State"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "BoatHullSerialNumber"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  5,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "specSource":  "devdoc BoatQuery #2",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "QBBQ.R",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  6,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "specSource":  "devdoc BoatQuery #2",
+                      "optionalsAdded":  [
+                                             "BoatHullSerialNumber"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "BoatHullSerialNumber"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  7,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "specSource":  "devdoc BoatQuery #2",
+                      "optionalsAdded":  [
+                                             "State"
+                                         ],
+                      "expectedKeyRef":  "QBBQ.R",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  8,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #1",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "QWDQ",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  9,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #1",
+                      "optionalsAdded":  [
+                                             "ImageIndicator"
+                                         ],
+                      "expectedKeyRef":  "QWDQ",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  10,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #1",
+                      "optionalsAdded":  [
+                                             "OperatorLicenseNumber"
+                                         ],
+                      "expectedKeyRef":  "QWDQ",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  11,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #1",
+                      "optionalsAdded":  [
+                                             "State"
+                                         ],
+                      "expectedKeyRef":  "QWDQ",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  12,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #1",
+                      "optionalsAdded":  [
+                                             "State2"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "State2"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  13,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #1",
+                      "optionalsAdded":  [
+                                             "State3"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "State3"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  14,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #1",
+                      "optionalsAdded":  [
+                                             "State4"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "State4"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  15,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #1",
+                      "optionalsAdded":  [
+                                             "State5"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "State5"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  16,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #2",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "DQ",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  17,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #2",
+                      "optionalsAdded":  [
+                                             "ImageIndicator"
+                                         ],
+                      "expectedKeyRef":  "DQ",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  18,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #2",
+                      "optionalsAdded":  [
+                                             "State"
+                                         ],
+                      "expectedKeyRef":  "DQ",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  19,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #2",
+                      "optionalsAdded":  [
+                                             "State2"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "State2"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  20,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #2",
+                      "optionalsAdded":  [
+                                             "State3"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "State3"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  21,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #2",
+                      "optionalsAdded":  [
+                                             "State4"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "State4"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  22,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #2",
+                      "optionalsAdded":  [
+                                             "State5"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "State5"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  23,
+                      "entity":  "Person",
+                      "query":  "DriverRegistrationQuery",
+                      "specSource":  "devdoc DriverRegistrationQuery #1",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "DQ.RN",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  24,
+                      "entity":  "Person",
+                      "query":  "DriverRegistrationQuery",
+                      "specSource":  "devdoc DriverRegistrationQuery #1",
+                      "optionalsAdded":  [
+                                             "ImageIndicator"
+                                         ],
+                      "expectedKeyRef":  "DQ.RN",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  25,
+                      "entity":  "Person",
+                      "query":  "DriverRegistrationQuery",
+                      "specSource":  "devdoc DriverRegistrationQuery #1",
+                      "optionalsAdded":  [
+                                             "State"
+                                         ],
+                      "expectedKeyRef":  "DQ.RN",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  26,
+                      "entity":  "Person",
+                      "query":  "DriverRegistrationQuery",
+                      "specSource":  "devdoc DriverRegistrationQuery #1",
+                      "optionalsAdded":  [
+                                             "State2"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "State2"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  27,
+                      "entity":  "Person",
+                      "query":  "DriverRegistrationQuery",
+                      "specSource":  "devdoc DriverRegistrationQuery #1",
+                      "optionalsAdded":  [
+                                             "State3"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "State3"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  28,
+                      "entity":  "Person",
+                      "query":  "DriverRegistrationQuery",
+                      "specSource":  "devdoc DriverRegistrationQuery #1",
+                      "optionalsAdded":  [
+                                             "State4"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "State4"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  29,
+                      "entity":  "Person",
+                      "query":  "DriverRegistrationQuery",
+                      "specSource":  "devdoc DriverRegistrationQuery #1",
+                      "optionalsAdded":  [
+                                             "State5"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "State5"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  30,
+                      "entity":  "Person",
+                      "query":  "DriverRegistrationQuery",
+                      "specSource":  "devdoc DriverRegistrationQuery #2",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "DQ.RO",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  31,
+                      "entity":  "Person",
+                      "query":  "DriverRegistrationQuery",
+                      "specSource":  "devdoc DriverRegistrationQuery #2",
+                      "optionalsAdded":  [
+                                             "ImageIndicator"
+                                         ],
+                      "expectedKeyRef":  "DQ.RO",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  32,
+                      "entity":  "Person",
+                      "query":  "DriverRegistrationQuery",
+                      "specSource":  "devdoc DriverRegistrationQuery #2",
+                      "optionalsAdded":  [
+                                             "State"
+                                         ],
+                      "expectedKeyRef":  "DQ.RO",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  33,
+                      "entity":  "Person",
+                      "query":  "DriverRegistrationQuery",
+                      "specSource":  "devdoc DriverRegistrationQuery #2",
+                      "optionalsAdded":  [
+                                             "State2"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "State2"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  34,
+                      "entity":  "Person",
+                      "query":  "DriverRegistrationQuery",
+                      "specSource":  "devdoc DriverRegistrationQuery #2",
+                      "optionalsAdded":  [
+                                             "State3"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "State3"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  35,
+                      "entity":  "Person",
+                      "query":  "DriverRegistrationQuery",
+                      "specSource":  "devdoc DriverRegistrationQuery #2",
+                      "optionalsAdded":  [
+                                             "State4"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "State4"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  36,
+                      "entity":  "Person",
+                      "query":  "DriverRegistrationQuery",
+                      "specSource":  "devdoc DriverRegistrationQuery #2",
+                      "optionalsAdded":  [
+                                             "State5"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "State5"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  37,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "specSource":  "devdoc GunQuery #1",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "QG",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  38,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "specSource":  "devdoc GunQuery #1",
+                      "optionalsAdded":  [
+                                             "GunCaliber"
+                                         ],
+                      "expectedKeyRef":  "QG",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "GunCaliber",
+                                        "value":  "TEST"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  39,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "specSource":  "devdoc GunQuery #1",
+                      "optionalsAdded":  [
+                                             "GunMake"
+                                         ],
+                      "expectedKeyRef":  "QG",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "GunMake",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  40,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "specSource":  "devdoc GunQuery #1",
+                      "optionalsAdded":  [
+                                             "GunModel"
+                                         ],
+                      "expectedKeyRef":  "QG",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "GunModel",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  41,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #1",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "QVRQ.P",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateTypeCode",
+                                        "value":  "PC"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateYear",
+                                        "value":  "2026"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  42,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #1",
+                      "optionalsAdded":  [
+                                             "State"
+                                         ],
+                      "expectedKeyRef":  "QVRQ.P",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateTypeCode",
+                                        "value":  "PC"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateYear",
+                                        "value":  "2026"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  43,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #1",
+                      "optionalsAdded":  [
+                                             "State2"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "State2"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateTypeCode",
+                                        "value":  "PC"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateYear",
+                                        "value":  "2026"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  44,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #1",
+                      "optionalsAdded":  [
+                                             "State3"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "State3"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateTypeCode",
+                                        "value":  "PC"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateYear",
+                                        "value":  "2026"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  45,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #1",
+                      "optionalsAdded":  [
+                                             "State4"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "State4"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateTypeCode",
+                                        "value":  "PC"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateYear",
+                                        "value":  "2026"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  46,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #1",
+                      "optionalsAdded":  [
+                                             "State5"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "State5"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateTypeCode",
+                                        "value":  "PC"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateYear",
+                                        "value":  "2026"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  47,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #2",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "QVRQ.V",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  48,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #2",
+                      "optionalsAdded":  [
+                                             "State"
+                                         ],
+                      "expectedKeyRef":  "QVRQ.V",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  49,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #2",
+                      "optionalsAdded":  [
+                                             "State2"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "State2"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  50,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #2",
+                      "optionalsAdded":  [
+                                             "State3"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "State3"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  51,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #2",
+                      "optionalsAdded":  [
+                                             "State4"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "State4"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  52,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #2",
+                      "optionalsAdded":  [
+                                             "State5"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "State5"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  53,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #2",
+                      "optionalsAdded":  [
+                                             "VehicleMakeCode"
+                                         ],
+                      "expectedKeyRef":  "QVRQ.V",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleMakeCode",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  54,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #2",
+                      "optionalsAdded":  [
+                                             "VehicleYear"
+                                         ],
+                      "expectedKeyRef":  "QVRQ.V",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "vehicleYear",
+                                        "value":  "2026"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  55,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleStolenQuery",
+                      "specSource":  "devdoc VehicleStolenQuery #1",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "QV.P",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  56,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleStolenQuery",
+                      "specSource":  "devdoc VehicleStolenQuery #1",
+                      "optionalsAdded":  [
+                                             "LicensePlateStateCode"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "LicensePlateStateCode"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  57,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleStolenQuery",
+                      "specSource":  "devdoc VehicleStolenQuery #1",
+                      "optionalsAdded":  [
+                                             "VehicleIdentificationNumber"
+                                         ],
+                      "expectedKeyRef":  "QV.P",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  58,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleStolenQuery",
+                      "specSource":  "devdoc VehicleStolenQuery #1",
+                      "optionalsAdded":  [
+                                             "VehicleMakeCode"
+                                         ],
+                      "expectedKeyRef":  "QV.P",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleMakeCode",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  59,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleStolenQuery",
+                      "specSource":  "devdoc VehicleStolenQuery #2",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "QV.VM",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleMakeCode",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  60,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #1",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "QWA.N",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  61,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #1",
+                      "optionalsAdded":  [
+                                             "BirthDate"
+                                         ],
+                      "expectedKeyRef":  "QWA.N",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  62,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #1",
+                      "optionalsAdded":  [
+                                             "ExpandedBirthDateSearchCode"
+                                         ],
+                      "expectedKeyRef":  "QWA.N",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "ExpandedBirthDateSearchCode",
+                                        "value":  "1990-01-15"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  63,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #1",
+                      "optionalsAdded":  [
+                                             "ExpandedNameSearchCode"
+                                         ],
+                      "expectedKeyRef":  "QWA.N",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "ExpandedNameSearchCode",
+                                        "value":  "T"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  64,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #1",
+                      "optionalsAdded":  [
+                                             "FBINumber"
+                                         ],
+                      "expectedKeyRef":  "QWA.N",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "FBINumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  65,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #1",
+                      "optionalsAdded":  [
+                                             "ImageIndicator"
+                                         ],
+                      "expectedKeyRef":  "QWA.N",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  66,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #1",
+                      "optionalsAdded":  [
+                                             "MiscellaneousNumber"
+                                         ],
+                      "expectedKeyRef":  "QWA.N",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "MiscellaneousNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  67,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #1",
+                      "optionalsAdded":  [
+                                             "OperatorLicenseNumber"
+                                         ],
+                      "expectedKeyRef":  "QWA.N",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  68,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #1",
+                      "optionalsAdded":  [
+                                             "RaceCode"
+                                         ],
+                      "expectedKeyRef":  "QWA.N",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "raceCode",
+                                        "value":  "W"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  69,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #1",
+                      "optionalsAdded":  [
+                                             "RelatedHitSearchIndicator"
+                                         ],
+                      "expectedKeyRef":  "QWA.N",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "RelatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  70,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #1",
+                      "optionalsAdded":  [
+                                             "SexCode"
+                                         ],
+                      "expectedKeyRef":  "QWA.N",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  71,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #1",
+                      "optionalsAdded":  [
+                                             "SocialSecurityNumber"
+                                         ],
+                      "expectedKeyRef":  "QWA.N",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "SocialSecurityNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  72,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #2",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "QWA.P",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateStateCode",
+                                        "value":  "SC"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleMakeCode",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  73,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #2",
+                      "optionalsAdded":  [
+                                             "ImageIndicator"
+                                         ],
+                      "expectedKeyRef":  "QWA.P",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateStateCode",
+                                        "value":  "SC"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleMakeCode",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  74,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #2",
+                      "optionalsAdded":  [
+                                             "RelatedHitSearchIndicator"
+                                         ],
+                      "expectedKeyRef":  "QWA.P",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateStateCode",
+                                        "value":  "SC"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleMakeCode",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "RelatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  75,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #3",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "QWA.P",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateStateCode",
+                                        "value":  "SC"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  76,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #3",
+                      "optionalsAdded":  [
+                                             "ImageIndicator"
+                                         ],
+                      "expectedKeyRef":  "QWA.P",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateStateCode",
+                                        "value":  "SC"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  77,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #3",
+                      "optionalsAdded":  [
+                                             "RelatedHitSearchIndicator"
+                                         ],
+                      "expectedKeyRef":  "QWA.P",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateStateCode",
+                                        "value":  "SC"
+                                    },
+                                    {
+                                        "fieldId":  "RelatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  78,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #4",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "QWA.VM",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleMakeCode",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  79,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #4",
+                      "optionalsAdded":  [
+                                             "ImageIndicator"
+                                         ],
+                      "expectedKeyRef":  "QWA.VM",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleMakeCode",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  80,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #4",
+                      "optionalsAdded":  [
+                                             "RelatedHitSearchIndicator"
+                                         ],
+                      "expectedKeyRef":  "QWA.VM",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleMakeCode",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "RelatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  81,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #5",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "QWA.OCA",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "OriginatingAgencyCaseNumber",
+                                        "value":  "SC2026001234"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  82,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #5",
+                      "optionalsAdded":  [
+                                             "ExpandedNameSearchCode"
+                                         ],
+                      "expectedKeyRef":  "QWA.OCA",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "OriginatingAgencyCaseNumber",
+                                        "value":  "SC2026001234"
+                                    },
+                                    {
+                                        "fieldId":  "ExpandedNameSearchCode",
+                                        "value":  "T"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  83,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #5",
+                      "optionalsAdded":  [
+                                             "ImageIndicator"
+                                         ],
+                      "expectedKeyRef":  "QWA.OCA",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "OriginatingAgencyCaseNumber",
+                                        "value":  "SC2026001234"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  84,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #5",
+                      "optionalsAdded":  [
+                                             "RelatedHitSearchIndicator"
+                                         ],
+                      "expectedKeyRef":  "QWA.OCA",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "OriginatingAgencyCaseNumber",
+                                        "value":  "SC2026001234"
+                                    },
+                                    {
+                                        "fieldId":  "RelatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  85,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #6",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "QWA.NCIC",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  86,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #6",
+                      "optionalsAdded":  [
+                                             "ImageIndicator"
+                                         ],
+                      "expectedKeyRef":  "QWA.NCIC",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  87,
+                      "entity":  "Firearm",
+                      "query":  "WantedPersonQuery",
+                      "specSource":  "devdoc WantedPersonQuery #6",
+                      "optionalsAdded":  [
+                                             "RelatedHitSearchIndicator"
+                                         ],
+                      "expectedKeyRef":  "QWA.NCIC",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "RelatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  }
+              ]
+}
