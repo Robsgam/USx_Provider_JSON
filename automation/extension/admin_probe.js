@@ -855,9 +855,65 @@
     });
     const o = await runExportSweep(wrapped);
     if (opts.pullConfigs) {
-      o.configsSaved = saved; o.configsFailed = saveFailed;
-      o.notes.push('CONFIG PULL: ' + saved + ' saved, ' + saveFailed + ' failed. One file per tenant.');
-      if (saveFailed > 0) { o.notes.push('!! a config that failed to save is NOT inventoried -- re-run those deptIds.'); }
+      // ── THE RECONCILIATION, because `0 saved, 0 failed` USED TO READ AS SUCCESS ──────────────
+      // `onFull` is invoked ONLY when a tenant actually yielded a config blob. A tenant that
+      // produced nothing -- NO-SAFE-CONTROL, CLICKED-BUT-NO-JSON, ERROR -- never reached it, so
+      // NEITHER counter moved. A sweep of 10 tenants where all 10 failed to export reported
+      // `CONFIG PULL: 0 saved, 0 failed`, the `saveFailed > 0` warning never fired, and ui.js
+      // painted it GREEN off the falsy failure count. ENGINEERING_STANDARD 4.3: "found nothing"
+      // and "never looked" must not print the same line. They did, and the line said success.
+      //
+      // ⚠️ AND `configsFailed` WAS A GATE THAT COULD NOT FAIL (LAW 2). It increments only when
+      // `dl()` THROWS, and `dl()` throws in exactly one case: `__usxLib` absent, i.e. the
+      // extension was never loaded -- which kills tenant #1, not one config. `triggerDownload`
+      // is otherwise FULLY ASYNCHRONOUS (postMessage to the service worker, 1500ms ack window,
+      // anchor fallback, failures to `console.warn`) and returns undefined. So a download that
+      // genuinely failed could not move this counter at all.
+      //
+      // ⚠️ THEREFORE `saved` IS NOT A PROVEN SAVE -- it counts dl() HAND-OFFS. The only authority
+      // for "this config is inventoried" is `ingest_tenant_configs.ps1` finding the file on disk.
+      // The names below say hand-off rather than saved so the number cannot be over-read.
+      const rows = o.results || [];
+      const byVerdict = {};
+      rows.forEach(function (r) {
+        const v = r.verdict || 'NO-VERDICT';
+        byVerdict[v] = (byVerdict[v] || 0) + 1;
+      });
+      const noBlob = rows.filter(function (r) {
+        return r.verdict !== 'VERSION-READ' && r.verdict !== 'EXPORTED-BUT-NO-VERSION-STRING';
+      }).length;
+      const saveErrors = rows.filter(function (r) { return r.saveError; }).length;
+
+      o.configsAttempted   = rows.length;
+      o.configsHandedOff   = saved;        // dl() calls that returned -- NOT proven landed files
+      o.configsNoBlob      = noBlob;       // attempted, yielded nothing to save
+      o.configsSaveThrew   = saveFailed;   // dl() threw synchronously (library missing)
+      o.configsSaveErrors  = saveErrors;   // per-row saveError recorded by runExportSweep
+      o.configVerdicts     = byVerdict;
+      // Kept so existing readers do not silently get `undefined`; the honest names are above.
+      o.configsSaved  = saved;
+      o.configsFailed = saveFailed + saveErrors + noBlob;
+
+      o.notes.push('CONFIG PULL RECONCILIATION: ' + rows.length + ' attempted | ' + saved +
+                   ' handed to the downloader | ' + noBlob + ' yielded NO config | ' +
+                   (saveFailed + saveErrors) + ' save error(s). One file per tenant.');
+      o.notes.push('VERDICTS: ' + Object.keys(byVerdict).sort().map(function (k) {
+        return k + '=' + byVerdict[k];
+      }).join(' '));
+      o.notes.push('A HAND-OFF IS NOT A PROVEN SAVE. triggerDownload is async and cannot report ' +
+                   'failure here; run ingest_tenant_configs.ps1 -- the files on disk are the record.');
+      if (rows.length > 0 && saved === 0) {
+        o.notes.push('!! NOTHING WAS PULLED. ' + rows.length + ' tenant(s) were attempted and ZERO ' +
+                     'produced a config. This is a FAILED RUN, not an empty one -- read the ' +
+                     'VERDICTS line above before re-running.');
+      }
+      if (noBlob > 0) {
+        o.notes.push('!! ' + noBlob + ' tenant(s) yielded NO config and are NOT inventoried. ' +
+                     'UNRESOLVED is not "no config installed" -- re-run those deptIds.');
+      }
+      if (saveFailed + saveErrors > 0) {
+        o.notes.push('!! a config that failed to save is NOT inventoried -- re-run those deptIds.');
+      }
     }
     dl('usx_admin_versions_' + location.hostname + '_' + stamp + '_FINAL.json', o);
     return o;

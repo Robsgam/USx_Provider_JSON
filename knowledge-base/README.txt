@@ -3109,3 +3109,26 @@ GRADUATION
   When a probe is worth re-asking, move it to tools/_probes/<name>.ps1 with a header
   saying what it answers (sweep_dead_fill.ps1, adjudicate_state_gate.ps1). That is how
   a throwaway becomes reviewed infrastructure instead of being re-derived next month.
+
+probe_pull_verdict.ps1 -- LAW 2 FOR THE CONFIG-PULL VERDICT (composed into doctor.ps1)
+  Does the panel REFUSE to show success when a config pull produced nothing? Until
+  2026-09-16 both pull buttons coloured themselves `o.configsFailed ? red : green`, and
+  that counter incremented ONLY when the downloader threw SYNCHRONOUSLY -- which happens
+  in exactly one case, __usxLib absent, i.e. the extension was never loaded at all.
+  `onFull` (where the counters live) is invoked ONLY for a tenant that actually yielded a
+  config blob, so a tenant producing NOTHING moved neither counter. A sweep of N tenants
+  where every one failed to export rendered "0 config(s) saved, 0 failed" IN GREEN WITH A
+  TICK. ENGINEERING_STANDARD 4.3, with the line claiming success.
+  8 cases: 3 zero-pulled (must be RED, including one with only the LEGACY fields present,
+  so an old probe build cannot read as clean), 2 partial (AMBER), 3 clean (GREEN).
+  !! IT EVALUATES THE SHIPPED SOURCE. The three verdict functions are EXTRACTED from
+  automation/extension/ui.js by name and run in headless Edge -- the same engine
+  audit_extension_syntax.ps1 uses. A re-implementation would pass forever while ui.js
+  rotted. Missing extraction FAILS rather than passing vacuously, and it asserts both
+  call sites use the helpers plus that no `configsFailed ? ...` colouring survives IN CODE
+  (comments stripped first: the first run FAILED on its own explanatory comment, which
+  quotes the expression it checks for -- A #-COMMENTED LINE IS NOT A FINDING).
+  PROVEN BOTH WAYS: reverting ui.js to the old colour logic gives 4 of 8 cases wrong and
+  exit 1; restored gives 0 wrong and exit 0. The GREEN-CLEAN positive control is required
+  to have RUN AND PASSED, because a verdict function returning red unconditionally would
+  otherwise score 100%.

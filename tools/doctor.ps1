@@ -226,6 +226,24 @@ try {
     Emit "  [WARN] audit_deploy_guards.ps1 failed: $($_.Exception.Message)"
 }
 
+Emit ""
+Emit "--- CONFIG-PULL VERDICT (a pull that got nothing must not read green; probe_pull_verdict.ps1) ---"
+# The READ path's mirror of the deploy-guard block above. Until 2026-09-16 both config-pull
+# buttons coloured themselves from `configsFailed`, a counter that could only move if the
+# downloader threw SYNCHRONOUSLY -- i.e. only when the extension was never loaded. A sweep where
+# every tenant failed to export therefore rendered "0 config(s) saved, 0 failed" IN GREEN WITH A
+# TICK, which is ENGINEERING_STANDARD 4.3 with the line claiming success.
+# Wired here, like the two gates above, because it ships no provider JSON and so blocks nothing --
+# but the operator's only signal that an inventory pull worked is that one line of panel text.
+try {
+    $pv = & powershell -NoProfile -ExecutionPolicy Bypass -File "$tool\_probes\probe_pull_verdict.ps1" *>&1 | Out-String
+    ($pv.TrimEnd() -split "`n") |
+        Where-Object { $_ -notmatch '^=+$' -and $_ -notmatch 'CONFIG-PULL VERDICT --' } |
+        ForEach-Object { Emit $_ }
+} catch {
+    Emit "  [WARN] probe_pull_verdict.ps1 failed: $($_.Exception.Message)"
+}
+
 # --- 6. Repo-scope advisories that nothing else ran ------------------------------
 # These three were ORPHANS: real gates, kept current, referenced by no orchestrator -- so their
 # findings only ever surfaced when someone ran them by hand. They are advisory or repo-scope

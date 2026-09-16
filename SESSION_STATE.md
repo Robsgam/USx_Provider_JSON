@@ -54,7 +54,8 @@ artifacts, byte-exact. RETRIEVAL, not rebuild: re-running an old script does NOT
 background task kills it). **VERIFY BY CURLING `/ping /pulljob /job /roster` ON PORT 8477** -- name
 and start time both lied 09-14; on 09-15 I curled the WRONG PORT and got the NO-CONNECT I expected.
 **Machine pages** -- heavy gates ONE AT A TIME, never piped through `Select-String` (buffers to 0).
-**BUILT, NEVER CLICKED -- HYPOTHESIS: panel `RUN THE JOB` (`/pulljob`) + `7b` RESCAN.**
+**`RUN THE JOB` + `7b` RESCAN are PROVEN, not hypotheses** (09-15: 1790 indexed / 2 new / 4s). ⚠️ **PANEL
+COLOURS CHANGED 09-16:** a pull that got NOTHING reads RED, partial AMBER, green only if all accounted.
 
 ## SC_SLED v1.0 -- BUILT AND GREEN, but ⛔ BLOCKED: WAITING ON UPDATED SC DOCS (Rob 2026-09-15)
 
@@ -102,8 +103,7 @@ the ONLY writer; dry-run default; 46 mutation cases. ⚠️ **GUI only, never a 
 - **Jira is HELD and lifts ONE PROVIDER AT A TIME.** No approval carries to the next provider.
 - **`hawaii-dle` LIVE on v4.15 vs repo v4.20 = DECISION, NOT A GAP** (Rob 09-15: *"hawaii will sit at
   that version until we meet with them again"*) -- reports will keep flagging it; that is correct
-  signal. **NEWARK STAYS MANUAL FOREVER** (*"will not be automated without me"*). Dallas ledger row
-  CLOSED 09-15: content-proven v4.22, applied on Rob's instruction.
+  signal. **NEWARK STAYS MANUAL FOREVER**. Dallas ledger row CLOSED 09-15 (content-proven v4.22).
 
 ## RULES I BROKE -- READ BEFORE EDITING
 

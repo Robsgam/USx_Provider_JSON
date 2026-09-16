@@ -47,6 +47,51 @@
     if (s) { s.style.color = color || '#f77'; s.textContent = msg; }
     else console.log('%c[USx-UI]', 'color:#fa0;font-weight:bold', msg);
   }
+
+  // ── CONFIG-PULL VERDICT ────────────────────────────────────────────────────────────────────
+  // ⚠️ BOTH PULL BUTTONS USED TO PAINT GREEN ON A RUN THAT PULLED NOTHING. The colour was
+  // `o.configsFailed ? red : green` and that counter only moved when the downloader threw
+  // synchronously -- which happens only if the extension library is absent. A tenant that
+  // yielded NO config never touched either counter, so a sweep where every tenant failed to
+  // export showed "✔ 0 config(s) saved, 0 failed" IN GREEN WITH A TICK.
+  //
+  // Rules, in order, because the first two are indistinguishable from success by count alone:
+  //   attempted > 0 and handed-off 0  -> RED. A failed run, not an empty one.
+  //   anything unaccounted for        -> AMBER. Partial: those tenants are NOT inventoried.
+  //   every tenant accounted for      -> GREEN, and only then.
+  // The tick is spent only on the green case; the other two get ✖ and !.
+  function pullAccounting(o) {
+    o = o || {};
+    const rows = o.results || [];
+    const attempted = (typeof o.configsAttempted === 'number') ? o.configsAttempted : rows.length;
+    const handed = o.configsHandedOff || o.configsSaved || 0;
+    // Older probe builds carry neither field; derive rather than report a false zero.
+    const noBlob = (typeof o.configsNoBlob === 'number') ? o.configsNoBlob
+      : rows.filter((r) => r.verdict !== 'VERSION-READ' && r.verdict !== 'EXPORTED-BUT-NO-VERSION-STRING').length;
+    const errs = (o.configsSaveThrew || 0) + (o.configsSaveErrors || 0);
+    return { attempted: attempted, handed: handed, noBlob: noBlob, errs: errs,
+             unaccounted: Math.max(0, attempted - handed) };
+  }
+  function pullVerdictColour(o) {
+    const a = pullAccounting(o);
+    if (a.attempted > 0 && a.handed === 0) return '#f77';
+    if (a.unaccounted > 0 || a.errs > 0) return '#fa0';
+    return '#7c7';
+  }
+  function pullVerdictText(o, requested, got, mixed) {
+    const a = pullAccounting(o);
+    const denom = requested || a.attempted;
+    if (a.attempted > 0 && a.handed === 0) {
+      return '✖ NOTHING PULLED -- ' + a.attempted + ' tenant(s) attempted, 0 produced a config.'
+        + ' A FAILED run, not an empty one. Check the FINAL json VERDICTS line.';
+    }
+    const mark = (a.unaccounted > 0 || a.errs > 0) ? '!' : '✔';
+    return mark + ' ' + a.handed + '/' + denom + ' config(s) pulled'
+      + (a.noBlob ? ' · ' + a.noBlob + ' yielded NOTHING (not inventoried)' : '')
+      + (a.errs ? ' · ' + a.errs + ' save error(s)' : '')
+      + ' · ' + got + ' version(s) read'
+      + (mixed ? ' · ' + mixed + ' tenant(s) carry MIXED versions' : '');
+  }
   function requireArmed() {
     if (isArmed()) return true;
     flash('DISARMED — click the switch above to arm this tenant first.', '#f77');
@@ -464,10 +509,8 @@
           const o = await window.__usxAdminProbe.runExportSweepDl({ deptIds: ids, pullConfigs: true });
           const got = (o.results || []).filter(r => r.verdict === 'VERSION-READ').length;
           const mixed = (o.results || []).filter(r => r.mixedVersions).length;
-          aStatus.style.color = (o.configsFailed ? '#f77' : '#7c7');
-          aStatus.textContent = '✔ ' + (o.configsSaved || 0) + ' config(s) saved, ' + (o.configsFailed || 0)
-            + ' failed · ' + got + '/' + (o.results || []).length + ' version(s) read'
-            + (mixed ? ' · ' + mixed + ' tenant(s) carry MIXED versions' : '');
+          aStatus.textContent = pullVerdictText(o, (o.results || []).length, got, mixed);
+          aStatus.style.color = pullVerdictColour(o);
         } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
         finally { pull.disabled = false; sweep.disabled = false; stopPull.style.display = 'none'; stopPull.textContent = 'Stop the pull (finishes the current tenant)'; }
       };
@@ -956,11 +999,9 @@
           const o = await window.__usxAdminProbe.runExportSweepDl({ deptIds: ids.join(','), pullConfigs: true });
           const got = (o.results || []).filter((r) => r.verdict === 'VERSION-READ').length;
           const mixed = (o.results || []).filter((r) => r.mixedVersions).length;
-          aStatus.style.color = (o.configsFailed ? '#f77' : '#7c7');
-          aStatus.textContent = '✔ ' + (o.configsSaved || 0) + '/' + ids.length + ' config(s) saved, '
-            + (o.configsFailed || 0) + ' failed · ' + got + ' version(s) read'
-            + (mixed ? ' · ' + mixed + ' tenant(s) carry MIXED versions' : '')
+          aStatus.textContent = pullVerdictText(o, ids.length, got, mixed)
             + ' · now run tools\\ingest_tenant_configs.ps1';
+          aStatus.style.color = pullVerdictColour(o);
         } catch (e) { aStatus.style.color = '#f77'; aStatus.textContent = '✖ ' + e.message; }
         finally { jobGo.disabled = false; jobStop.style.display = 'none'; jobStop.textContent = 'Stop the job (finishes the current tenant)'; }
       };
