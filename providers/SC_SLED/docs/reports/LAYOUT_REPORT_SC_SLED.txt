@@ -1,19 +1,18 @@
 ﻿================================================================
   Build Report: SC_SLED
-  Source: SC_SLED_v1.0.json
-  Generated: 2026-09-14 15:50
+  Source: SC_SLED_v1.1.json
+  Generated: 2026-09-16 14:48
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== SC_SLED_v1.0.json ===
-QIFs: 6
-  Vehicle | entity=Vehicle | qidm= | cards=1 fields=4
+=== SC_SLED_v1.1.json ===
+QIFs: 5
+  Vehicle | entity=Vehicle | qidm= | cards=2 fields=10
   Person | entity=Person | qidm= | cards=3 fields=20
   Firearm | entity=Firearm | qidm= | cards=1 fields=2
   Article | entity=Article | qidm= | cards=1 fields=1
   Boat | entity=Boat | qidm= | cards=1 fields=2
-  Administrative Message | entity=AdministrativeMessage | qidm= | cards=1 fields=6
 QIDMs: 9
   SC_SLED_VehicleRegistrationQuery | attrs=7 combos=2 autoSelect=True
   SC_SLED_VehicleStolenQuery | attrs=4 combos=2 autoSelect=True
@@ -44,6 +43,16 @@ LAYOUT DETAIL
         vehicleYear (Text | maxLen=4)
       ROW ROW_VEH_3 [12]
         RegistrationState (Dropdown | attributeTypeId=STATE)
+    CARD "CARD_AM"
+      ROW ROW_AM_1 [12]
+        FreeText (Text | maxLen=501)
+      ROW ROW_AM_2 [4 4 4]
+        DestinationCode (Text | maxLen=9)
+        DestinationCode2 (Text | maxLen=9)
+        DestinationCode3 (Text | maxLen=9)
+      ROW ROW_AM_3 [4 4]
+        DestinationCode4 (Text | maxLen=9)
+        DestinationCode5 (Text | maxLen=9)
 
 === Person ===
   name=ENTITY_Person | entity=Person | qidm=
@@ -119,20 +128,6 @@ LAYOUT DETAIL
         BoatHullIdNumber (Text | maxLen=20)
         RegistrationNumber (Text | maxLen=8)
         RegistrationState (Dropdown | attributeTypeId=STATE)
-
-=== Administrative Message ===
-  name=ENTITY_AdministrativeMessage | entity=AdministrativeMessage | qidm=
-  [default]
-    CARD "CARD_AM"
-      ROW ROW_AM_1 [12]
-        FreeText (Text | maxLen=501)
-      ROW ROW_AM_2 [4 4 4]
-        DestinationCode (Text | maxLen=9)
-        DestinationCode2 (Text | maxLen=9)
-        DestinationCode3 (Text | maxLen=9)
-      ROW ROW_AM_3 [4 4]
-        DestinationCode4 (Text | maxLen=9)
-        DestinationCode5 (Text | maxLen=9)
 
 === RMS QIDMs ===
   RMS Person Search query

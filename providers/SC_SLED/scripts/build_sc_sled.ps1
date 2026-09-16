@@ -35,7 +35,7 @@ $repoRoot    = Split-Path (Split-Path $providerDir -Parent) -Parent
 . (Join-Path $repoRoot 'tools\_build_provider_helpers.ps1')
 
 $providerName = 'SC_SLED'
-$Version      = '1.0'
+$Version      = '1.1'
 $currentYear  = (Get-Date).Year.ToString()
 
 Write-Host ''
@@ -455,23 +455,26 @@ $boatQuery = Build-Qidm -ProviderName $providerName -Query 'BoatQuery' `
 #     remove it later." Devdoc-Basic, and the only transaction here that is NOT a search: an officer
 #     sends free text to up to five destination ORIs.
 #
-#     ⚠️ STATUS: HYPOTHESIS -- THIS IS THE FIRST NON-ENTITY SURFACE IN THE PORTFOLIO.
-#     The platform's documented entity set is Person/Vehicle/Firearm/Article/Boat, and CLAUDE.md
-#     states the ENTITIES `order` array must use targetEntity values. Nothing in OUR tooling forbids
-#     a sixth: validate.ps1 only requires targetEntity to be PRESENT, and Build-EntitiesBundle takes
-#     the order as a string array. Whether the PLATFORM renders an unknown entity is unverified.
+#     ⚠️ THE HYPOTHESIS RAN AND WAS REFUTED -- v1.1, 2026-09-16. LIMITATION #46.
+#     v1.0 shipped this as its OWN entity (targetEntity='AdministrativeMessage'), ordered LAST so
+#     that if the platform ignored an unknown entity the five real ones would still place.
+#     THE DISCRIMINATING TEST RAN ON THE FIRST AUTOMATED IMPORT and split exactly:
+#       1. Do the five still render, in order?   YES -- blast radius zero, the caution paid off.
+#       2. Does an AdministrativeMessage form appear?   NO. Rob: "i did not see a admin card".
+#     The build was CORRECT when re-checked (ENTITIES first, QIF present, ALL THREE order arrays
+#     naming it, payload read-back byte-exact, bundle table 0 -> 3). A correctly-formed sixth
+#     entity is SILENTLY DROPPED. Measured portfolio-wide the same day: 21 providers use exactly
+#     Person/Vehicle/Firearm/Article/Boat; this was the only sixth and it vanished.
 #
-#     THE BLAST RADIUS IS THE REAL QUESTION, not whether AM appears. AZ v2.0 proved the order array
-#     is load-bearing -- forms do not render when ENTITIES is not first -- so an unknown member could
-#     in principle break the five that matter. That is why it goes LAST in every order array: if the
-#     platform truncates or ignores from the unknown entry onward, the five known entities have
-#     already been placed.
-#
-#     DISCRIMINATING TEST (do this on the FIRST import, before any query testing):
-#       1. Do Vehicle/Person/Firearm/Article/Boat still render, in that order? <- the one that matters
-#       2. Does an AdministrativeMessage form appear at the end?
-#     If 1 fails, remove AM from the order arrays (Rob: "we can always remove it later") and re-import.
-#     Do NOT record this as working until both are observed.
+#     WHY IT IS FIVE IS *NOT* ESTABLISHED and must not be written down as if it were. Nothing in
+#     the repo documents an entity list -- not the KB, not BUILD_RULES, and not
+#     UNIVERSAL_SEARCH_HANDLERS.txt (a HANDLER registry with no entity section, so CLAUDE.md's
+#     check-before-declaring-absent rule cannot help here). [Likely] targetEntity BINDS the form to
+#     a record type RMS can store and display -- the five are the NCIC hot-file / RMS master types,
+#     and _build_rms_bundle.ps1 defines targetEntity for only Vehicle and Person -- so an
+#     AdministrativeMessage yields no record to map. That is reasoning, not fact.
+#     Rob 2026-09-16: "we will not bother crinnger with this stuff  build it and we can iterate as
+#     needed." So the card is hosted on Vehicle and the open questions stay in #46 unasked.
 # =====================================================================
 $amAttrs = @(
     Build-QidmAttribute -Name 'FreeText'         -Size 501 -SourceField @('FreeText')
@@ -492,10 +495,14 @@ $amCombos = @(
         -Set @('FreeText') `
         -Any @('DestinationCode','DestinationCode2','DestinationCode3','DestinationCode4','DestinationCode5')
 )
+        # v1.1: TargetEntity moved 'AdministrativeMessage' -> 'Vehicle'. A QIDM's targetEntity must
+        # name an entity the platform RENDERS, or its form never appears and the query is
+        # unreachable (LIMITATION #46). Vehicle now hosts the AM card; see the Vehicle layout for
+        # why Vehicle and why that choice is a weak tiebreak rather than a principle.
 $amQuery = Build-Qidm -ProviderName $providerName -Query 'AdministrativeMessage' `
-    -TargetEntity 'AdministrativeMessage' -QueryLabel 'Administrative Message' `
+    -TargetEntity 'Vehicle' -QueryLabel 'Administrative Message' `
     -Attributes $amAttrs -Combinations $amCombos `
-    -Description 'AdministrativeMessage -- AM. Free text to up to five destination ORIs; the only non-search transaction SC declares as Basic. STATUS: HYPOTHESIS -- first non-entity surface in the portfolio; whether the platform renders a sixth targetEntity is unverified, so it is ordered LAST and the first import must confirm the other five still render. Metadata makes only FreeText mandatory while the devdoc marks DestinationCode mandatory; metadata is field authority, so the destination codes are optional and the label carries the expectation.'
+    -Description 'AdministrativeMessage -- AM. Free text to up to five destination ORIs; the only non-search transaction SC declares as Basic. v1.1: hosted as a CARD ON THE VEHICLE QIF. Its own entity did NOT render (LIMITATION #46, measured on the first import) -- a correctly-formed sixth targetEntity is silently dropped. It is not a vehicle search; Vehicle is simply the entity with room, and the move to any other of the five is one line. Metadata makes only FreeText mandatory while the devdoc marks DestinationCode mandatory; metadata is field authority, so the destination codes are optional and the label carries the expectation.'
 
 Write-Host '  QIDMs built: 9 (including AdministrativeMessage -- HYPOTHESIS, see script header)' -ForegroundColor Green
 
@@ -539,9 +546,52 @@ $vehLayout = MakeLayouts @(
             )}
         )
     }
+    # ---- ADMINISTRATIVE MESSAGE, NOW A CARD ON *VEHICLE* (v1.1) ---------------------------------
+    # !! IT WAS ITS OWN ENTITY AT v1.0 AND THAT DOES NOT RENDER -- LIMITATION #46, measured on the
+    # first import: Rob "i did not see a admin card  doublecheck your work". The build was CORRECT
+    # (ENTITIES first, QIF present, all three order arrays naming it, payload read-back byte-exact)
+    # and the platform silently dropped the sixth entity anyway. All 21 providers use exactly
+    # Person/Vehicle/Firearm/Article/Boat; AdministrativeMessage had one carrier and it vanished.
+    #
+    # A CARD LIVES INSIDE AN ENTITY, so the only way to make this reachable is to hang it on one of
+    # the five. WHY VEHICLE, and it is a weak tiebreak rather than a principle:
+    #   - Vehicle had the most room (1 card / 7 controls); Person is already 3 cards / 20.
+    #   - Rob's own direction was to DECROWD Person ("try moving wanted person off as well"), so
+    #     adding a fourth Person card would push the opposite way. Moving WantedPerson off is not
+    #     available either -- same limitation, there is no sixth entity to move it to.
+    #   - The fields (FreeText / DestinationCode1-5) collide with nothing on any entity, so
+    #     isolation is free wherever it goes.
+    # Semantically an admin message is NOT a vehicle search, and nobody should pretend otherwise.
+    # Rob 2026-09-16: "build it and we can iterate as needed" -- this is a ONE-LINE move to any
+    # other entity (change which layout array the card sits in, and the QIDM's TargetEntity).
+    #
+    # NO ROUTING RISK, checked rather than assumed: the AM combination requires FreeText, which
+    # appears on no other card, so a plate/VIN fill cannot fire it; and the Vehicle combinations
+    # require plate or VIN, which appear on no AM row, so an AM fill cannot fire them. Two QIDMs on
+    # targetEntity=Vehicle is already the shipped state (VehicleRegistration + VehicleStolen) and
+    # LIMITATION #2 is one QIDM per (targetEntity, QUERY) -- AdministrativeMessage is a third,
+    # distinct query.
+    @{
+        id    = 'CARD_AM'
+        title = 'ADMINISTRATIVE MESSAGE -- FREE TEXT TO UP TO FIVE AGENCIES (not a vehicle search)'
+        rows  = @(
+            @{ id = 'ROW_AM_1'; cols = @('12'); fields = @(
+                @{ id = 'FreeText_Input'; node = Inp 'FreeText' 'Message (required, up to 501 characters)' '501' 'ROW_AM_1' }
+            )}
+            @{ id = 'ROW_AM_2'; cols = @('4','4','4'); fields = @(
+                @{ id = 'DestinationCode_Input';  node = Inp 'DestinationCode' 'Destination ORI (devdoc expects at least one)' '9' 'ROW_AM_2' }
+                @{ id = 'DestinationCode2_Input'; node = Inp 'DestinationCode2' 'Destination ORI 2 (optional)' '9' 'ROW_AM_2' }
+                @{ id = 'DestinationCode3_Input'; node = Inp 'DestinationCode3' 'Destination ORI 3 (optional)' '9' 'ROW_AM_2' }
+            )}
+            @{ id = 'ROW_AM_3'; cols = @('4','4'); fields = @(
+                @{ id = 'DestinationCode4_Input'; node = Inp 'DestinationCode4' 'Destination ORI 4 (optional)' '9' 'ROW_AM_3' }
+                @{ id = 'DestinationCode5_Input'; node = Inp 'DestinationCode5' 'Destination ORI 5 (optional)' '9' 'ROW_AM_3' }
+            )}
+        )
+    }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle -- 1 card (Phase 1). Registration QVRQ.P (plate+type+year) / QVRQ.V (VIN), Stolen QV.P (plate) / QV.VM (VIN+make). Plate>VIN guardrails on both VIN paths.'
+    description  = 'Vehicle -- 2 cards. Card 1: Registration QVRQ.P (plate+type+year) / QVRQ.V (VIN), Stolen QV.P (plate) / QV.VM (VIN+make), Plate>VIN guardrails on both VIN paths. Card 2: ADMINISTRATIVE MESSAGE (v1.1) -- hosted here because a sixth targetEntity does not render (LIMITATION #46), NOT because it is a vehicle search. Its combination needs FreeText, which no vehicle card carries, so the two cannot co-fire.'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'
@@ -703,45 +753,21 @@ $boatForm = [PSCustomObject]@{
     targetEntity = 'Boat'
 }
 
-# ---- AdministrativeMessage -- its own card, ordered LAST (Rob 2026-09-14) ------------------------
-# STATUS: HYPOTHESIS. See the AdministrativeMessage QIDM block above for the discriminating test.
-$amLayout = MakeLayouts @(
-    @{
-        id    = 'CARD_AM'
-        title = 'ADMINISTRATIVE MESSAGE -- FREE TEXT TO UP TO FIVE AGENCIES'
-        rows  = @(
-            @{ id = 'ROW_AM_1'; cols = @('12'); fields = @(
-                @{ id = 'FreeText_Input'; node = Inp 'FreeText' 'Message (required, up to 501 characters)' '501' 'ROW_AM_1' }
-            )}
-            @{ id = 'ROW_AM_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'DestinationCode_Input';  node = Inp 'DestinationCode' 'Destination ORI (devdoc expects at least one)' '9' 'ROW_AM_2' }
-                @{ id = 'DestinationCode2_Input'; node = Inp 'DestinationCode2' 'Destination ORI 2 (optional)' '9' 'ROW_AM_2' }
-                @{ id = 'DestinationCode3_Input'; node = Inp 'DestinationCode3' 'Destination ORI 3 (optional)' '9' 'ROW_AM_2' }
-            )}
-            @{ id = 'ROW_AM_3'; cols = @('4','4'); fields = @(
-                @{ id = 'DestinationCode4_Input'; node = Inp 'DestinationCode4' 'Destination ORI 4 (optional)' '9' 'ROW_AM_3' }
-                @{ id = 'DestinationCode5_Input'; node = Inp 'DestinationCode5' 'Destination ORI 5 (optional)' '9' 'ROW_AM_3' }
-            )}
-        )
-    }
-)
-$amForm = [PSCustomObject]@{
-    description  = 'Administrative Message -- 1 card, ordered LAST. The only non-search transaction SC declares as Basic. STATUS: HYPOTHESIS -- first non-entity targetEntity in the portfolio; the first import must confirm the five real entities still render.'
-    label        = 'Administrative Message'
-    layout       = $amLayout
-    name         = 'ENTITY_AdministrativeMessage'
-    type         = 'QUERYINPUTFORM'
-    targetEntity = 'AdministrativeMessage'
-}
+# ---- THE SIXTH ENTITY IS GONE (v1.1) -------------------------------------------------------------
+# v1.0 built `ENTITY_AdministrativeMessage` with targetEntity='AdministrativeMessage', ordered LAST
+# on the theory that if the platform ignored an unknown entity the five real ones would still place.
+# THE FIVE DID PLACE. THE SIXTH DID NOT RENDER AT ALL -- LIMITATION #46, measured on the first
+# automated import. The card now lives on the Vehicle QIF (see the Vehicle layout above) and this
+# form and its order entry are removed rather than left as a harmless-looking no-op: a
+# QUERYINPUTFORM that renders nothing is exactly the artifact that reads like coverage.
 
 # =====================================================================
 # 13. ENTITIES BUNDLE -- must be bundle #1 or the forms do not render (AZ v2.0).
-#     AdministrativeMessage is LAST in all three orders so that if the platform ignores or truncates
-#     at an unknown entity, the five real ones have already been placed.
+#     FIVE entities, because that is what the platform renders (LIMITATION #46).
 # =====================================================================
-$entityOrder = @('Vehicle','Person','Firearm','Article','Boat','AdministrativeMessage')
+$entityOrder = @('Vehicle','Person','Firearm','Article','Boat')
 $entitiesBundle = Build-EntitiesBundle `
-    -Configurations @($vehicleForm, $personForm, $firearmForm, $articleForm, $boatForm, $amForm) `
+    -Configurations @($vehicleForm, $personForm, $firearmForm, $articleForm, $boatForm) `
     -DefaultOrder $entityOrder -CadOrder $entityOrder -FrOrder $entityOrder
 
 # =====================================================================

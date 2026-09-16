@@ -318,6 +318,36 @@ TOOLS
     Usage: .\build_translate_test.ps1 [-Provider <name>] [-OutPath <path>]
                                       [-InStateValue 16] [-OutOfStateCode PC]
 
+  tools/build_entity_probe.ps1
+    CAN THE PLATFORM RENDER MORE THAN FIVE ENTITY TABS? Emits the throwaway
+    providers\ENTITY_PROBE.json -- five known entities as CONTROLS plus N candidate
+    targetEntity values, each its own QUERYINPUTFORM with a uniquely-labelled control, all named
+    in the three order arrays. Import it and READ THE TABS: every candidate whose tab appears is
+    a usable entity.
+    WHY. Rob 2026-09-16, rejecting the card-on-Vehicle workaround for SC_SLED's
+    AdministrativeMessage: "there has to be a way to have more than 5 ... i want it compeltely
+    seperated". He was right that the question was not settled. What existed was: all 21 of OUR
+    providers use exactly the five (the weakest evidence there is -- 21 copies of one convention,
+    ENGINEERING_STANDARD 4.5), 66 DEPLOYED tenant configs surveyed with zero sixth entities
+    (see _probes/probe_entity_universe.ps1), and ONE attempt that rendered nothing. That proves
+    nobody has SHIPPED one; it does not prove the platform REFUSES one, and says nothing about
+    which names it would accept. Nothing in the repo documents the valid set.
+    THE CONTROLS ARE THE SAFETY DESIGN, not padding: AZ v2.0 proved the ENTITIES bundle is
+    load-bearing, so an unknown member could in principle break the real tabs. SC_SLED v1.0
+    measured that blast radius as ZERO. Keeping the five first preserves it AND makes them the
+    control -- if they do not render either, the probe is broken and its silence means nothing.
+    AdministrativeMessage is included as the NEGATIVE control: it must stay ABSENT, or the v1.0
+    finding was wrong.
+    !! AN IMPORT REPLACES THE BUNDLE SET, and this config carries no provider bundle -- importing
+    it REMOVES whatever provider is on that tenant. Use a throwaway tenant and re-import after.
+    Three self-inflicted build faults worth not repeating: a bundle needs `type='BUNDLE'` (omitting
+    it gave "missing type" AND "No provider bundle found" at once); a provider bundle MUST carry a
+    QUERYRESULTDATAMAPPING, and Build-ProviderQrdm wraps Build-CommsysQrdm so
+    _build_rms_bundle.ps1 must be dot-sourced; and `@(@(Build-Auth ...), ...)` yielded a config
+    with a BLANK type, invisible to every type-keyed validator check.
+    Emits 65 PASS / 0 FAIL / 4 WARN (the WARNs are the minimal Vehicle form, by design).
+    Usage: .\build_entity_probe.ps1 [-Candidates 'Organization','Location'] [-OutPath <path>]
+
   tools/extract_queries.ps1
     Parses metadata XML and extracts all query transactions, fields, and
     combinations into a structured SQVR-ready tracking file.
@@ -1205,6 +1235,34 @@ TOOLS
     Refactor safety: proven by diffing -List output for AZ/HI/NJ/OR and -All -IncludeLegacy
     before and after the extraction -- all five identical -- plus a hash-verified -Version
     retrieval.
+
+  tools/_tenant_intent.ps1   [SHARED MODULE]
+    WHICH PROVIDER IS A TENANT SUPPOSED TO RUN? Exports Resolve-TenantIntent -DeptId.
+    ONE implementation of the authority order, because two would be worse than either.
+    serve_plans.ps1's GET /target already answered this for the browser deploy path; on
+    2026-09-16 emit_import_job.ps1 needed the same answer to cut a job for a tenant with nothing
+    installed. Writing it twice means the job file can name one provider while /target names
+    another -- and deploy_probe.js REFUSES on exactly that disagreement, so the failure mode is
+    debugging two implementations at once with the real answer in neither
+    (ENGINEERING_STANDARD 4.4).
+    AUTHORITY ORDER, and the answer always says which rung it used:
+      1. `intendedProvider` on the tenant's tenant_map.json row   -> 'explicit-map'
+      2. the `usx-<slug>` subdomain, which encodes it              -> 'usx-subdomain'
+      3. nothing                                                   -> REFUSE (never a guess)
+    !! THE INSTALLED BUNDLE IS NOT AN AUTHORITY, returned for CONTEXT ONLY. usx-fl-fcic is the
+    proof: it carried a CA_eSUN bundle, so "what is installed" named exactly the WRONG provider on
+    the first tenant we ever deployed to. Intent comes from the record; the install is what is
+    being corrected. Never reads a config file -- which is also why it can answer for a tenant
+    that HAS no config.
+    !! CASING IS CANONICALISED OFF DISK, NOT DERIVED: 'usx-ca-esun' derives 'ca_esun' but the
+    provider is 'CA_eSUN'. Windows' filesystem is case-insensitive so the mismatch stays invisible
+    until something string-compares the derived name against the 'CA_eSUN' inside a bundle
+    description.
+    PROVEN EQUIVALENT BEFORE BEING WIRED IN: the module's verdict was compared against the LIVE
+    /target endpoint for all 66 tenant_map rows, case-sensitively and including every refusal --
+    66 AGREE / 0 DIFFER -- then serve_plans was pointed at it and restarted, and /target re-curled
+    byte-identical for a usx tenant, an explicit-map foundation tenant, and one carrying a foreign
+    build.
 
   tools/_bundle_identity.ps1   [SHARED MODULE]
     WHAT IS THIS BUNDLE, independent of what it calls itself. Extracted out of

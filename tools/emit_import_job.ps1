@@ -198,6 +198,44 @@ if ($DeptId -and -not $All -and -not $Provider) {
         if (-not $it.provider) { $skipped += ('{0} -- {1}' -f $id, $it.error); continue }
         if (-not $repoVer.ContainsKey($it.provider)) { $skipped += ('{0} -- no repo build for {1}' -f $id, $it.provider); continue }
 
+        # !! "NO CONFIG FILE" IS NOT THE SAME AS "NO CONFIG INSTALLED", and conflating them would
+        # emit a job the pre-flight guard MUST refuse. usx-sc-sled is the case: after the v1.0
+        # import it carries 3 bundles (measured off the live bundle table and recorded on its
+        # tenant_map row), but its Export JSON yields nothing (CLICKED-BUT-NO-JSON), so there is
+        # still no config on disk to diff. Marking it expectEmpty would assert a tenant state that
+        # is now FALSE -- and bundlePreflight would correctly refuse, because SC_SLED is on the
+        # page. The guard would be right and the job would be wrong.
+        # So: when the RECORD says bundles are installed, plan on the NAMES we measured and say
+        # plainly that content comparison was unavailable. Names are weaker evidence than a hash
+        # and the job admits it rather than implying a diff happened.
+        $recorded = @($it.installedBundles | Where-Object { $_ })
+        if ($recorded.Count -gt 0) {
+            $allB = @($repoHash.Keys | Where-Object { $_ -like ('{0}|*' -f $it.provider) } |
+                      ForEach-Object { $_.Split('|')[1] } | Select-Object -Unique)
+            $st2 = if ($status.ContainsKey($id)) { $status[$id] } else { "$($it.status)" }
+            $sd2 = if ($subOf.ContainsKey($id))  { $subOf[$id]  } else { "$($it.subdomain)" }
+            $targets += [ordered]@{
+                deptId           = $id
+                subdomain        = $sd2
+                url              = 'https://{0}.mark43.com/rms/api/support/admin/departments/configurations/{1}' -f $sd2, $id
+                provider         = $it.provider
+                providerSource   = $it.source
+                toVersion        = $repoVer[$it.provider]
+                fromVersion      = $null
+                fromVersionWhy   = 'UNKNOWN -- the tenant Export JSON returns no config for this tenant, so no version string or content hash could be read. The installed bundle NAMES below come from the live bundle table (tenant_map row), not from an export.'
+                notOurBuild      = $false
+                tenantStatus     = $st2
+                liveConfirmed    = $false
+                expectBundlesNow = $recorded
+                expectEmpty      = $false
+                contentCompared  = $false
+                willChange       = $allB
+                done             = $false
+            }
+            Say ('  [note] {0} ({1}) has NO exported config but the record shows [{2}] installed -- planning on NAMES, content NOT compared' -f $sd2, $id, ($recorded -join ', '))
+            continue
+        }
+
         # Everything the repo build carries is NEW here, because the tenant carries nothing.
         $allBundles = @($repoHash.Keys | Where-Object { $_ -like ('{0}|*' -f $it.provider) } |
                         ForEach-Object { $_.Split('|')[1] } | Select-Object -Unique)
@@ -279,9 +317,16 @@ Say '  TENANT                         DEPT           FROM        -> TO          
 Say '  ----------------------------------------------------------------------------------------'
 foreach ($t in $targets) {
     Say ('  {0,-30} {1,-14} {2,-11} -> {3,-11} {4}' -f $t.subdomain, $t.deptId,
+         # "NOT-OURS" means a FOREIGN build is installed. Two other states exist and both were
+         # mislabelled as foreign until 2026-09-16: nothing installed at all, and OURS-but-unreadable
+         # (the tenant's Export JSON returns no config, so no version string can be read).
          $(if ($t.fromVersion) { 'v' + $t.fromVersion }
-           elseif ($t.emptyTenant) { '(nothing)' }   # NOT "NOT-OURS": nothing is installed, so
-           else { 'NOT-OURS' }),                     # nothing FOREIGN is installed either
+           elseif ($t.emptyTenant) { '(nothing)' }
+           # $t is an [ordered] hashtable (OrderedDictionary), NOT a PSCustomObject -- use
+           # .Contains(), because .PSObject.Properties.Name lists the DICTIONARY's own members
+           # (Keys, Count, ...) and never the job fields, so the test silently never matched.
+           elseif ($t.Contains('contentCompared') -and -not $t['contentCompared']) { '(unreadable)' }
+           else { 'NOT-OURS' }),
          ('v' + $t.toVersion), ($t.willChange -join ', '))
 }
 if ($live.Count -gt 0) {

@@ -2,6 +2,56 @@
   BUILD NOTES: SC_SLED
   Created: 2026-09-14
 ================================================================
+v1.1  2026-09-16  AdministrativeMessage rehosted onto Vehicle -- the sixth entity does not render
+  CHANGED: 1. `ENTITY_AdministrativeMessage` (targetEntity='AdministrativeMessage') DELETED.
+              QIFs 6 -> 5; the ENTITIES order arrays are back to the five real entities.
+           2. The ADMINISTRATIVE MESSAGE card (FreeText + DestinationCode1-5, 3 rows, 6 controls)
+              MOVED into the Vehicle QIF as its second card. Vehicle: 1 card/4 fields -> 2/10.
+           3. `SC_SLED_AdministrativeMessage` QIDM TargetEntity 'AdministrativeMessage' -> 'Vehicle'.
+              Attributes, the single `AM` combination and all field wiring are UNCHANGED.
+           4. Every `STATUS: HYPOTHESIS` marker for this transaction removed and replaced with the
+              measured outcome. Validator 80P/0F/0W/1LIM -> 78P/0F/0W/1LIM (two PASS lines were the
+              deleted QIF's).
+  REASON:  LIMITATION #46, measured on the FIRST AUTOMATED IMPORT. Rob: "i did not see a admin card
+           doublecheck your work". It was double-checked and THE v1.0 BUILD WAS CORRECT -- ENTITIES
+           was bundle [0], the QIF existed, ALL THREE order arrays named AdministrativeMessage, and
+           the tenant provably received that payload (read-back byte-exact, bundle table 0 -> 3).
+           A correctly-formed sixth entity is SILENTLY DROPPED. Measured portfolio-wide the same
+           day: all 21 providers use exactly Person/Vehicle/Firearm/Article/Boat, and
+           AdministrativeMessage had exactly one carrier -- the one that vanished.
+
+           The v1.0 hypothesis block asked two questions and got a split answer, which is why the
+           caution it was built with was worth it:
+             1. Do the five still render, in order?        YES -- blast radius ZERO.
+             2. Does an AdministrativeMessage form appear?  NO.
+
+           A CARD LIVES INSIDE AN ENTITY, so the only way to make this transaction reachable is to
+           host it on one of the five. WHY VEHICLE is a weak tiebreak and is documented as such in
+           the build script: Vehicle had the most room, Person is already 3 cards/20 fields, and
+           Rob's own direction was to DECROWD Person. An admin message is NOT a vehicle search and
+           the card title says so. Moving it elsewhere is a one-line change.
+
+           NO ROUTING RISK, checked not assumed: the `AM` combination requires FreeText, which
+           appears on no other card, so a plate/VIN fill reports `[SKIP] AM -- missing set:
+           FreeText`; and the Vehicle combinations require plate or VIN, which appear on no AM row.
+           Three QIDMs now share targetEntity=Vehicle, which LIMITATION #2 permits -- it is one
+           QIDM per (targetEntity, QUERY), and AdministrativeMessage is a distinct query.
+
+  ALSO REFUSED BY THE SAME MEASUREMENT, and recorded so it is not re-attempted: Rob asked to "try
+  moving wanted person off as well". NOT AVAILABLE -- there is no sixth entity to move it to, so
+  WantedPersonQuery can only be reorganised WITHIN Person's cards. Person stays at 3 cards.
+
+  NOT A DEFECT, corrected here because I reported it as one: `audit_devdoc_combinations` notes that
+  no combination's set[] covers [FreeText, DestinationCode]. That is the devdoc/metadata divergence
+  this script already documents -- the devdoc marks DestinationCode mandatory, the metadata puts all
+  five destination codes in <Any>, and METADATA IS FIELD AUTHORITY (Rob 2026-08-18). The build is
+  right; the note is expected and should be registered rather than "fixed".
+
+  STILL OPEN: enforce 2p/2q remain UNPROVEN for this transaction. `emit_test_plan_spec`'s
+  query->ENTITY map is a fifth place assuming a `*Query` suffix, so AdministrativeMessage's devdoc
+  fields land in "UNREACHABLE (devdoc field not on form)" and the SPEC plan still covers 5 entities.
+  The devdoc PARSER itself now sees it (18 -> 19 items, measured; no other provider moved).
+
 
 v1.0 (2026-09-14)
   CHANGED: Initial standup
