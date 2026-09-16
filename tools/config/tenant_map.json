@@ -847,11 +847,11 @@
       "class": "usx-fleet",
       "status": "TEST",
       "bundles": [
-        { "name": "ENTITIES", "platformCounter": "596" },
-        { "name": "SC_SLED", "platformCounter": "1" },
-        { "name": "RMS", "platformCounter": "70" }
+        { "name": "ENTITIES" },
+        { "name": "ENTITY_PROBE" }
       ],
-      "_bundlesMeasured": "2026-09-16T17:47:33Z -- read from the LIVE bundle table (extension button 1, usx_admin_one_73046844870). This row said bundles:[] until the import landed; 0 -> 3 with exactly the payload's names IS the proof the import worked, because the Export JSON path is broken on this tenant (CLICKED-BUT-NO-JSON on all 3 pulls, 2 of them AFTER the import). platformCounter is the PLATFORM's counter, never our version -- our version rides in the bundle description.",
+      "_bundlesMeasured": "2026-09-16 -- DERIVED, not freshly read. At 17:47Z this row was [ENTITIES, SC_SLED, RMS], measured off the LIVE bundle table (extension button 1, usx_admin_one_73046844870) after the first automated import: 0 -> 3 with exactly the payload's names, which is what proved that import landed. It is now [ENTITIES, ENTITY_PROBE] because ENTITY_PROBE_DUP.json was imported BY HAND to settle whether more than five tabs are possible (it is -- 8 forms gave 8 tabs, CAPABILITY #47), AND AN IMPORT REPLACES THE BUNDLE SET. These two names come from the probe payload itself plus Rob's confirmation that it rendered, NOT from a re-read -- that tenant's Export JSON returns nothing (CLICKED-BUT-NO-JSON), so a content hash is unavailable. Re-read with extension button 1 to confirm.",
+      "_whyThisRowWentStale": "It did not go stale by neglect -- it was correct when written and the TENANT changed underneath it 40 minutes later. That is exactly what emit_import_job's pre-flight expectation is FOR, and it worked: the job cut off the old record listed expectBundlesNow=[ENTITIES,SC_SLED,RMS], bundlePreflight found SC_SLED and RMS absent, and deploy_probe REFUSED rather than overwriting a tenant that had moved. The refusal was the guard doing its job; the defect was cutting a job from a record nobody had re-measured after a manual import.",
       "_whyAdded": "Added by hand 2026-09-16 so GET /target/73046844870 can resolve. It returned 404 -- not 409 -- because the deptId was absent from this file entirely, and the row lookup runs BEFORE the usx-subdomain derivation, correctly: the row is the record that the tenant exists at all. This file is read by 8 tools and written by none, which is the same gap that made the pull job and 3 reports miss the 4 usx tenants carrying no config.",
       "_whyNoIntendedProvider": "DELIBERATE. No intendedProvider is recorded, so /target must resolve SC_SLED via the usx-subdomain derivation -- which is the path that has to be proven before it is trusted on a foundation tenant. Recording it explicitly here would bypass the very mechanism this deploy is meant to test. bundles is EMPTY because nothing has ever been installed on this tenant; that is the measured state, not a placeholder."
     },
