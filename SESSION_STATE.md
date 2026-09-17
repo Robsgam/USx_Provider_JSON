@@ -59,10 +59,11 @@ PROVEN.** ⚠️ **PANEL COLOURS 09-16:** a pull that got NOTHING reads RED, par
 ✅ v1.9 tab order + layout CONFIRMED on the tenant. v1.10 = **77P/0F/0W/2LIM**. The #28 /
 Sex+Race-dropdown adjudication and the `validate.ps1` fix are CLOSED -- reasoning in the v1.10
 commit body. ⚠️ **OPEN, NEEDS ROB:** the AM's 5 `DestinationCode` optionals are UNMAPPED -- an AM
-DELIVERS to the ORI named. ⚠️ **usx-sc-sled CARRIES THE MULTILINE PROBE, NOT v1.10** (an import
-REPLACES the bundle set). **TWO THINGS OWED, one a read that expires:** the **Wanted Person State
-dropdown was NEVER READ** (`NJ_NIBRS_STATE|NJ_NIBRS`, ZERO carriers -- the only reason v1.10 went in
-at 10:24 today; EMPTY list -> revert that ONE control to `Inp '2'`), and **v1.10 must go back**.
+DELIVERS to the ORI named. ✅ **STATE DROPDOWN READ 09-17, POPULATED** -- `NJ_NIBRS_STATE|NJ_NIBRS`
+resolves off-NJ; keep the `Sel`. ⚠️ **POPULATED ≠ PROVEN WIRE VALUE** (#38: VEHICLE_MAKE populates
+and ships `CNST_FORD`) and the KB's "sends 2-letter code" was UNCITED -- open, settles with one
+read-only GET, no import (see `FIELD_REFERENCE` NJ_NIBRS_STATE row). ⚠️ **usx-sc-sled CARRIES THE
+MULTILINE PROBE, NOT v1.10**, so **v1.10 must go back**.
 
 ## 🟢 THE MULTILINE BOX EXISTS -- `FormTextarea`, LOWERCASE `a` (measured 2026-09-17)
 

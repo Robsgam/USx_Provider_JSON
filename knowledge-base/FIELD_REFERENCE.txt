@@ -104,10 +104,36 @@ SECTION 2 -- CODE TYPE PAIRINGS TABLE
                                                 DO NOT use attributeTypeId=RACE. (AP #3)
                                                 Confirmed: NY v1.12 (2026-04-14).
 
-  NJ_NIBRS_STATE            NJ_NIBRS           NJ/NY state list. Sends 2-letter code.
-                                                NCIC gives empty dropdown.
+  NJ_NIBRS_STATE            NJ_NIBRS           NJ/NY state list. NCIC gives empty dropdown.
                                                 Use for OOS state dropdowns
                                                 (RegistrationStateOOS).
+                                                POPULATION CONFIRMED OFF-NJ: Rob read the list on
+                                                usx-sc-sled (SC_SLED v1.10 LicensePlateStateCode,
+                                                2026-09-17) and it was POPULATED -- so the pairing
+                                                resolves on a non-NJ tenant. That had ZERO carriers
+                                                before: a node-level census of all 21 emitted JSONs
+                                                finds this the ONLY *form control* on the category
+                                                (3 hits = 1 control x 3 layout variants). The 22
+                                                JSONs that merely CONTAIN the string are the shared
+                                                QRDM doing response-side lookups -- do not count
+                                                those as carriers.
+                                                ⚠️ "Sends 2-letter code" WAS AN UNCITED CLAIM and
+                                                has been removed pending measurement. Every
+                                                neighbouring row here carries a "Confirmed:"
+                                                reference; this one never did. The other 69 state
+                                                dropdowns in the portfolio use
+                                                attributeTypeId='STATE' -- a DIFFERENT mechanism --
+                                                so their wire logs do not transfer to this one.
+                                                A POPULATED DROPDOWN IS NOT A PROVEN WIRE VALUE:
+                                                VEHICLE_MAKE populates and is selectable on four
+                                                tenant-verified providers and ships the raw
+                                                attribute code (CNST_FORD) -- LIMITATION #38,
+                                                parked portfolio-wide.
+                                                CHEAP DISCRIMINATING TEST, no import needed -- the
+                                                migration guide documents these dropdowns as
+                                                sending valueProperty:"code", so read the codes:
+                                                rms/api/attributes/codes/source?code_type_source=NJ_NIBRS&code_type_categories=NJ_NIBRS_STATE
+                                                2-char values there = the claim is true; cite it.
 
   VEHICLE_BODY_STYLE        Provider-specific  LIMITATION #20: Must verify codeTypeSource
                             NJ_NIBRS (NJ)      per provider. NCIC = empty dropdown.
