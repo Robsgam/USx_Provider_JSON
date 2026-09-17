@@ -45,7 +45,7 @@ VEHICLE
 PERSON
 ------------------------------------------------------------------------------
   DriverLicenseQuery  (metadata DQ + QWDQ -- two DISTINCT keyRefs, no suffix invented)
-    [PENDING] QWDQ     set: SexCode, BirthDate, NameLast, NameFirst
+    [CONFIRMED] QWDQ     set: SexCode, BirthDate, NameLast, NameFirst
                        any: OperatorLicenseNumber, RegistrationState
                        "SC Driver Wanted/Reg Inquiry" -- COMPOUND
     [PENDING] DQ       set: OperatorLicenseNumber
@@ -54,7 +54,7 @@ PERSON
                        OLN-without-name fill. TEST IT THAT WAY OR IT IS NOT TESTED.
 
   DriverRegistrationQuery  (metadata DQ x2 -- same transaction as DriverLicenseQuery's DQ)
-    [PENDING] DQ.RN    set: BirthDateDR, NameLastDR, NameFirstDR
+    [CONFIRMED] DQ.RN    set: BirthDateDR, NameLastDR, NameFirstDR
                        any: RegistrationStateDR, SexCodeDR
     [PENDING] DQ.RO    set: OperatorLicenseNumberDR
                        any: ImageIndicatorDR, RegistrationStateDR
@@ -83,7 +83,7 @@ FIREARM / ARTICLE / BOAT
     [PENDING] QG       set: serialNumber        any: GunMake, GunModel, GunCaliber
 
   ArticleSingleQuery  (metadata QA -- "Article Inquiry")
-    [PENDING] QA       set: ArticleSerialNumber, ArticleTypeCode
+    [CONFIRMED] QA       set: ArticleSerialNumber, ArticleTypeCode
 
   BoatQuery  (metadata QBBQ -- "SC Boat Stolen/Reg Inquiry", COMPOUND; ONE declared
               combination holding a <Choice> nested under <Set>, i.e. TWO alternatives)
