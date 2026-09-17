@@ -1546,6 +1546,37 @@ LIMITATION #48: THERE IS NO MULTI-LINE / TEXTAREA FORM CONTROL. A LONG FREE-TEXT
                               likewise ours-never-built, 5 nodes). Undocumented.
 
   ALSO CORROBORATED, and it retires a recurring question: "Custom validation
+
+  ⚠️ IT IS FUNCTIONAL, NOT COSMETIC -- SHARPENED 2026-09-17 when Rob raised JSON's multiline
+  string handling (escaped \n vs string arrays vs JSON5/Hjson/YAML). That material is about
+  encoding a multiline VALUE; the blocker here is the CONTROL, and separating the two makes the
+  real consequence visible:
+
+    A single-line input GIVES THE OFFICER NO WAY TO ENTER A LINE BREAK AT ALL. So a 501-character
+    administrative message can only ever be ONE UNBROKEN PARAGRAPH. That is a content limitation
+    on a message a human at another agency has to read, not a complaint about box height.
+
+  AND THE VALUE SIDE IS ALREADY FULLY AVAILABLE, WHICH IS WHY IT IS NOT THE ANSWER:
+   * `ConvertTo-Json` (via `Write-ProviderJson`) escapes any newline automatically, so a multiline
+     string has always been expressible. MEASURED on SC_SLED v1.10: 10,087 physical line breaks
+     (pretty-print whitespace BETWEEN tokens -- legal JSON) and ZERO two-character `\n` escapes
+     inside any string. Nothing is being lost in encoding; there is simply no control that would
+     display or accept one. ⚠️ Those two numbers are easy to conflate -- the first count I took
+     reported 10,087 as "escaped sequences", which was the pretty-printer, not string content.
+   * A STRING ARRAY where the renderer expects a string is not a graceful degradation, it is a
+     hard reject. `label` is a string; `templateColumns` is the ONLY array-of-strings prop and it
+     is a grid spec. Type mismatches in this config are fatal, not ignored -- CA_eSUN v3.0/v3.1
+     shipped `conditions` as an OBJECT where an array was required and the platform rejected the
+     WHOLE FILE (`Cannot deserialize ArrayList<Combination$Condition> from Object value`).
+   * JSON5 / Hjson / YAML ARE RULED OUT AT THE IMPORTER, not by preference. The platform
+     deserializes with strict Java/Jackson -- the same reason a top-level `version` must not exist
+     (it is read as `java.lang.Integer` and a dotted string is rejected). Non-standard syntax
+     would fail at import. Authoring readability is also a non-issue: the JSON is GENERATED.
+
+  NO WORKAROUND VIA EXTRA CONTROLS EITHER, and this was checked rather than assumed: the
+  AdministrativeMessage transaction defines exactly ONE text field --
+  `<Field name="FreeText" type="Alphanumeric" maxLength="501">` -- so a second or third "line"
+  control would have no metadata field to map to. Faking rows is not available.
   messages NOT supported -- errorMessage, helpText, tooltip". There is NO help-text
   mechanism, which is exactly why hints live in LABELS and CARD TITLES
   (BUILD_RULES Section 11). That convention is not a stylistic preference; it is the
