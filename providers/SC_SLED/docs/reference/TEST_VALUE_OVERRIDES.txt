@@ -100,8 +100,21 @@ MiscellaneousNumber=MISC0000012345
 # mandatory field with no test value produces NO test at all -- the combination silently vanishes
 # from the plan and audit_test_coverage then reports it as 0 logs forever.
 #
-# 'FORD' is the DISPLAYED code the driver's select path matches on (usx_lib matches an option by
-# /^<value>\b/i after typing into the react-select input).
+# ⚠️ THE VALUE IS THE OPTION **CODE**, NOT THE MAKE NAME. My first attempt here was 'FORD' and it
+# FAILED ON THE TENANT -- Rob's driver run 2026-09-17 logged: 'VehicleMakeCode 28 option(s) ...
+# using opts[0] FALLBACK (no regex match for "FORD"): "CNST_HANN - CLIFFORD B. HANNEY & SONS, INC."'
+# then 'display NEVER matched -- FAIL' and 'field "VehicleMakeCode" did not fill (value="FORD")'.
+# CAUSE: options render as '<CODE> - <NAME>' (e.g. 'PASS_FORD - FORD') and usx_lib matches
+# /^<value>\b/i against that string, so a match must be anchored on the CODE. 'FORD' appears only
+# after the dash and never matches. I reasoned it was "the displayed code" instead of reading an
+# actual option string -- the log is what corrected it.
+# WHY 'PASS_FORD' AND NOT 'CNST_FORD': the list carries a make per VEHICLE CLASS and CNST_ is
+# CONSTRUCTION EQUIPMENT. Ten FORD-bearing options exist (CNST_/TRCK_/BOAT_/FARM_/PASS_/...);
+# PASS_ is the passenger-vehicle family, which is what a Vehicle query means.
+# ⚠️ THE FALLBACK IS DANGEROUS AND ONLY THE DISPLAY CHECK SAVED THIS: on no regex match the select
+# path takes opts[0], which here was an unrelated construction manufacturer. It then FAILED loudly
+# because the confirmed display did not match the requested value. Without that second check the
+# test would have SUBMITTED A WRONG MAKE and looked fine.
 #
 # âš ï¸ EXPECT 'CNST_FORD' ON THE WIRE, NOT 'FORD' -- that is LIMITATION #38, PARKED portfolio-wide by
 # Rob 2026-08-03 ("the drop down is what it is for now"). All 4 tenant-verified VehicleMakeCode
@@ -111,4 +124,4 @@ MiscellaneousNumber=MISC0000012345
 # âš ï¸ QV.VM WILL CO-FIRE WITH QVRQ.V. A VIN fill satisfies QVRQ.V (set[VIN] alone) as well, so the
 # stolen check and the registration query both go out. That is SC_SLED's documented shape -- the
 # only provider in the portfolio building a standalone VehicleStolenQuery -- not a routing defect.
-VehicleMakeCode=FORD
+VehicleMakeCode=PASS_FORD

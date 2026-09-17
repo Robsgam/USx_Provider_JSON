@@ -6,8 +6,7 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| NY_NYSPIN_EJUSTICE_v4.26.json | v4.26 | Current | 76P/0F/0W. |
-
+| NY_NYSPIN_EJUSTICE_v4.27.json | v4.27 | Current | 76P/0F/0W/0LIM. |
 ## phases/current/
 
 | File | Version | Date | Notes |
@@ -60,11 +59,17 @@ All JSON versions produced for this provider.
 
 
 
+
+## v4.27 (2026-09-17)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| NY_NYSPIN_EJUSTICE_v4.27.json | v4.27 | Current | 76P/0F/0W/0LIM. |
 ## v4.26 (2026-08-20)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| NY_NYSPIN_EJUSTICE_v4.26.json | v4.26 | Current | 76P/0F/0W/0LIM. |
+| NY_NYSPIN_EJUSTICE_v4.26.json | v4.26 | Superseded | 76P/0F/0W/0LIM. |
 ## v4.25 (2026-08-20)
 
 | File | Version | Status | Notes |

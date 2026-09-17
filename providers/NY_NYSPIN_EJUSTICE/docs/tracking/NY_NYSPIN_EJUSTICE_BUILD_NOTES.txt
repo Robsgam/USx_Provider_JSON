@@ -3,6 +3,53 @@ NY_NYSPIN_EJUSTICE -- BUILD NOTES
 Phase 1 reboot: 2026-04-20. Prior version history (v1.0-v1.21) archived in git.
 Clean restart from XML metadata as sole source of truth.
 See SQVR_main.txt for test results. See STATUS.txt for test matrix.
+v4.27  2026-09-17  PLATE TYPE IS FREE TEXT, NOT A DROPDOWN -- NY's own codes are NUMERIC
+  CHANGED: VEHICLE -- LicensePlateTypeCode control Sel -> Inp. The NCIC dropdown
+              (codeTypeCategory='NCIC_LICENSE_PLATE_TYPE', codeTypeSource='NCIC') is GONE;
+              the control is now a 2-character free-text input. fieldId, label ('Plate Type')
+              and every QIDM reference are UNCHANGED, so routing is untouched -- the field
+              keeps its place in RVEHOUT's set[] and RVEH's any[].
+  REASON: Rob 2026-09-17: "adjust ny so that the plate type is not a drop down but a free text
+              field that can support numbers or chars".
+  WHY THIS IS A FIX AND NOT A LOSS OF VALIDATION: NY's in-state plate types are NUMERIC, and the
+     NCIC category can only ever offer NCIC's 2-char ALPHA codes -- so the dropdown made the
+     officer's real in-state value UNSELECTABLE. LIMITATION #38 is why no cleverness bridges that:
+     the wire value IS the selected attribute's code, and there is no mapping layer.
+  THE METADATA PERMITS IT AND THIS WAS READ FROM THE RAW XML, NOT ASSUMED. LicensePlateTypeCode is
+     declared THREE times in NY's schema and only one applies to a transaction we build:
+        VehicleRegistrationQuery ........ type="Alphanumeric" maxLength="2"   <-- ours
+        5x *VehicleEntry transactions ... type="Alphabetic"   maxLength="2"   (NOT built)
+        ResponseType components ......... type="Text"                         (response side)
+     Alphanumeric is letters AND digits, which is exactly what was asked for. maxLength='2' carried.
+     ⚠️ Had we been building any of the *VehicleEntry transactions, "support numbers" would have
+     been REFUSED by the provider -- they are Alphabetic. Worth knowing before this is copied.
+  THE COMBO defaults[] STILL SEND 'PC' ON RVEH AND RVEHOUT, DELIBERATELY. A default FILLS WHEN
+     EMPTY; it does NOT override. PROVEN FROM COMMITTED EVIDENCE rather than reasoned:
+     logs/Vehicle/_archive_pre_v4.11/NY_NYSPIN_EJUSTICE_v4.10_RVEH_af_LicensePlateTypeCode.txt has
+     QUERY STRING "LicensePlateTypeCode":"AM" and carries <LicensePlateTypeCode>AM</...> on the
+     wire against the PC default; 28 captured wires hold AM. So an officer's numeric survives and
+     the default only covers the blank case, which is what keeps the plain plate search working.
+     (This also settles, for the fill-when-empty direction, the M1 question build_translate_test
+     was built to ask -- without an import.)
+  ⚠️ A VALIDATOR CHECK SILENTLY STOPPED RUNNING AND THE SCORE EXPOSED IT: 76P -> 75P, and the
+     missing line was exactly "PlateType no initialValue (combo defaults expected)". That check was
+     gated to FormSelect. The invariant is about the PREFILL, not the widget, and it matters MORE on
+     a free-text control (BUILD_RULES 24: a prefill on a routing field collapses its combo onto a
+     plainer sibling). validate.ps1 ungated to FormInput as well; NY is back to 76P/0F/0W and five
+     sampled providers hold their recorded scores, so the tool change is inert elsewhere.
+  CROSS-PROVIDER DIVERGENCE REGISTERED, SCOPED: NY is now the only provider of 21 with this field
+     as FormInput. Added to tools/config/accepted_field_divergences.json SCOPED to
+     NY_NYSPIN_EJUSTICE, so a free-text plate type on any OTHER provider is still a FAIL.
+  ⚠️ FOUND IN PASSING AND STILL OWED -- A VACUOUS TEST IN THE v4.26 PACKAGE: the alternate-fill test
+     logs/Vehicle/..._v4.26_RVEH_af_LicensePlateTypeCode.txt sends 'PC', which IS the combo default.
+     An _af_ fill must differ from the default or it exercises nothing; at v4.10 the same test
+     correctly used 'AM'. It degraded since and sat inside an ALL-PASS package. The v4.27 re-sweep
+     needs a TEST_VALUE_OVERRIDES entry, and the right value is a REAL NY NUMERIC plate-type code --
+     which would prove Rob's actual requirement (digits transmit) in the same test. NOT INVENTED
+     HERE: a made-up code risks a provider-side rejection that looks like a build defect.
+  RE-TEST COST: v4.26 was ALL-PASS with 65 logs; they are archived by this bump and a full 5-entity
+     sweep is owed. Stated, not used as a reason to defer.
+
 
 v4.26  2026-08-20  L6 WIDTH FIX -- two shared-context rows were 8 columns wide, not 12
   CHANGED:

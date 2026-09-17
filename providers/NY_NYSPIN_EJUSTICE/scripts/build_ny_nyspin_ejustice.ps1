@@ -95,7 +95,7 @@
 #   Functional routing change -> all 5 entities re-test from T1 (block-by-version).
 
 param(
-    [string]$Version = "4.26"
+    [string]$Version = "4.27"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -626,7 +626,27 @@ $vehLayout = MakeLayouts @(
             # (initialValue=current year, officer-editable, any[] optional).
             @{ id = 'ROW_VEH_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
-                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC' } 'ROW_VEH_1' }
+                # v4.27 -- FREE TEXT, NOT A DROPDOWN. Rob 2026-09-17: "adjust ny so that the plate
+                # type is not a drop down but a free text field that can support numbers or chars".
+                # WHY IT IS NOT A LOSS OF VALIDATION: the NCIC dropdown could only ever offer NCIC's
+                # 2-char ALPHA codes, and NY's own in-state plate types are NUMERIC -- so the control
+                # made the officer's real in-state value UNSELECTABLE. LIMITATION #38 is why no
+                # translation layer can bridge that: the wire value IS the selected attribute's code.
+                # THE METADATA PERMITS THIS -- checked in the raw XML, not assumed. LicensePlateTypeCode
+                # is declared THREE times and only one applies to a query we build:
+                #     VehicleRegistrationQuery ....... type="Alphanumeric" maxLength="2"  <-- ours
+                #     *VehicleEntry (5 transactions) . type="Alphabetic"   maxLength="2"  (not built)
+                #     ResponseType components ........ type="Text"                        (response)
+                # Alphanumeric is letters AND digits, so a 2-char free-text input is exactly right.
+                # ⚠️ THE COMBO defaults[] STILL SET 'PC' ON RVEH AND RVEHOUT AND THAT IS DELIBERATE --
+                # a default FILLS WHEN EMPTY, it does NOT override. PROVEN from committed evidence,
+                # not assumed: logs/Vehicle/_archive_pre_v4.11/..._v4.10_RVEH_af_LicensePlateTypeCode
+                # has QUERY STRING "LicensePlateTypeCode":"AM" and carries <...>AM</...> on the wire
+                # against a PC default. So an officer's numeric survives; the default only covers the
+                # blank case, which is what keeps the plain plate search working.
+                # Label stays bare "Plate Type" -- the standing LABEL-OVERRIDE above is Rob's explicit
+                # wording choice and a control-type change is not licence to re-open it.
+                @{ id = 'LicensePlateTypeCode_Input'; node = Inp 'LicensePlateTypeCode' 'Plate Type' '2' 'ROW_VEH_1' }
                 @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year (out-of-state)' '4' 'ROW_VEH_1' @{} }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('4','4','4'); fields = @(

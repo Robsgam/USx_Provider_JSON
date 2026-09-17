@@ -24,7 +24,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | MD_METERS | v2.4 | ALL-PASS (47 logs) |
 | NJ_NJCJIS | v4.17 | ALL-PASS (39 logs) |
 | NM_NMLETS_OFML | v2.7 | ALL-PASS (36 logs) |
-| NY_NYSPIN_EJUSTICE | v4.26 | ALL-PASS (65 logs) |
+| NY_NYSPIN_EJUSTICE | v4.27 | NEVER-TESTED -- 65 test(s) owed |
 | OH_LEADS | v2.11 | ALL-PASS (65 logs) |
 | OR_LEDS | v2.6 | ALL-PASS (27 logs) |
 | TN_TIES | v2.6 | ALL-PASS (67 logs) |

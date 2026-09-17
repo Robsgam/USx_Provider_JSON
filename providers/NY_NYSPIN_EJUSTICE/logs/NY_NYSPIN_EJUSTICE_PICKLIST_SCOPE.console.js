@@ -2,135 +2,145 @@
 // Then render each entity form and run its line (one at a time; each downloads one file):
 var scope = {
     "provider":  "NY_NYSPIN_EJUSTICE",
-    "version":  "4.26",
+    "version":  "4.27",
     "note":  "Paste as scope; render each entity form; __usxScopePicklists(scope, \u0027\u003cEntity\u003e\u0027). One download per entity.",
     "fields":  [
-                   {
-                       "entity":  "Vehicle",
-                       "fieldId":  "LicensePlateTypeCode",
-                       "label":  "Plate Type",
-                       "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE",
-                       "codeTypeSource":  "NCIC"
-                   },
                    {
                        "entity":  "Vehicle",
                        "fieldId":  "VehicleMakeCode",
                        "label":  "Vehicle Make",
                        "codeTypeCategory":  "",
-                       "codeTypeSource":  ""
+                       "codeTypeSource":  "",
+                       "attributeTypeId":  "VEHICLE_MAKE"
                    },
                    {
                        "entity":  "Vehicle",
                        "fieldId":  "RegistrationState",
                        "label":  "State (leave blank for NY)",
                        "codeTypeCategory":  "",
-                       "codeTypeSource":  ""
+                       "codeTypeSource":  "",
+                       "attributeTypeId":  "STATE"
                    },
                    {
                        "entity":  "Vehicle",
                        "fieldId":  "ImageIndicator",
                        "label":  "NCIC Image",
                        "codeTypeCategory":  "YES_NO_UNKNOWN",
-                       "codeTypeSource":  "NCIC"
+                       "codeTypeSource":  "NCIC",
+                       "attributeTypeId":  ""
                    },
                    {
                        "entity":  "Person",
                        "fieldId":  "RegistrationState",
                        "label":  "State (leave blank for NY)",
                        "codeTypeCategory":  "",
-                       "codeTypeSource":  ""
+                       "codeTypeSource":  "",
+                       "attributeTypeId":  "STATE"
                    },
                    {
                        "entity":  "Person",
                        "fieldId":  "ImageIndicator",
                        "label":  "NCIC Image",
                        "codeTypeCategory":  "YES_NO_UNKNOWN",
-                       "codeTypeSource":  "NCIC"
+                       "codeTypeSource":  "NCIC",
+                       "attributeTypeId":  ""
                    },
                    {
                        "entity":  "Person",
                        "fieldId":  "SexCode",
                        "label":  "Sex",
                        "codeTypeCategory":  "",
-                       "codeTypeSource":  ""
+                       "codeTypeSource":  "",
+                       "attributeTypeId":  "SEX"
                    },
                    {
                        "entity":  "Person",
                        "fieldId":  "RegistrationStateDH",
                        "label":  "State (leave blank for NY)",
                        "codeTypeCategory":  "",
-                       "codeTypeSource":  ""
+                       "codeTypeSource":  "",
+                       "attributeTypeId":  "STATE"
                    },
                    {
                        "entity":  "Person",
                        "fieldId":  "ImageIndicatorDH",
                        "label":  "NCIC Image",
                        "codeTypeCategory":  "YES_NO_UNKNOWN",
-                       "codeTypeSource":  "NCIC"
+                       "codeTypeSource":  "NCIC",
+                       "attributeTypeId":  ""
                    },
                    {
                        "entity":  "Person",
                        "fieldId":  "SexCodeDH",
                        "label":  "Sex",
                        "codeTypeCategory":  "",
-                       "codeTypeSource":  ""
+                       "codeTypeSource":  "",
+                       "attributeTypeId":  "SEX"
                    },
                    {
                        "entity":  "Firearm",
                        "fieldId":  "GunMake",
                        "label":  "Gun Make",
                        "codeTypeCategory":  "NCIC_FIREARM_MAKE",
-                       "codeTypeSource":  "NCIC"
+                       "codeTypeSource":  "NCIC",
+                       "attributeTypeId":  ""
                    },
                    {
                        "entity":  "Firearm",
                        "fieldId":  "GunCaliber",
                        "label":  "Caliber",
                        "codeTypeCategory":  "NCIC_FIREARM_CALIBER",
-                       "codeTypeSource":  "NCIC"
+                       "codeTypeSource":  "NCIC",
+                       "attributeTypeId":  ""
                    },
                    {
                        "entity":  "Firearm",
                        "fieldId":  "relatedHitSearchIndicator",
                        "label":  "Stolen Check",
                        "codeTypeCategory":  "YES_NO_UNKNOWN",
-                       "codeTypeSource":  "NCIC"
+                       "codeTypeSource":  "NCIC",
+                       "attributeTypeId":  ""
                    },
                    {
                        "entity":  "Article",
                        "fieldId":  "ArticleTypeCode",
                        "label":  "Article Type",
                        "codeTypeCategory":  "NCIC_ARTICLE_TYPE",
-                       "codeTypeSource":  "CA_CLETS"
+                       "codeTypeSource":  "CA_CLETS",
+                       "attributeTypeId":  ""
                    },
                    {
                        "entity":  "Article",
                        "fieldId":  "ImageIndicator",
                        "label":  "NCIC Image",
                        "codeTypeCategory":  "YES_NO_UNKNOWN",
-                       "codeTypeSource":  "NCIC"
+                       "codeTypeSource":  "NCIC",
+                       "attributeTypeId":  ""
                    },
                    {
                        "entity":  "Article",
                        "fieldId":  "relatedHitSearchIndicator",
                        "label":  "Stolen Check",
                        "codeTypeCategory":  "YES_NO_UNKNOWN",
-                       "codeTypeSource":  "NCIC"
+                       "codeTypeSource":  "NCIC",
+                       "attributeTypeId":  ""
                    },
                    {
                        "entity":  "Boat",
                        "fieldId":  "RegistrationState",
                        "label":  "State (leave blank for NY)",
                        "codeTypeCategory":  "",
-                       "codeTypeSource":  ""
+                       "codeTypeSource":  "",
+                       "attributeTypeId":  "STATE"
                    },
                    {
                        "entity":  "Boat",
                        "fieldId":  "ImageIndicator",
                        "label":  "NCIC Image",
                        "codeTypeCategory":  "YES_NO_UNKNOWN",
-                       "codeTypeSource":  "NCIC"
+                       "codeTypeSource":  "NCIC",
+                       "attributeTypeId":  ""
                    }
                ]
 };
-console.log('%c[USx-SCOPE] scope loaded: NY_NYSPIN_EJUSTICE v4.26 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Boat')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')");
+console.log('%c[USx-SCOPE] scope loaded: NY_NYSPIN_EJUSTICE v4.27 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Boat')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')");

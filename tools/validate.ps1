@@ -351,7 +351,16 @@ if ($entitiesBundle) {
 
                 # G-1: Standard field defaults (check only 'default' layout to avoid 3x noise)
                 if ($layoutName -eq 'default' -and $node.props -and $node.props.fieldId) {
-                    if ($node.props.fieldId -match '^(PlateType|LicensePlateTypeCode|licensePlateTypeCode)$' -and $node.type.resolvedName -eq 'FormSelect') {
+                    # ⚠️ NOT GATED TO FormSelect ANY MORE (2026-09-17). It was, and NY_NYSPIN_EJUSTICE
+                    # v4.27 turning this control into a free-text FormInput (Rob's ask -- NY's in-state
+                    # plate types are NUMERIC and the NCIC dropdown could not offer them) SILENTLY
+                    # DROPPED THIS CHECK: the score went 76P -> 75P and the missing line was exactly
+                    # "PlateType no initialValue (combo defaults expected)". The invariant it guards is
+                    # about the PREFILL, not the widget -- and it matters MORE on a free-text control,
+                    # where a prefill is just as capable of collapsing a combo onto a plainer sibling
+                    # (BUILD_RULES 24). A check that stops running because a control type changed is a
+                    # coverage loss wearing the costume of a passing build.
+                    if ($node.props.fieldId -match '^(PlateType|LicensePlateTypeCode|licensePlateTypeCode)$' -and $node.type.resolvedName -in @('FormSelect','FormInput')) {
                         if ($node.props.initialValue -eq 'PC') {
                             Write-Pass "QIF '$($cfg.name)' PlateType initialValue='PC'"; Inc-Pass
                         } elseif (-not $node.props.initialValue) {
