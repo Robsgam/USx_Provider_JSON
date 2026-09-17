@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: SC_SLED
-  Source: SC_SLED_v1.9.json
-  Generated: 2026-09-17 09:04
+  Source: SC_SLED_v1.10.json
+  Generated: 2026-09-17 09:44
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -27,10 +27,6 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 10 fieldIds
   [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
   [PASS] QIF 'ENTITY_Person' -> Person : 12 fieldIds
-  [WARN] QIF 'ENTITY_WantedPerson' SexCode field missing attributeTypeId='SEX' -- reverse-lookup will not work
-    [FIX] In build script: add attributeTypeId='SEX' to the SexCode FormSelect field
-  [WARN] QIF 'ENTITY_WantedPerson' SexCode field missing codeTypeProvider='NIBRS' -- dropdown shows wrong values
-    [FIX] In build script: add codeTypeProvider='NIBRS' to the SexCode FormSelect field
   [PASS] QIF 'ENTITY_WantedPerson' ImageIndicator default='Y' for Firearm
   [PASS] QIF 'ENTITY_WantedPerson' -> Firearm : 24 fieldIds
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 7 fieldIds
@@ -109,8 +105,10 @@ VALIDATOR RESULTS
   [PASS] QIDM 'SC_SLED_AdministrativeMessage' combo 'AM': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 77 PASS / 0 FAIL / 2 WARN / 2 LIMITATION
+  RESULTS: 77 PASS / 0 FAIL / 0 WARN / 2 LIMITATION
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
 
-  Review WARN items -- they may cause runtime issues.
+  2 known limitation(s) -- documented, no action needed.
+
+  Ready for import.
 

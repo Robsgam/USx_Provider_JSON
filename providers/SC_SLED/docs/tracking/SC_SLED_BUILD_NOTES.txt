@@ -2,6 +2,106 @@
   BUILD NOTES: SC_SLED
   Created: 2026-09-14
 ================================================================
+v1.10  2026-09-17  SEX AND RACE ARE DROPDOWNS AGAIN -- the v1.3 "capability given up" was HALF WRONG
+  CHANGED: WANTED -- SexCode Inp -> Sel codeTypeCategory='NIBRS_SEX' + codeTypeSource='NIBRS',
+              label 'Sex -- type M, F or U (optional)' -> 'Sex'.
+              raceCode Inp -> Sel NIBRS_RACE + NIBRS, label -> 'Race'.
+              LicensePlateStateCode Inp -> Sel NJ_NIBRS_STATE + NJ_NIBRS, label -> 'State'
+              (**HYPOTHESIS** -- see below; the other two are not).
+              Plate-row widths 3/3/3/3 -> 4/2/3/3 (State's label shrank, VIN displays narrower).
+           VEHICLE -- row 2 widths 5/3/2/2 -> 3/3/2/4: VIN displays narrower and State gets the
+              width, so its label stops being squished. VIN maxLength untouched at 20 (metadata size);
+              only the COLUMN it displays in shrank.
+           VALIDATOR 77P/0F/2W/2LIM -> 77P/0F/0W/2LIM. The two WARNs are GONE because the defect
+              they described was FIXED, not because anything was silenced.
+           REGISTRY -- the SCOPED raceCode and SexCode rows are DELETED; only RegistrationState
+              remains. 8 rows -> 6.
+  REASON:  Rob 2026-09-17: "on vin  shorten teh field length that displays  the helper for stae is
+           getting squished  on wanted person plate state should be state and use the drop down  sex
+           should just say sex and race should just say race".
+
+           "SEX SHOULD JUST SAY SEX" IS A DROPDOWN REQUEST. Those labels only read cleanly if the
+           CONTROL supplies the values -- 'Sex' over a free-text box tells the officer nothing about
+           what to type. So this reopened the question v1.3 had closed.
+
+           ** AND v1.3's REASONING WAS HALF WRONG. It made Sex, Race and Plate State type-ins
+           because this card shares an entity with Firearm, LIMITATION #28 breaks codeTypeProvider
+           reverse-lookup on a two-QIF entity, and AP #1 turns that into an internal numeric row id
+           on the wire. Every clause is true -- and it covers ONLY ONE OF TWO MECHANISMS. #28 breaks
+           the attributeTypeId + codeTypeProvider REVERSE-LOOKUP. A control carrying its OWN
+           codeTypeCategory/codeTypeSource resolves its list LOCALLY and the SELECTED CODE reaches
+           the wire; no reverse-lookup exists to break. THE PROOF WAS ALREADY IN THIS BUILD:
+           GunMake, GunCaliber and ArticleTypeCode are dropdowns on two-QIF entities and have worked
+           since v1.2. Three controls were given up without asking why the ones beside them were fine.
+
+           BOTH PAIRINGS COME FROM THE AUTHORITY (FIELD_REFERENCE Section 3 table), not from taste:
+             NIBRS_RACE | NIBRS -- "Sends W/B/I/A/U etc." Confirmed NY v1.12. BUILT AND
+               TENANT-PROVEN by MD_METERS (ALL-PASS, 47 logs) and LA_LEMS, both with NO
+               codeTypeProvider and NO attributeTypeId on the QIDM attribute. That exact shape was
+               copied, and SC's RaceCode attribute already matched it -- so NO attribute changed.
+               AP #3 forbids attributeTypeId=RACE anyway, making this the only correct race dropdown.
+             NIBRS_SEX | NIBRS -- "Sends M/F/U to CommSys. Use ONLY if RMS sex filtering is not
+               needed." THE PRECONDITION WAS CHECKED, NOT ASSUMED: Build-RmsBundle emits RMS QIDMs
+               for Vehicle and Person ONLY, and this card is on targetEntity='Firearm', so nothing
+               here feeds an RMS sex filter and the NJ v3.22/v3.29 RMS-400 failure mode
+               (useAttributeId + a string -> array wrap) cannot arise. The PERSON tab is untouched
+               and keeps the full attributeTypeId=SEX + codeTypeProvider=NIBRS pattern, which is
+               correct there: Person is single-QIF AND does feed RMS.
+             ** FIELD_REFERENCE's fallback prose also says to KEEP codeTypeProvider='NIBRS' beside
+               the category. DELIBERATELY NOT DONE: zero providers build that combination, MD and LA
+               both ship the category with a bare attribute, and a codeTypeProvider on a control that
+               already yields a code string is the shape validate.ps1 watches for (AP #11). Built
+               precedent beat the prose. If a wire capture ever shows a missing SexCode tag here,
+               that is the first line to revisit.
+
+  THE VALIDATOR HAD TO BE FIXED, AND IT IS THE SAME RULING AS ImageIndicator.
+           With the control correct, validate.ps1 raised a THIRD WARN -- "SexCode field has
+           codeTypeCategory='NIBRS_SEX' -- use attributeTypeId=SEX + codeTypeProvider=NIBRS
+           instead". The check demanded the PREFERRED pattern unconditionally, so on a multi-QIF
+           entity it was instructing a correct build to adopt a broken one. Rob's standing ruling on
+           exactly this shape (2026-08-12, ImageIndicator): "this should not generate a warn when
+           its the proper way to do this. whatever is triggering the warning needs to be fixed."
+           The check is now #28-aware: it counts QIFs per targetEntity and accepts NIBRS_SEX + NIBRS
+           as CORRECT when that count is > 1, reporting [INFO] with the entity and the count so the
+           non-preferred choice stays VISIBLE rather than silently tolerated.
+           NOTE the RACE check immediately above it had ALWAYS accepted the equivalent control-side
+           NIBRS_RACE -- sex was simply inconsistent with race, which is why race raised nothing.
+           LAW 2, PROVEN BOTH WAYS BY PLANTED MUTATION -- and each mutation ASSERTS IT CHANGED THE
+           FILE before the verdict is believed, because my first attempt was mangled by shell quoting,
+           no-oped, and returned a clean 0 WARN that would have "proven" the fix while testing nothing:
+             * incomplete pairing (category kept, source broken), multi-QIF entity -> 3 WARNs
+             * valid pairing but the entity retargeted to be SINGLE-QIF             -> 3 WARNs
+             * the real v1.10 (valid pairing, multi-QIF)                            -> 0 WARNs
+           REGRESSION SWEEP, all 21 providers re-validated after the change: every score identical to
+           its CLAUDE.md baseline, 0 FAIL / 0 WARN everywhere. The change only ADDS an acceptance
+           path, and that was measured rather than argued.
+
+  ** PLATE STATE IS A HYPOTHESIS AND IS THE ONLY RISK IN THIS VERSION.
+           NJ_NIBRS_STATE | NJ_NIBRS -- "NJ/NY state list. Sends 2-letter code. NCIC gives empty
+           dropdown." A 2-letter code is exactly what SC wants and the mechanism is the same
+           control-side one that makes Sex and Race safe. But:
+             * ZERO CARRIERS. All 69 state dropdowns in the portfolio use attributeTypeId='STATE';
+               not one uses a control-side state category. Measured, not assumed.
+             * The source is NJ_NIBRS and whether it RESOLVES on a non-NJ tenant is UNVERIFIABLE
+               from this repo -- CLAUDE.md records that same open question for VEHICLE_BODY_STYLE.
+             * FAILURE MODE IS A REGRESSION, not a wrong value: an EMPTY dropdown, where today an
+               officer can at least type 'SC'.
+           It is LOUD, not silent. DISCRIMINATING TEST: open the Wanted Person tab after this import
+           and look at the State list. If empty, revert that ONE control to Inp ... '2' with the
+           2-letter hint in the label -- the v1.9 shape, which worked.
+           BOAT'S State IS DELIBERATELY NOT CONVERTED IN THIS BUMP even though the same escape
+           applies. One experiment per import: if two dropdowns changed at once and one came back
+           empty, the import would teach nothing extra. Its registry row records that decision and
+           says to convert it once the Wanted list is seen to populate.
+
+  ** STILL NOT DELIVERED: the AM multi-row text box. Rob: "the admin message line still looks the
+           same" -- correct, because NOTHING WAS CHANGED THERE and nothing can be. There is no
+           multi-line control in the platform's vocabulary: probe_control_types.ps1 measured it
+           across 21 provider JSONs AND 66 tenant configs including NOT-OUR-BUILD, and a FormInput
+           has only ever carried fieldId/label/maxLength/initialValue. This is an ABSENCE, not a
+           deferral. The only way forward is a throwaway probe import with a candidate control --
+           the method that established CAPABILITY #47 and LIMITATION #46 on this provider.
+
 v1.9  2026-09-17  LAYOUT PASS -- name controls go FIRST-LAST-MIDDLE-SUFFIX everywhere, rows resequenced
   CHANGED: VEHICLE -- now 2 rows. `RegistrationState` moves to the END of row 2 (cols 5/3/2/2) and
               ROW_VEH_3 is deleted.

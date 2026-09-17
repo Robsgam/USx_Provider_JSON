@@ -1,7 +1,7 @@
 ======================================================================
-  PICKLIST / DROPDOWN REPORT: SC_SLED_v1.9
-  Source: SC_SLED_v1.9.json
-  Generated: 2026-09-17 09:04
+  PICKLIST / DROPDOWN REPORT: SC_SLED_v1.10
+  Source: SC_SLED_v1.10.json
+  Generated: 2026-09-17 09:44
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -18,6 +18,12 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
       Config: codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NCIC
     ImageIndicator [NCIC Image] (default=Y)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
+    LicensePlateStateCode [State]
+      Config: codeTypeCategory=NJ_NIBRS_STATE, codeTypeSource=NJ_NIBRS
+    raceCode [Race]
+      Config: codeTypeCategory=NIBRS_RACE, codeTypeSource=NIBRS
+    SexCode [Sex]
+      Config: codeTypeCategory=NIBRS_SEX, codeTypeSource=NIBRS
     VehicleMakeCode [Vehicle Make]
       Config: attributeTypeId=VEHICLE_MAKE
 
@@ -103,5 +109,5 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
 ======================================================================
   SUMMARY
 ======================================================================
-  Form dropdowns: 11
+  Form dropdowns: 14
   QRDM code type attrs: 15

@@ -2,9 +2,28 @@
 
 Auto-generated from `SC_SLED_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.9** | Generated: 2026-09-17
+Current: **v1.10** | Generated: 2026-09-17
 
 ---
+
+## v1.10 -- 2026-09-17 -- SEX AND RACE ARE DROPDOWNS AGAIN -- the v1.3 "capability given up" was HALF WRONG
+
+**CHANGED:** WANTED -- SexCode Inp -> Sel codeTypeCategory='NIBRS_SEX' + codeTypeSource='NIBRS',
+            label 'Sex -- type M, F or U (optional)' -> 'Sex'.  
+            raceCode Inp -> Sel NIBRS_RACE + NIBRS, label -> 'Race'.  
+            LicensePlateStateCode Inp -> Sel NJ_NIBRS_STATE + NJ_NIBRS, label -> 'State'  
+            (**HYPOTHESIS** -- see below; the other two are not).  
+            Plate-row widths 3/3/3/3 -> 4/2/3/3 (State's label shrank, VIN displays narrower).  
+         VEHICLE -- row 2 widths 5/3/2/2 -> 3/3/2/4: VIN displays narrower and State gets the  
+            width, so its label stops being squished. VIN maxLength untouched at 20 (metadata size);  
+            only the COLUMN it displays in shrank.  
+         VALIDATOR 77P/0F/2W/2LIM -> 77P/0F/0W/2LIM. The two WARNs are GONE because the defect  
+            they described was FIXED, not because anything was silenced.  
+         REGISTRY -- the SCOPED raceCode and SexCode rows are DELETED; only RegistrationState  
+            remains. 8 rows -> 6.  
+**REASON:**  Rob 2026-09-17: "on vin  shorten teh field length that displays  the helper for stae is
+         getting squished  on wanted person plate state should be state and use the drop down  sex  
+         should just say sex and race should just say race".  
 
 ## v1.9 -- 2026-09-17 -- LAYOUT PASS -- name controls go FIRST-LAST-MIDDLE-SUFFIX everywhere, rows resequenced
 

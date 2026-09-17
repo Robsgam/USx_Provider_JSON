@@ -35,7 +35,7 @@ $repoRoot    = Split-Path (Split-Path $providerDir -Parent) -Parent
 . (Join-Path $repoRoot 'tools\_build_provider_helpers.ps1')
 
 $providerName = 'SC_SLED'
-$Version      = '1.9'
+$Version      = '1.10'
 $currentYear  = (Get-Date).Year.ToString()
 
 Write-Host ''
@@ -596,7 +596,11 @@ $vehLayout = MakeLayouts @(
             # v1.9, Rob: "on veh lets move state to the end of the second line  veh will have 2 lines".
             # State joins this row as its LAST field and ROW_VEH_3 is deleted, so Vehicle is 2 rows.
             # Sequence and widths only -- no fieldId, attribute, combo or wire change.
-            @{ id = 'ROW_VEH_2'; cols = @('5','3','2','2'); fields = @(
+            # v1.10 widths, Rob: "on vin  shorten teh field length that displays  the helper for
+            # stae is getting squished". VIN 5 -> 3 and State 2 -> 4, so the freed width goes where
+            # the long label is. VIN's maxLength stays 20 -- that is the metadata size and is NOT
+            # what was wide; only the COLUMN it displays in shrank.
+            @{ id = 'ROW_VEH_2'; cols = @('3','3','2','4'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_2' }
                 @{ id = 'VehicleMakeCode_Input';            node = Sel 'VehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE' } 'ROW_VEH_2' }
                 @{ id = 'vehicleYear_Input';                node = Inp 'vehicleYear' 'Vehicle Year (optional)' '4' 'ROW_VEH_2' }
@@ -725,17 +729,81 @@ $wpLayout = MakeLayouts @(
                 @{ id = 'WPNameMiddle_Input'; node = Inp 'NameMiddle' 'Middle (optional)' '30' 'ROW_WP_N' }
                 @{ id = 'WPNameSuffix_Input'; node = Inp 'NameSuffix' 'Suffix (optional)' '10' 'ROW_WP_N' }
             )}
-            @{ id = 'ROW_WP_5'; cols = @('3','3','3','3'); fields = @(
+            # ⚠️ PLATE STATE IS A DROPDOWN AS OF v1.10 AND IT IS A **HYPOTHESIS**, UNLIKE SEX AND RACE.
+            # Rob: "plate state should be state and use the drop down". Label is now plain 'State'.
+            #
+            # Same control-side mechanism as Sex/Race above -- `codeTypeCategory` on the control, so
+            # LIMITATION #28's reverse-lookup breakage is irrelevant -- and the pairing is from the
+            # authority: FIELD_REFERENCE Section 3, `NJ_NIBRS_STATE | NJ_NIBRS`, "NJ/NY state list.
+            # Sends 2-letter code. NCIC gives empty dropdown." A 2-letter code is exactly what SC
+            # wants here, so the mechanism fits.
+            #
+            # WHY THIS ONE IS NOT SETTLED, stated rather than buried:
+            #   * ZERO CARRIERS. All 69 state dropdowns in the portfolio use attributeTypeId='STATE';
+            #     not one uses a control-side state category. Measured, not assumed.
+            #   * The source is named NJ_NIBRS and the table calls it an "NJ/NY state list". Whether
+            #     an NJ_NIBRS source RESOLVES on a non-NJ tenant is UNVERIFIABLE FROM THIS REPO --
+            #     CLAUDE.md records exactly that open question for VEHICLE_BODY_STYLE|NJ_NIBRS.
+            #   * FAILURE MODE IF IT DOES NOT RESOLVE: an EMPTY dropdown, which is a REGRESSION --
+            #     today an officer can type 'SC'; an empty list lets them enter nothing at all.
+            # STATUS: HYPOTHESIS. It is loud, not silent: DISCRIMINATING TEST is to open the Wanted
+            # Person tab after the next import and see whether the State list has options. If empty,
+            # revert this ONE control to `Inp ... '2'` with the 2-letter hint in the label -- that is
+            # the v1.9 shape and it worked.
+            #
+            # Widths: Plate 3->4 and State 3->2 (the label shrank from 'Plate State -- type the
+            # 2-letter code' to 'State'), VIN 3, Make 3. VIN also displays narrower per Rob.
+            @{ id = 'ROW_WP_5'; cols = @('4','2','3','3'); fields = @(
                 @{ id = 'WP_LicensePlateNumber_Input';    node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_WP_5' }
-                @{ id = 'LicensePlateStateCode_Input';    node = Inp 'LicensePlateStateCode' 'Plate State -- type the 2-letter code' '2' 'ROW_WP_5' }
+                @{ id = 'LicensePlateStateCode_Input';    node = Sel 'LicensePlateStateCode' 'State' @{ codeTypeCategory = 'NJ_NIBRS_STATE'; codeTypeSource = 'NJ_NIBRS' } 'ROW_WP_5' }
                 @{ id = 'WP_VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_WP_5' }
                 @{ id = 'WP_VehicleMakeCode_Input';       node = Sel 'VehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE' } 'ROW_WP_5' }
             )}
+            # ⚠️ SEX AND RACE ARE DROPDOWNS AGAIN AS OF v1.10, AND THE v1.3 TYPE-IN TRADE IS RETIRED.
+            # Rob: "sex should just say sex and race should just say race" -- the labels only read
+            # cleanly if the control supplies the values, so this is the dropdown question again.
+            #
+            # v1.3 made both type-ins because this card sits on a TWO-QIF entity and LIMITATION #28
+            # breaks `codeTypeProvider` reverse-lookup there, which AP #1 turns into an internal
+            # numeric row id on the wire. THAT REASONING WAS RIGHT ABOUT ONE MECHANISM AND BLIND TO
+            # THE OTHER. #28 only breaks the attributeTypeId + codeTypeProvider *reverse-lookup*
+            # pattern. A control carrying its OWN `codeTypeCategory`/`codeTypeSource` resolves its
+            # list locally and the SELECTED CODE is what reaches the wire -- no reverse-lookup is
+            # involved, so #28 has nothing to break. That is exactly why this provider's GunMake,
+            # GunCaliber and ArticleTypeCode dropdowns work on their own two-QIF entities.
+            #
+            # BOTH PAIRINGS ARE FROM THE AUTHORITY, NOT GUESSED (FIELD_REFERENCE Section 3 table):
+            #   NIBRS_RACE | NIBRS -- "Sends W/B/I/A/U etc." Confirmed NY v1.12. BUILT AND
+            #     TENANT-PROVEN by MD_METERS (ALL-PASS, 47 logs) and LA_LEMS, both with NO
+            #     codeTypeProvider and NO attributeTypeId on the QIDM attribute -- the shape copied
+            #     here verbatim. AP #3 forbids attributeTypeId=RACE, so this is also the only
+            #     correct way to build a race dropdown at all.
+            #   NIBRS_SEX | NIBRS -- "Sends M/F/U to CommSys. Use ONLY if RMS sex filtering is not
+            #     needed (CommSys-only case)." THAT CONDITION IS SATISFIED HERE AND IT WAS CHECKED:
+            #     `Build-RmsBundle` emits RMS QIDMs for Vehicle and Person ONLY, and this card is on
+            #     targetEntity='Firearm', so no RMS sex filter is fed by these controls and the
+            #     NJ v3.22/v3.29 RMS-400 failure mode (useAttributeId + a string -> array wrap)
+            #     cannot arise. The Person tab keeps the full attributeTypeId=SEX +
+            #     codeTypeProvider=NIBRS pattern, which is correct there: Person is single-QIF AND
+            #     does feed RMS.
+            #   ⚠️ FIELD_REFERENCE's fallback prose says to "keep codeTypeProvider=NIBRS" alongside
+            #     the category. NOT DONE, deliberately: ZERO providers build that combination, MD
+            #     and LA both ship the category with a bare attribute, and a codeTypeProvider on a
+            #     control that already yields a code string is the shape validate.ps1 watches for
+            #     (AP #11). Built precedent beat the prose; if a wire capture ever shows a missing
+            #     tag here, that line is the first thing to revisit.
             @{ id = 'ROW_WP_2'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'WPOperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN (optional)' '20' 'ROW_WP_2' }
                 @{ id = 'WPBirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth (optional)' 'ROW_WP_2' }
-                @{ id = 'WPSexCode_Input';   node = Inp 'SexCode' 'Sex -- type M, F or U (optional)' '1' 'ROW_WP_2' }
-                @{ id = 'raceCode_Input';    node = Inp 'raceCode' 'Race -- type W, B, I, A or U (optional)' '1' 'ROW_WP_2' }
+                # LABEL-OVERRIDE: raceCode -- Rob 2026-09-17 "race should just say race". CHECK 15
+                #   Rule 3 wants an '(optional)' qualifier on an any[]-only field and raceCode is
+                #   any[]-only on QWA.N. The qualifier is now REDUNDANT rather than merely unwanted:
+                #   this became a DROPDOWN in the same change, so an officer who selects nothing has
+                #   sent nothing and the control's own emptiness says 'optional' better than the
+                #   label did. Note SexCode needs no override -- it is in QWDQ's set[] on
+                #   DriverLicenseQuery, so it is not an any[]-only field and Rule 3 never applied.
+                @{ id = 'WPSexCode_Input';   node = Sel 'SexCode' 'Sex' @{ codeTypeCategory = 'NIBRS_SEX'; codeTypeSource = 'NIBRS' } 'ROW_WP_2' }
+                @{ id = 'raceCode_Input';    node = Sel 'raceCode' 'Race' @{ codeTypeCategory = 'NIBRS_RACE'; codeTypeSource = 'NIBRS' } 'ROW_WP_2' }
             )}
             @{ id = 'ROW_WP_1'; cols = @('6','6'); fields = @(
                 @{ id = 'NCICNumber_Input';                  node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_WP_1' }

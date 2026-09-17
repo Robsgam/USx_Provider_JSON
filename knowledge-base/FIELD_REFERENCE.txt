@@ -319,6 +319,21 @@ SECTION 4 -- SEX CODE CONFIGURATION
 
   ---- FALLBACK PATTERN (CommSys-only) ----
 
+  ** validate.ps1 NOW RECOGNISES THIS PATTERN -- it used to demand the preferred one
+     unconditionally and flag ANY codeTypeCategory on SexCode as wrong (2026-09-17).
+     That made it tell a CORRECT build to adopt a BROKEN one in the single situation
+     that matters: on a multi-QIF entity the reverse-lookup this section's preferred
+     pattern depends on is dead (LIMITATION #28) and AP #1 then puts the platform's
+     internal numeric row id on the wire instead of M/F/U.
+     The check now accepts codeTypeCategory='NIBRS_SEX' + codeTypeSource='NIBRS' as
+     CORRECT when the field's entity carries MORE THAN ONE QUERYINPUTFORM, and reports
+     it as [INFO] naming the entity and the QIF count so the choice stays visible. It
+     still WARNs when the pairing is incomplete, and still WARNs on a SINGLE-QIF entity
+     where the preferred pattern IS available -- both proven by planted mutation.
+     Note the RACE check directly above it had always accepted the equivalent
+     control-side NIBRS_RACE; sex was simply inconsistent with race for months.
+     First carrier: SC_SLED v1.10 Wanted Person (shares targetEntity with Firearm).
+
   Use ONLY when duplicate targetFields are unavoidable (entity-split design):
 
     Form: codeTypeCategory=NIBRS_SEX + codeTypeSource=NIBRS

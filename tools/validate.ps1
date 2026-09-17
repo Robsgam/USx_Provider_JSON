@@ -214,6 +214,19 @@ if ($entitiesBundle) {
         Write-Host "    [FIX] Add 'order' object to ENTITIES bundle: {default:[...], CAD_DISPATCH:[...], FIRST_RESPONDER:[...]} using targetEntity values" -ForegroundColor Cyan
     }
 
+    # ── QIFs PER ENTITY -- needed by the SexCode check below ─────────────────────────────────────
+    # LIMITATION #28: when MORE THAN ONE QUERYINPUTFORM targets the same entity, codeTypeProvider
+    # reverse-lookup on that entity's QIDM attributes FAILS and the raw attribute id goes on the
+    # wire. So "is this entity multi-QIF?" decides whether the PREFERRED SexCode pattern is even
+    # available, and a check that ignores it will demand the broken configuration.
+    $qifsPerEntity = @{}
+    foreach ($c0 in $entitiesBundle.configurations) {
+        if ($c0.type -ne 'QUERYINPUTFORM') { continue }
+        $k0 = "$($c0.targetEntity)"
+        if (-not $k0) { continue }
+        if ($qifsPerEntity.ContainsKey($k0)) { $qifsPerEntity[$k0]++ } else { $qifsPerEntity[$k0] = 1 }
+    }
+
     foreach ($cfg in $entitiesBundle.configurations) {
         if ($cfg.type -ne "QUERYINPUTFORM") {
             if ($cfg.type -eq "QUERYINPUTDATAMAPPING") {
@@ -536,18 +549,53 @@ if ($entitiesBundle) {
                         Write-Info "QIF '$($cfg.name)' field '$($node.props.fieldId)' is FormSelect -- Y-only fields can use FormInput maxLength=1 to avoid exposing N/U"
                     }
                     # SexCode form field chain: must have attributeTypeId=SEX AND codeTypeProvider=NIBRS (includes DH-suffix variants)
+                    # ⚠️ THIS CHECK DEMANDED A CONFIGURATION THAT #28 REFUTES, until 2026-09-17.
+                    # It required attributeTypeId='SEX' + codeTypeProvider='NIBRS' UNCONDITIONALLY
+                    # and flagged ANY codeTypeCategory as wrong. That is the PREFERRED pattern and it
+                    # is right on a single-QIF entity -- but on a MULTI-QIF entity LIMITATION #28
+                    # breaks the reverse-lookup it depends on, and AP #1 then puts the platform's
+                    # internal numeric row id on the wire instead of M/F/U. So the check was telling
+                    # a correct build to adopt a broken one, in the one situation that matters.
+                    #
+                    # FIELD_REFERENCE Section 4 already documents the way out, and the check had not
+                    # learned it: the FALLBACK PATTERN (CommSys-only) -- form carries
+                    # codeTypeCategory='NIBRS_SEX' + codeTypeSource='NIBRS', which resolves its list
+                    # ON THE CONTROL and sends the string M/F/U, with no reverse-lookup to break.
+                    # Its stated precondition is that RMS sex filtering is not needed, which is
+                    # exactly true of an entity RMS has no QIDM for (Build-RmsBundle emits Vehicle
+                    # and Person only).
+                    #
+                    # THE RACE CHECK ABOVE ALREADY GETS THIS RIGHT -- it accepts
+                    # codeTypeCategory='NIBRS_RACE' when nothing consumes the value as an id. Sex is
+                    # now consistent with it. Found on SC_SLED, whose Wanted Person tab shares an
+                    # entity with Firearm; two tenant-verified providers (MD_METERS ALL-PASS 47 logs,
+                    # LA_LEMS) already ship the equivalent race control that way.
                     if ($node.props.fieldId -match '^SexCode(DH|OOS)?$') {
-                        if ($node.props.attributeTypeId -ne 'SEX') {
-                            Write-Warn "QIF '$($cfg.name)' SexCode field missing attributeTypeId='SEX' -- reverse-lookup will not work"
-                            Write-Host "    [FIX] In build script: add attributeTypeId='SEX' to the SexCode FormSelect field" -ForegroundColor Cyan
+                        $entQifCount = 1
+                        if ($cfg.targetEntity -and $qifsPerEntity.ContainsKey("$($cfg.targetEntity)")) {
+                            $entQifCount = $qifsPerEntity["$($cfg.targetEntity)"]
                         }
-                        if ($node.props.codeTypeProvider -ne 'NIBRS') {
-                            Write-Warn "QIF '$($cfg.name)' SexCode field missing codeTypeProvider='NIBRS' -- dropdown shows wrong values"
-                            Write-Host "    [FIX] In build script: add codeTypeProvider='NIBRS' to the SexCode FormSelect field" -ForegroundColor Cyan
-                        }
-                        if ($node.props.codeTypeCategory) {
-                            Write-Warn "QIF '$($cfg.name)' SexCode field has codeTypeCategory='$($node.props.codeTypeCategory)' -- use attributeTypeId=SEX + codeTypeProvider=NIBRS instead"
-                            Write-Host "    [FIX] In build script: remove codeTypeCategory='$($node.props.codeTypeCategory)' from SexCode and use attributeTypeId='SEX' + codeTypeProvider='NIBRS'" -ForegroundColor Cyan
+                        $fallbackOk = ($entQifCount -gt 1) -and
+                                      ($node.props.codeTypeCategory -eq 'NIBRS_SEX') -and
+                                      ($node.props.codeTypeSource -eq 'NIBRS')
+                        if ($fallbackOk) {
+                            # Correct-by-the-authority for this shape. Reported so it is VISIBLE
+                            # rather than silently tolerated -- a reader must be able to see that a
+                            # non-preferred pattern was chosen, and why.
+                            Write-Info "QIF '$($cfg.name)' SexCode uses the CommSys-only FALLBACK (codeTypeCategory='NIBRS_SEX' + codeTypeSource='NIBRS') -- correct here because targetEntity='$($cfg.targetEntity)' carries $entQifCount QIFs, so LIMITATION #28 breaks the preferred attributeTypeId=SEX + codeTypeProvider=NIBRS reverse-lookup (FIELD_REFERENCE Section 4 fallback). Sends M/F/U; requires no RMS sex filter on this entity"
+                        } else {
+                            if ($node.props.attributeTypeId -ne 'SEX') {
+                                Write-Warn "QIF '$($cfg.name)' SexCode field missing attributeTypeId='SEX' -- reverse-lookup will not work"
+                                Write-Host "    [FIX] In build script: add attributeTypeId='SEX' to the SexCode FormSelect field. If this entity carries MORE THAN ONE QIF, #28 breaks that pattern -- use the documented fallback instead: codeTypeCategory='NIBRS_SEX' + codeTypeSource='NIBRS' (needs no RMS sex filter on the entity)" -ForegroundColor Cyan
+                            }
+                            if ($node.props.codeTypeProvider -ne 'NIBRS') {
+                                Write-Warn "QIF '$($cfg.name)' SexCode field missing codeTypeProvider='NIBRS' -- dropdown shows wrong values"
+                                Write-Host "    [FIX] In build script: add codeTypeProvider='NIBRS' to the SexCode FormSelect field" -ForegroundColor Cyan
+                            }
+                            if ($node.props.codeTypeCategory) {
+                                Write-Warn "QIF '$($cfg.name)' SexCode field has codeTypeCategory='$($node.props.codeTypeCategory)' -- use attributeTypeId=SEX + codeTypeProvider=NIBRS instead"
+                                Write-Host "    [FIX] In build script: remove codeTypeCategory='$($node.props.codeTypeCategory)' from SexCode and use attributeTypeId='SEX' + codeTypeProvider='NIBRS'. The ONLY exception is the #28 fallback, which needs BOTH codeTypeCategory='NIBRS_SEX' AND codeTypeSource='NIBRS' on a multi-QIF entity" -ForegroundColor Cyan
+                            }
                         }
                     }
                     # LicensePlateNumber fieldId check — canonical name is licensePlateNumber (no In/Out suffix)

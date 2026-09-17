@@ -56,23 +56,24 @@ and start time both lied 09-14; on 09-15 I curled the WRONG PORT and got the NO-
 **`RUN THE JOB` + `7b` RESCAN are PROVEN, not hypotheses** (09-15: 1790 indexed / 2 new / 4s). ⚠️ **PANEL
 COLOURS CHANGED 09-16:** a pull that got NOTHING reads RED, partial AMBER, green only if all accounted.
 
-## SC_SLED v1.9 -- IMPORT IT; DO NOT SWEEP IT (Rob 2026-09-16)
+## SC_SLED v1.10 -- IMPORT IT; DO NOT SWEEP IT (Rob 2026-09-16)
 
-✅ **v1.8 RENDERED CORRECTLY -- 7 tabs in the asked-for order, confirmed on the tenant.** The tab rule is
-SETTLED and written up in BUILD_NOTES v1.8 + the build script's TAB ORDER block: **same-entity tabs are
-ADJACENT, so a tab is last only if it sits on the LAST entity.** Admin Message therefore lives on `Boat`,
-which cost Boat's State dropdown (#28 on a 2-QIF entity) -- 3rd scoped divergence row.
-**v1.9 = LAYOUT ONLY, zero wire change** (verified on the emitted JSON): Vehicle 2 rows w/ State last;
-name controls **First-Last-Middle-Suffix everywhere** per Rob while the Name attribute keeps `sourceField`
-Last,First,Middle,Suffix so the wire stays `LAST, FIRST MIDDLE SUFFIX` -- **do NOT "align" sourceField,
-that WOULD change the wire**; Wanted rows now name/plate/OLN/NCIC/SSN/expanded; AM row 6/6 so layout flow
-is CLEAN. 9 QIDMs / 18 combos / 7 QIFs / 77P-0F-2W-2LIM / 65 plan tests. Sweep HELD on the docs.
-⚠️ **NOT DELIVERED, a CAPABILITY limit:** no multi-row text box exists for the AM message.
-`probe_control_types.ps1` (new) censused all 21 provider JSONs **and all 66 platform tenant configs incl.
-NOT-OUR-BUILD**: the vocabulary is FormInput/FormSelect/FormDate/FormCheckbox/FormRadioGroup, and FormInput
-only carries fieldId/label/maxLength/initialValue. Inventing a `resolvedName` renders NOTHING silently;
-test via throwaway probe import. ⚠️ **OPEN, NEEDS ROB:** the AM's 5 `DestinationCode` optionals are
-UNMAPPED on purpose (5 WARNs) -- an AM DELIVERS text to the ORI named, so a guess picks a real recipient.
+✅ **v1.9 tab order + layout CONFIRMED on the tenant.** v1.10 = **77P/0F/0W/2LIM, ZERO WARNs for the
+first time**, by FIXING the defect not silencing it. ⚠️ **v1.3's "capability given up" WAS HALF WRONG
+and is RETIRED:** #28 breaks only the `attributeTypeId`+`codeTypeProvider` REVERSE-LOOKUP; a control
+with its own `codeTypeCategory`/`codeTypeSource` resolves LOCALLY and sends the CODE -- which is why
+GunMake/GunCaliber/ArticleTypeCode always worked on two-QIF entities. Sex -> `NIBRS_SEX|NIBRS`
+(documented fallback, precondition CHECKED: no RMS QIDM on Firearm); Race -> `NIBRS_RACE|NIBRS` as
+MD_METERS (ALL-PASS) ships it. Scoped `raceCode`+`SexCode` divergence rows DELETED (premise gone).
+**validate.ps1 FIXED, same ruling as ImageIndicator** -- it demanded the PREFERRED SexCode pattern
+unconditionally, telling a correct build to adopt a broken one on a multi-QIF entity. Now #28-aware,
+LAW 2 both ways by planted mutation, all 21 providers re-validated with every score identical.
+⚠️ **ONE HYPOTHESIS RIDES ON THIS IMPORT:** Wanted plate State is now a dropdown via
+`NJ_NIBRS_STATE|NJ_NIBRS` -- **ZERO carriers** (all 69 state dropdowns use `attributeTypeId='STATE'`).
+**TEST: open Wanted Person, look at the State list. If EMPTY revert that ONE control to `Inp '2'`.**
+Boat's State deliberately not converted too -- one experiment per import. ⚠️ **AN ABSENCE, NOT A
+DEFERRAL:** no multi-row text box exists for the AM message (`probe_control_types.ps1`). ⚠️ **OPEN,
+NEEDS ROB:** the AM's 5 `DestinationCode` optionals are UNMAPPED -- an AM DELIVERS to the ORI named.
 
 ## ROB'S CALLS + OPEN FINDINGS -- detail lives in `FINDINGS_REGISTER.md`, do NOT restate it here
 
@@ -98,9 +99,8 @@ import **REPLACES** the bundle set. ⚠️ Still unexplained and worth more than
   the BMVIMS case. CommSys asks HELD. TX_TLETS_CCH PARKED. DH NOT FROM CAD. TN `RQ01` + name-casing CLOSED 08-24.
 - **A keyRef NEVER reaches the wire, nor does `primaryFieldReference`** -- ask whether the label
   ships. **`[FLAG:plan-dedupe-vacuous-tests]` DONE**; inflation 2026-09-14: 927 logs / 0 findings.
-- **NY DEMOTED-QUALIFIER: CLOSED, not owed** ([KILLED] 2026-09-09; two fixes REJECTED, see
-  `FINDINGS_REGISTER.md`). **NJ guardrail mutation: N/A, not stale** -- do NOT re-aim. Both were
-  stale-OWED claims IN THIS FILE that invented work -- **measure before believing this file.**
+- **NY DEMOTED-QUALIFIER: CLOSED, not owed** ([KILLED] 09-09, two fixes REJECTED, see
+  `FINDINGS_REGISTER.md`). **NJ guardrail mutation: N/A, not stale** -- do NOT re-aim. Both were stale-OWED claims IN THIS FILE that invented work -- **measure before believing this file.**
 - **Jira is HELD and lifts ONE PROVIDER AT A TIME.** No approval carries to the next provider.
 - **`hawaii-dle` LIVE on v4.15 vs repo v4.20 = DECISION, NOT A GAP** (Rob 09-15: *"hawaii will sit at
   that version until we meet with them again"*) -- reports will keep flagging it; that is correct

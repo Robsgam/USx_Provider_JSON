@@ -2,7 +2,7 @@
 // Then render each entity form and run its line (one at a time; each downloads one file):
 var scope = {
     "provider":  "SC_SLED",
-    "version":  "1.9",
+    "version":  "1.10",
     "note":  "Paste as scope; render each entity form; __usxScopePicklists(scope, \u0027\u003cEntity\u003e\u0027). One download per entity.",
     "fields":  [
                    {
@@ -55,11 +55,35 @@ var scope = {
                    },
                    {
                        "entity":  "Firearm",
+                       "fieldId":  "LicensePlateStateCode",
+                       "label":  "State",
+                       "codeTypeCategory":  "NJ_NIBRS_STATE",
+                       "codeTypeSource":  "NJ_NIBRS",
+                       "attributeTypeId":  ""
+                   },
+                   {
+                       "entity":  "Firearm",
                        "fieldId":  "VehicleMakeCode",
                        "label":  "Vehicle Make",
                        "codeTypeCategory":  "",
                        "codeTypeSource":  "",
                        "attributeTypeId":  "VEHICLE_MAKE"
+                   },
+                   {
+                       "entity":  "Firearm",
+                       "fieldId":  "SexCode",
+                       "label":  "Sex",
+                       "codeTypeCategory":  "NIBRS_SEX",
+                       "codeTypeSource":  "NIBRS",
+                       "attributeTypeId":  ""
+                   },
+                   {
+                       "entity":  "Firearm",
+                       "fieldId":  "raceCode",
+                       "label":  "Race",
+                       "codeTypeCategory":  "NIBRS_RACE",
+                       "codeTypeSource":  "NIBRS",
+                       "attributeTypeId":  ""
                    },
                    {
                        "entity":  "Firearm",
@@ -95,4 +119,4 @@ var scope = {
                    }
                ]
 };
-console.log('%c[USx-SCOPE] scope loaded: SC_SLED v1.9 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')");
+console.log('%c[USx-SCOPE] scope loaded: SC_SLED v1.10 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')");
