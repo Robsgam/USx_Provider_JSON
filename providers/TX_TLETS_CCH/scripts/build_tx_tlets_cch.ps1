@@ -1,5 +1,5 @@
 # build_tx_tlets_cch.ps1  -- TX_TLETS_CCH (version comes from $Version below -- said v1.10 while emitting v1.14, corrected 2026-08-02)
-# BASE-SYNC: TX_TLETS v4.22   <- base-6 QIDMs are kept in lockstep with this TX_TLETS version.
+# BASE-SYNC: TX_TLETS v4.23   <- base-6 QIDMs are kept in lockstep with this TX_TLETS version.
 # v1.17 (LOCKSTEP w/ TX_TLETS v4.21 -- COSMETIC, NO wire change): mandatory variant rebuild. Same three
 #   audit_layout_flow fixes as the base: 'nameMiddle'/'nameMiddleDH' relabelled 'MI' -> 'Middle Name'
 #   (L7 -- 'MI' means middle INITIAL on maxLen=30 controls), and the hidden Attention row moved from
@@ -103,7 +103,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets_cch.ps1
 
 param(
-    [string]$Version = "1.18"
+    [string]$Version = "1.19"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -568,7 +568,17 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC' } 'ROW_VEH_1' }
                 @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' }
-                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
+                # v1.19 -- BASE-SYNC with TX_TLETS v4.23. State defaults to 'TX' on VEHICLE, and
+                # deliberately NOT on Boat. Full reasoning lives in the BASE script at ROW_VEH_1:
+                # QV{Plate,State} is the devdoc's #5 "(InState) LicensePlateNumber, State [RegionId]"
+                # path, so the prefill makes a bare plate fire the IN-STATE Texas query where it
+                # previously matched nothing; RQ is the (OutofState) key, not the in-state one.
+                # Measured on the base before shipping: 0 dead of 20 combos (audit_combo_reachability)
+                # and no prefill-caused shadow (audit_prefill_shadow, 31 pairs).
+                # LOCKSTEP RULE: a base routing change must propagate here in the SAME pass -- this
+                # variant inherits the base-6 QIDMs, and drifting on a routing field is how a
+                # variant starts sending different queries from its base without anyone noticing.
+                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'TX' } 'ROW_VEH_1' }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_2' }

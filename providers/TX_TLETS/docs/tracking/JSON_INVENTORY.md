@@ -6,8 +6,7 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| TX_TLETS_v4.22.json | v4.22 | Current | 80P/0F/0W. |
-
+| TX_TLETS_v4.23.json | v4.23 | Current | 80P/0F/0W/1LIM. |
 ## phases/current/
 
 | File | Version | Date | Notes |
@@ -58,11 +57,17 @@ All JSON versions produced for this provider.
 
 
 
+
+## v4.23 (2026-09-17)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| TX_TLETS_v4.23.json | v4.23 | Current | 80P/0F/0W/1LIM. |
 ## v4.22 (2026-08-27)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| TX_TLETS_v4.22.json | v4.22 | Current | 80P/0F/0W/0LIM. |
+| TX_TLETS_v4.22.json | v4.22 | Superseded | 80P/0F/0W/0LIM. |
 ## v4.21 (2026-08-18)
 
 | File | Version | Status | Notes |

@@ -209,7 +209,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
 
 param(
-    [string]$Version = "4.22"
+    [string]$Version = "4.23"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -559,7 +559,41 @@ $vehLayout = MakeLayouts @(
                 # (BUILD_RULES 23): never trade a search path for a prefilled convenience value.
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC' } 'ROW_VEH_1' }
                 @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' }
-                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
+                # v4.23 -- STATE DEFAULTS TO 'TX', AND IT IS THE QV{Plate,State} GATE THAT MAKES
+                # THIS THE POINT RATHER THAN A RISK. Rob 2026-09-17: "i need tx json adjust to use
+                # TX as the default for states. we may need to adjust the routing so that tx goes
+                # in state."
+                # WHAT IT DELIVERS, read off the devdoc's own numbered list (line 275), NOT inferred
+                # from key names -- which is where I had it exactly backwards first time:
+                #     1. (InState)    Plate, PlateYear [FRT] .................. REG
+                #     2. (InState)    StickerNumber [FRT] ..................... DPSI
+                #     3. (OutofState) Plate, PlateType, PlateYear [State] ..... RQ{Plate}
+                #     4. (OutofState) VIN [Make, Year, State] ................. RQ{VIN}
+                #     5. (InState)    Plate, State [RegionId] ................. QV{Plate}   <-- this
+                #     6.              VIN [State, RegionId, FRT] .............. VIN{VIN}
+                # RQ IS THE OUT-OF-STATE KEY (registry row 16 calls RQ{VIN} "the devdoc's
+                # (OutofState) path"), and QV{Plate,State} is devdoc #5, labelled (InState). So with
+                # State prefilled TX a bare plate satisfies set[Plate,State] and fires the IN-STATE
+                # Texas query. THAT IS THE REQUEST. Before this, a bare plate matched NOTHING --
+                # RQ wants Type+Year, REG wants Year+FRT -- so the officer got no result at all.
+                # MEASURED BEFORE SHIPPING, on a throwaway replica with the prefill injected:
+                #   audit_combo_reachability  Vehicle ... PASS, 0 dead of 20
+                #   audit_prefill_shadow      ........... PASS, no prefill-caused shadow (31 pairs)
+                # SUPERSEDES the v4.22 registry warning ("Do not prefill Vehicle State") and the
+                # v4.14 no-prefill note below. Both were RIGHT about their own cases and neither
+                # covered this one: v4.14 was about PlateType=PC + PlateYear + FRT=E TOGETHER hiding
+                # the RQ/QV combos, and QV's own note assumed a prefill would recreate the v4.9
+                # ungated shadow. It does not -- QV is ordered LAST, and RQ (Plate+Year+Type) and
+                # REG (Plate+Year+FRT) still win first-match whenever their own set[] is satisfied.
+                # ⚠️ THE ONE REAL SIDE EFFECT, stated not hidden: the (OutofState) RQ paths carry
+                # State in any[], so an officer searching an OOS plate must change State off TX or
+                # the query goes out addressed to Texas. That is the same trade Person has shipped
+                # since v4.x (RegistrationState + RegistrationStateDH are both initialValue='TX').
+                # ⚠️ BOAT IS DELIBERATELY NOT GIVEN THIS DEFAULT -- see ROW_BOA_1. There BQ is the
+                # OUT-of-state key and State is the DESTINATION, so a TX prefill would address every
+                # boat search to Texas as though out-of-state AND kill the NCIC path (2 dead combos,
+                # measured). Rob's call 2026-09-17: leave Boat blank.
+                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'TX' } 'ROW_VEH_1' }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_2' }
@@ -779,6 +813,17 @@ $boaLayout = MakeLayouts @(
             @{ id = 'ROW_BOA_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '11' 'ROW_BOA_1' }
                 @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_1' }
+                # ⚠️ NO 'TX' DEFAULT HERE, DELIBERATELY -- v4.23. Vehicle got one (see ROW_VEH_1);
+                # Boat must not, and the reason is the opposite of Vehicle's. On Boat, BQ is the
+                # OUT-OF-STATE key and State is the DESTINATION state (registry rows 12/13: "BQ
+                # combos are state='Out', so destination State is required (set[]) to force the OOS
+                # boat query"), while QB{Reg}/QB{Hull} are gated RegistrationState:NOT_EXISTS.
+                # So a TX prefill would (a) address every boat search to Texas as though it were
+                # out-of-state, and (b) make NOT_EXISTS permanently false, killing the NCIC boat
+                # search outright. MEASURED on the prefill replica: 2 DEAD COMBOS --
+                # BoatQuery/QBRegistrationNumber and BoatQuery/QBBoatHullIdNumber.
+                # The blank is what routes a boat to NCIC; the officer supplies a state only when
+                # they mean out-of-state. Rob's call 2026-09-17: leave Boat blank.
                 @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
             )}
             @{ id = 'ROW_BOA_2'; cols = @('4','4','4'); fields = @(

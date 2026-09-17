@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TX_TLETS
-  Source: TX_TLETS_v4.22.json
-  Generated: 2026-09-14 13:25
+  Source: TX_TLETS_v4.23.json
+  Generated: 2026-09-17 15:32
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -57,6 +57,7 @@ VALIDATOR RESULTS
   [PASS] QIDM 'TX_TLETS_BoatQuery' ImageIndicator size=1
   [PASS] RMS Person QIDM 'RMS Person Search query' has registrationState attr
   [PASS] RMS Vehicle QIDM 'RMS Vehicle search query' has RegistrationState in combo any[]
+  [LIMITATION] QIDM 'TX_TLETS_VehicleInsuranceRegistrationQuery' has separate In/Out combos but Vehicle State field 'RegistrationState' has initialValue='TX' -- combo routing affected (LIMITATION #30)
 
 === PHASE 4: AutoSelect & Cross-Reference ===
   [PASS] Article : 1 QIDMs, 1 QIF(s)
@@ -104,8 +105,10 @@ VALIDATOR RESULTS
   [PASS] QIDM 'TX_TLETS_BoatQuery' combo 'QBNCICNumber': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 80 PASS / 0 FAIL / 0 WARN
+  RESULTS: 80 PASS / 0 FAIL / 0 WARN / 1 LIMITATION
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
+
+  1 known limitation(s) -- documented, no action needed.
 
   Ready for import.
 

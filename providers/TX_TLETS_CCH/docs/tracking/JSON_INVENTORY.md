@@ -26,13 +26,18 @@
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| TX_TLETS_CCH_v1.18.json | v1.18 | Current | 113P/0F/0W. |
+| TX_TLETS_CCH_v1.19.json | v1.19 | Current | 113P/0F/0W/1LIM. |
 
+## v1.19 (2026-09-17)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| TX_TLETS_CCH_v1.19.json | v1.19 | Current | 113P/0F/0W/1LIM. |
 ## v1.18 (2026-08-27)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| TX_TLETS_CCH_v1.18.json | v1.18 | Current | 113P/0F/0W/0LIM. |
+| TX_TLETS_CCH_v1.18.json | v1.18 | Superseded | 113P/0F/0W/0LIM. |
 ## v1.17 (2026-08-18)
 
 | File | Version | Status | Notes |

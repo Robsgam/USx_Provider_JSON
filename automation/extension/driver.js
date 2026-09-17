@@ -174,8 +174,32 @@
     // RELEASE THE LOCK ON THIS EXIT TOO. A lock that is only released on the happy path is worse
     // than no lock: one no-op run would wedge the button until a tab reload.
     if (!tests.length) { window.__usxRunInFlight = null; console.warn('[USx-DRV] no combo tests for', entityFilter); return; }
-    const manifest = []; const results = []; const notSent = [];
+    const manifest = []; const results = []; const notSent = []; const offForm = [];
     for (const t of tests) {
+      // ── PER-TEST FORM SCOPE CHECK (2026-09-17) ────────────────────────────────────────────
+      // WHY: one targetEntity can host MORE THAN ONE QUERYINPUTFORM, i.e. more than one TAB
+      // (CAPABILITY #47 -- tabs are keyed by QIF, not by entity). SC_SLED is the only provider of
+      // 21 that does it, and it does it twice over: entity='Firearm' carries ENTITY_Firearm
+      // (GunQuery, 5 tests) AND ENTITY_WantedPerson (WantedPersonQuery, 34 tests). The test filter
+      // above keys on t.entity, so "Run Plan -> Firearm" selects all 39 -- but only ONE of those
+      // two tabs is mounted at a time, so half the batch has no controls on screen.
+      // Rob 2026-09-17: "i need a wanted person tests in the driver". They were IN the plan all
+      // along (34 of them); they were unreachable because the run aborted on the first Gun field.
+      // WHAT THIS DOES: a test whose fields are not in the DOM is SKIPPED and reported, never
+      // driven. So the operator runs Firearm twice -- once per tab -- and each pass drives exactly
+      // the tests that belong to the tab in front of it.
+      // ⚠️ SKIPPING IS THE WHOLE POINT; DO NOT "IMPROVE" THIS INTO A BEST-EFFORT FILL. Without it
+      // the run filled nothing, clicked Send anyway, and logged "submitted UNDER-FILLED" -- a wire
+      // that looks like evidence and tests nothing. That is the inert-test class.
+      // Presence is checked, NOT fill success: an element that exists but fills slowly is a
+      // LATENCY problem (handled by fillWithRetry); an element that does not exist is a WRONG TAB.
+      const wantedFills = t.fills ? (Array.isArray(t.fills) ? t.fills : [t.fills]) : [];
+      const absent = wantedFills.filter((f) => f && f.fieldId && !L.q(f.fieldId)).map((f) => f.fieldId);
+      if (absent.length) {
+        offForm.push({ n: t.n, entity: t.entity, query: t.query, combo: t.comboKeyRef, absent });
+        console.warn(`[USx-DRV] T${t.n} ${t.entity}/${t.query} ${t.comboKeyRef || ''}: SKIPPED -- not on this form (missing: ${absent.join(', ')}). Open the tab that owns this query and run again.`);
+        continue;
+      }
       const fr = [];
       // Normalize fills: PowerShell ConvertTo-Json collapses single-element arrays to bare objects
       const rawFills = t.fills ? (Array.isArray(t.fills) ? t.fills : [t.fills]) : [];
@@ -229,9 +253,22 @@
     // count, but print BOTH numbers anyway so the operator never has to do the subtraction, and
     // name the tests that did not send so a shortfall is visible at the point it happens.
     console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold',
-      `plan run complete: ${tests.length} test(s) driven, ${manifest.length} SENT, ${notSent.length} NOT sent. ` +
+      `plan run complete: ${tests.length} selected, ${tests.length - offForm.length} driven, ${manifest.length} SENT, ` +
+      `${notSent.length} NOT sent, ${offForm.length} SKIPPED (not on this form). ` +
       `${manifest.length} manifest entr${manifest.length === 1 ? 'y' : 'ies'} written (never-sent tests are NOT recorded). ` +
       `Go to /admin/dex-log and run __usxCaptureBatch(). EXPECT EXACTLY ${manifest.length} CAPTURE(S).`, results);
+    // NAME THE OTHER TAB. A bare "34 skipped" reads like a defect; the operator needs to know the
+    // tests are fine and simply live on a form that is not mounted right now.
+    if (offForm.length) {
+      const byQuery = {};
+      offForm.forEach((s) => { byQuery[s.query] = (byQuery[s.query] || 0) + 1; });
+      console.warn('%c[USx-DRV]', 'color:#08a;font-weight:bold',
+        `${offForm.length} test(s) SKIPPED because their controls are not on the form currently shown -- ` +
+        `NOT a failure and NOTHING was sent for them. One targetEntity can host several tabs ` +
+        `(CAPABILITY #47), so run this entity once per tab. Still owed here: ` +
+        Object.keys(byQuery).map((q) => `${q} (${byQuery[q]})`).join(', ') +
+        `. Open that query's tab and press Run Plan again.`, offForm);
+    }
     if (notSent.length) {
       console.warn('%c[USx-DRV]', 'color:#c60;font-weight:bold',
         `${notSent.length} test(s) did NOT send and were deliberately kept OUT of the manifest, so nothing can be ` +
