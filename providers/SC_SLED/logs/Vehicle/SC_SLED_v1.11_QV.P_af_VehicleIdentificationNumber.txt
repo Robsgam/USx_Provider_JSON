@@ -1,7 +1,7 @@
 ﻿================================================================
 TEST LOG: SC_SLED Vehicle VehicleStolenQuery
 Combo: QV.P_af_VehicleIdentificationNumber (QV.P_af_VehicleIdentificationNumber (auto))
-Date: 2026-09-17 15:35:10
+Date: 2026-09-17 15:38:29
 Result: PASS
 JSON Version: 1.11
 Entity Fingerprint: 337fbfc73b789e1b32fcabcfc58fbbb8a63ddccc45e1c8d4e24cbe8469899962
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","VehicleIdentificationNumber":"1HGCM82633A123456"}
+{"LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","VehicleIdentificationNumber":"1HGCM82633A123456","vehicleYear":"2023"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01M2RCHZTNCQQE0PWEVAKEFRX0">
+    <api:Transaction id="01M2RCEBVQ2WXMJDJESTP6AVCG">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,7 +36,7 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleStolenQuery</MessageType>
-            <Id>01M2RCHZTNCQQE0PWEVAKEFRX0</Id>
+            <Id>01M2RCEBVQ2WXMJDJESTP6AVCG</Id>
             <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
             <LicensePlateNumber>TEST123</LicensePlateNumber>
           </Request>
@@ -74,12 +74,12 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01M2RCHZTNCQQE0PWEVAKEFRX0
+  Id                             01M2RCEBVQ2WXMJDJESTP6AVCG
   VehicleIdentificationNumber    1HGCM82633A123456
   LicensePlateNumber             TEST123
 
 NOTES
 -----
-Automated capture (txId 01M2RCHZTNCQQE0PWEVAKEFRX0). kind=any-field; anyField=VehicleIdentificationNumber; expectedKeyRef=QV.P; firedMessageType=VehicleStolenQuery. routing=VERIFIED (expected combo set[] on wire) UNDER-FILLED (a form field failed to fill on submit -- verify this combo).
+Automated capture (txId 01M2RCEBVQ2WXMJDJESTP6AVCG). kind=any-field; anyField=VehicleIdentificationNumber; expectedKeyRef=QV.P; firedMessageType=VehicleStolenQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS
