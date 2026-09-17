@@ -1234,7 +1234,10 @@ CAPABILITY #44 (NOT a limitation -- this slot HELD A FALSE LIMITATION FOR ONE HO
   WHAT IS PROVEN vs WHAT IS NOT:
     PROVEN -- the handler runs on the request path and substitutes the mapped value.
     PROVEN -- the emitted value is UPPERCASED (GEORGIA, NEW YORK). Favourable: an NCIC-style target
-              code is uppercase anyway.
+              code is uppercase anyway. ⚠️ **NOT THE HANDLER'S DOING -- corrected 2026-09-17.** The
+              multiline wire test (CAPABILITY #48 round 2) uppercased a plain `FormInput` value with
+              NO rule attached (`abc123` -> `ABC123`), so the platform uppercases text field values
+              generally. Do not cite this line as evidence that the MAPPING HANDLER uppercases.
     NOT PROVEN -- a MANY-TO-ONE table (16/17/18 -> PC). The mechanism supports it by construction
               (several codes may share one display value) but no such table exists to test against.
               The dependency is PROVISIONING, not capability.
@@ -1517,21 +1520,49 @@ CAPABILITY #48 (NOT a limitation -- this slot HELD A FALSE LIMITATION FOR SIX HO
   capability doc's "errorMessage, helpText, tooltip NOT supported" stands, MEASURED rather
   than merely documented. Hints continue to live in LABELS and CARD TITLES.
 
-  WHAT IS PROVEN vs WHAT IS NOT:
-    PROVEN ...... `FormTextarea` resolves and renders a multi-row, wrapping, scrollable box.
-    PROVEN ...... the 5 props and the 5 other component names do nothing, harmlessly.
-    NOT PROVEN -- THAT A TYPED VALUE REACHES THE WIRE. The rig deliberately wired only the
-                  COMPANION into its QIDM (`MULTILINE_TEST_C1FormTextareaProbeQuery` holds
-                  one attribute, `MlCompC1FormTextarea`, and one combination on it); the
-                  candidate fieldId appears in NO attribute and NO `set[]`, because when the
-                  rig was cut nobody knew the component was an input at all. So a submit from
-                  that box sends NOTHING TODAY. A control that renders and silently discards
-                  officer input is the exact class `audit_wiring_closure` exists to catch --
-                  DO NOT SHIP IT INTO A PROVIDER ON THE RENDER ALONE.
-    NOT PROVEN -- THAT A NEWLINE SURVIVES THE WIRE. The AM body is the use case, so the value
-                  will contain LFs. They may pass through, collapse to spaces, or break the
-                  XML. This is the question that could still kill the whole thing.
-    NOT PROVEN -- whether `maxLength` is honoured on it (FreeText is capped at 501).
+  ROUND 2 -- IT TRANSMITS, AND THE NEWLINES DIE BEFORE THE WIRE EVEN SEES THEM.
+  MEASURED 2026-09-17, second import, 3 captures. EVIDENCE, COMMITTED:
+  `docs/evidence/2026-09-17_MULTILINE_TEST_round2_WIRE_newlines_become_spaces.json`
+  (txns 01M2R64CN44.. / 01M2R63Q371.. / 01M2R63JS5Q..).
+  Rig: `build_multiline_test.ps1 -Components FormTextarea -Wire`.
+  ⚠️ READ THOSE CAPTURES WITH A SCRIPT, NOT A SHELL ONE-LINER. My first pass piped a PowerShell
+  `-replace` containing backtick-r/backtick-n through bash, which mangled the pattern into a
+  literal `n` and rendered every letter 'n' as "<LF>" -- I read invisible characters that were not
+  there and nearly reported the form state as containing newlines. A probe is a `.ps1`
+  (`tools\_probe.ps1`), never a bash one-liner; that is the defect class the harness deletes.
+
+    PROVEN ...... IT TRANSMITS, 3 for 3. `<MlCandC0FormTextarea>` carries the typed text on
+                  every capture. `FormTextarea` is a REAL INPUT, not just a rendered box.
+    PROVEN ...... NEWLINES DO NOT SURVIVE -- AND THE CONVERSION IS NOT ON THE WIRE PATH. The
+                  captured FORM STATE already holds **0 LF and 247 spaces**; the wire value is
+                  character-for-character the same length (262). So the control/form layer eats
+                  the line break BEFORE serialization. Do not go looking for a serializer fix.
+                  Each Enter became a run of 124 then 123 spaces (segments at index 0 / 129 /
+                  257). The exact padding rule was not derived -- the gaps are unequal, so it is
+                  not a single fixed column width, and it does not matter for the verdict.
+    PROVEN ...... THE WIRE VALUE IS UPPERCASED, AND IT IS THE PLATFORM, NOT A HANDLER. Form
+                  `line1` -> wire `LINE1`. ⚠️ THE COMPANION IS WHAT MAKES THIS GENERAL: it is a
+                  plain `FormInput` with NO rule and it uppercased too (`abc123` -> `ABC123`).
+                  **This corrects CAPABILITY #44**, which recorded "the emitted value is
+                  UPPERCASED (GEORGIA, NEW YORK)" as an observation about
+                  `CommsysResultAttributeMappingRuleHandler`. The handler is not doing it; the
+                  platform does it to text field values regardless.
+    PROVEN ...... PRESSING ENTER IN THE TEXTAREA SUBMITS THE QUERY. Rob's first two captures are
+                  accidental sends -- "the first 2 were from me hitting enter adn it sedning the
+                  query before i could get to line 2 or line 3" -- each carrying only `LINE1`.
+                  So the officer cannot casually type a line break even if one were wanted.
+
+  THE VERDICT FOR THE ADMINISTRATIVE MESSAGE, and it is arithmetic rather than taste: three
+  five-letter words consumed **262 of the 501-character `FreeText` budget**. That is ~4 line
+  breaks before the message is full, and what arrives is ONE line with ~124-space gaps -- HARDER
+  to read than the unbroken paragraph this whole thread set out to fix. **ADOPT `FormTextarea`
+  for the WRAP-AND-SCROLL, which is most of what was actually asked for (a 501-char message in a
+  box you can see and scroll beats a one-line input). DO NOT PROMISE LINE BREAKS: they are a
+  data hazard, not a feature.**
+
+    STILL NOT PROVEN -- whether `maxLength` is honoured on it (FreeText is capped at 501); and
+                  HOW a line break is reachable at all (Shift+Enter vs paste), which is what
+                  decides whether an officer can blow the character budget by accident.
 
   WHY THE FALSE LIMITATION SURVIVED FOUR SOURCES -- the lesson, and it is the SAME ONE as
   CAPABILITY #44 six hours earlier. Three of the four were USAGE CENSUSES (our 21 builds; 7,414

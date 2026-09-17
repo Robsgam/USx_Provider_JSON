@@ -68,17 +68,17 @@ MULTILINE PROBE, NOT v1.10**, so **v1.10 must go back**.
 ## 🟢 THE MULTILINE BOX EXISTS -- `FormTextarea`, LOWERCASE `a` (measured 2026-09-17)
 
 **`CAPABILITY #48`; the slot held a FALSE LIMITATION for six hours** (3 of its 4 sources were USAGE
-CENSUSES -- same lesson as `#44` six hours earlier). One hand-import: it renders a wrapping,
-auto-growing, scrollable multi-row box. `FormTextArea` (capital A -- the spelling anyone writes by
-hand) does NOTHING; the resolver is EXACT-MATCH and the validator's duplicate-tag refusal is the
-only reason both casings got tested. All 5 candidate PROPS dead; `Text` did NOT render (still no
-help-text channel); all 7 tabs rendered, so **an unknown `resolvedName` is IGNORED, not FATAL**.
+CENSUSES -- same lesson as `#44`). `FormTextArea` with a capital A does NOTHING: EXACT-MATCH
+resolver, and the validator's duplicate-tag refusal is the only reason both casings got tested. All
+5 candidate PROPS dead; `Text` does NOT render (no help-text channel); all 7 tabs rendered, so **an
+unknown `resolvedName` is IGNORED, not FATAL**.
 
-⚠️ **TRANSMISSION NOT PROVEN; THE RIG IS BUILT BUT NOT RUN.** Round 1 wired only the COMPANION, so
-that box sends nothing today. `-Components FormTextarea -Wire` emits a 2-tab v1.1 (20P/0F/2W, the
-WARNs being the by-design missing RMS bundle) with the candidate in **`any[]`** and the companion
-alone in `set[]` -- so a non-registering control cannot be mistaken for a non-transmitting one via a
-disabled Send. **Open, and it can still kill this for the AM: does a NEWLINE survive the wire?**
+✅ **ROUND 2: IT TRANSMITS (3/3) AND NEWLINES DIE BEFORE THE WIRE** -- FORM STATE already holds **0
+LF / 247 spaces** (each Enter -> ~124 spaces), so it is the CONTROL layer, not the serializer.
+**ENTER SUBMITS THE QUERY.** **Wire values are UPPERCASED and a no-rule `FormInput` did it too,
+CORRECTING `#44`'s handler attribution.** Evidence in `docs/evidence/2026-09-17_MULTILINE_*`.
+⚠️ **VERDICT: adopt for WRAP-AND-SCROLL, never line breaks** -- 3 words cost 262 of the 501-char
+`FreeText` budget, arriving as one gappy line. **OPEN:** Shift+Enter or paste-only? `maxLength`?
 
 ## ROB'S CALLS + OPEN FINDINGS -- detail lives in `FINDINGS_REGISTER.md`, do NOT restate it here
 
