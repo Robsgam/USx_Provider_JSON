@@ -3261,3 +3261,33 @@ probe_multi_qif_entities.ps1 -- WHICH PROVIDERS PUT >1 QUERYINPUTFORM ON ONE ENT
   slips the harness did not cover and the header now records: the dot-source from
   tools/_probes/ needs `..\_probe.ps1`, and Get-ProbeProviders returns -NoEnumerate, so
   `foreach ($p in Get-ProbeProviders)` iterates ONCE over the whole array -- assign first.
+
+probe_control_types.ps1 -- WHICH FORM CONTROL TYPES DOES THE PLATFORM ACTUALLY HAVE?
+  Rob 2026-09-17, on the Administrative Message tab: "can we make the text line multirow
+  like a box for text". A 501-character free-text message in a single-line box is a bad
+  control and the ask is right -- but whether a multi-line control EXISTS is a CAPABILITY
+  question, and inventing a resolvedName the Craft.js renderer does not know renders
+  NOTHING, silently. That is the retired whole-tree-recase failure verbatim (it collapsed
+  `nodes` and left only tab names showing). So: census what is proven, then answer.
+  ANSWER, measured 2026-09-17 across 21 provider JSONs AND 66 tenant configs pulled off
+  the platform:
+      FormInput   FormSelect   FormDate   FormCheckbox   FormRadioGroup
+  `FormRadioGroup` (5 nodes, the CA_eSUN radiobutton experiment) is the ONLY type we do
+  not build ourselves. There is NO textarea and no multi-line type anywhere, and the whole
+  prop vocabulary ever set on a FormInput is fieldId / label / maxLength / initialValue --
+  no rows, no multiline, no height.
+  !! THE SECOND AUTHORITY IS THE POINT. Our own 21 JSONs can only show what WE have used;
+  absence there is evidence about our habits, not about the platform. `_versions\
+  tenant_exports\` holds configs authored by OTHER engineers, so a type appearing there and
+  nowhere in ours would prove the platform renders it. That is how FormRadioGroup surfaced.
+  !! MY FIRST VERSION GOT 0 NODES FROM ALL 66 EXPORTS AND THAT WOULD HAVE READ AS A
+  FINDING. A tenant export nests the config under `.departmentBundle.bundles`, not
+  `.bundles`, and `Get-BundleList` in `_bundle_identity.ps1` has always handled both --
+  ENGINEERING_STANDARD 4.4, never re-implement an existing parser. The probe now prints
+  "configs with readable bundles: N of M" so a zero can never again be mistaken for an
+  answer (8a: a probe reporting a systemic finding is guilty until its denominator shows).
+  m43Forms was checked as a third source and yields no resolvedName in the one export that
+  carries it -- NOT evidence either way, recorded so nobody re-checks it.
+  DISCRIMINATING TEST if a multi-line control is still wanted: a throwaway probe JSON with
+  a candidate resolvedName imported to usx-sc-sled (which carries nothing precious), then
+  read the rendered card -- the method that established CAPABILITY #47 and LIMITATION #46.
