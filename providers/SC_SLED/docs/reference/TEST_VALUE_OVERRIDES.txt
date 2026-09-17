@@ -30,10 +30,29 @@ OriginatingAgencyCaseNumber=SC2026001234
 # 'SC' is the in-state code and keeps the test on the provider's own state.
 LicensePlateStateCode=SC
 #
-# --- AM : AdministrativeMessage ----------------------------------------------------------------
-# set[FreeText]. The devdoc caps it at 501 characters; a short readable string is enough to prove
-# the tag transmits, and a 501-char filler would make the captured log unreadable for no gain.
-FreeText=USX TEST MESSAGE - PLEASE DISREGARD
+# --- AM : AdministrativeMessage -- EXACTLY 501 CHARACTERS (v1.11) ------------------------------
+# set[FreeText]. ROB'S CALL 2026-09-17: "you can enter 501 chars". This REPLACES the short value
+# that used to sit here, whose comment argued a short string "is enough to prove the tag transmits
+# and a 501-char filler would make the captured log unreadable for no gain". That reasoning was
+# right for proving the TAG and wrong for the question v1.11 raises, because v1.11 changed this
+# control from FormInput to FormTextarea (CAPABILITY #48) and maxLength enforcement is UNMEASURED
+# on a textarea. It is honoured on FormInput and relied on portfolio-wide, so a silent loss of the
+# cap is a real regression risk -- and 501 is the metadata maximum (<Field name="FreeText"
+# type="Alphanumeric" maxLength="501">), so this is a LEGAL boundary value, not an abuse case.
+#
+# WHAT A FULL-LENGTH FILL PROVES: that a 501-character message survives the control, the form state
+# and the serializer intact -- i.e. nothing truncates at some lower limit nobody documented.
+#
+# âš ï¸ WHAT IT CANNOT PROVE, AND THIS IS WHY THE READABILITY OBJECTION LOSES: the driver assigns
+# .value programmatically (driver.js setVal), and HTML maxLength constrains USER input only --
+# typing and pasting. So no driver fill, at any length, can show whether an OFFICER is capped.
+# That needs a human pasting >501 characters by hand. Two different questions; this covers one.
+#
+# THE SENTINELS ARE THE DESIGN, not decoration. 'USX501START-' ... '-END501USX' means truncation is
+# visible at a glance in the captured wire instead of needing a character count, and the END
+# sentinel arriving intact is positive proof nothing was cut. The digit filler makes any partial
+# loss countable. This keeps the log auditable, which was the old comment's legitimate concern.
+FreeText=USX501START-01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678-END501USX
 #
 # --- AM : DestinationCode / DestinationCode2..5 -- DELIBERATELY NOT MAPPED, NEEDS ROB'S CALL ------
 # emit_test_plan WARNs 5x: "Article AM any[]: 'DestinationCodeN' has no test value". That WARN is
@@ -74,3 +93,22 @@ FreeText=USX TEST MESSAGE - PLEASE DISREGARD
 ExpandedNameSearchCode=Y
 FBINumber=123456AB1
 MiscellaneousNumber=MISC0000012345
+# --- QV.VM : VehicleStolen by VIN + make (added v1.11) -----------------------------------------
+# set[VehicleIdentificationNumber, VehicleMakeCode]. PHASE 2 step [2] reported "2 built combo(s)
+# have NO plan test: Person/DQ.RO, Vehicle/QV.VM" and this was the cause: VehicleMakeCode is a
+# FormSelect (attributeTypeId=VEHICLE_MAKE) that the shared resolver has no value for, and a
+# mandatory field with no test value produces NO test at all -- the combination silently vanishes
+# from the plan and audit_test_coverage then reports it as 0 logs forever.
+#
+# 'FORD' is the DISPLAYED code the driver's select path matches on (usx_lib matches an option by
+# /^<value>\b/i after typing into the react-select input).
+#
+# âš ï¸ EXPECT 'CNST_FORD' ON THE WIRE, NOT 'FORD' -- that is LIMITATION #38, PARKED portfolio-wide by
+# Rob 2026-08-03 ("the drop down is what it is for now"). All 4 tenant-verified VehicleMakeCode
+# providers transmit the raw attribute code. Do NOT file that as an SC_SLED defect when the log
+# lands, and do NOT "fix" it here -- a fix is a portfolio-wide bump archiving 324+ logs.
+#
+# âš ï¸ QV.VM WILL CO-FIRE WITH QVRQ.V. A VIN fill satisfies QVRQ.V (set[VIN] alone) as well, so the
+# stolen check and the registration query both go out. That is SC_SLED's documented shape -- the
+# only provider in the portfolio building a standalone VehicleStolenQuery -- not a routing defect.
+VehicleMakeCode=FORD
