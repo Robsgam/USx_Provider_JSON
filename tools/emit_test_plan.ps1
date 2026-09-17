@@ -993,6 +993,70 @@ if ($noContest.Count -gt 0) {
     $tests = $kept3
 }
 
+# ─────────────────────────────────────────────────────────────────────────────
+# WHICH TAB OWNS THIS TEST -- `qif` + `tab` per test (added 2026-09-17)
+#
+# Rob, twice: "i need a wanted person tests in the driver" / "still now wanted person test in
+# driver for sc". The 34 WantedPersonQuery tests WERE in the plan the whole time and were
+# RUNNABLE -- they were just invisible, because a test named only its `entity` and the panel
+# builds its dropdown from `[...new Set(tests.map(t => t.entity))]`. SC_SLED declares
+# `ENTITY_WantedPerson` with targetEntity='Firearm' (CAPABILITY #47 -- tabs are keyed by
+# QUERYINPUTFORM, NOT by targetEntity), so all 34 collapsed under "Firearm" and the words
+# "Wanted Person" never appeared anywhere the operator could see. The same thing hid
+# `ENTITY_AdministrativeMessage`, which declares targetEntity='Boat'.
+#
+# Being reachable is not the same as being FINDABLE, and the earlier fix (driver.js skips a
+# test whose fields are not on the shown form) only made the wrong selection safe -- it did not
+# give the operator a way to ASK for these tests.
+#
+# Resolution is by FIELD CONTAINMENT, not by name: the owning QIF is the one whose control set
+# contains EVERY fieldId the test fills. Ties break to the SMALLEST control set (most specific).
+# Measured on SC_SLED v1.11 -- the two doubled-up entities are cleanly separable:
+#     ENTITY_WantedPerson (21 controls) vs ENTITY_Firearm (4: GunCaliber/GunMake/GunModel/
+#     serialNumber)            -> disjoint
+#     ENTITY_AdministrativeMessage (6: DestinationCode1-5/FreeText) vs ENTITY_Boat (3)
+#                              -> disjoint
+# ⚠️ Do NOT "simplify" this to a name match (`ENTITY_<entity>`): the whole defect is that the
+# QIF name and the targetEntity DISAGREE, so a name match reproduces the bug it fixes.
+# A single-QIF entity short-circuits, so the other 20 providers are untouched by construction --
+# `tab` == `entity` there, which is what keeps the panel's existing labels stable.
+$qifIdCache = @{}
+foreach ($t in $tests) {
+    $cands = @($qifByEntity["$($t.entity)"])
+    $ownQif = $null
+    if ($cands.Count -eq 1) {
+        $ownQif = $cands[0]
+    } elseif ($cands.Count -gt 1) {
+        $fillIds = @(@($t.fills) | ForEach-Object { $_.fieldId } | Where-Object { $_ })
+        $best = $null; $bestSize = [int]::MaxValue
+        foreach ($q in $cands) {
+            $qn = "$($q.name)"
+            if (-not $qifIdCache.ContainsKey($qn)) { $qifIdCache[$qn] = @(Get-QifFieldIds $q) }
+            $ids = $qifIdCache[$qn]
+            if ($fillIds.Count -eq 0) { continue }
+            $missing = @($fillIds | Where-Object { $ids -notcontains $_ })
+            if ($missing.Count -eq 0 -and $ids.Count -lt $bestSize) { $best = $q; $bestSize = $ids.Count }
+        }
+        $ownQif = $best
+    }
+    if ($ownQif) {
+        $t.qif = "$($ownQif.name)"
+        # Friendly group label: strip the ENTITY_ prefix and split CamelCase into words, so
+        # ENTITY_WantedPerson -> 'Wanted Person' and ENTITY_AdministrativeMessage ->
+        # 'Administrative Message'. This is the string the operator picks in the panel.
+        $bare = ($t.qif -replace '^ENTITY_', '')
+        $t.tab = ($bare -creplace '(?<=[a-z0-9])(?=[A-Z])', ' ')
+    } else {
+        # UNRESOLVED IS REPORTED, NOT GUESSED. Falling back to the entity here would silently
+        # re-create the invisible-group bug for whichever form actually owns the test.
+        $t.qif = $null
+        $t.tab = "$($t.entity)"
+        Write-Host "[WARN] T$($t.n) $($t.entity)/$($t.query) $($t.comboKeyRef): no QIF on this entity contains all its fills -- tab falls back to the entity name" -ForegroundColor Yellow
+    }
+}
+$tabCensus = @($tests | Group-Object { $_.tab } | Sort-Object Name | ForEach-Object { "$($_.Name)=$($_.Count)" })
+Write-Host "[INFO] driver groups (tab=count): $($tabCensus -join ', ')" -ForegroundColor Cyan
+
 $plan = [ordered]@{
     provider = $provName
     version  = $version

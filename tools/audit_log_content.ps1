@@ -95,12 +95,24 @@ function Get-WinnerPoolIds($qidm, $combo) {
 
 $stale = @(); $mismatch = @(); $guardFail = @(); $ok = 0
 foreach ($p in $parsed) {
-    $cands = @($byLabel[$p.Label])
+    # ⚠️ `@($byLabel[$missing])` IS `@($null)`, AND ITS .Count IS 1 -- so the stale-guard below
+    # USED TO PASS ON A LABEL THAT IS NOT IN THE PLAN AT ALL, and the loop then dereferenced
+    # $null: "Index operation failed; the array index evaluated to null" at the formDefaults
+    # lookup. Measured on SC_SLED 2026-09-17 (1 crash), and it is NOT cosmetic -- a crashed
+    # iteration SKIPS Test-CmSnapshotMatchesTest for that candidate, so the log then falls
+    # through to `if (-not $t)` and is reported as a CONTENT MISMATCH. That is the FALSE-FAIL
+    # class enforce.ps1's own comment at ~line 1826 exists to warn about, arriving by a
+    # different route: not empty output under load, but a null element inside a non-empty array.
+    # Strip nulls FIRST so a genuinely unknown label is reported as STALE, which is what it is.
+    $cands = @(@($byLabel[$p.Label]) | Where-Object { $_ })
     if (-not $cands.Count) { $stale += "$($p.File.Directory.Name)\$($p.File.Name)"; continue }
     if (-not $p.Fs) { $mismatch += "$($p.Label): no parseable QUERY STRING"; continue }
     $t = $null
     foreach ($cand in $cands) {
-        $fd = if ($plan.formDefaults) { $plan.formDefaults.PSObject.Properties[$cand.entity].Value } else { $null }
+        # Guard the lookup itself too: Properties[<name>] returns $null for an entity the plan's
+        # formDefaults does not carry, and .Value on that throws the same way.
+        $fdProp = if ($plan.formDefaults -and $cand.entity) { $plan.formDefaults.PSObject.Properties["$($cand.entity)"] } else { $null }
+        $fd = if ($fdProp) { $fdProp.Value } else { $null }
         if (Test-CmSnapshotMatchesTest $p.Fs $p.MessageType $cand $familyFillable $defaultsByMt $fd) { $t = $cand; break }
     }
     if (-not $t) {
