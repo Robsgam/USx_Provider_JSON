@@ -1,14 +1,14 @@
 ================================================================
   STATUS: SC_SLED
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-  Version: v1.8
+  Version: v1.9
   Updated: 2026-09-16
 ================================================================
 
 CURRENT STATE
 =============
   Phase: 1 COMPLETE (QIDM confirmation) -- layout built in the same pass
-  JSON: SC_SLED_v1.8.json  --  77P/0F/2W/2LIM
+  JSON: SC_SLED_v1.9.json  --  77P/0F/2W/2LIM
   Score: 77P/0F/2W/2LIM  (BASE 77P/0F/2W/2LIM)  -- the 2 WARNs are Option A, deliberate
   Import: v1.7 IMPORTED to usx-sc-sled (73046844870) 2026-09-16 23:08Z -- CURRENT. Bundle table read via extension button 1 AFTER the import: counters moved ENTITIES 601->602, SC_SLED 4->5, RMS 70->70, and the row IDs are UNCHANGED (tfas8xq/ojke025/0ydnyze), so the three bundles were REPLACED IN PLACE. The deploy record (usx_deploy_..._22-57-43_CLICKED.json) shows guardsFailed [], target confirmed against BOTH the page and the modal field, payload SC_SLED v1.7 with [ENTITIES,SC_SLED,RMS], 1151633 bytes read back at the same size, #do-import clicked. History: v1.0 was the FIRST automated import in the project (bundle table 0 -> 3); v1.1/v1.2/v1.3/v1.5/v1.6 were NEVER imported -- v1.6 was committed carrying 3 blocking enforce FAILs and is superseded, so it must never be; v1.4 imported 2026-09-16 (ENTITIES 600->601, SC_SLED 3->4). NOTE ON THE LIMIT OF THIS EVIDENCE: that tenant's Export JSON returns no config (CLICKED-BUT-NO-JSON, re-confirmed from the 17:46Z sweep: configsAttempted 1 / handedOff 0 / noBlob 1), so NO content hash or version string can be read from the tenant. verify_tenant_import correctly FAILs with "no CURRENT config on disk" -- the tool refusing to infer, not a defect. Counter movement + bundle NAMES + the deploy record are the only evidence this tenant can yield; the platform counter is NEVER our version.
   USx tenant test: NOT STARTED (0 of 5 entities)

@@ -2,9 +2,36 @@
 
 Auto-generated from `SC_SLED_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.8** | Generated: 2026-09-17
+Current: **v1.9** | Generated: 2026-09-17
 
 ---
+
+## v1.9 -- 2026-09-17 -- LAYOUT PASS -- name controls go FIRST-LAST-MIDDLE-SUFFIX everywhere, rows resequenced
+
+**CHANGED:** VEHICLE -- now 2 rows. `RegistrationState` moves to the END of row 2 (cols 5/3/2/2) and
+            ROW_VEH_3 is deleted.  
+         PERSON  -- row 2 carries all four name components in First, Last, Middle, Suffix order  
+            (was Last/First/Middle with Suffix orphaned onto the DOB row). Row 3 is now  
+            DOB / Sex / NCIC Image.  
+         WANTED  -- six rows resequenced to lead with, in order: first name, plate, OLN, NCIC,  
+            SSN, expanded name. Name row in First/Last/Middle/Suffix order; OLN promoted to the  
+            FIRST field of its row and that row is now 3rd; the plate row (formerly last) is 2nd.  
+         BOAT    -- `BoatHullIdNumber` label 'Hull ID (takes priority over registration)' ->  
+            'Hull ID'. `RegistrationState` label -> 'State (leave blank for SC)'.  
+         AM      -- `DestinationCode` label -> 'Destination ORI (required)'. ROW_AM_3 cols 4/4 ->  
+            6/6, which clears the ONLY `audit_layout_flow` advisory on this provider (L6  
+            ROW-NOT-12: two fields at 4 sum to 8 and left 4 columns of dead space on the right).  
+            Pre-existing since v1.2 and surfaced by enforce PHASE 2w during this pass; fixed here  
+            because a layout pass is exactly when it should be, not left for the next reader.  
+         Validator 77P/0F/2W/2LIM, UNCHANGED from v1.8.  
+**REASON:**  Rob 2026-09-17, after confirming v1.8 rendered correctly: "on veh lets move state to the
+         end of the second line  veh will have 2 lines  person  do first last middle suffic on  
+         second line  wanted person  do tope line in first last middel suffix format  we need to  
+         use that format everythwere  second line put oln as first fiedl then make the oln line  
+         3rd row  wanted rows should start with frist name  plate oln ncic ssn and expanded name  
+         move the last line with plate  and make that the second line  on boat remove the helper  
+         on hull id  i asked for tht previously  clean up state helper to just say leave blank for  
+         SC  on admi ... change helper on destiantion ori to just say required".  
 
 ## v1.8 -- 2026-09-17 -- ADMINISTRATIVE MESSAGE IS LAST, as asked -- and the tab-order rule is now MEASURED
 

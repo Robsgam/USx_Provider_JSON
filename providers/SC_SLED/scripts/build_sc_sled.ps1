@@ -35,7 +35,7 @@ $repoRoot    = Split-Path (Split-Path $providerDir -Parent) -Parent
 . (Join-Path $repoRoot 'tools\_build_provider_helpers.ps1')
 
 $providerName = 'SC_SLED'
-$Version      = '1.8'
+$Version      = '1.9'
 $currentYear  = (Get-Date).Year.ToString()
 
 Write-Host ''
@@ -593,13 +593,14 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
                 @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
             )}
-            @{ id = 'ROW_VEH_2'; cols = @('6','3','3'); fields = @(
+            # v1.9, Rob: "on veh lets move state to the end of the second line  veh will have 2 lines".
+            # State joins this row as its LAST field and ROW_VEH_3 is deleted, so Vehicle is 2 rows.
+            # Sequence and widths only -- no fieldId, attribute, combo or wire change.
+            @{ id = 'ROW_VEH_2'; cols = @('5','3','2','2'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_2' }
                 @{ id = 'VehicleMakeCode_Input';            node = Sel 'VehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE' } 'ROW_VEH_2' }
                 @{ id = 'vehicleYear_Input';                node = Inp 'vehicleYear' 'Vehicle Year (optional)' '4' 'ROW_VEH_2' }
-            )}
-            @{ id = 'ROW_VEH_3'; cols = @('12'); fields = @(
-                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for SC)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_3' }
+                @{ id = 'RegistrationState_Input';          node = Sel 'RegistrationState' 'State (leave blank for SC)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_2' }
             )}
         )
     }
@@ -632,13 +633,24 @@ $perLayout = MakeLayouts @(
                 @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_DL_1' }
                 @{ id = 'RegistrationState_Input';     node = Sel 'RegistrationState' 'State (leave blank for SC)' @{ attributeTypeId = 'STATE' } 'ROW_DL_1' }
             )}
-            @{ id = 'ROW_DL_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'NameLast_Input';  node = Inp 'NameLast' 'Last Name' '30' 'ROW_DL_2' }
-                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_DL_2' }
+            # ⚠️ NAME CONTROLS IN FIRST-LAST-MIDDLE-SUFFIX ORDER -- v1.9, Rob: "person do first last
+            # middle suffic on second line ... we need to use that format everythwere". All four
+            # components now sit on ONE row, so Suffix no longer trails onto the DOB row.
+            #
+            # THIS IS DISPLAY ORDER ONLY AND IT DOES NOT TOUCH THE WIRE. The composite Name is built
+            # by the QIDM attribute, whose sourceField order stays
+            # @('NameLast','NameFirst','NameMiddle','NameSuffix') feeding FormatStringRuleHandler to
+            # emit the authoritative ConnectCIC format `LAST, FIRST MIDDLE SUFFIX`. Reordering the
+            # CONTROLS cannot change that -- the handler reads the attribute, not the layout. Do NOT
+            # "make them consistent" by reordering sourceField: that WOULD change the wire, and
+            # LAST-first is the format rule every provider in the portfolio is cross-checked against.
+            @{ id = 'ROW_DL_2'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'NameFirst_Input';  node = Inp 'NameFirst' 'First Name' '30' 'ROW_DL_2' }
+                @{ id = 'NameLast_Input';   node = Inp 'NameLast' 'Last Name' '30' 'ROW_DL_2' }
                 @{ id = 'NameMiddle_Input'; node = Inp 'NameMiddle' 'Middle Name' '30' 'ROW_DL_2' }
+                @{ id = 'NameSuffix_Input'; node = Inp 'NameSuffix' 'Suffix' '30' 'ROW_DL_2' }
             )}
-            @{ id = 'ROW_DL_3'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'NameSuffix_Input';     node = Inp 'NameSuffix' 'Suffix' '30' 'ROW_DL_3' }
+            @{ id = 'ROW_DL_3'; cols = @('4','4','4'); fields = @(
                 @{ id = 'BirthDate_Input';      node = Dt  'BirthDate' 'Date of Birth' 'ROW_DL_3' }
                 @{ id = 'SexCode_Input';        node = Sel 'SexCode' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DL_3' }
                 @{ id = 'ImageIndicator_Input'; node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_DL_3' }
@@ -695,21 +707,35 @@ $wpLayout = MakeLayouts @(
         id    = 'CARD_WP_ID'
         title = 'WANTED PERSON -- BY NCIC NUMBER, CASE NUMBER, NAME, OR VEHICLE'
         rows  = @(
-            # ROW ORDER, Rob 2026-09-16: "on eanted lets move the name row to the top  dob line to
-            # 2nd  and top row down 2". So: Name first, DOB/Sex/Race/OLN second, and the original
-            # top row (NCIC + case number) moves down to third. Nothing but sequence changed --
-            # same rows, same fields, same ids, so no routing or wiring is affected.
+            # ROW ORDER, Rob 2026-09-17: "wanted rows should start with frist name  plate oln ncic ssn
+            # and expanded name" -- six rows, each named by its LEADING field, so the sequence below
+            # is his list read top to bottom. Plus "do tope line in first last middel suffix format"
+            # and "second line put oln as first fiedl then make the oln line 3rd row".
+            # (v1.6 had ordered these name-first / DOB-second / NCIC-third; this supersedes it.)
+            #
+            # ⚠️ SEQUENCE AND WIDTHS ONLY. Every fieldId, maxLength and node id is unchanged, so no
+            # QIDM attribute, combination, set[]/any[] or wire value moves. The name CONTROLS are in
+            # First-Last-Middle-Suffix order per "we need to use that format everythwere", while the
+            # composite Name attribute keeps sourceField @('NameLast','NameFirst','NameMiddle',
+            # 'NameSuffix') feeding FormatStringRuleHandler -- the wire stays `LAST, FIRST MIDDLE
+            # SUFFIX`, which is the authoritative ConnectCIC format. Layout order cannot change it.
             @{ id = 'ROW_WP_N'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'WPNameLast_Input';   node = Inp 'NameLast' 'Last Name' '30' 'ROW_WP_N' }
                 @{ id = 'WPNameFirst_Input';  node = Inp 'NameFirst' 'First Name' '30' 'ROW_WP_N' }
+                @{ id = 'WPNameLast_Input';   node = Inp 'NameLast' 'Last Name' '30' 'ROW_WP_N' }
                 @{ id = 'WPNameMiddle_Input'; node = Inp 'NameMiddle' 'Middle (optional)' '30' 'ROW_WP_N' }
                 @{ id = 'WPNameSuffix_Input'; node = Inp 'NameSuffix' 'Suffix (optional)' '10' 'ROW_WP_N' }
             )}
+            @{ id = 'ROW_WP_5'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'WP_LicensePlateNumber_Input';    node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_WP_5' }
+                @{ id = 'LicensePlateStateCode_Input';    node = Inp 'LicensePlateStateCode' 'Plate State -- type the 2-letter code' '2' 'ROW_WP_5' }
+                @{ id = 'WP_VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_WP_5' }
+                @{ id = 'WP_VehicleMakeCode_Input';       node = Sel 'VehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE' } 'ROW_WP_5' }
+            )}
             @{ id = 'ROW_WP_2'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'WPOperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN (optional)' '20' 'ROW_WP_2' }
                 @{ id = 'WPBirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth (optional)' 'ROW_WP_2' }
                 @{ id = 'WPSexCode_Input';   node = Inp 'SexCode' 'Sex -- type M, F or U (optional)' '1' 'ROW_WP_2' }
                 @{ id = 'raceCode_Input';    node = Inp 'raceCode' 'Race -- type W, B, I, A or U (optional)' '1' 'ROW_WP_2' }
-                @{ id = 'WPOperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN (optional)' '20' 'ROW_WP_2' }
             )}
             @{ id = 'ROW_WP_1'; cols = @('6','6'); fields = @(
                 @{ id = 'NCICNumber_Input';                  node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_WP_1' }
@@ -725,12 +751,6 @@ $wpLayout = MakeLayouts @(
                 @{ id = 'ExpandedNameSearchCode_Input';      node = Inp 'ExpandedNameSearchCode' 'Expanded Name Search (optional)' '1' 'ROW_WP_4' }
                 @{ id = 'ExpandedBirthDateSearchCode_Input'; node = Inp 'ExpandedBirthDateSearchCode' 'Expanded DOB Search (optional)' '1' 'ROW_WP_4' }
                 @{ id = 'RelatedHitSearchIndicator_Input';   node = Inp 'RelatedHitSearchIndicator' 'Related Hit Search (optional)' '1' 'ROW_WP_4' }
-            )}
-            @{ id = 'ROW_WP_5'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'WP_LicensePlateNumber_Input';    node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_WP_5' }
-                @{ id = 'LicensePlateStateCode_Input';    node = Inp 'LicensePlateStateCode' 'Plate State -- type the 2-letter code' '2' 'ROW_WP_5' }
-                @{ id = 'WP_VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_WP_5' }
-                @{ id = 'WP_VehicleMakeCode_Input';       node = Sel 'VehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE' } 'ROW_WP_5' }
             )}
         )
     }
@@ -798,7 +818,7 @@ $boatLayout = MakeLayouts @(
         title = 'BOAT -- BY HULL ID, OR BY REGISTRATION NUMBER'
         rows  = @(
             @{ id = 'ROW_BOAT_1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber' 'Hull ID (takes priority over registration)' '20' 'ROW_BOAT_1' }
+                @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber' 'Hull ID' '20' 'ROW_BOAT_1' }
                 @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '8' 'ROW_BOAT_1' }
                 # ⚠️ TYPE-IN, NOT A DROPDOWN, SINCE v1.8 -- and this is a capability GIVEN UP, not a
                 # preference. Administrative Message now shares targetEntity='Boat' to place its tab
@@ -814,7 +834,7 @@ $boatLayout = MakeLayouts @(
                 # QBBQ.H and QBBQ.R, so it is a pure optional and NOT a routing discriminator -- no
                 # BUILD_RULES 24 exposure -- and the label already told the officer to leave it blank
                 # in state. Same trade the Wanted Person card took at v1.3 for LicensePlateStateCode.
-                @{ id = 'RegistrationState_Input';  node = Inp 'RegistrationState' 'State (2-char code; leave blank for SC)' '2' 'ROW_BOAT_1' }
+                @{ id = 'RegistrationState_Input';  node = Inp 'RegistrationState' 'State (leave blank for SC)' '2' 'ROW_BOAT_1' }
             )}
         )
     }
@@ -877,11 +897,14 @@ $amLayout = MakeLayouts @(
                 @{ id = 'FreeText_Input'; node = Inp 'FreeText' 'Message (required, up to 501 characters)' '501' 'ROW_AM_1' }
             )}
             @{ id = 'ROW_AM_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'DestinationCode_Input';  node = Inp 'DestinationCode' 'Destination ORI (devdoc expects at least one)' '9' 'ROW_AM_2' }
+                @{ id = 'DestinationCode_Input';  node = Inp 'DestinationCode' 'Destination ORI (required)' '9' 'ROW_AM_2' }
                 @{ id = 'DestinationCode2_Input'; node = Inp 'DestinationCode2' 'Destination ORI 2 (optional)' '9' 'ROW_AM_2' }
                 @{ id = 'DestinationCode3_Input'; node = Inp 'DestinationCode3' 'Destination ORI 3 (optional)' '9' 'ROW_AM_2' }
             )}
-            @{ id = 'ROW_AM_3'; cols = @('4','4'); fields = @(
+            # 6/6, not 4/4 -- v1.9. `audit_layout_flow` L6: two fields at 4 sum to 8 and leave 4
+            # columns of dead space on the right. Caught as an advisory while doing this layout
+            # pass, so it is fixed here rather than left for a reader to wonder about.
+            @{ id = 'ROW_AM_3'; cols = @('6','6'); fields = @(
                 @{ id = 'DestinationCode4_Input'; node = Inp 'DestinationCode4' 'Destination ORI 4 (optional)' '9' 'ROW_AM_3' }
                 @{ id = 'DestinationCode5_Input'; node = Inp 'DestinationCode5' 'Destination ORI 5 (optional)' '9' 'ROW_AM_3' }
             )}

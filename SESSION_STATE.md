@@ -56,22 +56,23 @@ and start time both lied 09-14; on 09-15 I curled the WRONG PORT and got the NO-
 **`RUN THE JOB` + `7b` RESCAN are PROVEN, not hypotheses** (09-15: 1790 indexed / 2 new / 4s). ⚠️ **PANEL
 COLOURS CHANGED 09-16:** a pull that got NOTHING reads RED, partial AMBER, green only if all accounted.
 
-## SC_SLED v1.8 -- IMPORT IT (proves the deploy path); DO NOT SWEEP IT (Rob 2026-09-16)
+## SC_SLED v1.9 -- IMPORT IT; DO NOT SWEEP IT (Rob 2026-09-16)
 
-⚠️ **IMPORT v1.8. v1.7 IS ON THE TENANT WITH THE WRONG TAB ORDER; v1.6 IS BROKEN, NEVER SEND IT.**
-v1.7 measured-installed 09-16 23:08Z (counters 601/4/70 -> 602/5/70, row ids unchanged). Rob read the
-strip: *"tab order is still wrong ... put admin at the end like i asked"* -- Admin Message rendered 6th,
-Boat 7th. **TAB RULE NOW LIVE-PROVEN:** the order array's DUPLICATE entity entries carry NO information;
-forms of one entity render in `configurations[]` order; so **same-entity tabs are always ADJACENT and a
-tab is last only if it sits on the LAST entity.** v1.8 moves Admin Message (QIF *and* QIDM -- #26 makes a
-split pair fire NOTHING silently) from Article to Boat. ⚠️ **PRICE, 3rd capability given up to place a
-tab:** Boat is now 2-QIF, #28 kills its reverse-lookup, so Boat `RegistrationState` is a 2-char TYPE-IN
-(any[]-only, not a routing field). Article hosts a 2nd QIF FREE but is not last. Scoped divergence row #3.
-⚠️ **SWEEP HOLD NARROWED, NOT LIFTED** -- docs suspect (*"veh reg adn veh stolen seem mixed"*);
-`QVRQ`/`QWDQ`/`QBBQ` COMPOUND. 9 QIDMs / 18 combos / **7 QIFs = 7 TABS** / 77P-0F-2W-2LIM / 65 plan tests.
-**CO-FIRE IS ROB'S ACCEPTED DESIGN** -- 1 LIM per co-firing entity; 2 WARNs are the Option A trade, NOT
-silenced. ONLY provider of 21 with >1 QIF on an entity (`probe_multi_qif_entities.ps1`). ⚠️ **OPEN, NEEDS
-ROB:** the AM's 5 `DestinationCode` optionals are UNMAPPED on purpose (5 WARNs standing) -- an AM DELIVERS text to the ORI named there, so a guessed value picks a real SC recipient.
+✅ **v1.8 RENDERED CORRECTLY -- 7 tabs in the asked-for order, confirmed on the tenant.** The tab rule is
+SETTLED and written up in BUILD_NOTES v1.8 + the build script's TAB ORDER block: **same-entity tabs are
+ADJACENT, so a tab is last only if it sits on the LAST entity.** Admin Message therefore lives on `Boat`,
+which cost Boat's State dropdown (#28 on a 2-QIF entity) -- 3rd scoped divergence row.
+**v1.9 = LAYOUT ONLY, zero wire change** (verified on the emitted JSON): Vehicle 2 rows w/ State last;
+name controls **First-Last-Middle-Suffix everywhere** per Rob while the Name attribute keeps `sourceField`
+Last,First,Middle,Suffix so the wire stays `LAST, FIRST MIDDLE SUFFIX` -- **do NOT "align" sourceField,
+that WOULD change the wire**; Wanted rows now name/plate/OLN/NCIC/SSN/expanded; AM row 6/6 so layout flow
+is CLEAN. 9 QIDMs / 18 combos / 7 QIFs / 77P-0F-2W-2LIM / 65 plan tests. Sweep HELD on the docs.
+⚠️ **NOT DELIVERED, a CAPABILITY limit:** no multi-row text box exists for the AM message.
+`probe_control_types.ps1` (new) censused all 21 provider JSONs **and all 66 platform tenant configs incl.
+NOT-OUR-BUILD**: the vocabulary is FormInput/FormSelect/FormDate/FormCheckbox/FormRadioGroup, and FormInput
+only carries fieldId/label/maxLength/initialValue. Inventing a `resolvedName` renders NOTHING silently;
+test via throwaway probe import. ⚠️ **OPEN, NEEDS ROB:** the AM's 5 `DestinationCode` optionals are
+UNMAPPED on purpose (5 WARNs) -- an AM DELIVERS text to the ORI named, so a guess picks a real recipient.
 
 ## ROB'S CALLS + OPEN FINDINGS -- detail lives in `FINDINGS_REGISTER.md`, do NOT restate it here
 
@@ -107,14 +108,13 @@ import **REPLACES** the bundle set. ⚠️ Still unexplained and worth more than
 
 ## RULES I BROKE -- READ BEFORE EDITING
 
-- Durable rules live in `usx-tooling` (6 / 8a): **a registry row suppresses only if its rule name is
-  the string the gate greps**; **validate every probe against a known answer WITH negative
-  controls**. **A `#`-COMMENTED LINE IS NOT A FINDING.** **NEVER verify a produced file with
-  `Test-Path`** -- compare write times, and do not trust a tool's own success line either
-  (09-14: `extract_metadata_reference` printed a summary and wrote nothing without `-OutFile`).
-- **A SAME-LOOKING STRUCTURE ELSEWHERE IS A QUESTION, NEVER A PRECEDENT** -- read that provider's
-  OWN `<Requirements>`. **A STANDING RULE IS NOT EVIDENCE**: 09-14 the rule prescribing
-  `autoSelect=false` for VehStolen had ZERO tenant-proven carriers. **AN EXPLANATION IS NOT A
-  MEASUREMENT** and **A GATE THAT MEASURED NOTHING IS NOT A PASS**. **A RULE ABOUT ONE PROCESS IS A
-  RULE ABOUT THE QUERY** -- the documented `watch_captures` self-match trap bit me on `serve_plans`
-  and I killed a phantom. **MY OWN STATE ROWS GO STALE WITHIN HOURS** -- re-read before citing.
+- Durable rules live in `usx-tooling` (6 / 8a): **a registry row suppresses only if its rule name is the
+  string the gate greps**; **validate every probe against a known answer WITH negative controls**; **a
+  `#`-COMMENTED LINE IS NOT A FINDING**; **NEVER verify a produced file with `Test-Path`** -- compare
+  write times AND distrust a tool's success line (09-17: `build_report` died at 13/17, files newer,
+  manifest stale, hash gate caught it). **REUSE THE PARSER** (ENG-STD 4.4) -- my control-type probe
+  re-read bundles by hand and got 0 nodes from all 66 exports; `Get-BundleList` knows both shapes.
+- **A SAME-LOOKING STRUCTURE ELSEWHERE IS A QUESTION, NEVER A PRECEDENT** -- read that provider's OWN
+  `<Requirements>`. **A STANDING RULE IS NOT EVIDENCE** (09-14: the `autoSelect=false` rule had ZERO
+  tenant-proven carriers). **AN EXPLANATION IS NOT A MEASUREMENT**; **A GATE THAT MEASURED NOTHING IS NOT
+  A PASS**; **MY OWN STATE ROWS GO STALE WITHIN HOURS** -- re-read before citing.
