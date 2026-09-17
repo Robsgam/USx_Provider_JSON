@@ -177,7 +177,8 @@
                                                                                                                   "props":  {
                                                                                                                                 "fieldId":  "RegistrationState",
                                                                                                                                 "label":  "State",
-                                                                                                                                "attributeTypeId":  "STATE"
+                                                                                                                                "attributeTypeId":  "STATE",
+                                                                                                                                "initialValue":  "TX"
                                                                                                                             },
                                                                                                                   "isCanvas":  false,
                                                                                                                   "hidden":  false,
@@ -530,7 +531,8 @@
                                                                                                                        "props":  {
                                                                                                                                      "fieldId":  "RegistrationState",
                                                                                                                                      "label":  "State",
-                                                                                                                                     "attributeTypeId":  "STATE"
+                                                                                                                                     "attributeTypeId":  "STATE",
+                                                                                                                                     "initialValue":  "TX"
                                                                                                                                  },
                                                                                                                        "isCanvas":  false,
                                                                                                                        "hidden":  false,
@@ -964,7 +966,8 @@
                                                                                                                           "props":  {
                                                                                                                                         "fieldId":  "RegistrationState",
                                                                                                                                         "label":  "State",
-                                                                                                                                        "attributeTypeId":  "STATE"
+                                                                                                                                        "attributeTypeId":  "STATE",
+                                                                                                                                        "initialValue":  "TX"
                                                                                                                                     },
                                                                                                                           "isCanvas":  false,
                                                                                                                           "hidden":  false,
@@ -10477,7 +10480,13 @@
                                                                                                  "any":  [
                                                                                                              "regionId",
                                                                                                              "RegistrationState"
-                                                                                                         ]
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "RegistrationState",
+                                                                                                                      "value":  "TX"
+                                                                                                                  }
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "LicensePlateNumber",
                                                                             "keyReference":  "RQLicensePlateNumber",
@@ -10493,7 +10502,13 @@
                                                                                                  "any":  [
                                                                                                              "regionId",
                                                                                                              "RegistrationState"
-                                                                                                         ]
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "RegistrationState",
+                                                                                                                      "value":  "TX"
+                                                                                                                  }
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "LicensePlateNumber",
                                                                             "keyReference":  "REGLicensePlateNumber",
@@ -10524,7 +10539,13 @@
                                                                                                                                   ],
                                                                                                                         "operator":  "EXISTS"
                                                                                                                     }
-                                                                                                                ]
+                                                                                                                ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "RegistrationState",
+                                                                                                                      "value":  "TX"
+                                                                                                                  }
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "VehicleIdentificationNumber",
                                                                             "keyReference":  "VINVehicleIdentificationNumber",
@@ -10554,7 +10575,13 @@
                                                                                                                                   ],
                                                                                                                         "operator":  "NOT_EXISTS"
                                                                                                                     }
-                                                                                                                ]
+                                                                                                                ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "RegistrationState",
+                                                                                                                      "value":  "TX"
+                                                                                                                  }
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "VehicleIdentificationNumber",
                                                                             "keyReference":  "RQVehicleIdentificationNumber",
@@ -10568,25 +10595,17 @@
                                                                                                  "any":  [
                                                                                                              "financialResponsibilityType",
                                                                                                              "RegistrationState"
-                                                                                                         ]
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "RegistrationState",
+                                                                                                                      "value":  "TX"
+                                                                                                                  }
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "StickerNumber",
                                                                             "keyReference":  "DPSIStickerNumber",
                                                                             "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "LicensePlateNumber",
-                                                                                                             "RegistrationState"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "regionId"
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "LicensePlateNumber",
-                                                                            "keyReference":  "QVLicensePlateNumber",
-                                                                            "state":  "In"
                                                                         }
                                                                     ],
                                                    "description":  "VehicleInsuranceRegistrationQuery -- 6 combos, all form-reachable (RQ plate, REG, VIN+FRT, RQ VIN, DPSI, QV plate). QV plate RESTORED v1.18 with State promoted any[]-\u003eset[], BASE-SYNC with TX_TLETS v4.22: the devdoc marks State REQUIRED where metadata marks it optional, and set[Plate,State] cannot match a bare plate, so this QV is gated and cannot ungate-shadow RQ/REG the way the v4.9 version did. It closes a real hole -- CCH lost QV plate in the same v4.17/v1.13 lockstep commit, and from then until now plate+State matched NO combo. QV VIN stays out: RQ{VIN} is already set[VIN]. No defaults[], no prefilled routing field (BUILD_RULES 24).",
@@ -12680,7 +12699,7 @@
                                                    "targetEntity":  "Person"
                                                }
                                            ],
-                        "description":  "Provider configuration for TX_TLETS_CCH v1.18",
+                        "description":  "Provider configuration for TX_TLETS_CCH v1.19",
                         "name":  "TX_TLETS_CCH",
                         "type":  "BUNDLE",
                         "provider":  "TX_TLETS_CCH"

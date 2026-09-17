@@ -2,9 +2,58 @@
 
 Auto-generated from `TX_TLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.22** | Generated: 2026-09-17
+Current: **v4.23** | Generated: 2026-09-17
 
 ---
+
+## v4.23 -- 2026-09-17 -- QV PLATE REMOVED (it is DATA-MINED, never ours to send) -- which frees State=TX
+
+**CHANGED:** VEHICLE -- QVLicensePlateNumber combination REMOVED from
+            VehicleInsuranceRegistrationQuery. 20 combinations -> 19, all reachable.  
+         VEHICLE -- RegistrationState gains initialValue='TX'. Person already had it on  
+            RegistrationState + RegistrationStateDH; BOAT deliberately still has none.  
+**REASON:** Rob 2026-09-17, escalating from a ruling to a STANDING RULE across one session:
+         "we do not build the qv combo that would give a false sens of running instate it would  
+         only run ncic" -> "recall qv is a shadow and data mined query" -> "i keep telling you at  
+         a high level never try to build the qv  sc is a different story but we are calling that  
+         isolated". Plus the original ask: "i need tx json adjust to use TX as the default for  
+         states. we may need to adjust the routing so that tx goes in state."  
+MEASURED, NOT TAKEN ON TRUST -- tools\audit_data_mined.ps1 -Provider TX_TLETS reads the devdoc:  
+         DECLARED "NCIC (QA, QB, QG, QV, QW) and DMV (Person and Vehicle) Tags returned from Data  
+         mining"; tokens DMV/QA/QB/QG/QV/QW; QRDM hit/related mapping PRESENT; [PASS] every  
+         provider declaring mined transactions can receive their tags.  
+         That tool's stated purpose: "A DATA-MINED transaction is run BY THE STATE off our single  
+         request; its tags come back in the response. We never send it separately, SO IT IS NOT A  
+         COMBINATION WE OWE." So devdoc #5 "(InState) LicensePlateNumber, State [RegionId]" is  
+         satisfied BY TLETS off whatever registration request we send -- our own QV DUPLICATED a  
+         query the state had already run.  
+THE TWO CHANGES ARE ONE CHANGE: QV was RegistrationState's ONLY set[] membership on Vehicle. While  
+         it existed, a State prefill silently SWALLOWED a sibling's fill -- enforce caught devdoc  
+         #1 (Plate + PlateYear, the InState registration search) firing QV, which carries no  
+         LicensePlateYear in set[] OR any[], so the officer's typed year was DISCARDED and the  
+         wrong query ran. With QV gone State is any[]-ONLY on every vehicle combination, i.e. not  
+         a routing discriminator, and the prefill is safe.  
+⚠️ AN EARLIER v4.23 ATTEMPT THIS SAME DAY ADDED THE PREFILL WITHOUT REMOVING QV, AND WAS ROLLED  
+         BACK. Worth recording because two gates said it was fine: audit_combo_reachability 0 dead  
+         of 20 and audit_prefill_shadow "no prefill-caused shadow" over 31 pairs -- neither asks  
+         whether an EARLIER devdoc combination's mandatory fill is swallowed by a LATER combo that  
+         ignores one of its fields. audit_devdoc_optionals owns that question. Two green gates are  
+         not a verdict on a question they were not built to answer.  
+⚠️ THIS SUPERSEDES THE v4.22 RESTORE, and its registry row is marked SUPERSEDED rather than  
+         deleted. That restore read devdoc #5 as an owed combination and promoted State  
+         any[] -> set[] to gate it, and it never weighed the devdoc's data-mining line.  
+         History: QV removed v4.9 -> wrongly restored v4.22 -> removed again v4.23. The restore  
+         is the mistake, not the removals. SC_SLED builds a QV deliberately and is an ISOLATED  
+         exception -- do not generalise from it to this provider or any other.  
+regionId still rides in REGLicensePlateNumber's any[] (registry row 18), so no devdoc-optional  
+         field is orphaned by the removal.  
+RE-TEST COST: v4.22 was ALL-PASS with 98 logs; they are archived by this bump and a full 5-entity  
+         sweep is owed. Stated, not used as a reason to defer -- this is a WIRE change (one fewer  
+         query leaves the client).  
+VERIFIED: validator 79P/0F/0W; 19 combinations all reachable; devdoc combinations 0 FAIL;  
+         audit_cad 71P/0F/0W after pairing the form default with combo defaults[] on all 5  
+         vehicle combinations (CAD ignores a form initialValue, so a form-only flip would leave  
+         CAD-originated queries still sending no State).  
 
 ## v4.22 -- 2026-09-17 -- QV plate RESTORED with State promoted any[]->set[] -- the devdoc (InState)
 

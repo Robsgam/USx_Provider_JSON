@@ -1,5 +1,5 @@
 # build_tx_tlets_cch.ps1  -- TX_TLETS_CCH (version comes from $Version below -- said v1.10 while emitting v1.14, corrected 2026-08-02)
-# BASE-SYNC: TX_TLETS v4.22   <- base-6 QIDMs are kept in lockstep with this TX_TLETS version.
+# BASE-SYNC: TX_TLETS v4.23   <- base-6 QIDMs are kept in lockstep with this TX_TLETS version.
 # v1.17 (LOCKSTEP w/ TX_TLETS v4.21 -- COSMETIC, NO wire change): mandatory variant rebuild. Same three
 #   audit_layout_flow fixes as the base: 'nameMiddle'/'nameMiddleDH' relabelled 'MI' -> 'Middle Name'
 #   (L7 -- 'MI' means middle INITIAL on maxLen=30 controls), and the hidden Attention row moved from
@@ -103,7 +103,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets_cch.ps1
 
 param(
-    [string]$Version = "1.18"
+    [string]$Version = "1.19"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -164,12 +164,19 @@ $vehRegQuery = [PSCustomObject]@{
         # BUILD_RULES 23: form queries come first. QV{VIN} is ordered BEFORE RQ{VIN} because
         # verify_build CHECK 14 only credits an EXISTS condition on the EARLIER combo.
         # Verify: tools\audit_query_trace.ps1 -Provider TX_TLETS_CCH  (expect 0 PREFILL-DEAD)
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateYear','LicensePlateTypeCode'); any = @('regionId','RegistrationState') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'RQLicensePlateNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateYear','financialResponsibilityType'); any = @('regionId','RegistrationState') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'REGLicensePlateNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','financialResponsibilityType'); any = @('regionId','RegistrationState','VehicleMakeCode','vehicleYear'); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('financialResponsibilityType'); operator = 'EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'VINVehicleIdentificationNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('regionId','RegistrationState','VehicleMakeCode','vehicleYear'); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('financialResponsibilityType'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'RQVehicleIdentificationNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('stickerNumber'); any = @('financialResponsibilityType','RegistrationState') }; primaryFieldReference = 'StickerNumber'; keyReference = 'DPSIStickerNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','RegistrationState'); any = @('regionId') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'QVLicensePlateNumber'; state = 'In' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateYear','LicensePlateTypeCode'); any = @('regionId','RegistrationState') ; defaults = @([PSCustomObject]@{ field = 'RegistrationState'; value = 'TX' }) }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'RQLicensePlateNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateYear','financialResponsibilityType'); any = @('regionId','RegistrationState') ; defaults = @([PSCustomObject]@{ field = 'RegistrationState'; value = 'TX' }) }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'REGLicensePlateNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','financialResponsibilityType'); any = @('regionId','RegistrationState','VehicleMakeCode','vehicleYear'); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('financialResponsibilityType'); operator = 'EXISTS' }) ; defaults = @([PSCustomObject]@{ field = 'RegistrationState'; value = 'TX' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'VINVehicleIdentificationNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('regionId','RegistrationState','VehicleMakeCode','vehicleYear'); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('financialResponsibilityType'); operator = 'NOT_EXISTS' }) ; defaults = @([PSCustomObject]@{ field = 'RegistrationState'; value = 'TX' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'RQVehicleIdentificationNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('stickerNumber'); any = @('financialResponsibilityType','RegistrationState') ; defaults = @([PSCustomObject]@{ field = 'RegistrationState'; value = 'TX' }) }; primaryFieldReference = 'StickerNumber'; keyReference = 'DPSIStickerNumber'; state = 'In/Out' }
+        # ── QVLicensePlateNumber REMOVED at v1.19, BASE-SYNC with TX_TLETS v4.23. Rob's standing
+        #    rule, 2026-09-17: "i keep telling you at a high level never try to build the qv" --
+        #    QV is a PLATFORM-AUTO-SENT shadow and its results come back DATA-MINED, so it is not a
+        #    combination we owe. Measured on the base via audit_data_mined.ps1 (devdoc declares
+        #    "NCIC (QA, QB, QG, QV, QW) ... Tags returned from Data mining", QRDM mapping PRESENT).
+        #    Full reasoning in the BASE script. LOCKSTEP: the base's removal propagates here in the
+        #    same pass -- a variant that keeps a query its base stopped sending is drift on the wire.
+        #    (SC_SLED builds a QV deliberately and is an ISOLATED exception -- do not copy it here.)
         # -- QVLicensePlateNumber RESTORED v1.18, BASE-SYNC with TX_TLETS v4.22 ---------------
         # CCH carried the IDENTICAL defect: it lost QV plate in the same v4.17/v1.13 lockstep
         # commit, so from then until now a plate+State fill matched NO combination here either
@@ -577,7 +584,7 @@ $vehLayout = MakeLayouts @(
                 # variant inherits the base-6 QIDMs, and drifting on a routing field is how a
                 # variant starts sending different queries from its base without anyone noticing.
                 # That applies to the REVERT exactly as it applied to the change.
-                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
+                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'TX' } 'ROW_VEH_1' }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_2' }

@@ -209,7 +209,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
 
 param(
-    [string]$Version = "4.22"
+    [string]$Version = "4.23"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -290,19 +290,43 @@ $vehRegQuery = [PSCustomObject]@{
         # NO defaults[] on any of these. A combo default re-injects the value on the CAD path and
         # counts as always-present for routing, which would re-create the exact bug. BUILD_RULES 23:
         # form queries come first; CAD injection never takes precedence.
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateYear','LicensePlateTypeCode'); any = @('regionId','RegistrationState') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'RQLicensePlateNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateYear','financialResponsibilityType'); any = @('regionId','RegistrationState') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'REGLicensePlateNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','financialResponsibilityType'); any = @('regionId','RegistrationState','VehicleMakeCode','vehicleYear'); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('financialResponsibilityType'); operator = 'EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'VINVehicleIdentificationNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateYear','LicensePlateTypeCode'); any = @('regionId','RegistrationState') ; defaults = @([PSCustomObject]@{ field = 'RegistrationState'; value = 'TX' }) }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'RQLicensePlateNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateYear','financialResponsibilityType'); any = @('regionId','RegistrationState') ; defaults = @([PSCustomObject]@{ field = 'RegistrationState'; value = 'TX' }) }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'REGLicensePlateNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','financialResponsibilityType'); any = @('regionId','RegistrationState','VehicleMakeCode','vehicleYear'); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('financialResponsibilityType'); operator = 'EXISTS' }) ; defaults = @([PSCustomObject]@{ field = 'RegistrationState'; value = 'TX' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'VINVehicleIdentificationNumber'; state = 'In/Out' }
         # RQ{VIN}: FRT NOT_EXISTS is the ONLY discriminator it needs now (vs VIN+FRT above).
         # The former 'regionId NOT_EXISTS' condition existed ONLY to split it from QV{VIN}; with QV
         # gone that condition would make RQ{VIN} UNREACHABLE the moment an officer types a Region ID
         # -- a self-inflicted hole of exactly the BUILD_RULES 24 shape. regionId rides in any[]
         # instead (never drop a devdoc-optional combination field; the auto-fired QV reads it from
         # the union pool).
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('regionId','RegistrationState','VehicleMakeCode','vehicleYear'); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('financialResponsibilityType'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'RQVehicleIdentificationNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('stickerNumber'); any = @('financialResponsibilityType','RegistrationState') }; primaryFieldReference = 'StickerNumber'; keyReference = 'DPSIStickerNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','RegistrationState'); any = @('regionId') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'QVLicensePlateNumber'; state = 'In' }
-        # -- QVLicensePlateNumber RESTORED v4.22, with State PROMOTED any[] -> set[] ----------
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('regionId','RegistrationState','VehicleMakeCode','vehicleYear'); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('financialResponsibilityType'); operator = 'NOT_EXISTS' }) ; defaults = @([PSCustomObject]@{ field = 'RegistrationState'; value = 'TX' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'RQVehicleIdentificationNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('stickerNumber'); any = @('financialResponsibilityType','RegistrationState') ; defaults = @([PSCustomObject]@{ field = 'RegistrationState'; value = 'TX' }) }; primaryFieldReference = 'StickerNumber'; keyReference = 'DPSIStickerNumber'; state = 'In/Out' }
+        # ── QVLicensePlateNumber REMOVED AGAIN at v4.23 -- IT IS DATA-MINED, SO IT IS NOT OURS TO
+        #    SEND. Rob 2026-09-17: "we do not build the qv combo that would give a false sens of
+        #    running instate it would only run ncic", then "recall qv is a shadow and data mined
+        #    query". MEASURED, not taken on trust -- tools\audit_data_mined.ps1 -Provider TX_TLETS:
+        #      DECLARED: "NCIC (QA, QB, QG, QV, QW) and DMV (Person and Vehicle) Tags returned from
+        #                 Data mining"   tokens: DMV, QA, QB, QG, QV, QW
+        #      QRDM hit/related mapping PRESENT; [PASS] every provider declaring mined transactions
+        #      can receive their tags.
+        #    That tool's whole purpose is to close this debate: "A DATA-MINED transaction is run BY
+        #    THE STATE off our single request; its tags come back in the response. We never send it
+        #    separately, SO IT IS NOT A COMBINATION WE OWE."
+        #    So devdoc #5 "(InState) LicensePlateNumber, State [RegionId]" is SATISFIED BY THE
+        #    STATE off whatever registration request we send -- it is not an unbuilt gap, and
+        #    sending our own QV duplicated a query TLETS had already run. Same class as
+        #    QVVehicleIdentificationNumber (unbuilt) and QW (Rob: "no qw and qv should stay
+        #    parked", v4.2 ruling -- PLATFORM-AUTO-SENT shadow, not client-buildable).
+        #    ⚠️ THIS SUPERSEDES THE v4.22 RESTORE AND ITS REGISTRY ROW. That restore read devdoc #5
+        #    as an owed combination and promoted State any[] -> set[] to gate it. The devdoc's own
+        #    data-mining line (27) says QV comes back mined, which the restore did not weigh.
+        #    ⚠️ AND REMOVING IT IS WHAT MAKES THE 'TX' DEFAULT SAFE: QV was State's ONLY set[]
+        #    membership on Vehicle. With it gone, RegistrationState is any[]-ONLY on every vehicle
+        #    combination -- not a routing discriminator -- so a prefill cannot swallow another
+        #    combination's fill. The v4.23 attempt WITH QV present did exactly that: enforce found
+        #    devdoc #1 (Plate+PlateYear) firing QV, which carries no LicensePlateYear anywhere, so
+        #    the officer's year was silently discarded. regionId keeps riding in REG's any[]
+        #    (registry row 18), so no devdoc-optional field is orphaned by the removal.
         # Rob's direction 2026-08-27: "make state a set and the qv of plate number only will
         # shadow properly."
         # WHY IT HAD TO COME BACK: v4.9 ruled QV{Plate} a redundant subset-shadow of RQ/REG, and
@@ -615,7 +639,7 @@ $vehLayout = MakeLayouts @(
                 # OUT-of-state key and State is the DESTINATION, so a TX prefill would address every
                 # boat search to Texas as though out-of-state AND kill the NCIC path (2 dead combos,
                 # measured). Rob's call 2026-09-17: leave Boat blank.
-                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
+                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'TX' } 'ROW_VEH_1' }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_2' }

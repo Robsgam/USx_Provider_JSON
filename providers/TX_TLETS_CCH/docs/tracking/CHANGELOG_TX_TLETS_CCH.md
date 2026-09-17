@@ -2,9 +2,29 @@
 
 Auto-generated from `TX_TLETS_CCH_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.18** | Generated: 2026-09-17
+Current: **v1.19** | Generated: 2026-09-17
 
 ---
+
+## v1.19 -- 2026-09-17 -- LOCKSTEP with TX_TLETS v4.23 -- QV PLATE REMOVED (data-mined), State=TX on Vehicle
+
+**CHANGED:** VEHICLE -- QVLicensePlateNumber combination REMOVED (mirrors the base exactly);
+            RegistrationState gains initialValue='TX'. Person already carried TX on  
+            RegistrationState + RegistrationStateDH. BOAT deliberately still has no default.  
+            BASE-SYNC marker v4.22 -> v4.23.  
+**REASON:** Rob's standing rule 2026-09-17: "i keep telling you at a high level never try to build the
+         qv  sc is a different story but we are calling that isolated". QV is a PLATFORM-AUTO-SENT  
+         shadow whose results come back DATA-MINED, so it is not a combination we owe. Full  
+         reasoning and the audit_data_mined evidence are in the BASE provider's v4.23 entry.  
+LOCKSTEP IS THE POINT HERE: this variant inherits the base-6 QIDMs, so a combination the base  
+         stopped sending must stop being sent here in the SAME pass. A variant still emitting a  
+         query its base removed is drift ON THE WIRE, not a documentation mismatch -- and it would  
+         be invisible, because audit_variant_sync checks the marker, not the combination list.  
+⚠️ DO NOT COPY SC_SLED HERE. SC_SLED builds a standalone VehicleStolenQuery/QV on purpose and Rob  
+         has ruled it an ISOLATED exception. It is not a precedent for any other provider.  
+VERIFIED: validator 112P/0F/0W.  
+RE-TEST COST: none owed in practice -- TX_TLETS_CCH is PARKED (Rob 2026-08-21, proof-of-concept  
+         for parallel base+variant building, no tenant need). Lockstep itself is NOT parked.  
 
 ## v1.18 -- 2026-09-17 -- LOCKSTEP with TX_TLETS v4.22 -- QV plate RESTORED, State promoted to set[]
 
