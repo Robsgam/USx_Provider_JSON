@@ -220,3 +220,43 @@ concluding a capability does not exist.
     - deployed carries the top-level behaviors block
   DO NOT "fix" our eSUN to match without a decision: the two designs are coherent but different,
   and switching routing models invalidates that provider's whole test package.
+
+================================================================================
+  COMPANION PAGES CAPTURED 2026-09-17 -- THE FORM-SIDE AUTHORITIES
+================================================================================
+  This file is the HANDLER registry. The two pages below are the CONTROL/PROP
+  authorities, and nothing in this repo pointed at them until Rob said "look on
+  the internet  i gave you json resources months ago to teach you".
+
+    https://mark43.atlassian.net/wiki/spaces/RND/pages/6397788223
+    "Federated Search JSON Configuration Capabilities" (Brad Fullwood,
+    last modified 2026-02-27). THE CAPABILITY DOCUMENT for the form surface:
+    supported field props, FormSelect-specific props, an explicit "Not Supported
+    in Field Props" list, and an "Unsupported Features (Require Frontend Code)"
+    section. Also states plainly how validation actually behaves -- values polled
+    every 100ms, debounced 200ms, checked against the combinations, and the ONLY
+    visual effects are the provider checkboxes and the Send button: "Fields do NOT
+    change appearance". Read it before claiming the JSON cannot do something.
+
+    https://mark43.atlassian.net/wiki/spaces/SEARCH/pages/6944981063
+    "Forge -> M43Forms Migration Guide" (Vladyslav Konovalov). Names the renderers:
+    our JSON drives **FORGE** (Craft.js; JMS/RMS/CAD/FR) while OnScene/mobile uses
+    **m43Forms** (Form.io) -- the `m43Forms` key beside `departmentBundle` in every
+    tenant export. Its §3 maps every Forge `type.resolvedName` in use, §4 maps every
+    prop, and §5 documents the TWO FormSelect paths, which is the mechanism behind
+    LIMITATION #28's escape hatch: `attributeTypeId` becomes an `attributeselect`
+    that stores INTEGER attribute ids, while `codeTypeCategory`+`codeTypeSource`
+    becomes a plain select fetching
+    `rms/api/attributes/codes/source?code_type_source=<SRC>&code_type_categories=<CAT>`
+    with `valueProperty: "code"` -- i.e. a STRING CODE. That is independent
+    confirmation of why a control-side code type survives a multi-QIF entity when
+    the reverse-lookup pattern does not (SC_SLED v1.10).
+    ⚠️ Its component/prop tables are a CENSUS OF WHAT IS IN USE -- the page says so
+    outright ("only covers the Forge component types and props that are in use
+    today"). Absence there is not proof of absence in Forge.
+
+  ⚠️ THAT FETCH URL IS A READ-ONLY, SINGLE-REQUEST TEST FOR ANY CODE-TYPE DROPDOWN
+  BEFORE AN IMPORT. If it returns no values on the target tenant, the dropdown will
+  render EMPTY. That answers the SC_SLED v1.10 `NJ_NIBRS_STATE|NJ_NIBRS` hypothesis
+  without spending an import:
+    rms/api/attributes/codes/source?code_type_source=NJ_NIBRS&code_type_categories=NJ_NIBRS_STATE

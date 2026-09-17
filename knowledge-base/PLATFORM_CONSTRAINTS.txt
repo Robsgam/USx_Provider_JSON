@@ -1461,3 +1461,92 @@ CAPABILITY #47 (NOT a limitation): TABS ARE KEYED BY QUERYINPUTFORM, NOT BY ENTI
   AdministrativeMessage is the live case -- can have its OWN TAB, which is what Rob asked for
   ("i want it compeltely seperated"). It does not have to be a card bolted onto Vehicle, and
   WantedPersonQuery CAN be moved off Person onto a tab of its own.
+
+--------------------------------------------------------------------------------
+
+LIMITATION #48: THERE IS NO MULTI-LINE / TEXTAREA FORM CONTROL. A LONG FREE-TEXT
+  FIELD IS A SINGLE-LINE `FormInput` AND THAT IS THE MOST THE JSON CAN EXPRESS.
+  CONFIRMED 2026-09-17 by FOUR independent sources (Rob: "on admi can we make the
+  text line multirow like a box for text" -- SC_SLED's AdministrativeMessage carries
+  a 501-character message in a one-line box, which is a fair thing to want fixed).
+
+  WHAT THE FORM RENDERER IS: the QIF renderer is called **FORGE** (Craft.js based)
+  and serves JMS, RMS, CAD and FR. Mobile/OnScene uses a SECOND, DIFFERENT renderer
+  called **m43Forms**, which is Form.io based -- that is the `m43Forms` key sitting
+  beside `departmentBundle` in every tenant export. Form.io HAS a textarea; FORGE
+  IS THE ONE OUR JSON DRIVES AND IT DOES NOT. Do not conflate them.
+
+  THE FOUR SOURCES, weakest to strongest:
+   1. OUR 21 BUILDS -- 9 component types, and a `FormInput` has only ever carried
+      fieldId / label / maxLength / initialValue. (`probe_control_types.ps1`)
+   2. 66 TENANT CONFIGS PULLED OFF THE PLATFORM, INCLUDING NOT-OUR-BUILD ones
+      authored by other engineers -- 7,414 control nodes, the same five field
+      component types (FormInput, FormSelect, FormDate, FormCheckbox,
+      FormRadioGroup), 19 distinct props, NO multiline/rows/height prop anywhere.
+      This is the source that makes it a statement about the PLATFORM rather than
+      about our habits.
+   3. Confluence "Forge -> M43Forms Migration Guide" (SEARCH/6944981063) §3
+      Component Mapping enumerates the Forge `type.resolvedName` values it converts:
+      Card, Row, FormInput, FormDate, FormSelect (two paths), FormCheckbox, and
+      Root/Form/Page as scaffolding. No textarea. ⚠️ READ ITS OWN CAVEAT: the page
+      states the script "only covers the Forge component types and props that are in
+      use today", so this is a USAGE CENSUS like #1 and #2, not a registry dump.
+   4. Confluence "Federated Search JSON Configuration Capabilities" (RND/6397788223)
+      -- THE CAPABILITY DOCUMENT, and the strongest source because it is written as
+      supported-vs-unsupported rather than as an inventory of current use. It lists
+      field props for "FormInput, FormSelect, FormDate", has an explicit "Not
+      Supported in Field Props" section, and frames every unsupported item under
+      "Unsupported Features (Require Frontend Code)". No multiline, no rows, no
+      height, and no textarea component. ⚠️ Last modified 2026-02-27, so it is ~7
+      months old -- old enough that a NEW component could exist un-documented, which
+      is why this entry is a LIMITATION on the JSON surface and not a claim about
+      Forge's source.
+
+  CONSEQUENCE: a multi-row message box is a PRODUCT ASK (frontend code / Jira),
+  not a configuration change. Anything the capability doc lists as unsupported is
+  explicitly "Requires Frontend Code" -- that is the route, not a cleverer JSON.
+  ⚠️ DO NOT INVENT A `resolvedName`. An unknown component name renders NOTHING and
+  says nothing -- the retired `Convert-UsxCasing` whole-tree recase is the precedent
+  (it collapsed Craft.js `nodes` and left only tab names showing). The most the
+  proven vocabulary allows for a long field is a full-width row (`['12']`) with the
+  metadata `maxLength`, which is what SC_SLED already ships.
+
+  SAME INVESTIGATION FOUND FIVE PROPS THE DOCS SUPPORT AND WE HAVE NEVER BUILT.
+  Recorded here because the question "what else is on the table?" was answered at
+  the same time and would otherwise be re-derived. Counts are NODES across the 66
+  tenant configs; the parenthetical is the honest evidential status.
+
+    clearOnSubmit : true   -- 79 nodes, CA_eSUN + HI_HCJDC on 6 tenants incl.
+                              sandiegoharborpd-foundation. PRODUCTION-PROVEN VALUE.
+                              Clears the field after submit; plausibly wanted for
+                              repeat queries.
+    validaton : "numeric"  -- 56 nodes, 19 tenants, the hand-built LA_LEMS lineage.
+                              NOTE THE TYPO IS THE REAL PROP NAME (one 'i') and the
+                              migration guide documents it as such. Enforces
+                              numeric-only entry -- directly applicable to
+                              LicensePlateYear, vehicleYear, SSN, NCIC number, none
+                              of which we validate today. PRODUCTION-PROVEN.
+    placeholder            -- 44 nodes, but ALL on the `RecordsArchive` provider
+                              family, never on a CommSys query form. Our own KB says
+                              placeholder does not render on our forms. UNRESOLVED
+                              CONFLICT -- do not adopt without a live check.
+    required : true        -- ⚠️ THE DOC SAYS SUPPORTED ("adds * to label") AND
+                              NOTHING ON THE PLATFORM HAS EVER SET IT TRUE. All 38
+                              nodes are `required=false`, all on `RecordsArchive`.
+                              So it is a HYPOTHESIS, not a capability we can cite --
+                              and it carries a specific risk worth thinking about
+                              before use: the capability doc says the SEND BUTTON is
+                              driven by the combination `set[]`/`any[]` logic, so a
+                              `required` field that is only in `any[]` sets up two
+                              mechanisms with different opinions about whether the
+                              form may be submitted. TEST BEFORE ADOPTING.
+    direction : "row"      -- 1 node, CA_eSUN on `practice-robsgambellone`, and it
+                              appears in NEITHER Confluence doc. Almost certainly
+                              from the radiobutton experiment (`FormRadioGroup` is
+                              likewise ours-never-built, 5 nodes). Undocumented.
+
+  ALSO CORROBORATED, and it retires a recurring question: "Custom validation
+  messages NOT supported -- errorMessage, helpText, tooltip". There is NO help-text
+  mechanism, which is exactly why hints live in LABELS and CARD TITLES
+  (BUILD_RULES Section 11). That convention is not a stylistic preference; it is the
+  only channel that exists.
