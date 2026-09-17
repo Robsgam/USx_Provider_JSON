@@ -27,9 +27,10 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | NY_NYSPIN_EJUSTICE | v4.27 | NEVER-TESTED -- 65 test(s) owed |
 | OH_LEADS | v2.11 | ALL-PASS (65 logs) |
 | OR_LEDS | v2.6 | ALL-PASS (27 logs) |
+| SC_SLED | v1.11 | PARTIAL -- 55 plan test(s) owed (11 captured) |
 | TN_TIES | v2.6 | ALL-PASS (67 logs) |
 | TX_TLETS | v4.22 | ALL-PASS (98 logs) |
-| _6 others_ | -- | never tenant-tested: CA_CONTRA_COSTA, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, LA_LEMS, SC_SLED, TX_TLETS_CCH |
+| _5 others_ | -- | never tenant-tested: CA_CONTRA_COSTA, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, LA_LEMS, TX_TLETS_CCH |
 
 **Gate invariant:** `tools\enforce.ps1 -Provider <NAME>` must exit 0 -- `0 FAIL / 0 WARN`.
 No PASS count is recorded here on purpose: it moves every time a gate is added, so an
@@ -72,10 +73,10 @@ CENSUSES -- same lesson as `#44`). `FormTextArea` with a capital A does NOTHING:
 resolver, and the validator's duplicate-tag refusal is the only reason both casings got tested. 5
 PROPS dead; `Text` does NOT render (no help-text channel); all 7 tabs rendered, so **an unknown
 `resolvedName` is IGNORED, not FATAL**. ✅ **ROUND 2: IT TRANSMITS (3/3), NEWLINES DIE IN THE
-CONTROL** -- form state already holds 0 LF / 247 spaces, so not a serializer fix. **NO KEYBOARD
-ROUTE TO A BREAK: Enter AND Shift+Enter both SUBMIT, paste only** -- so the 501-char budget cannot
-be blown by typing. **Wire values are UPPERCASED and a no-rule `FormInput` did it too, CORRECTING
-`#44`'s handler attribution.** Evidence: `docs/evidence/2026-09-17_MULTILINE_*`.
+CONTROL** -- form state holds 0 LF / 247 spaces, so not a serializer fix. **NO KEYBOARD ROUTE TO A
+BREAK: Enter AND Shift+Enter both SUBMIT, paste only**, so the 501-char budget cannot be blown by
+typing. **Wire values are UPPERCASED and a no-rule `FormInput` did it too, CORRECTING `#44`'s
+handler attribution.** Evidence: `docs/evidence/2026-09-17_MULTILINE_*`.
 ⚠️ **ADOPT for WRAP-AND-SCROLL, never line breaks.** ⚠️⚠️ **THE REAL AM FINDING IS THE PREMATURE
 SEND** -- Enter transmits a HALF-WRITTEN MESSAGE to the addressed ORI; standard HTML, so it is on
 every `FormInput` too, undocumented until now, likely a PRODUCT ask. Raise that, not box height.
@@ -92,8 +93,7 @@ every `FormInput` too, undocumented until now, likely a PRODUCT ask. Raise that,
 **RECOVERY RECORD: `providers\HELD_TENANT_WORK.md` -- READ BEFORE RESUMING.** Nothing half-applied;
 one operator click outstanding. Mechanics live in the `usx-deploy` skill. ⚠️ **GUI only** and an
 import **REPLACES** the bundle set. `newarkpd-foundation` runs NJ v4.16 vs ledger v4.17 and stays
-MANUAL (Rob). Still unexplained, worth more than the import: **WHY the 08-20 Newark import did not
-land.** Held (Rob's): scoping, the batch, Confluence.
+MANUAL (Rob). Still unexplained, worth more than the import: **WHY the 08-20 Newark import did not land.** Held (Rob's): scoping, the batch, Confluence.
 
 ## DO NOT RE-RAISE
 

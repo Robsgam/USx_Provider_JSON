@@ -209,7 +209,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
 
 param(
-    [string]$Version = "4.23"
+    [string]$Version = "4.22"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -589,11 +589,33 @@ $vehLayout = MakeLayouts @(
                 # State in any[], so an officer searching an OOS plate must change State off TX or
                 # the query goes out addressed to Texas. That is the same trade Person has shipped
                 # since v4.x (RegistrationState + RegistrationStateDH are both initialValue='TX').
-                # ⚠️ BOAT IS DELIBERATELY NOT GIVEN THIS DEFAULT -- see ROW_BOA_1. There BQ is the
+                # ⚠️⚠️ THE 'TX' PREFILL WAS TRIED AT v4.23 AND REVERTED THE SAME HOUR. ENFORCE
+                # CAUGHT WHAT THE REACHABILITY GATES COULD NOT, and it is the exact harm Rob named:
+                #   "VehicleInsuranceRegistrationQuery #1 (mandatory only) -> fires
+                #    QVLicensePlateNumber but devdoc-MANDATORY LicensePlateYear are in NO matching
+                #    combo's set[]/any[] -- the officer cannot perform this search"
+                # MECHANISM. Devdoc #1 is "(InState) LicensePlateNumber, LicensePlateYear [FRT]" =
+                # REG. Fill exactly its mandatory pair (Plate + PlateYear) and, with State
+                # prefilled, set[Plate,State] is satisfied, so QV -- which carries NO
+                # LicensePlateYear in set[] OR any[] -- matches and the officer's YEAR IS SILENTLY
+                # DISCARDED. Before the prefill that fill matched nothing at all; the prefill turned
+                # "no result" into "a different query that drops a field you typed", which is worse.
+                # ⚠️ AND THE PREFILL PASSED EVERY STRUCTURAL GATE: audit_combo_reachability 0 dead of
+                # 20, audit_prefill_shadow "no prefill-caused shadow" over 31 pairs. Neither asks
+                # whether an EARLIER devdoc combination's mandatory fill gets swallowed by a LATER
+                # combo that ignores one of its fields. I concluded "safe" from those two and was
+                # wrong; audit_devdoc_optionals is the gate that owns this question.
+                # SO ROB'S REQUEST CANNOT BE HONOURED ON VEHICLE while QV{Plate,State} exists --
+                # and he wants QV (it is devdoc #5, the InState plate+state path). Person KEEPS its
+                # TX default (RegistrationState + RegistrationStateDH), which is safe because State
+                # is any[]-ONLY on every DL/DH combination, i.e. not a routing discriminator.
+                # This also vindicates the v4.14 no-prefill rule below by a DIFFERENT mechanism than
+                # that comment describes: not "hides the others", but "swallows their fill".
+                # ⚠️ BOAT IS ALSO NOT GIVEN THIS DEFAULT -- see ROW_BOA_1. There BQ is the
                 # OUT-of-state key and State is the DESTINATION, so a TX prefill would address every
                 # boat search to Texas as though out-of-state AND kill the NCIC path (2 dead combos,
                 # measured). Rob's call 2026-09-17: leave Boat blank.
-                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'TX' } 'ROW_VEH_1' }
+                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_2' }

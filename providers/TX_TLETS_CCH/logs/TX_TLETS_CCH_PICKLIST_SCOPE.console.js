@@ -2,7 +2,7 @@
 // Then render each entity form and run its line (one at a time; each downloads one file):
 var scope = {
     "provider":  "TX_TLETS_CCH",
-    "version":  "1.19",
+    "version":  "1.18",
     "note":  "Paste as scope; render each entity form; __usxScopePicklists(scope, \u0027\u003cEntity\u003e\u0027). One download per entity.",
     "fields":  [
                    {
@@ -10,193 +10,169 @@ var scope = {
                        "fieldId":  "LicensePlateTypeCode",
                        "label":  "Plate Type",
                        "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE",
-                       "codeTypeSource":  "NCIC",
-                       "attributeTypeId":  ""
+                       "codeTypeSource":  "NCIC"
                    },
                    {
                        "entity":  "Vehicle",
                        "fieldId":  "RegistrationState",
                        "label":  "State",
                        "codeTypeCategory":  "",
-                       "codeTypeSource":  "",
-                       "attributeTypeId":  "STATE"
+                       "codeTypeSource":  ""
                    },
                    {
                        "entity":  "Vehicle",
                        "fieldId":  "VehicleMakeCode",
                        "label":  "Vehicle Make",
                        "codeTypeCategory":  "",
-                       "codeTypeSource":  "",
-                       "attributeTypeId":  "VEHICLE_MAKE"
+                       "codeTypeSource":  ""
                    },
                    {
                        "entity":  "Person",
                        "fieldId":  "SexCode",
                        "label":  "Sex",
                        "codeTypeCategory":  "",
-                       "codeTypeSource":  "",
-                       "attributeTypeId":  "SEX"
+                       "codeTypeSource":  ""
                    },
                    {
                        "entity":  "Person",
                        "fieldId":  "RegistrationState",
                        "label":  "State",
                        "codeTypeCategory":  "",
-                       "codeTypeSource":  "",
-                       "attributeTypeId":  "STATE"
+                       "codeTypeSource":  ""
                    },
                    {
                        "entity":  "Person",
                        "fieldId":  "ImageIndicator",
                        "label":  "NCIC Image",
                        "codeTypeCategory":  "YES_NO_UNKNOWN",
-                       "codeTypeSource":  "NCIC",
-                       "attributeTypeId":  ""
+                       "codeTypeSource":  "NCIC"
                    },
                    {
                        "entity":  "Person",
                        "fieldId":  "SexCodeDH",
                        "label":  "Sex",
                        "codeTypeCategory":  "",
-                       "codeTypeSource":  "",
-                       "attributeTypeId":  "SEX"
+                       "codeTypeSource":  ""
                    },
                    {
                        "entity":  "Person",
                        "fieldId":  "RegistrationStateDH",
                        "label":  "State",
                        "codeTypeCategory":  "",
-                       "codeTypeSource":  "",
-                       "attributeTypeId":  "STATE"
+                       "codeTypeSource":  ""
                    },
                    {
                        "entity":  "Person",
                        "fieldId":  "ImageIndicatorDH",
                        "label":  "NCIC Image",
                        "codeTypeCategory":  "YES_NO_UNKNOWN",
-                       "codeTypeSource":  "NCIC",
-                       "attributeTypeId":  ""
+                       "codeTypeSource":  "NCIC"
                    },
                    {
                        "entity":  "Person",
                        "fieldId":  "sexCodeCCH",
                        "label":  "Sex (CCH)",
                        "codeTypeCategory":  "",
-                       "codeTypeSource":  "",
-                       "attributeTypeId":  "SEX"
+                       "codeTypeSource":  ""
                    },
                    {
                        "entity":  "Person",
                        "fieldId":  "raceCodeCCH",
                        "label":  "Race (CCH)",
                        "codeTypeCategory":  "NIBRS_RACE",
-                       "codeTypeSource":  "NIBRS",
-                       "attributeTypeId":  ""
+                       "codeTypeSource":  "NIBRS"
                    },
                    {
                        "entity":  "Person",
                        "fieldId":  "stateCCH",
                        "label":  "State (CCH)",
                        "codeTypeCategory":  "",
-                       "codeTypeSource":  "",
-                       "attributeTypeId":  "STATE"
+                       "codeTypeSource":  ""
                    },
                    {
                        "entity":  "Person",
                        "fieldId":  "imageIndicatorCCH",
                        "label":  "Image (CCH)",
                        "codeTypeCategory":  "YES_NO_UNKNOWN",
-                       "codeTypeSource":  "NCIC",
-                       "attributeTypeId":  ""
+                       "codeTypeSource":  "NCIC"
                    },
                    {
                        "entity":  "Person",
                        "fieldId":  "relatedHitSearchIndicatorCCH",
                        "label":  "Related Hit Search (CCH)",
                        "codeTypeCategory":  "YES_NO_UNKNOWN",
-                       "codeTypeSource":  "NCIC",
-                       "attributeTypeId":  ""
+                       "codeTypeSource":  "NCIC"
                    },
                    {
                        "entity":  "Firearm",
                        "fieldId":  "GunMake",
                        "label":  "Gun Make",
                        "codeTypeCategory":  "NCIC_FIREARM_MAKE",
-                       "codeTypeSource":  "NCIC",
-                       "attributeTypeId":  ""
+                       "codeTypeSource":  "NCIC"
                    },
                    {
                        "entity":  "Firearm",
                        "fieldId":  "GunCaliber",
                        "label":  "Caliber",
                        "codeTypeCategory":  "NCIC_FIREARM_CALIBER",
-                       "codeTypeSource":  "NCIC",
-                       "attributeTypeId":  ""
+                       "codeTypeSource":  "NCIC"
                    },
                    {
                        "entity":  "Firearm",
                        "fieldId":  "ImageIndicator",
                        "label":  "NCIC Image",
                        "codeTypeCategory":  "YES_NO_UNKNOWN",
-                       "codeTypeSource":  "NCIC",
-                       "attributeTypeId":  ""
+                       "codeTypeSource":  "NCIC"
                    },
                    {
                        "entity":  "Firearm",
                        "fieldId":  "relatedHitSearchIndicator",
                        "label":  "Stolen Check",
                        "codeTypeCategory":  "YES_NO_UNKNOWN",
-                       "codeTypeSource":  "NCIC",
-                       "attributeTypeId":  ""
+                       "codeTypeSource":  "NCIC"
                    },
                    {
                        "entity":  "Article",
                        "fieldId":  "ArticleTypeCode",
                        "label":  "Article Type",
                        "codeTypeCategory":  "NCIC_ARTICLE_TYPE",
-                       "codeTypeSource":  "CA_CLETS",
-                       "attributeTypeId":  ""
+                       "codeTypeSource":  "CA_CLETS"
                    },
                    {
                        "entity":  "Article",
                        "fieldId":  "ImageIndicator",
                        "label":  "NCIC Image",
                        "codeTypeCategory":  "YES_NO_UNKNOWN",
-                       "codeTypeSource":  "NCIC",
-                       "attributeTypeId":  ""
+                       "codeTypeSource":  "NCIC"
                    },
                    {
                        "entity":  "Article",
                        "fieldId":  "relatedHitSearchIndicator",
                        "label":  "Stolen Check",
                        "codeTypeCategory":  "YES_NO_UNKNOWN",
-                       "codeTypeSource":  "NCIC",
-                       "attributeTypeId":  ""
+                       "codeTypeSource":  "NCIC"
                    },
                    {
                        "entity":  "Boat",
                        "fieldId":  "RegistrationState",
                        "label":  "State",
                        "codeTypeCategory":  "",
-                       "codeTypeSource":  "",
-                       "attributeTypeId":  "STATE"
+                       "codeTypeSource":  ""
                    },
                    {
                        "entity":  "Boat",
                        "fieldId":  "ImageIndicator",
                        "label":  "NCIC Image",
                        "codeTypeCategory":  "YES_NO_UNKNOWN",
-                       "codeTypeSource":  "NCIC",
-                       "attributeTypeId":  ""
+                       "codeTypeSource":  "NCIC"
                    },
                    {
                        "entity":  "Boat",
                        "fieldId":  "relatedHitSearchIndicator",
                        "label":  "Stolen Check",
                        "codeTypeCategory":  "YES_NO_UNKNOWN",
-                       "codeTypeSource":  "NCIC",
-                       "attributeTypeId":  ""
+                       "codeTypeSource":  "NCIC"
                    }
                ]
 };
-console.log('%c[USx-SCOPE] scope loaded: TX_TLETS_CCH v1.19 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Boat')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')");
+console.log('%c[USx-SCOPE] scope loaded: TX_TLETS_CCH v1.18 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Boat')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')");

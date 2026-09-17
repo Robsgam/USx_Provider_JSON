@@ -2,16 +2,11 @@
 
 Auto-generated from `TX_TLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.23** | Generated: 2026-09-17
+Current: **v4.22** | Generated: 2026-09-17
 
 ---
 
-## v4.23 -- 2026-09-17 -- Pipeline rebuild
-
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
-
-## v4.22 -- 2026-08-27 -- QV plate RESTORED with State promoted any[]->set[] -- the devdoc (InState)
+## v4.22 -- 2026-09-17 -- QV plate RESTORED with State promoted any[]->set[] -- the devdoc (InState)
 
                  plate path had been UNREACHABLE since v4.17 (WIRE CHANGE)  
 **CHANGED:** Added QVLicensePlateNumber to TX_TLETS_VehicleInsuranceRegistrationQuery --
