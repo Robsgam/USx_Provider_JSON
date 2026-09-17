@@ -1547,10 +1547,28 @@ CAPABILITY #48 (NOT a limitation -- this slot HELD A FALSE LIMITATION FOR SIX HO
                   UPPERCASED (GEORGIA, NEW YORK)" as an observation about
                   `CommsysResultAttributeMappingRuleHandler`. The handler is not doing it; the
                   platform does it to text field values regardless.
-    PROVEN ...... PRESSING ENTER IN THE TEXTAREA SUBMITS THE QUERY. Rob's first two captures are
-                  accidental sends -- "the first 2 were from me hitting enter adn it sedning the
-                  query before i could get to line 2 or line 3" -- each carrying only `LINE1`.
-                  So the officer cannot casually type a line break even if one were wanted.
+    PROVEN ...... THERE IS NO KEYBOARD ROUTE TO A LINE BREAK AT ALL. **ENTER submits the query**
+                  (Rob's first two captures are accidental sends -- "the first 2 were from me
+                  hitting enter adn it sedning the query before i could get to line 2 or line 3" --
+                  each carrying only `LINE1`) and **SHIFT+ENTER submits too** ("shift enter caused
+                  a send"), which is the chat-input escape hatch and the obvious thing to try. So
+                  the ~124-space runs in capture [0] can only have arrived by PASTE.
+                  ⭐ THIS IS THE FAVOURABLE READING, not the damning one: an officer CANNOT blow
+                  the 501-char budget by typing, because the control gives them no way to make a
+                  break. The exposure is narrow and deliberate -- composing elsewhere and pasting.
+
+    ⚠️⚠️ THE REAL HAZARD IS THE PREMATURE SEND, AND IT IS NOT THE TEXTAREA'S FAULT. Enter
+    submitting a form is standard HTML behaviour and applies to the single-line `FormInput` we ship
+    on all 21 providers -- so this is a LONG-STANDING, UNDOCUMENTED behaviour, not a regression
+    introduced here. What changes is the CONSEQUENCE. On a query, a premature Enter fires an
+    incomplete search and wastes a transaction. **On an AdministrativeMessage it TRANSMITS A
+    HALF-WRITTEN MESSAGE TO THE ORI IT IS ADDRESSED TO** -- an AM delivers, it does not look
+    something up. Rob got two unintended sends off in the time it took to type three words; an
+    officer typing 501 characters of prose will hit Enter. ⚠️ NOT YET MEASURED: whether Enter
+    behaves identically in a plain `FormInput` (assumed from HTML semantics, not tested), and
+    whether anything in the config can suppress it -- `probe_control_types` found no such prop, so
+    the honest status is that the JSON surface probably cannot fix this and it is a PRODUCT ask.
+    THIS IS THE THING TO RAISE ABOUT THE AM, ahead of the box height that started the thread.
 
   THE VERDICT FOR THE ADMINISTRATIVE MESSAGE, and it is arithmetic rather than taste: three
   five-letter words consumed **262 of the 501-character `FreeText` budget**. That is ~4 line
@@ -1560,9 +1578,11 @@ CAPABILITY #48 (NOT a limitation -- this slot HELD A FALSE LIMITATION FOR SIX HO
   box you can see and scroll beats a one-line input). DO NOT PROMISE LINE BREAKS: they are a
   data hazard, not a feature.**
 
-    STILL NOT PROVEN -- whether `maxLength` is honoured on it (FreeText is capped at 501); and
-                  HOW a line break is reachable at all (Shift+Enter vs paste), which is what
-                  decides whether an officer can blow the character budget by accident.
+    STILL NOT PROVEN -- whether `maxLength` is honoured on the control (FreeText is capped at 501,
+                  and a paste is now the only way in, so a paste longer than 501 is the one case
+                  worth measuring). Also unproven: Enter's behaviour in a plain `FormInput`, and
+                  the exact padding rule behind the unequal 124/123-space runs.
+                  ✅ CLOSED: how a break is reachable. Neither Enter nor Shift+Enter -- PASTE ONLY.
 
   WHY THE FALSE LIMITATION SURVIVED FOUR SOURCES -- the lesson, and it is the SAME ONE as
   CAPABILITY #44 six hours earlier. Three of the four were USAGE CENSUSES (our 21 builds; 7,414

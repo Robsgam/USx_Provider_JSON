@@ -67,18 +67,18 @@ MULTILINE PROBE, NOT v1.10**, so **v1.10 must go back**.
 
 ## 🟢 THE MULTILINE BOX EXISTS -- `FormTextarea`, LOWERCASE `a` (measured 2026-09-17)
 
-**`CAPABILITY #48`; the slot held a FALSE LIMITATION for six hours** (3 of its 4 sources were USAGE
+**`CAPABILITY #48`; the slot held a FALSE LIMITATION for six hours** (3 of 4 sources were USAGE
 CENSUSES -- same lesson as `#44`). `FormTextArea` with a capital A does NOTHING: EXACT-MATCH
-resolver, and the validator's duplicate-tag refusal is the only reason both casings got tested. All
-5 candidate PROPS dead; `Text` does NOT render (no help-text channel); all 7 tabs rendered, so **an
-unknown `resolvedName` is IGNORED, not FATAL**.
-
-✅ **ROUND 2: IT TRANSMITS (3/3) AND NEWLINES DIE BEFORE THE WIRE** -- FORM STATE already holds **0
-LF / 247 spaces** (each Enter -> ~124 spaces), so it is the CONTROL layer, not the serializer.
-**ENTER SUBMITS THE QUERY.** **Wire values are UPPERCASED and a no-rule `FormInput` did it too,
-CORRECTING `#44`'s handler attribution.** Evidence in `docs/evidence/2026-09-17_MULTILINE_*`.
-⚠️ **VERDICT: adopt for WRAP-AND-SCROLL, never line breaks** -- 3 words cost 262 of the 501-char
-`FreeText` budget, arriving as one gappy line. **OPEN:** Shift+Enter or paste-only? `maxLength`?
+resolver, and the validator's duplicate-tag refusal is the only reason both casings got tested. 5
+PROPS dead; `Text` does NOT render (no help-text channel); all 7 tabs rendered, so **an unknown
+`resolvedName` is IGNORED, not FATAL**. ✅ **ROUND 2: IT TRANSMITS (3/3), NEWLINES DIE IN THE
+CONTROL** -- form state already holds 0 LF / 247 spaces, so not a serializer fix. **NO KEYBOARD
+ROUTE TO A BREAK: Enter AND Shift+Enter both SUBMIT, paste only** -- so the 501-char budget cannot
+be blown by typing. **Wire values are UPPERCASED and a no-rule `FormInput` did it too, CORRECTING
+`#44`'s handler attribution.** Evidence: `docs/evidence/2026-09-17_MULTILINE_*`.
+⚠️ **ADOPT for WRAP-AND-SCROLL, never line breaks.** ⚠️⚠️ **THE REAL AM FINDING IS THE PREMATURE
+SEND** -- Enter transmits a HALF-WRITTEN MESSAGE to the addressed ORI; standard HTML, so it is on
+every `FormInput` too, undocumented until now, likely a PRODUCT ask. Raise that, not box height.
 
 ## ROB'S CALLS + OPEN FINDINGS -- detail lives in `FINDINGS_REGISTER.md`, do NOT restate it here
 
