@@ -431,7 +431,18 @@
     const out = [];
     const poll = async (fn, ms, step) => { const t0 = Date.now(); let r; while (!(r = fn()) && Date.now() - t0 < ms) { await L.sleep(step); } return r; };
     const setVal = (input, v) => {
-      Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(input, v);
+      // ⚠️ THE PROTOTYPE MUST MATCH THE ELEMENT. This line hardcoded HTMLInputElement.prototype
+      // until 2026-09-17, which THROWS "Illegal invocation" on a <textarea> -- a textarea is an
+      // HTMLTextAreaElement and the two do not share the `value` accessor. SC_SLED v1.11 is the
+      // first build to carry a FormTextarea (CAPABILITY #48), so driving its Administrative
+      // Message tab would have thrown mid-fill, left the mandatory FreeText empty, and shown up as
+      // Send-stays-disabled -- i.e. it would have looked like a FORM defect, not a driver defect.
+      // Found by reading the code before the sweep rather than by watching it fail.
+      // usx_lib.js:98 has carried the correct tagName check all along; this is the same pattern.
+      const proto = input.tagName === 'TEXTAREA'
+        ? window.HTMLTextAreaElement.prototype
+        : window.HTMLInputElement.prototype;
+      Object.getOwnPropertyDescriptor(proto, 'value').set.call(input, v);
       input.dispatchEvent(new Event('input', { bubbles: true }));
     };
 

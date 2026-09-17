@@ -270,8 +270,19 @@ if (Test-Path $sqvrFile) {
         Updated "SQVR.txt -- v${version}"
     } elseif ($changed) {
         Updated "(dry) SQVR.txt -- v${version}"
-    } else {
+    } elseif ($text -match [regex]::Escape("v${version}")) {
         Skipped "SQVR.txt -- already current"
+    } else {
+        # ⚠️ "ALREADY CURRENT" WAS ASSERTED WITHOUT CHECKING, AND IT WAS FALSE (fixed 2026-09-17,
+        # found on SC_SLED v1.11). $changed is set ONLY by the two canonical-line regexes
+        # (^JSON version: / ^Validator:). A hand-authored SQVR carrying NEITHER -- SC_SLED was the
+        # only one of 21, because it is the one provider written from scratch since the toolchain
+        # changed -- matched nothing, left $changed false, and fell into this branch, which then
+        # reported the file as CURRENT while its header still read v1.10. audit_repo then FAILed
+        # the pipeline at step 8 on a doc the sync had just declared fine. STATUS.txt already had
+        # this exact safety net (the 2026-07-17 HI_HCJDC_OFML incident) and SQVR never got it.
+        # "I changed nothing" and "nothing needed changing" are different claims -- ENG-STD 4.3.
+        Write-Host "  [WARN] SQVR.txt -- 'v${version}' not present and no canonical line matched; NOTHING WAS UPDATED (add a 'JSON version: v${version}' line -- 20 of 21 providers carry one)" -ForegroundColor Yellow
     }
 } else {
     Skipped "SQVR.txt -- not found"

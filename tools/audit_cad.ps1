@@ -117,7 +117,7 @@ function Get-LayoutFieldIds($layoutObj) {
         $resolved = $null
         try { $resolved = $node.type.resolvedName } catch {}
         if (-not $resolved) { continue }
-        if ($resolved -in @('FormInput','FormSelect','FormDate','FormDateInput','FormCheckbox',
+        if ($resolved -in @('FormInput','FormSelect','FormDate','FormDateInput','FormCheckbox','FormTextarea',
                             'CheckboxInput','TextInput','SelectInput','SelectHistoryInput','HiddenInput')) {
             $fid = $null
             try { $fid = $node.props.fieldId } catch {}
@@ -138,7 +138,7 @@ function Get-LayoutInitialValues($layoutObj) {
         $resolved = $null
         try { $resolved = $node.type.resolvedName } catch {}
         if (-not $resolved) { continue }
-        if ($resolved -in @('FormInput','FormSelect','FormDate','FormDateInput','FormCheckbox',
+        if ($resolved -in @('FormInput','FormSelect','FormDate','FormDateInput','FormCheckbox','FormTextarea',
                             'CheckboxInput','TextInput','SelectInput','SelectHistoryInput','HiddenInput')) {
             $fid = $null
             try { $fid = $node.props.fieldId } catch {}

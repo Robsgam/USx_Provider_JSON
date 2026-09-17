@@ -2,6 +2,42 @@
   BUILD NOTES: SC_SLED
   Created: 2026-09-14
 ================================================================
+v1.11  2026-09-17  THE AM MESSAGE IS A MULTI-LINE BOX -- FormTextarea, and it is LIVE-PROVEN
+  CHANGED: ADMINISTRATIVE MESSAGE -- FreeText control `Inp` -> `Txa`, i.e. resolvedName
+              'FormInput' -> 'FormTextarea'. fieldId, label and maxLength='501' all UNCHANGED, so
+              the wire contract and every QIDM reference are untouched. Emitted in all 3 layout
+              variants (default / CAD_DISPATCH / FIRST_RESPONDER).
+           NEW SHARED HELPER `Txa` in tools/_build_layout_helpers.ps1 (exports line updated).
+           THREE GATES TAUGHT THE NEW TYPE: validate.ps1 (fieldId-presence check),
+              audit_cross_provider.ps1 (field-type consistency) and audit_cad.ps1 (x2) all
+              whitelisted control types BY NAME and would have SKIPPED a FormTextarea silently.
+  REASON: Rob 2026-09-17: "so you now need to make message multiline". The AM carries a
+           501-character free-text message to another agency in what was a ONE-LINE box.
+  WHY THIS IS NOW BUILDABLE AT ALL -- PLATFORM_CONSTRAINTS CAPABILITY #48. That slot held a
+           LIMITATION reading "THERE IS NO MULTI-LINE / TEXTAREA FORM CONTROL", backed by four
+           sources. It was FALSE, and it was retired the same day by importing a throwaway probe
+           (tools/build_multiline_test.ps1) to this provider's own tenant. Three of the four
+           sources were USAGE CENSUSES -- 0 uses means UNTESTED, never IMPOSSIBLE.
+  ⚠️ THE NAME IS LOWERCASE-'a' `FormTextarea`. `FormTextArea` renders NOTHING (exact-match
+           resolver) -- which is why this went in as a HELPER rather than a hand-written node:
+           the failure is one keystroke wide and completely silent.
+  ⚠️ THIS BUYS WRAP-AND-SCROLL, NOT LINE BREAKS, and the label deliberately does not promise them.
+           MEASURED on the round-2 wire test (docs/evidence/2026-09-17_MULTILINE_TEST_round2_*):
+           the control TRANSMITS (3/3 captures), but neither Enter nor Shift+Enter inserts a
+           newline -- BOTH SUBMIT THE FORM -- and a PASTED newline becomes ~124 spaces before it
+           even reaches form state, so three five-letter words cost 262 of the 501 characters.
+           The officer cannot make a break by typing, which is the only reason the budget is safe.
+  ⚠️ OPEN, AND IT IS A POSSIBLE REGRESSION: maxLength enforcement is UNMEASURED on this control.
+           It is honoured on FormInput and relied on portfolio-wide. The probe tenant was restored
+           to v1.10 before this could be tested, so measure it on the v1.11 import -- paste MORE
+           than 501 characters into the message box and see whether it truncates.
+  ⚠️ NOT FIXED HERE AND BIGGER THAN THE BOX: pressing Enter SENDS THE AM. On a query that wastes a
+           transaction; on an AM it TRANSMITS A HALF-WRITTEN MESSAGE to the ORI it is addressed to.
+           Standard HTML form behaviour, so it applies to the single-line FormInput too and is NOT
+           a regression introduced here -- no config prop to suppress it appears across 7,414
+           control nodes, so it is a PRODUCT ask. This is the thing to raise about the AM.
+  NOT TENANT-TESTED: SC_SLED has never been swept, so no test package was archived by this bump.
+
 v1.10  2026-09-17  SEX AND RACE ARE DROPDOWNS AGAIN -- the v1.3 "capability given up" was HALF WRONG
   CHANGED: WANTED -- SexCode Inp -> Sel codeTypeCategory='NIBRS_SEX' + codeTypeSource='NIBRS',
               label 'Sex -- type M, F or U (optional)' -> 'Sex'.

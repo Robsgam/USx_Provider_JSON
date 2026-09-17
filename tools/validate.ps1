@@ -671,7 +671,7 @@ if ($entitiesBundle) {
             $layoutObj.PSObject.Properties | ForEach-Object {
                 $node = $_.Value
                 $typeName = $node.type.resolvedName
-                if ($typeName -match 'FormInput|FormSelect|FormDate|FormCheckbox') {
+                if ($typeName -match 'FormInput|FormSelect|FormDate|FormCheckbox|FormTextarea') {
                     if (-not $node.props -or -not $node.props.fieldId) {
                         Write-Fail "QIF '$($cfg.name)' layout '$layoutName' node '$($_.Name)' ($typeName): missing fieldId in props"
                     }

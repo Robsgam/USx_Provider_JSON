@@ -245,12 +245,23 @@ if (-not $batchMode) {
     # Step 5: Sync version docs
     Step "Sync version docs (STATUS, SQVR, JSON_INVENTORY, REBUILD_TRACKER)"
     $output = & powershell -ExecutionPolicy Bypass -File "$toolDir\sync_version_docs.ps1" -Provider $provName 2>&1 | Out-String
+    # ⚠️ ECHO THE TOOL'S OWN WARNINGS -- THIS STEP USED TO SWALLOW THEM ENTIRELY (fixed
+    # 2026-09-17). All three branches below report StepPass, and $output was captured and then
+    # never examined, so sync_version_docs printing "[WARN] STATUS.txt -- 'v1.11' never matched any
+    # known header format" surfaced as "[PASS] Version docs: 5 files updated". The pipeline then
+    # ran on and FAILED at step 8 with "STATUS.txt does not mention current version v1.11" -- the
+    # answer had been printed two steps earlier and thrown away. Same class as the officer-guide
+    # Out-Null swallow (CLAUDE.md build_report step 13). The step stays non-blocking (audit_repo is
+    # the gate); it just stops hiding the reason.
+    $syncWarns = @($output -split "`r?`n" | Where-Object { $_ -match '^\s*\[WARN\]' })
+    foreach ($w in $syncWarns) { Write-Host $w -ForegroundColor Yellow }
     if ($output -match '(\d+) updated') {
         $count = [int]$Matches[1]
+        $suffix = if ($syncWarns.Count -gt 0) { " ($($syncWarns.Count) WARN -- see above)" } else { '' }
         if ($count -gt 0) {
-            StepPass "Version docs: $count files updated"
+            StepPass "Version docs: $count files updated$suffix"
         } else {
-            StepPass "Version docs already current"
+            StepPass "Version docs already current$suffix"
         }
     } else {
         StepPass "sync_version_docs ran"

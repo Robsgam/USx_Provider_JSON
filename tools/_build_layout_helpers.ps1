@@ -1,7 +1,7 @@
 # _build_layout_helpers.ps1 — Shared QIF layout helpers for MC build scripts
 # Dot-source from any MC build: . "$PSScriptRoot\..\..\..\tools\_build_layout_helpers.ps1"
 #
-# Exports: N, Inp, InpH, Sel, SelH, Dt, BuildMultiCardLayout, AddCadNodes, AddFrNodes, MakeLayouts
+# Exports: N, Inp, InpH, Sel, SelH, Dt, Txa, BuildMultiCardLayout, AddCadNodes, AddFrNodes, MakeLayouts
 
 function N($type, $display, $props, $isCanvas, $hidden, $nodes, $parent) {
     $nodeList = [System.Collections.Generic.List[string]]::new()
@@ -47,6 +47,37 @@ function SelH($fid, $lbl, $extra, $parentId) {
 
 function Dt($fid, $lbl, $parentId) {
     N 'FormDate' 'Date' @{ fieldId = $fid; label = $lbl } $false $false @() $parentId
+}
+
+function Txa($fid, $lbl, $maxLen, $parentId, $extra = @{}) {
+    <#
+      THE MULTI-LINE CONTROL. Added 2026-09-17 -- see PLATFORM_CONSTRAINTS CAPABILITY #48.
+
+      ⚠️ THE NAME IS `FormTextarea` WITH A LOWERCASE 'a' AND THAT IS NOT A STYLE CHOICE. The Forge
+      resolver is EXACT-MATCH. `FormTextArea` (capital A -- the spelling almost everyone writes by
+      hand, including me) resolves to NOTHING: the control silently does not render, its companion
+      does, and the form still looks fine. That is why this is a HELPER and not something to
+      hand-write per provider -- the failure mode is invisible and one keystroke wide.
+
+      MEASURED on usx-sc-sled 2026-09-17: renders a wrapping, auto-growing, scrollable multi-row
+      box, and its typed value REACHES THE WIRE (evidence:
+      docs/evidence/2026-09-17_MULTILINE_TEST_round2_WIRE_newlines_become_spaces.json).
+
+      ⚠️ IT IS NOT A LINE-BREAK CONTROL. Neither Enter nor Shift+Enter inserts a newline -- BOTH
+      SUBMIT THE FORM. A pasted newline is converted to a long run of spaces BEFORE it reaches form
+      state (~124 spaces each, measured), which on a maxLength-capped field burns the budget
+      catastrophically: three five-letter words cost 262 of 501 characters. So use this for
+      WRAP-AND-SCROLL on a long single-paragraph field. Do NOT promise an officer line breaks.
+
+      ⚠️ maxLength ENFORCEMENT IS UNMEASURED ON THIS CONTROL. It is honoured on FormInput and is
+      relied on portfolio-wide; whether the textarea respects it was not tested before the probe
+      tenant was restored. It is passed through here because omitting it would be a silent
+      downgrade. Discriminating test: paste MORE than maxLength characters and see if it truncates.
+    #>
+    $p = [ordered]@{ fieldId = $fid; label = $lbl }
+    if ($maxLen) { $p['maxLength'] = $maxLen }
+    foreach ($k in $extra.Keys) { $p[$k] = $extra[$k] }
+    N 'FormTextarea' 'Textarea' $p $false $false @() $parentId
 }
 
 function BuildMultiCardLayout($cardDefs) {

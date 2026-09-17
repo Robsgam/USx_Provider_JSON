@@ -130,7 +130,7 @@ function Get-FormFields {
             if (-not $node) { continue }
             $resolvedName = $null
             try { $resolvedName = $node.type.resolvedName } catch { continue }
-            if ($resolvedName -notin @('FormInput','FormSelect','FormDate','FormCheckbox')) { continue }
+            if ($resolvedName -notin @('FormInput','FormSelect','FormDate','FormCheckbox','FormTextarea')) { continue }
 
             $p = $null
             try { $p = $node.props } catch { continue }

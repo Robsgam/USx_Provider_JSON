@@ -1,12 +1,12 @@
 ﻿================================================================
   Build Report: SC_SLED
-  Source: SC_SLED_v1.10.json
-  Generated: 2026-09-17 09:44
+  Source: SC_SLED_v1.11.json
+  Generated: 2026-09-17 14:05
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== SC_SLED_v1.10.json ===
+=== SC_SLED_v1.11.json ===
 QIFs: 7
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=4
   Person | entity=Person | qidm= | cards=1 fields=5
@@ -14,7 +14,7 @@ QIFs: 7
   Firearm | entity=Firearm | qidm= | cards=1 fields=2
   Article | entity=Article | qidm= | cards=1 fields=1
   Boat | entity=Boat | qidm= | cards=1 fields=3
-  Administrative Message | entity=Boat | qidm= | cards=1 fields=6
+  Administrative Message | entity=Boat | qidm= | cards=1 fields=5
 QIDMs: 9
   SC_SLED_VehicleRegistrationQuery | attrs=7 combos=2 autoSelect=True
   SC_SLED_VehicleStolenQuery | attrs=4 combos=2 autoSelect=True
@@ -126,7 +126,7 @@ LAYOUT DETAIL
   [default]
     CARD "CARD_AM"
       ROW ROW_AM_1 [12]
-        FreeText (Text | maxLen=501)
+        FreeText (FormTextarea | maxLen=501)
       ROW ROW_AM_2 [4 4 4]
         DestinationCode (Text | maxLen=9)
         DestinationCode2 (Text | maxLen=9)

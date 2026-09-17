@@ -35,7 +35,7 @@ $repoRoot    = Split-Path (Split-Path $providerDir -Parent) -Parent
 . (Join-Path $repoRoot 'tools\_build_provider_helpers.ps1')
 
 $providerName = 'SC_SLED'
-$Version      = '1.10'
+$Version      = '1.11'
 $currentYear  = (Get-Date).Year.ToString()
 
 Write-Host ''
@@ -961,8 +961,21 @@ $amLayout = MakeLayouts @(
         id    = 'CARD_AM'
         title = 'ADMINISTRATIVE MESSAGE -- FREE TEXT TO UP TO FIVE AGENCIES'
         rows  = @(
+            # v1.11 -- THE MESSAGE IS A MULTI-LINE BOX. Rob: "so you now need to make message
+            # multiline". `Txa` emits resolvedName='FormTextarea' (LOWERCASE 'a' -- exact-match
+            # resolver; the capital-A spelling renders NOTHING), MEASURED on this tenant
+            # 2026-09-17: wraps, grows downward, scrolls, and its value REACHES THE WIRE.
+            # PLATFORM_CONSTRAINTS CAPABILITY #48 -- the slot previously held a LIMITATION saying
+            # no such control existed, which three usage censuses appeared to confirm.
+            #
+            # ⚠️ THIS BUYS WRAP-AND-SCROLL, NOT LINE BREAKS, and the label must not imply
+            # otherwise. Neither Enter nor Shift+Enter inserts a newline -- BOTH SUBMIT THE FORM,
+            # which on an AM means transmitting a half-written message to the ORI it is addressed
+            # to. A pasted newline becomes ~124 SPACES before it even reaches form state, so three
+            # words cost 262 of the 501 characters. The officer cannot produce a break by typing,
+            # which is the only reason the character budget is safe.
             @{ id = 'ROW_AM_1'; cols = @('12'); fields = @(
-                @{ id = 'FreeText_Input'; node = Inp 'FreeText' 'Message (required, up to 501 characters)' '501' 'ROW_AM_1' }
+                @{ id = 'FreeText_Input'; node = Txa 'FreeText' 'Message (required, up to 501 characters)' '501' 'ROW_AM_1' }
             )}
             @{ id = 'ROW_AM_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'DestinationCode_Input';  node = Inp 'DestinationCode' 'Destination ORI (required)' '9' 'ROW_AM_2' }
