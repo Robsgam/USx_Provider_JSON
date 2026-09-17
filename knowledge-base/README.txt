@@ -3291,3 +3291,53 @@ probe_control_types.ps1 -- WHICH FORM CONTROL TYPES DOES THE PLATFORM ACTUALLY H
   DISCRIMINATING TEST if a multi-line control is still wanted: a throwaway probe JSON with
   a candidate resolvedName imported to usx-sc-sled (which carries nothing precious), then
   read the rendered card -- the method that established CAPABILITY #47 and LIMITATION #46.
+
+build_multiline_test.ps1 -- CAN ANY FORM CONTROL SHOW MORE THAN ONE LINE? (throwaway rig)
+  Rob 2026-09-17, after the documentary investigation came back negative: "The probe
+  import lets try that". Emits providers\MULTILINE_TEST.json. NOT a provider -- no
+  provider directory, so no gate treats it as one (same shape as ENTITY_PROBE.json
+  and TRANSLATE_TEST.json).
+  WHY A PROBE AT ALL when LIMITATION #48 already says no: three of #48's four sources
+  are USAGE CENSUSES and the Forge migration guide says so in its own words ("only
+  covers the component types and props in use today"). The fourth is a capability doc
+  last touched 2026-02-27. So the documented status is "unreachable per the documented
+  surface, and nobody ever shipped one" -- not "Forge has no such component". Only an
+  import closes that.
+  TWO HALVES WITH VERY DIFFERENT RISK, and the layout exists to separate them:
+    HALF A, ZERO RISK -- 5 candidate PROPS (multiline, rows, type=textarea,
+      numberOfLines, maxRows) on known-good FormInputs, all on the CONTROL tab beside a
+      baseline. An unrecognised prop is ignored, so the worst case is six identical
+      single-line boxes. Any box TALLER than the baseline is the answer.
+    HALF B, REAL RISK -- 6 candidate resolvedNames, ONE FORM EACH: FormTextArea,
+      FormTextarea (casing variant -- resolver lookups are exact-match),
+      FormMultilineInput, FormLongText, TextArea (UNPREFIXED, because the
+      QUERYRESULTSLAYOUT components in the same tenant configs carry no prefix -- Box,
+      Br, Text, Image), and Text (which PROVABLY exists in QUERYRESULTSLAYOUT; it tests
+      whether the two resolvers share one registry, and would hand us a HELP-TEXT
+      CHANNEL the capability doc says does not exist -- worth more than the textarea).
+      An unresolved resolvedName is NOT guaranteed to degrade quietly: it may throw while
+      deserialising the Craft.js tree and take the form down. That is a different failure
+      from SC_SLED v1.0's unknown targetEntity, which was MEASURED harmless; no such
+      measurement exists for an unknown COMPONENT.
+  EVERY CANDIDATE FORM CARRIES A KNOWN-GOOD COMPANION FormInput, which is what makes the
+  result readable rather than ambiguous:
+      both boxes render          -> the component RESOLVES
+      companion only            -> component IGNORED, harmless
+      tab missing, others fine  -> component FATAL to its own form
+      no tabs at all            -> an unknown component is fatal MODULE-WIDE (blunt, but
+                                   a real finding: never risk one in a real build)
+  CONTROL TAB IS FIRST IN THE ORDER ARRAYS -- if it does not render the probe is broken
+  and every other result is meaningless (same design as build_entity_probe).
+  !! THE VALIDATOR CAUGHT A DEFECT IN THE FIRST BUILD AND IT WAS THE INERT-TEST CLASS.
+  Tags derived from the candidate name collide between `FormTextArea` and `FormTextarea`
+  under a case-insensitive comparison -- "duplicate QIF name ... second silently
+  overwrites first at import". The probe would have tested ONE casing while reporting
+  two. Tags are now index-prefixed; the resolvedName and label still carry the name
+  verbatim. Testing both casings is the entire reason those two entries exist, so the
+  collision would have silently removed the point of the probe.
+  !! AN IMPORT REPLACES THE BUNDLE SET -- it REMOVES the real provider from the tenant.
+  The bridge deliberately REFUSES to serve it (`GET /build/MULTILINE_TEST` ->
+  "no versioned root JSON"), and the DEPLOY guards would refuse it anyway because
+  `/target/<deptId>` resolves usx-sc-sled's intent as SC_SLED. Both are the safeguards
+  working: a throwaway does not travel the automated write path. HAND-IMPORT it, exactly
+  as ENTITY_PROBE was, then put the real build back.
