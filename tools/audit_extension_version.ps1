@@ -56,6 +56,29 @@ function Get-LiveBuild([string]$text) {
     return $null
 }
 
+# ⚠️ EVERY SCRIPT ANNOUNCES ITS OWN BUILD, AND THIS GATE USED TO WATCH ONLY ONE (fixed 2026-09-17).
+# It keyed solely on ui.js's "control panel injected. BUILD <stamp>". So on 2026-09-17 driver.js was
+# CHANGED TWICE -- the textarea fill fix and the off-form skip -- while its own banner still said
+# "driver ready. BUILD 2026-09-02c", and this gate PASSED both commits. Rob read the console and
+# said it plainly: "the extension is not advancing the version like i asked". The gate's own
+# rationale is that a stale extension and a broken one must not look identical; that was true of
+# driver.js specifically, inside the gate meant to prevent it.
+# Each entry is the file's LIVE console banner -- the line an operator actually reads on load.
+# A file with no banner is reported, never silently skipped (see the [WARN] below).
+$BANNERS = [ordered]@{
+    'automation/extension/ui.js'           = 'control panel injected\.\s*BUILD\s+(\S+?)[\s)]'
+    'automation/extension/driver.js'       = 'driver ready\.\s*BUILD\s+(\S+?)[\s)]'
+    'automation/extension/usx_lib.js'      = 'usx_lib loaded\.\s*BUILD\s+(\S+?)[\s)]'
+    'automation/extension/deploy_probe.js' = 'deploy_probe loaded[^\r\n]*?BUILD\s+(\S+?)[\s)]'
+    'automation/extension/admin_probe.js'  = 'admin_probe[^\r\n]*?BUILD\s+(\S+?)[\s)]'
+}
+function Get-FileBuild([string]$text, [string]$rx) {
+    if (-not $text) { return $null }
+    $m = [regex]::Match($text, $rx)
+    if ($m.Success) { return $m.Groups[1].Value.TrimEnd('.', ',', '-') }
+    return $null
+}
+
 Emit ''
 Emit '===================================================================================='
 Emit '  EXTENSION VERSION GATE -- a changed extension must announce a new BUILD'
@@ -80,8 +103,23 @@ if ($Bump) {
     # tell the operator to look for a stamp that no longer exists.
     $updated = $cur.Replace($tok, $newTok)
     [System.IO.File]::WriteAllText($uiAbs, $updated, (New-Object System.Text.UTF8Encoding($false)))
-    Emit ("  BUMPED: {0} -> {1}  ({2} occurrence(s) replaced)" -f $tok, $newTok,
+    Emit ("  BUMPED: {0} -> {1}  ({2} occurrence(s) replaced)  [ui.js]" -f $tok, $newTok,
           ([regex]::Matches($cur, [regex]::Escape($tok))).Count)
+
+    # EVERY OTHER BANNERED SCRIPT GETS THE SAME STAMP. One stamp to look for across the whole
+    # extension is the point -- per-file stamps drifting apart is how driver.js ended up three
+    # weeks behind ui.js while this tool reported PASS. Replaces that file's OWN token only.
+    foreach ($rel in $BANNERS.Keys) {
+        if ($rel -eq $uiRel) { continue }
+        $abs = Join-Path $repo $rel
+        if (-not (Test-Path $abs)) { continue }
+        $txt = [System.IO.File]::ReadAllText($abs)
+        $own = Get-FileBuild $txt $BANNERS[$rel]
+        if (-not $own) { Emit ("  [WARN] {0} has no live BUILD banner -- cannot stamp it." -f $rel); continue }
+        if ($own -ceq $newTok) { Emit ("  already {0}: {1}" -f $newTok, $rel); continue }
+        [System.IO.File]::WriteAllText($abs, $txt.Replace($own, $newTok), (New-Object System.Text.UTF8Encoding($false)))
+        Emit ("  BUMPED: {0} -> {1}  [{2}]" -f $own, $newTok, $rel)
+    }
 }
 
 # what changed?
@@ -138,5 +176,45 @@ if ($workTok -ceq $headTok) {
     Done 1
 }
 Emit ''
-Emit ("  [PASS] extension changed and BUILD advanced {0} -> {1}." -f $headTok, $workTok)
+Emit ("  [PASS] ui.js BUILD advanced {0} -> {1}." -f $headTok, $workTok)
+
+# ── PER-FILE BANNER CHECK (2026-09-17) ───────────────────────────────────────────────────────────
+# ui.js advancing says nothing about the file that actually changed. Any CHANGED script carrying
+# its own banner must have advanced its own stamp too, or an operator reading that script's load
+# line cannot tell a reloaded extension from a stale one. This is the hole Rob caught.
+$stale = @(); $unbannered = @()
+Push-Location $repo
+try {
+    $prevEA2 = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+    try {
+        foreach ($rel in $extChanged) {
+            if (-not $BANNERS.Contains($rel)) { $unbannered += $rel; continue }
+            $rx  = $BANNERS[$rel]
+            $abs = Join-Path $repo $rel
+            $wTok = Get-FileBuild ([System.IO.File]::ReadAllText($abs)) $rx
+            $hTxt = ((& git show ("HEAD:" + $rel) 2>&1) | ForEach-Object { "$_" }) -join "`n"
+            if ($hTxt -match '^fatal:') { $hTxt = '' }
+            $hTok = Get-FileBuild $hTxt $rx
+            if (-not $wTok) { $unbannered += $rel; continue }
+            Emit ("  {0,-38} {1} -> {2}" -f $rel, $(if ($hTok) { $hTok } else { '(none)' }), $wTok)
+            if ($hTok -and ($wTok -ceq $hTok)) { $stale += $rel }
+        }
+    } finally { $ErrorActionPreference = $prevEA2 }
+} finally { Pop-Location }
+
+foreach ($u in $unbannered) {
+    Emit ("  [WARN] {0} changed but announces no BUILD -- its reload cannot be verified from the console." -f $u)
+}
+if ($stale.Count -gt 0) {
+    Emit ''
+    Emit ("  [FAIL] {0} changed file(s) did NOT advance their OWN BUILD banner:" -f $stale.Count)
+    foreach ($s in $stale) { Emit ("         {0}" -f $s) }
+    Emit '         ui.js advancing is not enough -- the operator reads the banner of the script that'
+    Emit '         changed. driver.js sat at 2026-09-02c through two behaviour changes on 2026-09-17'
+    Emit '         while this gate reported PASS; that is the defect this check closes.'
+    Emit '         FIX:  tools\audit_extension_version.ps1 -Bump   (stamps every bannered script)'
+    Done 1
+}
+Emit ("  [PASS] all {0} changed bannered script(s) advanced their own BUILD." -f
+      @($extChanged | Where-Object { $BANNERS.Contains($_) }).Count)
 Done 0

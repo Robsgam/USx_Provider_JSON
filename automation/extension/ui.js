@@ -1227,14 +1227,45 @@
         const tests = (plan.tests || []).filter(t => (t.kind === 'combo' || t.kind === 'any' || t.kind === 'any-field' || t.kind === 'guardrail') && (!entity || t.entity === entity));
         if (!tests.length) { flash('No submittable tests found for entity "' + entity + '". Check the entity name (case-sensitive, e.g. Vehicle).'); return; }
         // Wrong-form guard: an entity run on the WRONG rendered form burns every test
-        // ("Firearm" ran on the Article form, all six NOT submitted, 2026-07-02). Probe the
-        // entity's first fill field before starting.
-        const firstFill = tests.map(t => Array.isArray(t.fills) ? t.fills[0] : t.fills).find(f => f && f.fieldId);
-        if (firstFill && !document.querySelector('#' + CSS.escape(firstFill.fieldId))) {
-          flash('The ' + (entity || 'selected') + ' form is not on screen (field "' + firstFill.fieldId + '" not found). Click the ' + entity + ' entity tab first, then Run Plan.');
+        // ("Firearm" ran on the Article form, all six NOT submitted, 2026-07-02). KEPT -- that
+        // incident was real. But the question it asked was wrong.
+        //
+        // ⚠️ IT PROBED ONLY THE FIRST TEST'S FIRST FIELD AND REFUSED THE WHOLE RUN (fixed
+        // 2026-09-17). ONE targetEntity can host SEVERAL QUERYINPUTFORMs, i.e. several TABS
+        // (CAPABILITY #47 -- tabs are keyed by QIF, not entity). SC_SLED's entity='Firearm' carries
+        // ENTITY_Firearm (GunQuery, 5 tests) AND ENTITY_WantedPerson (WantedPersonQuery, 34). With
+        // the Wanted tab open, the first Firearm test is a GunQuery one, its NCICNumber is absent,
+        // and the run was refused -- so the 34 Wanted tests were UNREACHABLE FROM THE PANEL no
+        // matter which tab was showing. Rob: "i dont see wanted person in the driver test", and
+        // before that the flash itself: 'The Firearm form is not on screen (field "NCICNumber" not
+        // found)'. One cause, two symptoms, and the plan always had the tests.
+        //
+        // THE RIGHT QUESTION IS "CAN ANY OF THESE TESTS RUN HERE?", not "can the first one?".
+        // Refuse only when NOTHING in the selection is on screen -- that is the genuine wrong-form
+        // case the 2026-07-02 incident describes. Otherwise proceed: the driver skips off-form
+        // tests per-test (BUILD 2026-09-17d) without submitting them, so a mixed selection is safe.
+        const fieldsOf = t => (Array.isArray(t.fills) ? t.fills : [t.fills]).filter(f => f && f.fieldId);
+        const onForm = t => { const ff = fieldsOf(t); return ff.length > 0 && ff.every(f => document.querySelector('#' + CSS.escape(f.fieldId))); };
+        const runnable = tests.filter(onForm);
+        if (!runnable.length) {
+          const probe = fieldsOf(tests[0])[0];
+          flash('None of the ' + tests.length + ' test(s) for "' + (entity || 'all') + '" match the form on screen'
+            + (probe ? ' (e.g. field "' + probe.fieldId + '" not found)' : '')
+            + '. Open the tab that owns this query and press Run Plan again.');
           return;
         }
-        runStatus.style.color = '#fa0'; runStatus.textContent = `Running ${tests.length} tests for ${entity || 'all'}…`;
+        if (runnable.length < tests.length) {
+          // Say this out loud BEFORE the run so a partial pass is expected rather than alarming.
+          console.warn('[USx-UI] ' + runnable.length + ' of ' + tests.length + ' test(s) are on the form shown; '
+            + (tests.length - runnable.length) + ' belong to another tab of the same entity and will be SKIPPED (nothing sent). '
+            + 'Run this entity once per tab to cover them all.');
+        }
+        // Report the count that will ACTUALLY run, not the count selected -- otherwise a two-tab
+        // entity reads "Running 39 tests" and then reports 5, which looks like 34 failures.
+        runStatus.style.color = '#fa0';
+        runStatus.textContent = runnable.length === tests.length
+          ? `Running ${tests.length} tests for ${entity || 'all'}…`
+          : `Running ${runnable.length} of ${tests.length} tests for ${entity || 'all'} (${tests.length - runnable.length} on another tab)…`;
         run.disabled = true;
         try {
           const results = await window.__usxRunPlan(plan, entity || undefined);
@@ -1466,5 +1497,5 @@
 
   window.__usxUiTimer = setInterval(tick, 1000);
   tick();
-  console.log('%c[USx-UI]', 'color:#fa0;font-weight:bold', 'control panel injected. BUILD 2026-09-17c -- READ THIS LINE FIRST IF A BUTTON SEEMS MISSING. If the console does not say 2026-09-17c, the extension did not reload and no amount of clicking will help. DEPLOY NOW RE-READS THE JOB FILE ON EVERY CLICK (it used to act on the copy fetched at PAGE LOAD, so a job re-cut while the page sat open was invisible -- that is why RUN THE JOB FOR THIS TENANT appeared broken on SC_SLED: three jobs were cut in one session and the panel held the first). A config pull that got NOTHING now reads RED, partial AMBER. THE READ SIDE IS ONE BUTTON: RUN THE JOB (reads providers\\PULL_JOB.json via serve_plans GET /pulljob and pulls exactly the tenants it names; it RE-FETCHES on every click, so re-cutting the job needs no reload). Refresh tenant list stays beside it because the job is DERIVED from the roster. EVERYTHING ELSE -- 7 census, 7b RESCAN, 6b manual pull, 1/3/4/5/6 -- is behind the MORE TOOLS bar, which is now a bordered amber control rather than grey text, and the panel scrolls (max-height) instead of running off the bottom of the screen. Earlier: BUILD 2026-09-11h (THE JOB IS A BUTTON, not a console command -- Rob: "i will not run commands in the console", a standing GUI-ONLY rule I broke by shipping the runner as __usxJob(). The ad-hoc EXECUTE button is GONE with it: that was the decision-assembled-at-the-keyboard path, so the ONLY write path is now generate a job file, read it, press the button. DEPLOY has NO PROVIDER BOX: the provider comes from serve_plans /target/<deptId> -- the recorded intent, not something typed, because a typo there imports the wrong provider and every guard still passes. The panel STATES the resolved target before anything is clicked, and refuses an unrecorded or scope-excluded tenant while the buttons are still cold. Earlier: the DEPLOY section -- dry-run and execute buttons over deploy_probe.js, the only write path; payload fetched from serve_plans /build/<PROVIDER> so it is the repo artifact byte-for-byte. Adds the Capture-this-page form-element button -- read-only live-DOM capture for measuring the import dialog before automating it. STEP 3 CLEANUP: the admin panel now shows only the standing workflow -- 2 list tenants, 6b pull the configs, 7 census. Buttons 1/3/4/5/6 are HIDDEN behind a collapsed diagnostics toggle, not deleted: their handlers read inputs that would throw if removed, and a deleted code path is how the driver died for five days).');
+  console.log('%c[USx-UI]', 'color:#fa0;font-weight:bold', 'control panel injected. BUILD 2026-09-17d -- READ THIS LINE FIRST IF A BUTTON SEEMS MISSING. If the console does not say 2026-09-17d, the extension did not reload and no amount of clicking will help. DEPLOY NOW RE-READS THE JOB FILE ON EVERY CLICK (it used to act on the copy fetched at PAGE LOAD, so a job re-cut while the page sat open was invisible -- that is why RUN THE JOB FOR THIS TENANT appeared broken on SC_SLED: three jobs were cut in one session and the panel held the first). A config pull that got NOTHING now reads RED, partial AMBER. THE READ SIDE IS ONE BUTTON: RUN THE JOB (reads providers\\PULL_JOB.json via serve_plans GET /pulljob and pulls exactly the tenants it names; it RE-FETCHES on every click, so re-cutting the job needs no reload). Refresh tenant list stays beside it because the job is DERIVED from the roster. EVERYTHING ELSE -- 7 census, 7b RESCAN, 6b manual pull, 1/3/4/5/6 -- is behind the MORE TOOLS bar, which is now a bordered amber control rather than grey text, and the panel scrolls (max-height) instead of running off the bottom of the screen. Earlier: BUILD 2026-09-11h (THE JOB IS A BUTTON, not a console command -- Rob: "i will not run commands in the console", a standing GUI-ONLY rule I broke by shipping the runner as __usxJob(). The ad-hoc EXECUTE button is GONE with it: that was the decision-assembled-at-the-keyboard path, so the ONLY write path is now generate a job file, read it, press the button. DEPLOY has NO PROVIDER BOX: the provider comes from serve_plans /target/<deptId> -- the recorded intent, not something typed, because a typo there imports the wrong provider and every guard still passes. The panel STATES the resolved target before anything is clicked, and refuses an unrecorded or scope-excluded tenant while the buttons are still cold. Earlier: the DEPLOY section -- dry-run and execute buttons over deploy_probe.js, the only write path; payload fetched from serve_plans /build/<PROVIDER> so it is the repo artifact byte-for-byte. Adds the Capture-this-page form-element button -- read-only live-DOM capture for measuring the import dialog before automating it. STEP 3 CLEANUP: the admin panel now shows only the standing workflow -- 2 list tenants, 6b pull the configs, 7 census. Buttons 1/3/4/5/6 are HIDDEN behind a collapsed diagnostics toggle, not deleted: their handlers read inputs that would throw if removed, and a deleted code path is how the driver died for five days).');
 })();
