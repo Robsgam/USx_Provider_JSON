@@ -1,0 +1,183 @@
+TX_TLETS -- 2025 TLETS FullAccessManual REFERENCE NOTES
+=======================================================
+Source:  providers/TX_TLETS/source/2025 TLETS FullAccessManual.pdf
+         ("TCIC/TLETS Operation Manual -- Current as of 01012025", 19,085 extracted lines)
+Read in full and recorded 2026-09-17 at Rob's request ("review the doc in tis entirey foir
+reference"). Applies to TX_TLETS and, for the CHRI sections, to TX_TLETS_CCH.
+
++---------------------------------------------------------------------------------------------+
+| THIS FILE IS REFERENCE ONLY. IT IS NOT AN AUTHORITY AND MUST NEVER BE USED AS ONE.          |
+|                                                                                             |
+| The Source Authority table is unchanged and absolute:                                       |
+|   * WHICH QUERIES we build       -> the devdoc "Basic Queries Supported" list                |
+|   * WHETHER A FIELD IS MANDATORY -> the raw <Requirements> of that <Combination>             |
+|   * METADATA ALWAYS WINS on fields. It is not a tiebreaker to weigh, and there is no third  |
+|     source to consult (Rob 2026-09-17: "i've pushed th absolute truth that metadata alwasy   |
+|     wins and you are still tripping over that fact").                                       |
+|                                                                                             |
+| This is an OPERATOR manual for humans typing TLETS forms. It describes the STATE's message   |
+| formats, not the CommSys interface we build against. Where it disagrees with the metadata,   |
+| THE METADATA DECIDES AND THE DISAGREEMENT IS NOT REOPENED -- see section 6.                  |
+| Its legitimate uses: understanding what a transaction DOES, reading returns, officer-guide   |
+| wording, and explaining a mnemonic whose MessageKey description is too narrow (section 2).   |
++---------------------------------------------------------------------------------------------+
+
+1. STRUCTURE OF THE MANUAL (where to look)
+------------------------------------------
+  lines     1 - 1320   Administration, security, dissemination policy, sanctions. Governance only;
+                       no field or scope authority. Includes CJIS access rules, CHRI storage and
+                       destruction, the Michael Morton Act, and misuse sanctions.
+  lines  1322 - 2820   Texas vehicle registration: REG (1326), QLP (2248), RQ (2308), RNQ (2575)
+  lines  2821 - 3037   LQ (2821), MQ (2841), QB (2894), BQ (2972)
+  lines  3038 - 3514   QG (3038) + serial-number matching rules
+  lines  3515 - 3689   Image Indicator (IND) semantics + wanted-person returns
+  lines  3690 - 6026   TCIC person files NOT in our scope: QID, QOT, QPO, QBN, QM, QGL, QND,
+                       GDQ, QU, QFA, CWQ
+  lines  6027 - 7310   Driver: DL (6027), DQ (7096), KQ (7267), DNQ (7295)
+  lines  7311 - 9230   CHRI: QH (7399), QR (7941), IQ (8197), FQ (8247), AQ (8353), AR (8380)
+  lines  9231 - 9560   NCIC LW (9231), DW (9334)
+  lines  9559 - 9709   *** COMBINATION FORMS: RSDW, RSDWW, Master Query (QUERY) *** see section 2
+  lines  9710 - 13362  ORION, NIQ, NAQ/NIQ, interstate Nlets (WQ/VQ/XQ/UQ), Canadian, Interpol
+  lines 13363 - 19085  ENTRY / MODIFY / CANCEL transactions (ERV, ERB, EFG, ELA, EW, ENVP,
+                       protection orders, dental). We build QUERIES only -- these correspond to
+                       the BEP* and WMPE* metadata transactions and are all correctly unbuilt.
+
+2. THE MOST IMPORTANT FINDING -- COMBINATION FORMS (manual lines 9559-9709)
+--------------------------------------------------------------------------
+The manual, verbatim: "Combination forms allow a user to enter data into a single form. The data
+will be automatically re-formatted to the specific forms required for the desired stolen/wanted
+and/or registration/driver license check."
+
+  RSDW    by NAME (NAM) -- vehicle registration + stolen + driver licence + wanted (QWA),
+          in-state and/or out-of-state, one transaction. "This form cannot be used for states with
+          unique query requirements, like the KQ needing ATN and PUR fields."
+  RSDWW   by OLN -- vehicle registration + stolen + driver licence + wanted (QW).
+          "This form cannot be used for out-of-state warrants; warrants require a name and date of
+          birth for out-of-state queries."
+  QUERY   Master Query -- the superset: registration/stolen + DL/wanted + GUN (SER, MAK) +
+          ARTICLE (SER, TYP) + BOAT (BHN, REG). "This form cannot be used for states with unique
+          query requirements."
+  Batch   QAB / QBB / QGB / QSB / QVB / QWB -- multiple items, multiple identifiers, one form.
+          No corresponding metadata transaction; out of scope.
+
+WHY THIS MATTERS: the metadata MessageKey for RSDWW reads only "Driver License Inquiry by OLN"
+(TX_TLETS.xml line 156), which is far narrower than what the form does. That narrow description
+is what produced the original (wrong) premise of ACCEPTED_DIVERGENCES row 14, corrected 2026-09-17.
+
+A COMBINATION FORM IS THE DATA-MINING PATTERN, IN THE STATE'S OWN WORDS. One input, re-formatted
+server-side into several transactions. This is the same mechanism audit_data_mined.ps1 documents
+and the reason for Rob's standing rule: never build the QV/QW shadows -- the state runs them off
+our single request and returns the tags. See also the SC_SLED compound keys (QVRQ/QWDQ/QBBQ),
+which are this same idea expressed as one MessageKey.
+
+STILL CORRECTLY UNBUILT. RSDWW appears as a Combination in three transactions:
+DriverLicenseQuery (line 15736, BUILT), TxDriverMultiQuery (17610), TxRSDWMultiQuery (17929).
+Neither multi-query transaction is in the devdoc Basic list, so both are out of scope; and inside
+DriverLicenseQuery the RSDWW alternative needs exactly set[OperatorLicenseNumber], identical to the
+built DQOLN, so first-match routing can only ever fire one. Full reasoning: registry row 14.
+
+3. WHAT THE MANUAL CORROBORATES ABOUT OUR BUILD (no action -- confirmation)
+--------------------------------------------------------------------------
+  RQ (2308)   "By LIC: *LIC *LIY *LIT" and "By VIN: *VIN" (VMA/VYR optional). This AGREES with the
+              metadata exactly -- VehicleRegistrationQuery RQ{Plate} carries LicensePlateNumber +
+              LicensePlateYear + LicensePlateTypeCode all in <Set>. It is also precisely why the
+              CAD plate defaults (PlateYear / PlateType) exist on the RQ path.
+              Header carries *Nlets Destination Code (DRI) -- RQ is the OUT-OF-STATE path, which
+              confirms the RQ=OutOfState / REG=InState orientation (devdoc #3/#4 vs #1).
+              "Texas Only: Financial Responsibility Type (FRT)" -- FRT is an in-state DMV field.
+  DQ (7096)   "By NAM/DOB: *NAM *SEX *DOB" and "By OLN: *OLN". Matches our DQName + DQOLN.
+              Optional: CDL, IMQ, RSN, EML -- the Image/Reason/Email trio we build together.
+  KQ (7267)   Same two branches (KQName / KQOLN), but its optionals ADD Attention (ATN) and
+              Purpose Code (PUR), which DQ does not list. That is independent corroboration of the
+              DH-suffix design: Attention and PurposeCode belong on the Driver History card only.
+  QB (2894)   "By REG/BHN -- At Least One of the Following: REG, BHN" (a <Choice>), plus "By NIC:
+              *NIC". Optional IND + RSH. Matches QBRegistrationNumber / QBBoatHullIdNumber /
+              QBNCICNumber and the RelatedHitSearchIndicator + ImageIndicator optionals.
+  QG (3038)   "By SER: *SER", "OR by Serial # and one of CAL / MAK / MOD", "By NIC: *NIC".
+              Matches QGGunSerialNumber + QGNCICNumber with make/caliber/model as optionals.
+  IND (3515)  "If the IND is Y, image data related to a primary hit response would be a mugshot,
+              if available." Plain confirmation of ImageIndicator semantics.
+  CHRI        QH (7399) requires *PUR *REQ *OPR *RFI; QR (7941) requires *PUR *ATN *RFI plus one
+              of FBI/SID; IQ/FQ/AQ (8197/8247/8353) each require *PUR *ATN *RFI. Every one of
+              those is present in the TX_TLETS_CCH metadata <Set>s as PurposeCode, Attention and
+              InquiryReason. Corroborated -- nothing owed.
+
+4. AVAILABLE TO A TLETS OPERATOR BUT NOT OURS TO BUILD (all correctly absent)
+-----------------------------------------------------------------------------
+  (a) NO METADATA TRANSACTION EXISTS -- CommSys does not expose these at all, so there is nothing
+      to build and no gap. Verified against the transaction-name census of TX_TLETS.xml:
+        RNQ (2575)  vehicle registration by OWNER NAME (*DRI *NAM, optional DOB/AGE)
+        DNQ (7295)  driver licence by NAME only (*NAM, optional AGE/SEX/CTY/COU/NXT)
+        QLP (2248)  Texas Licence Plate Reader file (*LIC or *PIC, with date-range search)
+        LQ, MQ, QNIC, TQ/TU, QO/MO, NIQ, NAQ, ACQ, AVQ, FQC, GQ, SQ, HQ, WLQ, CTSI, PAQ, CCQ,
+        SWQ, SOQ/SON, WQ, VQ, XQ, UQ, CAQ, CGQ, CBQ, IVQ, FPQ/FVQ/FTQ, and the batch forms.
+  (b) IN METADATA BUT NOT devdoc-BASIC -- out of scope, same class as the AZ_AZDPS WMPI removal:
+        TxDriverMultiQuery, TxRSDWMultiQuery, TxVehicleRegistrationQuery, TxDriverHistoryQuery,
+        TxTletsQfa (QFA), WantedPersonQuery + WMPIWantedPersonQuery (WQ/QW),
+        WMPIMissingPersonQuery (QM), WMPIUnidentifiedPersonQuery (QU),
+        WMPIProtectionOrderQuery + ProtectiveOrderQuery (QPO), WMPISexOffenderQuery,
+        StolenVehicleQuery (QV), StolenSecuritiesQuery.
+  (c) BOAT BY NAME IS NOT A GAP. The manual's BQ (2972) lists a third branch, "By NAM/DOB: *NAM
+      *DOB". The metadata defines NO by-name combination for BoatQuery -- BQ has exactly
+      RegistrationNumber and BoatHullIdNumber, each <Set> with <Any>State. Our five Boat combos
+      equal the five metadata combinations exactly. Metadata is field authority; nothing is owed.
+  (d) ENTRY TRANSACTIONS (manual lines 13363+) are the BEP*/WMPE* metadata transactions. We build
+      queries only.
+
+5. OPERATIONAL DETAIL WORTH KEEPING (officer-guide / response-reading material)
+------------------------------------------------------------------------------
+  * "TLETS users are allowed a maximum of five (5) inquiries in a single transmission." REG accepts
+    LIC up to 5, VIN up to 5, PLCD up to 5; RQ and BQ accept DRI/DST up to five. This is what the
+    State2-State5 / NletsDestination2-5 metadata fields are for. Multi-state broadcast is OUT OF
+    SCOPE (2026-08-02) -- recorded here to explain the fields, NOT to reopen the question.
+  * GUN SERIAL MATCHING (3038+): query the frame number first; if a serial exceeds 20 characters
+    query the RIGHTMOST 20 first, then the leftmost; embedded alphabetic characters are IGNORED for
+    matching, so 369J257 also retrieves 369257 and 369M257, but prefix/suffix letters ARE matched.
+  * "Vehicle registration inquiries to Missouri (MO) by VIN require the vehicle make and year."
+    A per-destination conditional our config cannot express -- but VMA/VYR are in the RQ{VIN}
+    any[], so the officer CAN supply them. Not a defect.
+  * Out-of-state returns are NOT standardised and vary substantially by state. Common prefixes:
+    LIC LIT LIY VIN VYR VMA VMO VST VCO; driver returns add SOC OLN OLT EXP REST.
+  * Tribal plates return TWO responses (state + Indian Nation). Diplomatic plates use destination
+    code US. FRVP (Financial Responsibility Verification Program) returns can read
+    "VERIFY MANUALLY" and support a multiple-response form.
+  * Samuel Allen Law (1339): since 2019-09-01 a registrant may disclose a communication impediment;
+    it surfaces as a header warning and the "Communication Impediment" field on registration
+    returns. Worth knowing when reading a REG response, and a genuine officer-safety note.
+  * Specialty plate returns documented separately: special plates, plate-with-owner, DEALER plates
+    (master dealer number), temporary eTAG, NMVTIS, SALVAGE plates, disabled-person placard, and
+    the "STOLEN VERIFY TCIC BY VIN" caution line.
+
+6. WHERE THE MANUAL DISAGREES WITH OUR AUTHORITIES -- RECORDED, NOT ACTED ON
+---------------------------------------------------------------------------
+REG (manual lines 1326-1338) marks "* Indicates Mandatory Field" and stars ONLY
+Registration Type (RGT). License Plate (LIC), License Year (LIY), Financial Responsibility Type
+(FRT), VIN and Placard are all UNSTARRED.
+
+That agrees with NEITHER of our authorities:
+    metadata REG <Set> : LicensePlateNumber + LicensePlateYear + FinancialResponsibilityType
+                         (State in <Any>)  -> all three MANDATORY
+    devdoc  #1         : LicensePlateNumber, LicensePlateYear mandatory, [FRT] bracketed optional
+    manual             : only RGT mandatory
+
+METADATA WINS AND THIS IS SETTLED. FRT stays in set[]. The adjudication is recorded in
+TX_TLETS_ACCEPTED_DIVERGENCES.txt (VehicleInsuranceRegistrationQuery | REGLicensePlateNumber |
+LicensePlateYear | devdoc-optional-unreachable) with both candidate fixes measured and rejected.
+The manual is IRRELEVANT to that decision and finding a third answer here changes nothing --
+hunting a casting vote is the failure mode, not diligence. DO NOT REOPEN ON THIS SECTION.
+
+Two lesser notes of the same kind, also metadata-wins, also not acted on:
+  * Registration Type (RGT) is starred mandatory on REG by the manual and is not a field our REG
+    combination defines at all. Not in metadata -> not built. Adding it would be over-inclusion.
+  * IQ (8197) documents three alternative branches (By DOB/SEX, By SOC, By MNU). The metadata
+    collapses IQ to ONE combination requiring Name+BirthDate+SexCode (with SocialSecurityNumber
+    and MiscellaneousNumber in <Any>), i.e. only the DOB/SEX branch is mandatory. Our TX_TLETS_CCH
+    build follows the metadata.
+
+7. OWED TO COMMSYS (documentation fixes, not code)
+--------------------------------------------------
+  * Drop the devdoc bracket around FinancialResponsibilityType on combination #1 so the devdoc
+    agrees with its own metadata.
+  * The RSDWW MessageKey description "Driver License Inquiry by OLN" understates the transaction;
+    it is a combination form spanning registration, stolen, driver licence and wanted. The narrow
+    description directly caused a wrong adjudication that stood from 2026-07-28 to 2026-09-17.
