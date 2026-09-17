@@ -1,4 +1,4 @@
-================================================================
+﻿================================================================
   STATUS: SC_SLED
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Current: v1.11 | 77P/0F/0W/2LIM | Updated 2026-09-17
@@ -49,3 +49,11 @@ NOTES
     - DriverLicenseQuery QWDQ / ImageIndicator  -- devdoc-optional-unreachable
     - WantedPersonQuery QWA.P  / VIN + Make     -- demoted-to-any (nested-Set group)
     - WantedPersonQuery QWA.VM / Plate + State  -- demoted-to-any (nested-Set group)
+
+LIVE TEST RESULTS -- MC (post_test.ps1)
+--------------------------------------------------
+  #     Date        Entity      Combo                Result    Notes
+  ---   ----------  ----------  -------------------  --------  -----
+  ---   2026-09-17 Vehicle    VehStolen:QV.P_af_VehicleIdentificationNumber PASS     QV.P_af_VehicleIdentificationNumber (auto)
+  ---   2026-09-17 Vehicle    VehReg:QVRQ.V_af_vehicleYear PASS     QVRQ.V_af_vehicleYear (auto)
+  ---   2026-09-17 Vehicle    VehReg:QVRQ.V        PASS     QVRQ.V (auto)

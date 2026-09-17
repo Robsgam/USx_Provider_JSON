@@ -1,4 +1,4 @@
-==============================================================================
+﻿==============================================================================
   SUPPORTED QUERY VALIDATION REPORT -- SC_SLED v1.11
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 JSON version: v1.11
@@ -24,14 +24,14 @@ VEHICLE
   VehicleRegistrationQuery  (metadata QVRQ -- "SC Vehicle Stolen/Reg Inquiry", COMPOUND)
     [PENDING] QVRQ.P   set: LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear
                        any: RegistrationState
-    [PENDING] QVRQ.V   set: VehicleIdentificationNumber
+    [CONFIRMED] QVRQ.V   set: VehicleIdentificationNumber
                        any: RegistrationState, VehicleMakeCode, vehicleYear
                        gate: LicensePlateNumber NOT_EXISTS  (Plate > VIN priority)
 
   VehicleStolenQuery  (metadata QV -- "Stolen Vehicle Inquiry", NCIC)
     [PENDING] QV.VM    set: VehicleIdentificationNumber, VehicleMakeCode
                        gate: LicensePlateNumber NOT_EXISTS
-    [PENDING] QV.P     set: LicensePlateNumber
+    [CONFIRMED] QV.P     set: LicensePlateNumber
                        any: VehicleIdentificationNumber, RegistrationState, VehicleMakeCode
 
   !! CO-FIRE, MEASURED -- NOT A DEFECT MARKER, A TESTING INSTRUCTION.
