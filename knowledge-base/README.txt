@@ -3288,16 +3288,33 @@ probe_control_types.ps1 -- WHICH FORM CONTROL TYPES DOES THE PLATFORM ACTUALLY H
   answer (8a: a probe reporting a systemic finding is guilty until its denominator shows).
   m43Forms was checked as a third source and yields no resolvedName in the one export that
   carries it -- NOT evidence either way, recorded so nobody re-checks it.
-  DISCRIMINATING TEST if a multi-line control is still wanted: a throwaway probe JSON with
-  a candidate resolvedName imported to usx-sc-sled (which carries nothing precious), then
-  read the rendered card -- the method that established CAPABILITY #47 and LIMITATION #46.
+  !! THE CENSUS WAS RIGHT AND ITS CONCLUSION WAS WRONG, WHICH IS THE WHOLE POINT OF THIS
+  TOOL'S WARNING. The five types it found ARE the five types in use. But `FormTextarea`
+  exists in the platform and appears in NONE of the 66 configs -- it was RENDERED on
+  usx-sc-sled 2026-09-17 (CAPABILITY #48). A census bounds CURRENT USE, never the
+  registry. Run it before promising a control; do NOT cite it to refuse one. The
+  discriminating test that settled it: a throwaway probe JSON carrying the candidate
+  resolvedName, hand-imported to usx-sc-sled (which carries nothing precious), then read
+  the rendered card -- the method that established CAPABILITY #47 and LIMITATION #46.
 
 build_multiline_test.ps1 -- CAN ANY FORM CONTROL SHOW MORE THAN ONE LINE? (throwaway rig)
   Rob 2026-09-17, after the documentary investigation came back negative: "The probe
   import lets try that". Emits providers\MULTILINE_TEST.json. NOT a provider -- no
   provider directory, so no gate treats it as one (same shape as ENTITY_PROBE.json
   and TRANSLATE_TEST.json).
-  WHY A PROBE AT ALL when LIMITATION #48 already says no: three of #48's four sources
+  ** RESULT, MEASURED 2026-09-17, ONE IMPORT, 7 TABS -- THE PROBE PAID OFF AND THE
+  LIMITATION IS RETIRED. `FormTextarea` (LOWERCASE `a`) RESOLVES and renders a wrapping,
+  auto-growing, scrollable multi-row box. `FormTextArea` (capital A -- the spelling anyone
+  would write by hand) does NOTHING; the resolver is EXACT-MATCH, so testing both casings
+  is the only reason we have the answer, and the validator's duplicate-tag refusal is what
+  preserved it. All 5 PROPS are dead (six identical single-line boxes on the control tab).
+  All 7 tabs rendered, so AN UNKNOWN resolvedName IS IGNORED, NOT FATAL -- the HALF B risk
+  below is now MEASURED AWAY, second case after SC_SLED v1.0's unknown targetEntity. `Text`
+  did NOT render in a QIF: still no help-text channel. !! TRANSMISSION IS NOT PROVEN -- the
+  rig wired only the COMPANION into the QIDM, so that box sends nothing today, and whether
+  a NEWLINE survives the wire is still open. Full entry: PLATFORM_CONSTRAINTS CAPABILITY #48.
+  WHY A PROBE AT ALL when #48 said no (the reasoning, kept because it generalises): three
+  of #48's four sources
   are USAGE CENSUSES and the Forge migration guide says so in its own words ("only
   covers the component types and props in use today"). The fourth is a capability doc
   last touched 2026-02-27. So the documented status is "unreachable per the documented

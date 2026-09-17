@@ -1464,57 +1464,134 @@ CAPABILITY #47 (NOT a limitation): TABS ARE KEYED BY QUERYINPUTFORM, NOT BY ENTI
 
 --------------------------------------------------------------------------------
 
-LIMITATION #48: THERE IS NO MULTI-LINE / TEXTAREA FORM CONTROL. A LONG FREE-TEXT
-  FIELD IS A SINGLE-LINE `FormInput` AND THAT IS THE MOST THE JSON CAN EXPRESS.
-  CONFIRMED 2026-09-17 by FOUR independent sources (Rob: "on admi can we make the
-  text line multirow like a box for text" -- SC_SLED's AdministrativeMessage carries
-  a 501-character message in a one-line box, which is a fair thing to want fixed).
+CAPABILITY #48 (NOT a limitation -- this slot HELD A FALSE LIMITATION FOR SIX HOURS):
+                THERE *IS* A MULTI-LINE TEXTAREA CONTROL IN FORGE. resolvedName
+                **`FormTextarea`** -- LOWERCASE `a` -- renders a wrapping,
+                auto-growing, scrollable multi-row box inside a QUERYINPUTFORM.
+================================================================================
+  STATUS: RENDER LIVE-PROVEN 2026-09-17, one import on usx-sc-sled (dept 73046844870).
+          ⚠️ TRANSMISSION IS *NOT* PROVEN -- see WHAT IS PROVEN vs WHAT IS NOT below.
+  RIG: tools/build_multiline_test.ps1 -> providers/MULTILINE_TEST.json (7 tabs, 39P/0F)
+  ROB'S READING, verbatim: "#2 formtextarea is the only one that showed a multiline
+  field and the text wraps in the window and expands down with scrollbar".
 
-  WHAT THE FORM RENDERER IS: the QIF renderer is called **FORGE** (Craft.js based)
-  and serves JMS, RMS, CAD and FR. Mobile/OnScene uses a SECOND, DIFFERENT renderer
-  called **m43Forms**, which is Form.io based -- that is the `m43Forms` key sitting
-  beside `departmentBundle` in every tenant export. Form.io HAS a textarea; FORGE
-  IS THE ONE OUR JSON DRIVES AND IT DOES NOT. Do not conflate them.
+  THE MEASUREMENT. Two halves, 7 tabs, one import. The CONTROL tab rendered, which is
+  what makes every negative below a measurement instead of silence:
 
-  THE FOUR SOURCES, weakest to strongest:
-   1. OUR 21 BUILDS -- 9 component types, and a `FormInput` has only ever carried
-      fieldId / label / maxLength / initialValue. (`probe_control_types.ps1`)
-   2. 66 TENANT CONFIGS PULLED OFF THE PLATFORM, INCLUDING NOT-OUR-BUILD ones
-      authored by other engineers -- 7,414 control nodes, the same five field
-      component types (FormInput, FormSelect, FormDate, FormCheckbox,
-      FormRadioGroup), 19 distinct props, NO multiline/rows/height prop anywhere.
-      This is the source that makes it a statement about the PLATFORM rather than
-      about our habits.
-   3. Confluence "Forge -> M43Forms Migration Guide" (SEARCH/6944981063) §3
-      Component Mapping enumerates the Forge `type.resolvedName` values it converts:
-      Card, Row, FormInput, FormDate, FormSelect (two paths), FormCheckbox, and
-      Root/Form/Page as scaffolding. No textarea. ⚠️ READ ITS OWN CAVEAT: the page
-      states the script "only covers the Forge component types and props that are in
-      use today", so this is a USAGE CENSUS like #1 and #2, not a registry dump.
-   4. Confluence "Federated Search JSON Configuration Capabilities" (RND/6397788223)
-      -- THE CAPABILITY DOCUMENT, and the strongest source because it is written as
-      supported-vs-unsupported rather than as an inventory of current use. It lists
-      field props for "FormInput, FormSelect, FormDate", has an explicit "Not
-      Supported in Field Props" section, and frames every unsupported item under
-      "Unsupported Features (Require Frontend Code)". No multiline, no rows, no
-      height, and no textarea component. ⚠️ Last modified 2026-02-27, so it is ~7
-      months old -- old enough that a NEW component could exist un-documented, which
-      is why this entry is a LIMITATION on the JSON surface and not a claim about
-      Forge's source.
+  HALF A -- 5 candidate PROPS on known-good FormInputs, beside a baseline, one row each:
+    multiline=true / rows=4 / type=textarea / numberOfLines=4 / maxRows=4
+    ALL FIVE DEAD. "no lines were taller than 1" -- six boxes, identical height. An
+    unrecognised prop is silently ignored, exactly as predicted. There is no prop route.
 
-  CONSEQUENCE: a multi-row message box is a PRODUCT ASK (frontend code / Jira),
-  not a configuration change. Anything the capability doc lists as unsupported is
-  explicitly "Requires Frontend Code" -- that is the route, not a cleverer JSON.
-  ⚠️ DO NOT INVENT A `resolvedName`. An unknown component name renders NOTHING and
-  says nothing -- the retired `Convert-UsxCasing` whole-tree recase is the precedent
-  (it collapsed Craft.js `nodes` and left only tab names showing). The most the
-  proven vocabulary allows for a long field is a full-width row (`['12']`) with the
-  metadata `maxLength`, which is what SC_SLED already ships.
+  HALF B -- 6 candidate `resolvedName`s, ONE FORM EACH, each with a known-good COMPANION
+  FormInput so the result could not be ambiguous. ALL 7 TABS APPEARED:
+    FormTextarea ........ RESOLVES. Multi-line, wraps, grows downward, scrollbar.  <<<<
+    FormTextArea ........ companion only -> IGNORED
+    FormMultilineInput .. companion only -> IGNORED
+    FormLongText ........ companion only -> IGNORED
+    TextArea ............ companion only -> IGNORED
+    Text ................ companion only -> IGNORED
 
-  SAME INVESTIGATION FOUND FIVE PROPS THE DOCS SUPPORT AND WE HAVE NEVER BUILT.
-  Recorded here because the question "what else is on the table?" was answered at
-  the same time and would otherwise be re-derived. Counts are NODES across the 66
-  tenant configs; the parenthetical is the honest evidential status.
+  ⚠️ THE CASING IS THE ENTIRE FINDING, AND THE VALIDATOR IS WHY WE HAVE IT. `FormTextArea`
+  (capital A -- the spelling anyone would write by hand, and the one this KB entry would
+  have recommended had it recommended anything) does NOTHING. The resolver is EXACT-MATCH.
+  Testing both casings is the only reason the answer exists, and the first build of the rig
+  derived its QIF tags from the candidate name, so the two collided under a case-insensitive
+  comparison -- "duplicate QIF name 'ENTITY_MlFormTextarea' -- second silently overwrites
+  first". validate.ps1 refused it. Unfixed, the probe would have tested ONE casing, reported
+  TWO, and returned a FALSE NEGATIVE with a clean run. Tags are index-prefixed now.
+
+  ⚠️ AN UNKNOWN `resolvedName` IS IGNORED, NOT FATAL -- FIRST MEASUREMENT, and worth nearly
+  as much as the textarea because it de-risks every future component experiment. All 7 tabs
+  rendered with 5 unknown components among them; each unknown control simply did not appear
+  while its companion did. The form did NOT throw, the tab did NOT vanish, the module did NOT
+  die. THIS RETIRES THE WARNING THE OLD ENTRY CARRIED ("an unknown component name renders
+  NOTHING and says nothing"): the first half is right, the implied risk is not. It joins
+  SC_SLED v1.0's unknown `targetEntity` as the second measured case of Forge degrading
+  quietly rather than rejecting. ⚠️ This is a RENDER-time finding; it says nothing about the
+  IMPORTER, which rejects type mismatches outright (see the value-side notes below).
+
+  ⚠️ `Text` DOES NOT RENDER IN A QIF, so THERE IS STILL NO HELP-TEXT CHANNEL ON THE FORM.
+  It was the most valuable candidate for a reason beyond multiline -- it PROVABLY exists in
+  QUERYRESULTSLAYOUT (2 nodes across the 66 tenant configs) -- and it was ignored here. The
+  capability doc's "errorMessage, helpText, tooltip NOT supported" stands, MEASURED rather
+  than merely documented. Hints continue to live in LABELS and CARD TITLES.
+
+  WHAT IS PROVEN vs WHAT IS NOT:
+    PROVEN ...... `FormTextarea` resolves and renders a multi-row, wrapping, scrollable box.
+    PROVEN ...... the 5 props and the 5 other component names do nothing, harmlessly.
+    NOT PROVEN -- THAT A TYPED VALUE REACHES THE WIRE. The rig deliberately wired only the
+                  COMPANION into its QIDM (`MULTILINE_TEST_C1FormTextareaProbeQuery` holds
+                  one attribute, `MlCompC1FormTextarea`, and one combination on it); the
+                  candidate fieldId appears in NO attribute and NO `set[]`, because when the
+                  rig was cut nobody knew the component was an input at all. So a submit from
+                  that box sends NOTHING TODAY. A control that renders and silently discards
+                  officer input is the exact class `audit_wiring_closure` exists to catch --
+                  DO NOT SHIP IT INTO A PROVIDER ON THE RENDER ALONE.
+    NOT PROVEN -- THAT A NEWLINE SURVIVES THE WIRE. The AM body is the use case, so the value
+                  will contain LFs. They may pass through, collapse to spaces, or break the
+                  XML. This is the question that could still kill the whole thing.
+    NOT PROVEN -- whether `maxLength` is honoured on it (FreeText is capped at 501).
+
+  WHY THE FALSE LIMITATION SURVIVED FOUR SOURCES -- the lesson, and it is the SAME ONE as
+  CAPABILITY #44 six hours earlier. Three of the four were USAGE CENSUSES (our 21 builds; 7,414
+  control nodes across 66 tenant configs including other engineers' work; the Forge->M43Forms
+  migration guide, which SAYS SO IN ITS OWN WORDS -- "only covers the component types and props
+  that are in use today"). The fourth, the capability doc, is written supported-vs-unsupported
+  and IS the right kind of source, but it was last modified 2026-02-27. The entry even recorded
+  that caveat and still concluded "a multi-row message box is a PRODUCT ASK, not a configuration
+  change". NOBODY HAD EVER TRIED A NAME NOT ALREADY IN USE. 0 uses means UNTESTED, never
+  IMPOSSIBLE -- the same trap as the unused handler family, as `autoSelect=$false`, and as
+  #44's request-path handler. Rob's instruction was one sentence: "The probe import lets try
+  that". THE CORRECT RESPONSE TO A CENSUS-BACKED ABSENCE IS AN IMPORT, NOT A DOC UPDATE.
+
+  WHAT THE ASK WAS (kept -- it is why this mattered, and it is now answerable). Rob: "on admi
+  can we make the text line multirow like a box for text". SC_SLED's AdministrativeMessage
+  carries a 501-character message in a one-line box. IT IS FUNCTIONAL, NOT COSMETIC: a
+  single-line input GIVES THE OFFICER NO WAY TO ENTER A LINE BREAK AT ALL, so a 501-character
+  administrative message could only ever be ONE UNBROKEN PARAGRAPH -- a content limitation on
+  a message a human at another agency has to read, not a complaint about box height.
+
+  WHAT THE FORM RENDERER IS (unchanged and still load-bearing): the QIF renderer is **FORGE**
+  (Craft.js based) and serves JMS, RMS, CAD and FR. Mobile/OnScene uses a SECOND, DIFFERENT
+  renderer called **m43Forms**, Form.io based -- the `m43Forms` key sitting beside
+  `departmentBundle` in every tenant export. Form.io has a textarea and so, now, does Forge.
+  Do not conflate them; a finding on one is not a finding on the other.
+
+  THE VALUE SIDE WAS NEVER THE BLOCKER, and this stays recorded because it was checked properly
+  and the reasoning is reusable:
+   * `ConvertTo-Json` (via `Write-ProviderJson`) escapes any newline automatically, so a
+     multiline string has always been expressible. MEASURED on SC_SLED v1.10: 10,087 physical
+     line breaks (pretty-print whitespace BETWEEN tokens -- legal JSON) and ZERO two-character
+     `\n` escapes inside any string. ⚠️ Those two numbers are easy to conflate -- the first
+     count I took reported 10,087 as "escaped sequences", which was the pretty-printer, not
+     string content.
+   * A STRING ARRAY where the renderer expects a string is not graceful degradation, it is a
+     hard reject. `label` is a string; `templateColumns` is the ONLY array-of-strings prop and
+     it is a grid spec. Type mismatches in this config are fatal AT THE IMPORTER -- CA_eSUN
+     v3.0/v3.1 shipped `conditions` as an OBJECT where an array was required and the platform
+     rejected the WHOLE FILE (`Cannot deserialize ArrayList<Combination$Condition> from Object
+     value`). An unknown `resolvedName` being survivable (above) does NOT generalise to this.
+   * JSON5 / Hjson / YAML ARE RULED OUT AT THE IMPORTER, not by preference. Strict Java/Jackson
+     -- the same reason a top-level `version` must not exist (read as `java.lang.Integer`, and
+     a dotted string is rejected). Authoring readability is a non-issue: the JSON is GENERATED.
+
+  ONE CONTROL IS ALL THAT IS NEEDED, WHICH IS FORTUNATE: the AdministrativeMessage transaction
+  defines exactly ONE text field -- `<Field name="FreeText" type="Alphanumeric" maxLength="501">`
+  -- so a second or third "line" control would have had no metadata field to map to. Faking rows
+  was never available; a real textarea does not need it.
+
+  ALSO CORROBORATED, and it retires a recurring question: "Custom validation messages NOT
+  supported -- errorMessage, helpText, tooltip". There is NO help-text mechanism, now measured
+  twice over (the doc says it, and `Text` did not render) -- which is exactly why hints live in
+  LABELS and CARD TITLES (BUILD_RULES Section 11). That convention is not a stylistic
+  preference; it is the only channel that exists.
+
+  SAME INVESTIGATION FOUND FIVE PROPS THE DOCS SUPPORT AND WE HAVE NEVER BUILT. Recorded here
+  because the question "what else is on the table?" was answered at the same time and would
+  otherwise be re-derived. Counts are NODES across the 66 tenant configs; the parenthetical is
+  the honest evidential status. ⚠️ READ THEM IN LIGHT OF THIS ENTRY: a prop with 0 platform uses
+  is UNTESTED, not unavailable -- and one import settles it.
 
     clearOnSubmit : true   -- 79 nodes, CA_eSUN + HI_HCJDC on 6 tenants incl.
                               sandiegoharborpd-foundation. PRODUCTION-PROVEN VALUE.
@@ -1544,40 +1621,3 @@ LIMITATION #48: THERE IS NO MULTI-LINE / TEXTAREA FORM CONTROL. A LONG FREE-TEXT
                               appears in NEITHER Confluence doc. Almost certainly
                               from the radiobutton experiment (`FormRadioGroup` is
                               likewise ours-never-built, 5 nodes). Undocumented.
-
-  ALSO CORROBORATED, and it retires a recurring question: "Custom validation
-
-  ⚠️ IT IS FUNCTIONAL, NOT COSMETIC -- SHARPENED 2026-09-17 when Rob raised JSON's multiline
-  string handling (escaped \n vs string arrays vs JSON5/Hjson/YAML). That material is about
-  encoding a multiline VALUE; the blocker here is the CONTROL, and separating the two makes the
-  real consequence visible:
-
-    A single-line input GIVES THE OFFICER NO WAY TO ENTER A LINE BREAK AT ALL. So a 501-character
-    administrative message can only ever be ONE UNBROKEN PARAGRAPH. That is a content limitation
-    on a message a human at another agency has to read, not a complaint about box height.
-
-  AND THE VALUE SIDE IS ALREADY FULLY AVAILABLE, WHICH IS WHY IT IS NOT THE ANSWER:
-   * `ConvertTo-Json` (via `Write-ProviderJson`) escapes any newline automatically, so a multiline
-     string has always been expressible. MEASURED on SC_SLED v1.10: 10,087 physical line breaks
-     (pretty-print whitespace BETWEEN tokens -- legal JSON) and ZERO two-character `\n` escapes
-     inside any string. Nothing is being lost in encoding; there is simply no control that would
-     display or accept one. ⚠️ Those two numbers are easy to conflate -- the first count I took
-     reported 10,087 as "escaped sequences", which was the pretty-printer, not string content.
-   * A STRING ARRAY where the renderer expects a string is not a graceful degradation, it is a
-     hard reject. `label` is a string; `templateColumns` is the ONLY array-of-strings prop and it
-     is a grid spec. Type mismatches in this config are fatal, not ignored -- CA_eSUN v3.0/v3.1
-     shipped `conditions` as an OBJECT where an array was required and the platform rejected the
-     WHOLE FILE (`Cannot deserialize ArrayList<Combination$Condition> from Object value`).
-   * JSON5 / Hjson / YAML ARE RULED OUT AT THE IMPORTER, not by preference. The platform
-     deserializes with strict Java/Jackson -- the same reason a top-level `version` must not exist
-     (it is read as `java.lang.Integer` and a dotted string is rejected). Non-standard syntax
-     would fail at import. Authoring readability is also a non-issue: the JSON is GENERATED.
-
-  NO WORKAROUND VIA EXTRA CONTROLS EITHER, and this was checked rather than assumed: the
-  AdministrativeMessage transaction defines exactly ONE text field --
-  `<Field name="FreeText" type="Alphanumeric" maxLength="501">` -- so a second or third "line"
-  control would have no metadata field to map to. Faking rows is not available.
-  messages NOT supported -- errorMessage, helpText, tooltip". There is NO help-text
-  mechanism, which is exactly why hints live in LABELS and CARD TITLES
-  (BUILD_RULES Section 11). That convention is not a stylistic preference; it is the
-  only channel that exists.

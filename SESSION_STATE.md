@@ -37,43 +37,47 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 <!-- END GENERATED -->
 
 **MISSION** -- headline count deliberately NOT restated: it read "13 of 20" and went stale the moment
-SC_SLED became the 21st. **Derive live: `report_mission_status.ps1`.** Owed per that tool 2026-09-14:
+SC_SLED became the 21st. **Derive live: `report_mission_status.ps1`.** Owed per that tool 09-14:
 **test 5** (CA_CONTRA_COSTA BLOCKED on Rob's JAWS call; CA_SAN_LUIS_OBISPO, CA_VENTURA, LA_LEMS
-sweep-ready, CA_VENTURA owes a picklist capture; **SC_SLED sweep HELD on the docs -- but its IMPORT
-is wanted, see its section**) and **jira 2** (CA_CLETS_OCATS DEX-980; CA_eSUN DEX-1312/1313 owes a
-v3.3 release line). TX_TLETS_CCH is PARKED. **A never-tested provider is owed a SWEEP, not an
-import** (Rob 09-09) -- SC_SLED is the EXCEPTION twice over: on no tenant, and now the deploy pilot.
-**SDSO LIVE runs eSUN v1.0 vs repo v3.3** -- Rob's call. Handover: `USX_PROJECT_GUIDE.pdf`.
+sweep-ready, CA_VENTURA owes a picklist capture; SC_SLED sweep HELD, its IMPORT wanted) and **jira
+2** (CA_CLETS_OCATS DEX-980; CA_eSUN DEX-1312/1313 owes a v3.3 release line). TX_TLETS_CCH PARKED.
+**A never-tested provider is owed a SWEEP, not an import** (Rob 09-09) -- SC_SLED is the EXCEPTION
+twice over. **SDSO LIVE runs eSUN v1.0 vs repo v3.3** -- Rob's call. Handover: `USX_PROJECT_GUIDE.pdf`.
 **ANY PRIOR JSON IS ONE COMMAND:** `get_provider_version.ps1 -Provider <P> -Version <X.Y>` -- 671
 artifacts, byte-exact. RETRIEVAL, not rebuild: re-running an old script does NOT reproduce it.
 
 ## ⭐ SERVE_PLANS AND THE JOB FILES -- CHECK THIS FIRST
 
-**`serve_plans.ps1` MUST RUN DETACHED** (`Start-Process ... -WindowStyle Hidden`; a reboot or a
-background task kills it). **VERIFY BY CURLING `/ping /pulljob /job /roster` ON PORT 8477** -- name
-and start time both lied 09-14; on 09-15 I curled the WRONG PORT and got the NO-CONNECT I expected.
-**Machine pages** -- heavy gates ONE AT A TIME, never piped through `Select-String` (buffers to 0).
-**`RUN THE JOB` + `7b` RESCAN are PROVEN, not hypotheses** (09-15: 1790 indexed / 2 new / 4s). ⚠️ **PANEL
-COLOURS CHANGED 09-16:** a pull that got NOTHING reads RED, partial AMBER, green only if all accounted.
+**`serve_plans.ps1` MUST RUN DETACHED** (`-WindowStyle Hidden`; a reboot kills it). **VERIFY BY
+CURLING `/ping /pulljob /job /roster` ON PORT 8477** -- name and start time both lied 09-14; on
+09-15 I curled the WRONG PORT and got the NO-CONNECT I expected. **Machine pages:** heavy gates ONE
+AT A TIME, never piped through `Select-String` (buffers to 0). **`RUN THE JOB` + `7b` RESCAN are
+PROVEN.** ⚠️ **PANEL COLOURS 09-16:** a pull that got NOTHING reads RED, partial AMBER.
 
 ## SC_SLED v1.10 -- IMPORT IT; DO NOT SWEEP IT (Rob 2026-09-16)
 
-✅ **v1.9 tab order + layout CONFIRMED on the tenant.** v1.10 = **77P/0F/0W/2LIM, ZERO WARNs for the
-first time**, by FIXING the defect not silencing it. ⚠️ **v1.3's "capability given up" WAS HALF WRONG
-and is RETIRED:** #28 breaks only the `attributeTypeId`+`codeTypeProvider` REVERSE-LOOKUP; a control
-with its own `codeTypeCategory`/`codeTypeSource` resolves LOCALLY and sends the CODE -- which is why
-GunMake/GunCaliber/ArticleTypeCode always worked on two-QIF entities. Sex -> `NIBRS_SEX|NIBRS`
-(documented fallback, precondition CHECKED: no RMS QIDM on Firearm); Race -> `NIBRS_RACE|NIBRS` as
-MD_METERS (ALL-PASS) ships it. Scoped `raceCode`+`SexCode` divergence rows DELETED (premise gone).
-**validate.ps1 FIXED, same ruling as ImageIndicator** -- it demanded the PREFERRED SexCode pattern
-unconditionally, telling a correct build to adopt a broken one on a multi-QIF entity. Now #28-aware,
-LAW 2 both ways by planted mutation, all 21 providers re-validated with every score identical.
-⚠️ **ONE HYPOTHESIS RIDES ON THIS IMPORT:** Wanted plate State is now a dropdown via
-`NJ_NIBRS_STATE|NJ_NIBRS` -- **ZERO carriers** (all 69 state dropdowns use `attributeTypeId='STATE'`).
-**TEST: open Wanted Person, look at the State list. If EMPTY revert that ONE control to `Inp '2'`.**
-Boat's State deliberately not converted too -- one experiment per import. ⚠️ **AN ABSENCE, NOT A
-DEFERRAL:** no multi-row text box exists for the AM message (`probe_control_types.ps1`). ⚠️ **OPEN,
-NEEDS ROB:** the AM's 5 `DestinationCode` optionals are UNMAPPED -- an AM DELIVERS to the ORI named.
+✅ v1.9 tab order + layout CONFIRMED on the tenant. v1.10 = **77P/0F/0W/2LIM**. The #28 /
+Sex+Race-dropdown adjudication and the `validate.ps1` fix are CLOSED -- reasoning in the v1.10
+commit body. ⚠️ **OPEN, NEEDS ROB:** the AM's 5 `DestinationCode` optionals are UNMAPPED -- an AM
+DELIVERS to the ORI named. ⚠️ **usx-sc-sled CARRIES THE MULTILINE PROBE, NOT v1.10** (an import
+REPLACES the bundle set). **TWO THINGS OWED, one a read that expires:** the **Wanted Person State
+dropdown was NEVER READ** (`NJ_NIBRS_STATE|NJ_NIBRS`, ZERO carriers -- the only reason v1.10 went in
+at 10:24 today; EMPTY list -> revert that ONE control to `Inp '2'`), and **v1.10 must go back**.
+
+## 🟢 THE MULTILINE BOX EXISTS -- `FormTextarea`, LOWERCASE `a` (measured 2026-09-17)
+
+**`CAPABILITY #48`; the slot held a FALSE LIMITATION for six hours** (3 of its 4 sources were USAGE
+CENSUSES -- same lesson as `#44` six hours earlier). One hand-import: it renders a wrapping,
+auto-growing, scrollable multi-row box. `FormTextArea` (capital A -- the spelling anyone writes by
+hand) does NOTHING; the resolver is EXACT-MATCH and the validator's duplicate-tag refusal is the
+only reason both casings got tested. All 5 candidate PROPS dead; `Text` did NOT render (still no
+help-text channel); all 7 tabs rendered, so **an unknown `resolvedName` is IGNORED, not FATAL**.
+
+⚠️ **TRANSMISSION NOT PROVEN; THE RIG IS BUILT BUT NOT RUN.** Round 1 wired only the COMPANION, so
+that box sends nothing today. `-Components FormTextarea -Wire` emits a 2-tab v1.1 (20P/0F/2W, the
+WARNs being the by-design missing RMS bundle) with the candidate in **`any[]`** and the companion
+alone in `set[]` -- so a non-registering control cannot be mistaken for a non-transmitting one via a
+disabled Send. **Open, and it can still kill this for the AM: does a NEWLINE survive the wire?**
 
 ## ROB'S CALLS + OPEN FINDINGS -- detail lives in `FINDINGS_REGISTER.md`, do NOT restate it here
 
@@ -82,16 +86,13 @@ NEEDS ROB:** the AM's 5 `DestinationCode` optionals are UNMAPPED -- an AM DELIVE
 - **CA_eSUN v2.2: 2 BUILD_NOTES items OFF the ticket** (the 7 validator FAILs the 53 captures REFUTE; the BirthDate over-permit whose fix collapses owner-name search). **+2 from 09-14, Rob's call: 10 radiobutton-experiment ORPHANS, and it is the ONLY 1 of 15 ALL-PASS providers with no `DEX_TICKET_ARCHIVE.md`** despite a POSTED marker.
 - **LIMITATION #41** (HOME state routes a local plate to NLETS) -- paused pending CommSys; 5 providers owe a picklist capture. **CA_VENTURA hollow toggle** needs a TEST_VALUE_OVERRIDE after its capture. Portfolio 2026-09-14: **21/21 ENFORCED 741P/0F/0W**; the only 4 UNDER / 4 OVER are CA_CONTRA_COSTA, Rob's JAWS call.
 
-## THE DEPLOY LOOP IS BUILT AND PROVEN -- and ALL TENANT WORK IS HELD (Rob 2026-09-14)
+## DEPLOY LOOP BUILT + PROVEN -- ALL OTHER TENANT WORK HELD (Rob 2026-09-14)
 
-**RECOVERY RECORD: `providers\HELD_TENANT_WORK.md` -- READ IT BEFORE RESUMING.** Nothing is
-half-applied; the only outstanding action is ONE operator click. `newarkpd-foundation` (68055618928)
-runs NJ_NJCJIS v4.16 while ledger AND catalog say v4.17, proven five ways -- and per Rob it stays
-MANUAL. Loop: `emit_import_job.ps1` -> review `IMPORT_JOB.json` -> panel **RUN THE JOB FOR THIS
-TENANT** -> auto re-export -> `watch_imports.ps1` -> `verify_tenant_import`. `deploy_probe.js` is
-the ONLY writer; dry-run default; 46 mutation cases. ⚠️ **GUI only, never a console command.** ⚠️ An
-import **REPLACES** the bundle set. ⚠️ Still unexplained and worth more than the import: **WHY the
-2026-08-20 Newark import did not land.** Held (Rob's): scoping, the batch, Confluence.
+**RECOVERY RECORD: `providers\HELD_TENANT_WORK.md` -- READ BEFORE RESUMING.** Nothing half-applied;
+one operator click outstanding. Mechanics live in the `usx-deploy` skill. ⚠️ **GUI only** and an
+import **REPLACES** the bundle set. `newarkpd-foundation` runs NJ v4.16 vs ledger v4.17 and stays
+MANUAL (Rob). Still unexplained, worth more than the import: **WHY the 08-20 Newark import did not
+land.** Held (Rob's): scoping, the batch, Confluence.
 
 ## DO NOT RE-RAISE
 
@@ -99,22 +100,20 @@ import **REPLACES** the bundle set. ⚠️ Still unexplained and worth more than
   the BMVIMS case. CommSys asks HELD. TX_TLETS_CCH PARKED. DH NOT FROM CAD. TN `RQ01` + name-casing CLOSED 08-24.
 - **A keyRef NEVER reaches the wire, nor does `primaryFieldReference`** -- ask whether the label
   ships. **`[FLAG:plan-dedupe-vacuous-tests]` DONE**; inflation 2026-09-14: 927 logs / 0 findings.
-- **NY DEMOTED-QUALIFIER: CLOSED, not owed** ([KILLED] 09-09, two fixes REJECTED, see
-  `FINDINGS_REGISTER.md`). **NJ guardrail mutation: N/A, not stale** -- do NOT re-aim. Both were stale-OWED claims IN THIS FILE that invented work -- **measure before believing this file.**
-- **Jira is HELD and lifts ONE PROVIDER AT A TIME.** No approval carries to the next provider.
-- **`hawaii-dle` LIVE on v4.15 vs repo v4.20 = DECISION, NOT A GAP** (Rob 09-15: *"hawaii will sit at
-  that version until we meet with them again"*) -- reports will keep flagging it; that is correct
-  signal. **NEWARK STAYS MANUAL FOREVER**. Dallas ledger row CLOSED 09-15 (content-proven v4.22).
+- **NY DEMOTED-QUALIFIER CLOSED** ([KILLED] 09-09, 2 fixes REJECTED); **NJ guardrail mutation N/A,
+  not stale**. Both were stale-OWED claims IN THIS FILE that invented work -- **measure before
+  believing this file.** **Jira is HELD, lifts ONE PROVIDER AT A TIME**; no approval carries over.
+- **`hawaii-dle` LIVE on v4.15 vs repo v4.20 = DECISION, NOT A GAP** (Rob 09-15) -- reports will keep
+  flagging it; correct signal. **NEWARK STAYS MANUAL FOREVER.** Dallas ledger row CLOSED 09-15.
 
 ## RULES I BROKE -- READ BEFORE EDITING
 
-- Durable rules live in `usx-tooling` (6 / 8a): **a registry row suppresses only if its rule name is the
-  string the gate greps**; **validate every probe against a known answer WITH negative controls**; **a
-  `#`-COMMENTED LINE IS NOT A FINDING**; **NEVER verify a produced file with `Test-Path`** -- compare
-  write times AND distrust a tool's success line (09-17: `build_report` died at 13/17, files newer,
-  manifest stale, hash gate caught it). **REUSE THE PARSER** (ENG-STD 4.4) -- my control-type probe
-  re-read bundles by hand and got 0 nodes from all 66 exports; `Get-BundleList` knows both shapes.
-- **A SAME-LOOKING STRUCTURE ELSEWHERE IS A QUESTION, NEVER A PRECEDENT** -- read that provider's OWN
-  `<Requirements>`. **A STANDING RULE IS NOT EVIDENCE** (09-14: the `autoSelect=false` rule had ZERO
-  tenant-proven carriers). **AN EXPLANATION IS NOT A MEASUREMENT**; **A GATE THAT MEASURED NOTHING IS NOT
-  A PASS**; **MY OWN STATE ROWS GO STALE WITHIN HOURS** -- re-read before citing.
+- Durable rules live in `usx-tooling` (6 / 8a): **a registry row suppresses only if its rule name is
+  the string the gate greps**; **validate every probe against a known answer WITH negative controls**;
+  **a `#`-COMMENTED LINE IS NOT A FINDING**; **NEVER verify a produced file with `Test-Path`** (09-17
+  `build_report` died at 13/17, files newer, manifest stale); **REUSE THE PARSER** (ENG-STD 4.4 --
+  `Get-BundleList` knows both bundle shapes; hand-rolling it got 0 nodes from all 66 exports).
+- **A SAME-LOOKING STRUCTURE ELSEWHERE IS A QUESTION, NEVER A PRECEDENT.** **A STANDING RULE IS NOT
+  EVIDENCE**; **AN EXPLANATION IS NOT A MEASUREMENT**; **A GATE THAT MEASURED NOTHING IS NOT A PASS**;
+  **A CENSUS BOUNDS CURRENT USE, NOT THE PLATFORM** (09-17, #48); **MY OWN STATE ROWS GO STALE WITHIN
+  HOURS** -- re-read before citing.

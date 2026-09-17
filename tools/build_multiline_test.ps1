@@ -90,7 +90,31 @@ param(
     # HALF A -- candidate props applied to a known-good FormInput. All on the CONTROL tab, all
     # zero-risk. Value is a string where the platform's own convention is stringy (maxLength is
     # "30", not 30) except the boolean-looking one, which is sent as a real boolean like `hidden`.
-    [string]$OutPath
+    [string]$OutPath,
+
+    # ROUND 2 -- DOES THE VALUE REACH THE WIRE? Added 2026-09-17 after round 1 answered the
+    # RENDER question (CAPABILITY #48: `FormTextarea` resolves). Round 1 deliberately wired only
+    # the COMPANION, because a component that might not be an input at all has no business in a
+    # combination -- so it proved the box EXISTS and nothing about whether typing in it transmits.
+    # A control that renders beautifully and silently discards officer input is the exact defect
+    # class audit_wiring_closure exists to catch, so this must be measured before the component
+    # goes anywhere near a real provider.
+    #
+    # ⚠️ THE CANDIDATE GOES IN any[], NOT set[], AND THAT IS THE WHOLE DESIGN. If it were in
+    # set[] and its value never registered in form state, SEND WOULD STAY DISABLED and the result
+    # would be ambiguous -- "the control does not transmit" and "the control does not register"
+    # would look identical (the CA_eSUN autoSelect=$false failure shape, where Send stayed
+    # disabled and told us nothing). With the COMPANION alone in set[], Send is guaranteed to
+    # enable, the query is guaranteed to go out, and the wire XML then answers cleanly:
+    #     candidate tag present with the typed text -> IT TRANSMITS
+    #     companion tag only                        -> it renders and DISCARDS input
+    # any[] membership is what feeds a field onto the wire (the same mechanism that makes the
+    # Attention auto-handler work on HI/AZ: any[] membership alone, no set[] and no prefill).
+    #
+    # THE SECOND QUESTION THIS ANSWERS, and it is the one that can still kill the component for
+    # the AdministrativeMessage use case: DOES A NEWLINE SURVIVE? The officer's line breaks are
+    # the entire point of a textarea. They may pass through, collapse to spaces, or break the XML.
+    [switch]$Wire
 )
 
 $ErrorActionPreference = 'Stop'
@@ -194,7 +218,11 @@ foreach ($c in $Components) {
         isCanvas   = $false
         props      = [PSCustomObject]@{
             fieldId   = $candidateFid
-            label     = ("CANDIDATE resolvedName='{0}' -- if you can see this box, the component RESOLVES" -f $c)
+            label     = if ($Wire) {
+                            ("WIRE TEST -- type 3 SHORT LINES here and press ENTER between them, then fill the companion and send. resolvedName='{0}'" -f $c)
+                        } else {
+                            ("CANDIDATE resolvedName='{0}' -- if you can see this box, the component RESOLVES" -f $c)
+                        }
             maxLength = '501'
         }
         displayName = $c
@@ -229,17 +257,36 @@ foreach ($c in $Components) {
 
     $attrs  = @(Build-QidmAttribute -Name $companionFid -Size 30 -SourceField @($companionFid))
     $combos = @(Build-QidmCombo -KeyReference ('ML' + $tag.ToUpper()) -PrimaryFieldReference $companionFid -Set @($companionFid))
+    $qidmDesc = ("Throwaway QIDM for the '{0}' candidate form. Wires the COMPANION only -- the candidate may not be an input at all." -f $c)
+    if ($Wire) {
+        # Candidate in any[], companion alone in set[] -- see the -Wire parameter comment for why
+        # set[] would make a non-registering control indistinguishable from a non-transmitting one.
+        $attrs += Build-QidmAttribute -Name $candidateFid -Size 501 -SourceField @($candidateFid)
+        $combos = @(Build-QidmCombo -KeyReference ('ML' + $tag.ToUpper()) `
+            -PrimaryFieldReference $companionFid -Set @($companionFid) -Any @($candidateFid))
+        $qidmDesc = ("WIRE TEST QIDM for '{0}'. Companion in set[] guarantees Send enables; the CANDIDATE is in any[] so the wire XML shows whether its typed value -- newlines included -- reaches CommSys. Candidate tag present = it transmits; companion tag only = it renders and discards input." -f $c)
+    }
     $qidms += Build-Qidm -ProviderName $providerName -Query ($tag + 'ProbeQuery') `
         -TargetEntity $ent -QueryLabel ("Probe $c") `
         -Attributes $attrs -Combinations $combos `
-        -Description ("Throwaway QIDM for the '{0}' candidate form. Wires the COMPANION only -- the candidate may not be an input at all." -f $c)
+        -Description $qidmDesc
     $n++
 }
 
 # CONTROL FIRST in every order array. Same-entity forms render adjacent in configurations order
 # (CAPABILITY #47 + the SC_SLED v1.8 tab-order measurement), and the control is on Person which is
 # listed first, so it is the leftmost tab.
-$order = @('Person') + @($KNOWN5 | Where-Object { $_ -ne 'Person' })
+#
+# ⚠️ DERIVED FROM THE FORMS ACTUALLY EMITTED, not hardcoded to KNOWN5 -- and the validator is why.
+# The first version listed all five entities unconditionally, which is fine for the default 6
+# candidates (they cycle through every entity) but FAILS the moment you ask for a subset:
+# `-Components FormTextarea -Wire` emits Person forms only, and validate.ps1 correctly refused
+# with 4 x "Entity 'X' in order array but no QIF has targetEntity='X'". An order array naming an
+# entity with no form is a dangling reference, and round 2 is precisely a one-candidate run -- so
+# the bug was latent from the moment the -Components parameter existed and surfaced on first use.
+$used  = @($forms | ForEach-Object { $_.targetEntity } | Select-Object -Unique)
+$order = @('Person') + @($KNOWN5 | Where-Object { $_ -ne 'Person' -and $used -contains $_ })
+$order = @($order | Where-Object { $used -contains $_ })
 
 $entitiesBundle = Build-EntitiesBundle -Configurations $forms `
     -DefaultOrder $order -CadOrder $order -FrOrder $order
@@ -257,7 +304,11 @@ $providerBundle = [PSCustomObject]@{
     name           = $providerName
     type           = 'BUNDLE'   # REQUIRED -- the provider-bundle detector keys off it
     provider       = $providerName
-    description    = "Provider configuration for $providerName v1.0 -- THROWAWAY MULTILINE PROBE. 1 control form carrying $($propCandidates.Count) candidate PROPS plus $($Components.Count) candidate COMPONENTS, one form each. Import, then READ THE TABS AND THE BOX HEIGHTS."
+    description    = if ($Wire) {
+        "Provider configuration for $providerName v1.1 -- THROWAWAY MULTILINE WIRE TEST. Round 1 proved FormTextarea RENDERS (CAPABILITY #48); this round asks whether a typed value -- newlines included -- REACHES THE WIRE. Candidate in any[], companion in set[]. Import, fill both boxes with the candidate on 3 lines, send, then READ THE OUTGOING XML in dex-log."
+    } else {
+        "Provider configuration for $providerName v1.0 -- THROWAWAY MULTILINE PROBE. 1 control form carrying $($propCandidates.Count) candidate PROPS plus $($Components.Count) candidate COMPONENTS, one form each. Import, then READ THE TABS AND THE BOX HEIGHTS."
+    }
     configurations = $cfgs
 }
 
@@ -268,13 +319,31 @@ Write-Host ('  control tab props : {0}' -f (($propCandidates | ForEach-Object { 
 Write-Host ('  candidate components: {0}' -f ($Components -join ', ')) -ForegroundColor Yellow
 Write-Host ('  forms emitted     : {0} ({1} tabs expected)' -f $forms.Count, $forms.Count) -ForegroundColor DarkGray
 Write-Host ''
-Write-Host '  HOW TO READ THE RESULT:' -ForegroundColor Cyan
-Write-Host '    TAB 0 CONTROL must render. If it does not, the probe is broken -- ignore everything else.' -ForegroundColor Gray
-Write-Host '    On tab 0, any box TALLER than the baseline = that PROP works (zero-risk half).' -ForegroundColor Gray
-Write-Host '    Candidate tab with BOTH boxes  = that component RESOLVES.' -ForegroundColor Gray
-Write-Host '    Candidate tab with ONE box     = component ignored, harmless.' -ForegroundColor Gray
-Write-Host '    Candidate tab MISSING          = that component is fatal to its own form.' -ForegroundColor Gray
-Write-Host '    NO TABS AT ALL                 = an unknown component is fatal module-wide.' -ForegroundColor Gray
+if ($Wire) {
+    Write-Host '  ROUND 2 -- WIRE TEST. The RENDER question is already answered (CAPABILITY #48).' -ForegroundColor Cyan
+    Write-Host '  HOW TO RUN IT:' -ForegroundColor Cyan
+    Write-Host '    1. Open the candidate tab. Type 3 SHORT LINES in the big box, ENTER between them.' -ForegroundColor Gray
+    Write-Host '    2. Fill the COMPANION box too -- it is the set[] field, and it is what enables Send.' -ForegroundColor Gray
+    Write-Host '    3. Send, then open the outgoing XML in dex-log.' -ForegroundColor Gray
+    Write-Host ''
+    Write-Host '  HOW TO READ THE RESULT:' -ForegroundColor Cyan
+    Write-Host '    candidate tag present, line breaks intact  = IT TRANSMITS, newlines survive. DONE.' -ForegroundColor Gray
+    Write-Host '    candidate tag present, text run together   = transmits, newlines COLLAPSED (still' -ForegroundColor Gray
+    Write-Host '                                                 a better box, but not a better message).' -ForegroundColor Gray
+    Write-Host '    COMPANION tag only                         = it renders and DISCARDS officer input.' -ForegroundColor Gray
+    Write-Host '                                                 Do NOT ship it. audit_wiring_closure class.' -ForegroundColor Gray
+    Write-Host '    SEND stays disabled                        = unexpected -- the companion alone is the' -ForegroundColor Gray
+    Write-Host '                                                 set[] field, so this means the candidate' -ForegroundColor Gray
+    Write-Host '                                                 control interferes with form state. Say so.' -ForegroundColor Gray
+} else {
+    Write-Host '  HOW TO READ THE RESULT:' -ForegroundColor Cyan
+    Write-Host '    TAB 0 CONTROL must render. If it does not, the probe is broken -- ignore everything else.' -ForegroundColor Gray
+    Write-Host '    On tab 0, any box TALLER than the baseline = that PROP works (zero-risk half).' -ForegroundColor Gray
+    Write-Host '    Candidate tab with BOTH boxes  = that component RESOLVES.' -ForegroundColor Gray
+    Write-Host '    Candidate tab with ONE box     = component ignored, harmless.' -ForegroundColor Gray
+    Write-Host '    Candidate tab MISSING          = that component is fatal to its own form.' -ForegroundColor Gray
+    Write-Host '    NO TABS AT ALL                 = an unknown component is fatal module-wide.' -ForegroundColor Gray
+}
 Write-Host ''
 Write-Host '  !! AN IMPORT REPLACES THE BUNDLE SET -- this REMOVES SC_SLED from the tenant.' -ForegroundColor Red
 Write-Host '     Put the real build back afterwards: emit_import_job.ps1 -DeptId 73046844870' -ForegroundColor Red
