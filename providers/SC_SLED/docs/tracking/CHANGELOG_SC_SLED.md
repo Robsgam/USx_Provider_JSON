@@ -2,9 +2,21 @@
 
 Auto-generated from `SC_SLED_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.7** | Generated: 2026-09-16
+Current: **v1.8** | Generated: 2026-09-17
 
 ---
+
+## v1.8 -- 2026-09-17 -- ADMINISTRATIVE MESSAGE IS LAST, as asked -- and the tab-order rule is now MEASURED
+
+**CHANGED:** 1. `$amForm` AND `$amQuery` move targetEntity 'Article' -> 'Boat'. Both, not one: see below.
+         2. `$entityOrder` last element 'Article' -> 'Boat'.  
+         3. Boat's `RegistrationState` control: `Sel` (attributeTypeId='STATE') -> `Inp`, 2 chars,  
+            label 'State (2-char code; leave blank for SC)'.  
+         4. BoatQuery's `State` attribute: `-CodeTypeProvider 'NCIC'` REMOVED.  
+         No combination, keyRef, set[]/any[] or field id changed. Validator 78P -> 77P/0F/2W/2LIM  
+         (the lost PASS is the Boat State dropdown check; nothing regressed).  
+**REASON:**  Rob 2026-09-17, on the rendered v1.7 tenant: "tab order is still wrong ... put admin at
+         the end like i asked". He had asked for this order on 09-16 and v1.7 did not deliver it.  
 
 ## v1.7 -- 2026-09-16 -- OLN>NAME GUARDRAIL ON DriverRegistrationQuery -- the co-fire's missed cost
 

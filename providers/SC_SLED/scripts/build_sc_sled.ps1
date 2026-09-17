@@ -35,7 +35,7 @@ $repoRoot    = Split-Path (Split-Path $providerDir -Parent) -Parent
 . (Join-Path $repoRoot 'tools\_build_provider_helpers.ps1')
 
 $providerName = 'SC_SLED'
-$Version      = '1.7'
+$Version      = '1.8'
 $currentYear  = (Get-Date).Year.ToString()
 
 Write-Host ''
@@ -471,7 +471,12 @@ $artQuery = Build-Qidm -ProviderName $providerName -Query 'ArticleSingleQuery' `
 $boatAttrs = @(
     Build-QidmAttribute -Name 'BoatHullSerialNumber' -Size 20 -SourceField @('BoatHullIdNumber')
     Build-QidmAttribute -Name 'RegistrationNumber'   -Size 8  -SourceField @('RegistrationNumber')
-    Build-QidmAttribute -Name 'State' -Size 2 -SourceField @('RegistrationState') -TargetField 'State' -CodeTypeProvider 'NCIC'
+    # v1.8 NO codeTypeProvider -- see the RegistrationState control in $boatLayout. Boat became a
+    # TWO-QIF entity when Administrative Message moved here to sit last, so LIMITATION #28 kills the
+    # reverse-lookup; the control is now a type-in and the officer enters the 2-char code directly,
+    # which is the value that must reach the wire. A codeTypeProvider left here would be reverse-
+    # looking-up an attribute id that no longer exists.
+    Build-QidmAttribute -Name 'State' -Size 2 -SourceField @('RegistrationState') -TargetField 'State'
 )
 $boatCombos = @(
     # Hull>Registration identifier priority: hull is the unique handle.
@@ -540,12 +545,19 @@ $amCombos = @(
         -Set @('FreeText') `
         -Any @('DestinationCode','DestinationCode2','DestinationCode3','DestinationCode4','DestinationCode5')
 )
-# v1.2: TargetEntity is 'Article' -- a RECOGNISED record kind, which is what makes this form render
-# AT ALL (LIMITATION #46: an unrecognised value is silently dropped). It gets its OWN TAB because
-# tabs are keyed by QUERYINPUTFORM rather than by entity (CAPABILITY #47, LIVE-PROVEN).
-# It is NOT a claim that this searches for a person.
+# TargetEntity is a RECOGNISED record kind, which is what makes this form render AT ALL
+# (LIMITATION #46: an unrecognised value is silently dropped). It gets its OWN TAB because tabs are
+# keyed by QUERYINPUTFORM rather than by entity (CAPABILITY #47, LIVE-PROVEN). It is NOT a claim
+# that this searches for a boat.
+#
+# ⚠️ v1.8 MOVED THIS FROM 'Article' TO 'Boat' AND THE QIDM HAD TO MOVE WITH THE FORM.
+# Leaving the QIDM on Article while the QIF moved to Boat would have SILENTLY BROKEN the query:
+# LIMITATION #26 says the platform evaluates every QIDM of an entity against THAT ENTITY'S shared
+# field pool, so FreeText typed on a Boat-hosted form lands in the BOAT pool while an Article-hosted
+# QIDM reads the ARTICLE pool -- set[FreeText] would never be satisfied and NOTHING would fire, with
+# no error anywhere. The form and its QIDM must name the same entity.
 $amQuery = Build-Qidm -ProviderName $providerName -Query 'AdministrativeMessage' `
-    -TargetEntity 'Article' -QueryLabel 'Administrative Message' `
+    -TargetEntity 'Boat' -QueryLabel 'Administrative Message' `
     -Attributes $amAttrs -Combinations $amCombos `
     -Description 'AdministrativeMessage -- AM. Free text to up to five destination ORIs; the only non-search transaction SC declares as Basic. v1.1: hosted as a CARD ON THE VEHICLE QIF. Its own entity did NOT render (LIMITATION #46, measured on the first import) -- a correctly-formed sixth targetEntity is silently dropped. It is not a vehicle search; Vehicle is simply the entity with room, and the move to any other of the five is one line. Metadata makes only FreeText mandatory while the devdoc marks DestinationCode mandatory; metadata is field authority, so the destination codes are optional and the label carries the expectation.'
 
@@ -788,7 +800,21 @@ $boatLayout = MakeLayouts @(
             @{ id = 'ROW_BOAT_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber' 'Hull ID (takes priority over registration)' '20' 'ROW_BOAT_1' }
                 @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '8' 'ROW_BOAT_1' }
-                @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State (leave blank for SC)' @{ attributeTypeId = 'STATE' } 'ROW_BOAT_1' }
+                # ⚠️ TYPE-IN, NOT A DROPDOWN, SINCE v1.8 -- and this is a capability GIVEN UP, not a
+                # preference. Administrative Message now shares targetEntity='Boat' to place its tab
+                # last, which makes Boat a TWO-QIF entity, and LIMITATION #28 is explicit: "when
+                # multiple QIFs target the same entity, codeTypeProvider reverse-lookup on QIDM
+                # attributes fails -- the QIDM sends the raw attribute ID instead of the resolved
+                # code." This control was `Sel ... attributeTypeId='STATE'` paired with
+                # `-CodeTypeProvider 'NCIC'` on the BoatQuery State attribute, which is exactly that
+                # rescue pattern (AP #1: attributeTypeId WITHOUT codeTypeProvider sends the platform's
+                # internal numeric row id). Keeping the dropdown would have put a numeric id on the
+                # wire where SC expects a 2-character state code.
+                # THE COST IS SMALL AND WAS MEASURED BEFORE CHOOSING: State is any[]-ONLY on both
+                # QBBQ.H and QBBQ.R, so it is a pure optional and NOT a routing discriminator -- no
+                # BUILD_RULES 24 exposure -- and the label already told the officer to leave it blank
+                # in state. Same trade the Wanted Person card took at v1.3 for LicensePlateStateCode.
+                @{ id = 'RegistrationState_Input';  node = Inp 'RegistrationState' 'State (2-char code; leave blank for SC)' '2' 'ROW_BOAT_1' }
             )}
         )
     }
@@ -863,12 +889,12 @@ $amLayout = MakeLayouts @(
     }
 )
 $amForm = [PSCustomObject]@{
-    description  = 'Administrative Message -- ITS OWN TAB (v1.2). Declares targetEntity=Person because tabs are keyed by QUERYINPUTFORM, not by entity (CAPABILITY #47, LIVE-PROVEN: 8 forms -> 8 tabs, three sharing Person). That value is a recognised record kind, NOT a claim this searches for a person. All controls are AM-suffixed so no field can be shared with the real Person tab -- whether two forms on one entity share a field pool is unmeasured, and LIMITATION #1 makes a shared pool a live over-send risk.'
+    description  = 'Administrative Message -- ITS OWN TAB (v1.2), hosted on targetEntity=Boat since v1.8. Tabs are keyed by QUERYINPUTFORM, not by entity (CAPABILITY #47), and the entity is chosen PURELY to place the tab: same-entity tabs always render ADJACENT and in configurations[] order, so the LAST tab must sit on the LAST entity. It was on Article through v1.7 and rendered 6th, ahead of Boat -- see the TAB ORDER block. targetEntity=Boat is not a claim this searches for a boat. Its 6 field ids (FreeText, DestinationCode1-5) are fully DISJOINT from ENTITY_Boat''s 3 (BoatHullIdNumber, RegistrationNumber, RegistrationState), which matters because LIMITATION #26 makes the field pool SHARED across every QIF on one entity and LIMITATION #1 makes a shared pool an over-send risk. Neither query can match the other''s fill: AM needs set[FreeText], QBBQ.H/.R need set[BoatHullIdNumber]/set[RegistrationNumber].'
     label        = 'Administrative Message'
     layout       = $amLayout
     name         = 'ENTITY_AdministrativeMessage'
     type         = 'QUERYINPUTFORM'
-    targetEntity = 'Article'
+    targetEntity = 'Boat'
 }
 
 # =====================================================================
@@ -880,25 +906,45 @@ $amForm = [PSCustomObject]@{
 # =====================================================================
 # TAB ORDER, Rob 2026-09-16: "veh per wanted person firearm articel boat admin mesage  in that order".
 #
-# ⚠️ THE ORDER ARRAY LISTS ENTITY NAMES, AND TWO PAIRS OF TABS SHARE AN ENTITY -- so `Firearm`
-# and `Article` each appear TWICE and the array ALONE cannot say which form takes which slot:
+# ⚠️ MEASURED ON THE RENDERED TENANT AT v1.7, 2026-09-16 -- THE HYPOTHESIS THAT USED TO BE HERE IS
+# NOW ANSWERED, AND IT WAS HALF WRONG. Rob read the strip after the v1.7 import:
+#
+#     rendered v1.7 : Vehicle | Person | Wanted Person | Firearm | Article | ADMIN MESSAGE | BOAT
+#     asked for     : Vehicle | Person | Wanted Person | Firearm | Article | BOAT | ADMIN MESSAGE
+#
+# THE RULE, now LIVE-PROVEN rather than assumed:
+#   1. The order array lists ENTITY names and DUPLICATES CARRY NO INFORMATION. v1.7 shipped
+#      @('Vehicle','Person','Firearm','Firearm','Article','Boat','Article') -- two `Firearm` and two
+#      `Article` entries that cannot say WHICH form takes which slot. The array is AMBIGUOUS BY
+#      CONSTRUCTION; it effectively sets the order of the UNIQUE entities and nothing more.
+#   2. Within one entity, its forms render in CONFIGURATIONS[] ORDER -- the half that was right, and
+#      it is why Wanted Person correctly preceded Firearm.
+#   3. CONSEQUENCE, and it is the constraint that actually governs layout here:
+#      SAME-ENTITY TABS ARE ALWAYS ADJACENT. So a tab can only be LAST if it sits on the LAST
+#      entity. On Article, Administrative Message was glued to Article at position 6 and Boat was
+#      pushed to 7 -- no reordering of this array could have fixed it.
+#
+# THE v1.8 FIX therefore moves the HOST, not the order: $amForm and its QIDM go to targetEntity
+# 'Boat', Boat is last in the unique-entity order, and ENTITY_Boat precedes ENTITY_AdministrativeMessage
+# in the configurations array -- so rule 2 puts Boat 6th and Administrative Message 7th:
 #     position 1 Vehicle        -> $vehicleForm
 #     position 2 Person         -> $personForm
 #     position 3 Firearm  (1st) -> $wpForm        <- Wanted Person
 #     position 4 Firearm  (2nd) -> $firearmForm
-#     position 5 Article  (1st) -> $articleForm
-#     position 6 Boat           -> $boatForm
-#     position 7 Article  (2nd) -> $amForm        <- Administrative Message
+#     position 5 Article        -> $articleForm
+#     position 6 Boat     (1st) -> $boatForm
+#     position 7 Boat     (2nd) -> $amForm        <- Administrative Message
 #
-# [Likely] duplicates resolve by the order of the CONFIGURATIONS array, so that array is now in the
-# SAME sequence as this one -- which makes the mapping above hold if the assumption is right.
-# STATUS: HYPOTHESIS. CAPABILITY #47 proved 8 forms give 8 TABS, but nobody recorded what ORDER
-# they appeared in, so the tie-break rule for a duplicated entity name is UNMEASURED. Do not write
-# it down as fact until the rendered page is read.
-# DISCRIMINATING TEST: import and read the tab strip. If Wanted Person and Firearm are swapped, the
-# tie-break is something other than configuration order -- try reordering ONLY the configurations
-# array next, since this one is already in the requested sequence.
-$entityOrder = @('Vehicle','Person','Firearm','Firearm','Article','Boat','Article')
+# ⚠️ IT IS NOT FREE, AND THE BILL IS PAID IN $boatLayout: Boat is now a TWO-QIF entity, so
+# LIMITATION #28 breaks its codeTypeProvider reverse-lookup and RegistrationState had to become a
+# type-in. Article could host a second QIF for nothing (ArticleTypeCode resolves on the CONTROL via
+# codeTypeCategory and no Article attribute uses codeTypeProvider); Boat could not. That asymmetry
+# was measured from the emitted JSON before the move, not assumed.
+#
+# ⚠️ THE DUPLICATE ENTRIES ARE KEPT DELIBERATELY. They are inert by rule 1, and trimming this to the
+# 5 unique entities in the SAME bump would be two experiments at once: if tabs then went missing,
+# nothing would say whether the host move or the trimmed array caused it. One change per import.
+$entityOrder = @('Vehicle','Person','Firearm','Firearm','Article','Boat','Boat')
 $entitiesBundle = Build-EntitiesBundle `
     -Configurations @($vehicleForm, $personForm, $wpForm, $firearmForm, $articleForm, $boatForm, $amForm) `
     -DefaultOrder $entityOrder -CadOrder $entityOrder -FrOrder $entityOrder

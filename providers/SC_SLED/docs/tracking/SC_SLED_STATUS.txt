@@ -1,19 +1,19 @@
-﻿================================================================
+================================================================
   STATUS: SC_SLED
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-  Version: v1.7
+  Version: v1.8
   Updated: 2026-09-16
 ================================================================
 
 CURRENT STATE
 =============
   Phase: 1 COMPLETE (QIDM confirmation) -- layout built in the same pass
-  JSON: SC_SLED_v1.7.json  --  78P/0F/2W/2LIM
-  Score: 78P/0F/2W/2LIM  (BASE 78P/0F/2W/2LIM)  -- the 2 WARNs are Option A, deliberate
+  JSON: SC_SLED_v1.8.json  --  77P/0F/2W/2LIM
+  Score: 77P/0F/2W/2LIM  (BASE 77P/0F/2W/2LIM)  -- the 2 WARNs are Option A, deliberate
   Import: v1.7 IMPORTED to usx-sc-sled (73046844870) 2026-09-16 23:08Z -- CURRENT. Bundle table read via extension button 1 AFTER the import: counters moved ENTITIES 601->602, SC_SLED 4->5, RMS 70->70, and the row IDs are UNCHANGED (tfas8xq/ojke025/0ydnyze), so the three bundles were REPLACED IN PLACE. The deploy record (usx_deploy_..._22-57-43_CLICKED.json) shows guardsFailed [], target confirmed against BOTH the page and the modal field, payload SC_SLED v1.7 with [ENTITIES,SC_SLED,RMS], 1151633 bytes read back at the same size, #do-import clicked. History: v1.0 was the FIRST automated import in the project (bundle table 0 -> 3); v1.1/v1.2/v1.3/v1.5/v1.6 were NEVER imported -- v1.6 was committed carrying 3 blocking enforce FAILs and is superseded, so it must never be; v1.4 imported 2026-09-16 (ENTITIES 600->601, SC_SLED 3->4). NOTE ON THE LIMIT OF THIS EVIDENCE: that tenant's Export JSON returns no config (CLICKED-BUT-NO-JSON, re-confirmed from the 17:46Z sweep: configsAttempted 1 / handedOff 0 / noBlob 1), so NO content hash or version string can be read from the tenant. verify_tenant_import correctly FAILs with "no CURRENT config on disk" -- the tool refusing to infer, not a defect. Counter movement + bundle NAMES + the deploy record are the only evidence this tenant can yield; the platform counter is NEVER our version.
   USx tenant test: NOT STARTED (0 of 5 entities)
 
-  9 QIDMs / 18 combinations / 7 QIFs = SEVEN TABS in the order Vehicle, Person, Wanted Person, Firearm, Article, Boat, Administrative Message (v1.6, unchanged at v1.7). Person is ONE card feeding BOTH driver queries, which CO-FIRE. Wanted Person and Administrative Message each have their OWN TAB; Person is down to 2 cards / 10 fields. AdministrativeMessage has its OWN TAB, declaring targetEntity='Article' -- tabs are keyed by QUERYINPUTFORM, not by entity (CAPABILITY #47). Article, not Person, because LIMITATION #28 breaks codeTypeProvider reverse-lookup on a second QIF and all three such controls are on Person.
+  9 QIDMs / 18 combinations / 7 QIFs = SEVEN TABS, and at v1.8 the strip finally reads the order Rob asked for: Vehicle, Person, Wanted Person, Firearm, Article, Boat, Administrative Message. THE RULE IS NOW LIVE-PROVEN, not assumed -- v1.7 rendered Administrative Message 6th and Boat 7th, and Rob read the strip: (1) the ENTITIES order array lists ENTITY names, so DUPLICATE entries carry NO information about which form takes which slot; (2) within one entity, forms render in configurations[] order; (3) therefore SAME-ENTITY TABS ARE ALWAYS ADJACENT and a tab can only be LAST if it sits on the LAST entity. v1.8 moves Administrative Message (QIF *and* QIDM -- LIMITATION #26 means a QIF on one entity with its QIDM on another silently fires NOTHING) from targetEntity='Article' to 'Boat'. Person is ONE card feeding BOTH driver queries, which CO-FIRE. Wanted Person and Administrative Message each have their OWN TAB. Tabs are keyed by QUERYINPUTFORM, not by entity (CAPABILITY #47). PRICE PAID, recorded not hidden: Boat is now a TWO-QIF entity, so LIMITATION #28 breaks its codeTypeProvider reverse-lookup and its State control dropped from a dropdown to a 2-char type-in -- it is any[]-only on both Boat combos, so not a routing field. Article could have hosted a second QIF for free (ArticleTypeCode resolves on the CONTROL and no Article attribute uses codeTypeProvider) but Article is not the last entity.
   First ground-up provider since the toolchain changed; first build authored with
   the Build-Qidm / Build-QidmAttribute / Build-QidmCombo helpers.
 

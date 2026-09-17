@@ -1,7 +1,7 @@
 ======================================================================
-  PICKLIST / DROPDOWN REPORT: SC_SLED_v1.7
-  Source: SC_SLED_v1.7.json
-  Generated: 2026-09-16 17:51
+  PICKLIST / DROPDOWN REPORT: SC_SLED_v1.8
+  Source: SC_SLED_v1.8.json
+  Generated: 2026-09-17 08:32
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -10,10 +10,6 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
   Entity: Article
     ArticleTypeCode [Article Type (required)]
       Config: codeTypeCategory=NCIC_ARTICLE_TYPE, codeTypeSource=CA_CLETS
-
-  Entity: Boat
-    RegistrationState [State (leave blank for SC)]
-      Config: attributeTypeId=STATE
 
   Entity: Firearm
     GunCaliber [Caliber (optional)]
@@ -61,9 +57,6 @@ SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
         codeTypeProvider=NIBRS
       State -> State
         codeTypeProvider=NCIC
-    Config: SC_SLED_BoatQuery
-      State -> State
-        codeTypeProvider=NCIC
 
   Config Type: QUERYRESULTDATAMAPPING
     Config: SC_SLED_Results
@@ -107,11 +100,8 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
   QIDM: SC_SLED_DriverRegistrationQuery
     State -> targetField=State, codeTypeProvider=NCIC
 
-  QIDM: SC_SLED_BoatQuery
-    State -> targetField=State, codeTypeProvider=NCIC
-
 ======================================================================
   SUMMARY
 ======================================================================
-  Form dropdowns: 12
-  QRDM code type attrs: 16
+  Form dropdowns: 11
+  QRDM code type attrs: 15

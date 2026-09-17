@@ -2,6 +2,78 @@
   BUILD NOTES: SC_SLED
   Created: 2026-09-14
 ================================================================
+v1.8  2026-09-17  ADMINISTRATIVE MESSAGE IS LAST, as asked -- and the tab-order rule is now MEASURED
+  CHANGED: 1. `$amForm` AND `$amQuery` move targetEntity 'Article' -> 'Boat'. Both, not one: see below.
+           2. `$entityOrder` last element 'Article' -> 'Boat'.
+           3. Boat's `RegistrationState` control: `Sel` (attributeTypeId='STATE') -> `Inp`, 2 chars,
+              label 'State (2-char code; leave blank for SC)'.
+           4. BoatQuery's `State` attribute: `-CodeTypeProvider 'NCIC'` REMOVED.
+           No combination, keyRef, set[]/any[] or field id changed. Validator 78P -> 77P/0F/2W/2LIM
+           (the lost PASS is the Boat State dropdown check; nothing regressed).
+  REASON:  Rob 2026-09-17, on the rendered v1.7 tenant: "tab order is still wrong ... put admin at
+           the end like i asked". He had asked for this order on 09-16 and v1.7 did not deliver it.
+
+           WHAT HE READ, AND WHAT IT PROVED. v1.7 rendered:
+               Vehicle | Person | Wanted Person | Firearm | Article | ADMIN MESSAGE | BOAT
+           against the requested:
+               Vehicle | Person | Wanted Person | Firearm | Article | BOAT | ADMIN MESSAGE
+           Six of seven were right. That one swap settled a HYPOTHESIS this script had been carrying
+           since v1.3, and it was HALF WRONG:
+             1. The order array lists ENTITY names and DUPLICATES CARRY NO INFORMATION. v1.7 shipped
+                ('Vehicle','Person','Firearm','Firearm','Article','Boat','Article') -- two `Firearm`
+                and two `Article` entries, and nothing in that array can say which FORM takes which
+                slot. It is AMBIGUOUS BY CONSTRUCTION: it orders the UNIQUE entities, nothing more.
+             2. Within one entity, its forms render in CONFIGURATIONS[] ORDER. This half WAS right,
+                and it is why Wanted Person correctly preceded Firearm.
+             3. CONSEQUENCE, and this is the constraint that actually governs the layout:
+                SAME-ENTITY TABS ARE ALWAYS ADJACENT, so a tab is LAST only if it sits on the LAST
+                entity. On Article, Administrative Message was GLUED to Article at position 6 and
+                pushed Boat to 7. NO REORDERING OF THE ORDER ARRAY COULD HAVE FIXED IT -- which is
+                why v1.8 moves the HOST rather than the order.
+
+           THE QIDM HAD TO MOVE WITH THE FORM, and getting this wrong would have failed silently.
+           LIMITATION #26: the platform evaluates every QIDM of an entity against THAT ENTITY'S
+           shared field pool. A QIF on Boat with its QIDM still on Article means FreeText lands in
+           the BOAT pool while the QIDM reads the ARTICLE pool -- set[FreeText] is never satisfied,
+           NOTHING fires, and no gate or error says so. Verified on the emitted JSON: AM QIDM
+           targetEntity=Boat.
+
+  THE PRICE, PAID IN $boatLayout AND RECORDED RATHER THAN HIDDEN:
+           Boat is now a TWO-QIF entity, and LIMITATION #28 is explicit -- "when multiple QIFs target
+           the same entity, codeTypeProvider reverse-lookup on QIDM attributes fails; the QIDM sends
+           the raw attribute ID instead of the resolved code." Boat's State was the exact rescue
+           pattern: `Sel` with `attributeTypeId='STATE'` (which alone sends the platform's internal
+           numeric row id -- AP #1) paired with `-CodeTypeProvider 'NCIC'` on the attribute to resolve
+           it back to a code. Keeping the dropdown would have put a numeric id on the wire where SC
+           expects a 2-character state code. So the control is a type-in and the codeTypeProvider is
+           gone with it -- there is no attribute id left to reverse-look-up.
+
+           THE COST WAS MEASURED BEFORE CHOOSING, not rationalised after:
+             - State is `any[]`-ONLY on BOTH Boat combos (QBBQ.H set[BoatHullIdNumber] any[State];
+               QBBQ.R set[RegistrationNumber] any[State]). A pure optional, NOT a routing
+               discriminator, so there is no BUILD_RULES 24 exposure.
+             - The label already told the officer to leave it blank in state.
+             - Precedent on this same provider: Wanted Person's LicensePlateStateCode became a
+               type-in at v1.3 for this identical reason.
+
+           WHY BOAT AND NOT ARTICLE BORE IT -- an asymmetry read from the emitted JSON, not assumed.
+           Article hosts a second QIF for FREE: `ArticleTypeCode` resolves itself on the CONTROL
+           (codeTypeCategory NCIC_ARTICLE_TYPE / codeTypeSource CA_CLETS) and a census of every
+           attribute carrying codeTypeProvider or attributeTypeId shows NO Article attribute uses
+           either -- so #28 has nothing to break there. Boat could not: its State depended on the
+           reverse-lookup. Article is simply not the last entity, so it could not host the last tab.
+
+  ⚠️ A FALSE ALARM I RAISED AND THEN REFUTED, kept here because I nearly acted on it: seeing
+           GunMake/GunCaliber on ENTITY_Firearm (shared with Wanted Person since v1.3) I flagged the
+           same #28 exposure. The census above says NO Firearm attribute carries codeTypeProvider
+           either -- those dropdowns resolve on the control like Article's. There was nothing to
+           break and there never had been. Reading the emitted JSON killed it in one command.
+
+  ⚠️ THE DUPLICATE ORDER ENTRIES ARE KEPT ON PURPOSE. They are inert by rule 1 above, and trimming
+           the array to the 5 unique entities in the SAME bump would be two experiments at once: if
+           tabs then went missing, nothing would say whether the host move or the trimmed array
+           caused it. One change per import.
+
 v1.7  2026-09-16  OLN>NAME GUARDRAIL ON DriverRegistrationQuery -- the co-fire's missed cost
   CHANGED: `DQ.RN` gains `conditions: [{ field: [OperatorLicenseNumber], operator: NOT_EXISTS }]`.
            One combination, one condition. No field, label, layout, order or attribute change.

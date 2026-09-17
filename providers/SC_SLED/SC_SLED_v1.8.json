@@ -5554,13 +5554,13 @@
                                                                                                                },
                                                                                   "RegistrationState_Input":  {
                                                                                                                   "type":  {
-                                                                                                                               "resolvedName":  "FormSelect"
+                                                                                                                               "resolvedName":  "FormInput"
                                                                                                                            },
-                                                                                                                  "displayName":  "Select",
+                                                                                                                  "displayName":  "Input",
                                                                                                                   "props":  {
                                                                                                                                 "fieldId":  "RegistrationState",
-                                                                                                                                "label":  "State (leave blank for SC)",
-                                                                                                                                "attributeTypeId":  "STATE"
+                                                                                                                                "label":  "State (2-char code; leave blank for SC)",
+                                                                                                                                "maxLength":  "2"
                                                                                                                             },
                                                                                                                   "isCanvas":  false,
                                                                                                                   "hidden":  false,
@@ -5713,13 +5713,13 @@
                                                                                                                     },
                                                                                        "RegistrationState_Input":  {
                                                                                                                        "type":  {
-                                                                                                                                    "resolvedName":  "FormSelect"
+                                                                                                                                    "resolvedName":  "FormInput"
                                                                                                                                 },
-                                                                                                                       "displayName":  "Select",
+                                                                                                                       "displayName":  "Input",
                                                                                                                        "props":  {
                                                                                                                                      "fieldId":  "RegistrationState",
-                                                                                                                                     "label":  "State (leave blank for SC)",
-                                                                                                                                     "attributeTypeId":  "STATE"
+                                                                                                                                     "label":  "State (2-char code; leave blank for SC)",
+                                                                                                                                     "maxLength":  "2"
                                                                                                                                  },
                                                                                                                        "isCanvas":  false,
                                                                                                                        "hidden":  false,
@@ -5953,13 +5953,13 @@
                                                                                                                        },
                                                                                           "RegistrationState_Input":  {
                                                                                                                           "type":  {
-                                                                                                                                       "resolvedName":  "FormSelect"
+                                                                                                                                       "resolvedName":  "FormInput"
                                                                                                                                    },
-                                                                                                                          "displayName":  "Select",
+                                                                                                                          "displayName":  "Input",
                                                                                                                           "props":  {
                                                                                                                                         "fieldId":  "RegistrationState",
-                                                                                                                                        "label":  "State (leave blank for SC)",
-                                                                                                                                        "attributeTypeId":  "STATE"
+                                                                                                                                        "label":  "State (2-char code; leave blank for SC)",
+                                                                                                                                        "maxLength":  "2"
                                                                                                                                     },
                                                                                                                           "isCanvas":  false,
                                                                                                                           "hidden":  false,
@@ -6016,7 +6016,7 @@
                                                    "targetEntity":  "Boat"
                                                },
                                                {
-                                                   "description":  "Administrative Message -- ITS OWN TAB (v1.2). Declares targetEntity=Person because tabs are keyed by QUERYINPUTFORM, not by entity (CAPABILITY #47, LIVE-PROVEN: 8 forms -\u003e 8 tabs, three sharing Person). That value is a recognised record kind, NOT a claim this searches for a person. All controls are AM-suffixed so no field can be shared with the real Person tab -- whether two forms on one entity share a field pool is unmeasured, and LIMITATION #1 makes a shared pool a live over-send risk.",
+                                                   "description":  "Administrative Message -- ITS OWN TAB (v1.2), hosted on targetEntity=Boat since v1.8. Tabs are keyed by QUERYINPUTFORM, not by entity (CAPABILITY #47), and the entity is chosen PURELY to place the tab: same-entity tabs always render ADJACENT and in configurations[] order, so the LAST tab must sit on the LAST entity. It was on Article through v1.7 and rendered 6th, ahead of Boat -- see the TAB ORDER block. targetEntity=Boat is not a claim this searches for a boat. Its 6 field ids (FreeText, DestinationCode1-5) are fully DISJOINT from ENTITY_Boat\u0027s 3 (BoatHullIdNumber, RegistrationNumber, RegistrationState), which matters because LIMITATION #26 makes the field pool SHARED across every QIF on one entity and LIMITATION #1 makes a shared pool an over-send risk. Neither query can match the other\u0027s fill: AM needs set[FreeText], QBBQ.H/.R need set[BoatHullIdNumber]/set[RegistrationNumber].",
                                                    "label":  "Administrative Message",
                                                    "layout":  {
                                                                   "default":  {
@@ -6929,7 +6929,7 @@
                                                               },
                                                    "name":  "ENTITY_AdministrativeMessage",
                                                    "type":  "QUERYINPUTFORM",
-                                                   "targetEntity":  "Article"
+                                                   "targetEntity":  "Boat"
                                                }
                                            ],
                         "name":  "ENTITIES",
@@ -6942,7 +6942,7 @@
                                                       "Firearm",
                                                       "Article",
                                                       "Boat",
-                                                      "Article"
+                                                      "Boat"
                                                   ],
                                       "CAD_DISPATCH":  [
                                                            "Vehicle",
@@ -6951,7 +6951,7 @@
                                                            "Firearm",
                                                            "Article",
                                                            "Boat",
-                                                           "Article"
+                                                           "Boat"
                                                        ],
                                       "FIRST_RESPONDER":  [
                                                               "Vehicle",
@@ -6960,7 +6960,7 @@
                                                               "Firearm",
                                                               "Article",
                                                               "Boat",
-                                                              "Article"
+                                                              "Boat"
                                                           ]
                                   },
                         "provider":  "MARK43"
@@ -8923,8 +8923,7 @@
                                                                           "sourceField":  [
                                                                                               "RegistrationState"
                                                                                           ],
-                                                                          "targetField":  "State",
-                                                                          "codeTypeProvider":  "NCIC"
+                                                                          "targetField":  "State"
                                                                       }
                                                                   ],
                                                    "combinations":  [
@@ -9053,10 +9052,10 @@
                                                    "providerType":  "Commsys",
                                                    "query":  "AdministrativeMessage",
                                                    "queryLabel":  "Administrative Message",
-                                                   "targetEntity":  "Article"
+                                                   "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for SC_SLED v1.7 -- South Carolina SLED. 9 Basic transactions, 18 combinations.",
+                        "description":  "Provider configuration for SC_SLED v1.8 -- South Carolina SLED. 9 Basic transactions, 18 combinations.",
                         "name":  "SC_SLED",
                         "type":  "BUNDLE",
                         "provider":  "SC_SLED"

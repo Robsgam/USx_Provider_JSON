@@ -5,7 +5,7 @@
 > every number from `portfolio_status.ps1` / `enforce.ps1`, never from memory.
 
 <!-- BEGIN GENERATED: tools\sync_session_state.ps1 -- do not hand-edit below this line -->
-**Last updated:** 2026-09-16 (generated) | **Branch:** `main`
+**Last updated:** 2026-09-17 (generated) | **Branch:** `main`
 
 ## Tenant-test state -- GENERATED, do not hand-edit
 
@@ -56,22 +56,22 @@ and start time both lied 09-14; on 09-15 I curled the WRONG PORT and got the NO-
 **`RUN THE JOB` + `7b` RESCAN are PROVEN, not hypotheses** (09-15: 1790 indexed / 2 new / 4s). ⚠️ **PANEL
 COLOURS CHANGED 09-16:** a pull that got NOTHING reads RED, partial AMBER, green only if all accounted.
 
-## SC_SLED v1.7 -- IMPORT IT (proves the deploy path); DO NOT SWEEP IT (Rob 2026-09-16)
+## SC_SLED v1.8 -- IMPORT IT (proves the deploy path); DO NOT SWEEP IT (Rob 2026-09-16)
 
-⚠️ **IMPORT v1.7, NEVER v1.6.** v1.6 is COMMITTED AND BROKEN (`d538fbac`): 3 blocking enforce FAILs,
-shipped because I read the validator ("Validation passed") and not `enforce` -- 2nd time here, v1.2
-was the 1st. Account: its BUILD_NOTES v1.7 entry. v1.7 enforce exits 0. ⚠️ **THE SWEEP HOLD NARROWED,
-IT DID NOT LIFT** -- docs still suspect (*"the combos between veh reg adn veh stolen seem mixed"*);
-`QVRQ`/`QWDQ`/`QBBQ` are COMPOUND, re-adjudicate the Vehicle/Person split when they land. The import
-does not wait on that. 9 QIDMs / 18 combos / **7 QIFs = 7 TABS** / 78P-0F-2W-2LIM / **65 plan tests**.
-**CO-FIRE IS ROB'S ACCEPTED DESIGN** -- 1 LIM per co-firing entity; the 2 WARNs are the Option A
-trade (WantedPerson `SexCode`), deliberately NOT silenced. A plate fires `QVRQ.P` AND `QV.P` but they
-are **NOT the same request** -- what duplicates is the STOLEN CHECK. Masking unavailable. **ONLY
-provider of 21 with >1 QIF on an entity** (new `probe_multi_qif_entities.ps1`), which is why
-`emit_test_plan`'s QIF-eviction bug hit here alone. ⚠️ **OPEN, NEEDS ROB:** the AM's five
-`DestinationCode` optionals are deliberately UNMAPPED, 5 WARNs left standing -- an AM DELIVERS text to
-the ORI named there, so a guess picks a real SC recipient; self-addressing needs the tenant ORI
-`Build-Auth` reads at runtime. See its `TEST_VALUE_OVERRIDES.txt`.
+⚠️ **IMPORT v1.8. v1.7 IS ON THE TENANT WITH THE WRONG TAB ORDER; v1.6 IS BROKEN, NEVER SEND IT.**
+v1.7 measured-installed 09-16 23:08Z (counters 601/4/70 -> 602/5/70, row ids unchanged). Rob read the
+strip: *"tab order is still wrong ... put admin at the end like i asked"* -- Admin Message rendered 6th,
+Boat 7th. **TAB RULE NOW LIVE-PROVEN:** the order array's DUPLICATE entity entries carry NO information;
+forms of one entity render in `configurations[]` order; so **same-entity tabs are always ADJACENT and a
+tab is last only if it sits on the LAST entity.** v1.8 moves Admin Message (QIF *and* QIDM -- #26 makes a
+split pair fire NOTHING silently) from Article to Boat. ⚠️ **PRICE, 3rd capability given up to place a
+tab:** Boat is now 2-QIF, #28 kills its reverse-lookup, so Boat `RegistrationState` is a 2-char TYPE-IN
+(any[]-only, not a routing field). Article hosts a 2nd QIF FREE but is not last. Scoped divergence row #3.
+⚠️ **SWEEP HOLD NARROWED, NOT LIFTED** -- docs suspect (*"veh reg adn veh stolen seem mixed"*);
+`QVRQ`/`QWDQ`/`QBBQ` COMPOUND. 9 QIDMs / 18 combos / **7 QIFs = 7 TABS** / 77P-0F-2W-2LIM / 65 plan tests.
+**CO-FIRE IS ROB'S ACCEPTED DESIGN** -- 1 LIM per co-firing entity; 2 WARNs are the Option A trade, NOT
+silenced. ONLY provider of 21 with >1 QIF on an entity (`probe_multi_qif_entities.ps1`). ⚠️ **OPEN, NEEDS
+ROB:** the AM's 5 `DestinationCode` optionals are UNMAPPED on purpose (5 WARNs standing) -- an AM DELIVERS text to the ORI named there, so a guessed value picks a real SC recipient.
 
 ## ROB'S CALLS + OPEN FINDINGS -- detail lives in `FINDINGS_REGISTER.md`, do NOT restate it here
 

@@ -1,20 +1,20 @@
 ﻿================================================================
   Build Report: SC_SLED
-  Source: SC_SLED_v1.7.json
-  Generated: 2026-09-16 17:51
+  Source: SC_SLED_v1.8.json
+  Generated: 2026-09-17 08:32
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== SC_SLED_v1.7.json ===
+=== SC_SLED_v1.8.json ===
 QIFs: 7
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=4
   Person | entity=Person | qidm= | cards=1 fields=5
   Wanted Person | entity=Firearm | qidm= | cards=1 fields=18
   Firearm | entity=Firearm | qidm= | cards=1 fields=2
   Article | entity=Article | qidm= | cards=1 fields=1
-  Boat | entity=Boat | qidm= | cards=1 fields=2
-  Administrative Message | entity=Article | qidm= | cards=1 fields=6
+  Boat | entity=Boat | qidm= | cards=1 fields=3
+  Administrative Message | entity=Boat | qidm= | cards=1 fields=6
 QIDMs: 9
   SC_SLED_VehicleRegistrationQuery | attrs=7 combos=2 autoSelect=True
   SC_SLED_VehicleStolenQuery | attrs=4 combos=2 autoSelect=True
@@ -120,10 +120,10 @@ LAYOUT DETAIL
       ROW ROW_BOAT_1 [4 4 4]
         BoatHullIdNumber (Text | maxLen=20)
         RegistrationNumber (Text | maxLen=8)
-        RegistrationState (Dropdown | attributeTypeId=STATE)
+        RegistrationState (Text | maxLen=2)
 
 === Administrative Message ===
-  name=ENTITY_AdministrativeMessage | entity=Article | qidm=
+  name=ENTITY_AdministrativeMessage | entity=Boat | qidm=
   [default]
     CARD "CARD_AM"
       ROW ROW_AM_1 [12]
