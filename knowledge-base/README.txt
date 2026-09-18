@@ -3297,6 +3297,24 @@ probe_control_types.ps1 -- WHICH FORM CONTROL TYPES DOES THE PLATFORM ACTUALLY H
   resolvedName, hand-imported to usx-sc-sled (which carries nothing precious), then read
   the rendered card -- the method that established CAPABILITY #47 and LIMITATION #46.
 
+build_sharedquery_probe.ps1 -- CAN ONE `query` LIVE ON TWO ENTITIES AT ONCE? (throwaway rig)
+  Rob 2026-09-18: "the wanted person query will need to cofire with person queires and vehicle
+  queires were appropriate ... roll the wanted person query onto to each tab". That needs ONE
+  transaction split across TWO entities, and two measured facts box it in:
+    - checkboxes are keyed by ENTITY (CHECKBOX_PROBE), so Person combos and Vehicle combos MUST
+      live in separate QIDMs -- a Vehicle-tab fill can never trigger a Person-entity query;
+    - the wire carries the `query` value as <MessageType> (read from a real SC_SLED capture), so
+      both QIDMs MUST share the same `query` -- an invented name would go out on the wire.
+  Therefore: same `query`, DIFFERENT `name` (a duplicate config name is a silent overwrite at
+  import), different targetEntity. Emits providers\SHAREDQ_PROBE.json. NOT a provider.
+  THE UNKNOWN: the platform spec says `query` is "used to match this config with the form the
+  user submitted" and does NOT say whether the match is by query ALONE or (query, entity). If
+  query alone, one config is silently dropped with every structural gate green.
+  Carries a CONTROL QIDM per entity with a UNIQUE query name, which is what makes a null result
+  readable: control renders + shared does not = the shared query is the cause; neither renders =
+  the probe is broken and proves nothing.
+  Usage: .\build_sharedquery_probe.ps1 [-OutPath <path>]
+
 build_checkbox_probe.ps1 -- WHAT CREATES, AND WHAT REMOVES, A QUERY CHECKBOX? (throwaway rig)
   Rob 2026-09-18: "did we probe the checkbox creation mechnism  were you gusing at naming
   values". Both answers were uncomfortable -- NO (every claim came from READING the captured
