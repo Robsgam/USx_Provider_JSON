@@ -58,6 +58,57 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 
 function Say([string]$s) { if (-not $Quiet) { Write-Host $s } }
 
+# ── A SUCCESSFUL IMPORT INVALIDATES THE NEXT JOB, AND NOTHING NOTICED ───────────────────────────
+# `expectBundlesNow` is the pre-flight's whole assertion: "the tenant is still in the state this
+# job was cut against". For a tenant whose Export JSON returns nothing, it comes from the
+# hand-maintained tenant_map row -- which only moves when a human is asked for a fresh reading.
+# So the record goes stale THE MOMENT AN IMPORT SUCCEEDS, and the very next job asserts a state
+# that our own deploy just replaced. usx-sc-sled was refused THREE TIMES in one hour on 2026-09-18
+# and the third refusal was pure self-harm: an 18:28 deploy of v1.15 returned CLICKED with
+# guardsFailed [] and a read-back byte match, and the v1.16 job re-cut minutes later still
+# described the 18:20 pre-import state. Rob: "still sloppy". He was right; a re-cut that cannot see
+# the deploy it follows is not automation, it is a stale file with a timestamp.
+#
+# THE DEPLOY RECORD IS EVIDENCE, NOT INFERENCE, and that distinction is the whole reason this is
+# allowed where guessing is not (see the REFUSAL below, and _whyThisRowNeededTwoCorrections in
+# tenant_map.json -- I guessed that row twice and was wrong twice). The record is a timestamped
+# artifact written BY the write path, naming the payload's bundles, the modal's target deptId, and
+# a normalized-vs-read-back byte comparison. Combined with the measured, twice-demonstrated fact
+# that AN IMPORT REPLACES THE BUNDLE SET, a CLICKED record with no failed guards tells us what the
+# tenant carries now with better provenance than a hand-typed row.
+# It is still NOT proof of landing -- "A CLICKED verdict is not proof", and only
+# verify_tenant_import can settle that -- which is why this sets an EXPECTATION for a guard that
+# re-checks the live page, and never a claim of what is installed.
+#
+# REFUSES to use a record that is: not CLICKED, dryRun, carrying failed guards, aimed at a
+# different deptId than its filename, or OLDER than the tenant_map reading. Older matters most --
+# a human reading always wins over an earlier deploy, because the reading is the live page.
+function Get-LatestDeployState {
+    param([string]$DeptIdArg, [datetime]$NotBefore)
+    $dl = Join-Path $env:USERPROFILE 'Downloads'
+    if (-not (Test-Path $dl)) { return $null }
+    $files = @(Get-ChildItem $dl -Filter ("usx_deploy_{0}_*.json" -f $DeptIdArg) -File -ErrorAction SilentlyContinue |
+               Sort-Object LastWriteTime -Descending)
+    foreach ($f in $files) {
+        try { $o = Get-Content $f.FullName -Raw | ConvertFrom-Json } catch { continue }
+        if ("$($o.verdict)" -ne 'CLICKED') { continue }
+        if ($o.dryRun) { continue }
+        if (@($o.guardsFailed | Where-Object { $_ }).Count -gt 0) { continue }
+        if ("$($o.modalTargetShown)" -and "$($o.modalTargetShown)" -ne "$DeptIdArg") { continue }
+        $b = @($o.payloadBundles | Where-Object { $_ })
+        if (-not $b.Count) { continue }
+        if ($NotBefore -and $f.LastWriteTime.ToUniversalTime() -le $NotBefore) { return $null }
+        return [pscustomobject]@{
+            Bundles  = $b
+            Provider = "$($o.payloadProvider)"
+            Version  = "$($o.payloadVersion)"
+            At       = $f.LastWriteTime.ToUniversalTime().ToString('s') + 'Z'
+            File     = $f.Name
+        }
+    }
+    return $null
+}
+
 Say '===================================================================================='
 Say '  EMIT IMPORT JOB -- the reviewed artifact that authorises an import'
 Say '===================================================================================='
@@ -168,6 +219,12 @@ foreach ($f in $files) {
         tenantStatus     = $st
         liveConfirmed    = $false
         expectBundlesNow = $have
+        # THE SECOND LEGITIMATE PRE-STATE: our own previous install of this same provider. The
+        # guard must not refuse an upgrade just because the recorded state predates the install it
+        # is upgrading. See deploy_probe.bundlePreflight -- it takes this ONLY when the recorded
+        # expectation fails and the page matches this set EXACTLY, and it prints which it took.
+        acceptBundlesAlso = @($repoHash.Keys | Where-Object { $_ -like ('{0}|*' -f $pn) } |
+                               ForEach-Object { $_.Split('|')[1] } | Select-Object -Unique | Sort-Object)
         willChange       = $changed
         done             = $false
     }
@@ -229,6 +286,27 @@ if ($DeptId -and -not $All -and -not $Provider) {
         if ($rowRaw.Count -eq 1 -and ($rowRaw[0].PSObject.Properties.Name -contains '_bundlesMeasured')) {
             $measuredNote = "$($rowRaw[0]._bundlesMeasured)"
         }
+        # A DEPLOY THAT HAPPENED AFTER THE READING SUPERSEDES THE READING. The note's leading
+        # timestamp is the reading's own claim of when it was taken; parse it as UTC (a bare cast
+        # yields unspecified-kind and compares wrong against a local file time -- that bug once made
+        # a staleness guard unable to fire at all). No parsable timestamp = no override, because
+        # "newer than the reading" is unanswerable and a guess here is what caused the refusals.
+        $readingAt = $null
+        if ($measuredNote -match '^\s*(\d{4}-\d{2}-\d{2}T[0-9:]+Z)') {
+            try {
+                $readingAt = [datetime]::Parse($Matches[1], [Globalization.CultureInfo]::InvariantCulture,
+                    ([Globalization.DateTimeStyles]::AdjustToUniversal -bor [Globalization.DateTimeStyles]::AssumeUniversal))
+            } catch { $readingAt = $null }
+        }
+        if ($readingAt) {
+            $dep = Get-LatestDeployState -DeptIdArg $id -NotBefore $readingAt
+            if ($dep) {
+                Say ('  [note] {0}: a deploy SUCCEEDED after the last reading -- {1} v{2} -> [{3}] at {4}. Using that as the pre-flight expectation instead of the {5} tenant_map row (an import REPLACES the bundle set). Record: {6}' -f `
+                        $id, $dep.Provider, $dep.Version, ($dep.Bundles -join ', '), $dep.At, $Matches[1], $dep.File)
+                $recorded     = @($dep.Bundles)
+                $measuredNote = ('{0} -- from deploy record {1} (CLICKED, no guards failed), newer than the last live reading' -f $dep.At, $dep.File)
+            }
+        }
         if ($recorded.Count -gt 0 -and $measuredNote -match 'DERIVED') {
             $skipped += ('{0} -- installed bundles are DERIVED, not measured. A pre-flight expectation built from an inference will be refused against the real tenant. Re-read it first: open the tenant configuration page and press extension button 1, then update the tenant_map row from that capture.' -f $id)
             continue
@@ -252,6 +330,9 @@ if ($DeptId -and -not $All -and -not $Provider) {
                 tenantStatus     = $st2
                 liveConfirmed    = $false
                 expectBundlesNow = $recorded
+                # See the note on the other target shape: re-importing over our own prior install
+                # is the normal upgrade path and must not read as an unexpected tenant change.
+                acceptBundlesAlso = @($allB | Sort-Object)
                 expectEmpty      = $false
                 contentCompared  = $false
                 willChange       = $allB

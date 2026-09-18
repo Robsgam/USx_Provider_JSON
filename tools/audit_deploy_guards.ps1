@@ -295,6 +295,28 @@ $html = @"
          D.bundlePreflight({ expectEmpty: true, expectBundlesNow: ['ENTITIES'],
                              expectNoBundlesNamed: ['SC_SLED'] }) === null, false);
 
+  // ── acceptBundlesAlso: RE-IMPORTING OVER OUR OWN PRIOR INSTALL (added 2026-09-18) ───────────
+  // This EXEMPTION WIDENS the only write path's guard, so it gets mutations before it is trusted
+  // (usx-build Step 4: re-run the mutation whenever you widen an exemption). It exists because the
+  // guard refused usx-sc-sled THREE TIMES in an hour and was wrong the third time: a successful
+  // v1.15 deploy replaced the bundle set, and the v1.16 job -- re-cut minutes later from a reading
+  // taken BEFORE that deploy -- asserted the superseded state. Every successful import poisoned
+  // the next job.
+  // The fixture page carries ENTITIES/FL_FCIC/RMS, so it can play both sides of this directly.
+  assert('preflight ALT: stale expectation, but the page is exactly what this payload installs -> proceed',
+         D.bundlePreflight({ expectBundlesNow: ['ENTITIES', 'SHAREDQ_PROBE'],
+                             acceptBundlesAlso: ['ENTITIES', 'FL_FCIC', 'RMS'], provider: 'FL_FCIC' }), null);
+  // THE NEGATIVE THAT KEEPS IT A GATE. The alternative is not a skeleton key: if the page is not
+  // the set this payload installs either, the row is still refused. Without this case the
+  // exemption could degrade to "any acceptBundlesAlso present -> allow" and nobody would know.
+  assert('preflight ALT: alternative does not match the page either -> still refuse',
+         D.bundlePreflight({ expectBundlesNow: ['ENTITIES', 'SHAREDQ_PROBE'],
+                             acceptBundlesAlso: ['ENTITIES', 'CA_eSUN', 'RMS'], provider: 'CA_eSUN' }) === null, false);
+  // And the pre-change behaviour is untouched when a job carries no alternative at all, so an
+  // older job file cannot be silently loosened by a newer extension.
+  assert('preflight ALT: no alternative supplied -> unchanged, still refuse the stale expectation',
+         D.bundlePreflight({ expectBundlesNow: ['ENTITIES', 'SHAREDQ_PROBE'] }) === null, false);
+
   // ── THE BATCH SEAM: every DOM read must work against a DOCUMENT THAT IS NOT THIS ONE ────
   // Rob, 2026-09-11: "i want the process to be able to eventually say update all fl_fcic tenants
   // and you would create the job and i would have to launch it ... that is the eventual intent so

@@ -573,6 +573,36 @@
     }
 
     const missing = expected.filter(n => !cells.some(c => c === n || c.indexOf(n) >= 0));
+
+    // ── RE-IMPORTING OVER OUR OWN PREVIOUS INSTALL IS THE NORMAL PATH, NOT A CHANGE TO REFUSE ──
+    // THIS GUARD REFUSED usx-sc-sled THREE TIMES IN ONE HOUR AND WAS WRONG THE THIRD TIME.
+    // Its job is "confirm the tenant is still in the state the job was cut against", so that an
+    // import never silently clobbers something unexpected. But it treated the single most common
+    // legitimate state as unexpected: install v1.15, then v1.16, and the second is refused because
+    // the RECORD the job was cut from still describes whatever preceded v1.15.
+    // Measured: 18:28:46 a v1.15 deploy returned CLICKED / guardsFailed [] / read-back byte match,
+    // which REPLACED the SHAREDQ_PROBE bundle set (an import replaces, documented and measured on
+    // this very tenant). The v1.16 job was cut 10 minutes earlier from an 18:20 reading. The tenant
+    // was in a perfectly expected state; the expectation was stale.
+    // So: a page carrying EXACTLY the bundle set THIS payload installs (`acceptBundlesAlso`, which
+    // emit_import_job writes from the payload's own bundle names) is our own prior install of the
+    // same provider -- the thing we are deliberately overwriting. Accept it and SAY SO, rather than
+    // pass silently, because a guard that takes an alternative path must show which one it took.
+    // STILL REFUSES everything else: a foreign provider, a probe bundle, a partial set, a blank
+    // table. Proven failable both ways by audit_deploy_guards.
+    const alt = (t && t.acceptBundlesAlso) || [];
+    if (missing.length && alt.length) {
+      const altMissing = alt.filter(n => !cells.some(c => c === n || c.indexOf(n) >= 0));
+      if (!altMissing.length) {
+        console.log('%c[USx-DEPLOY] pre-flight: the tenant does not match the job\'s recorded state ['
+          + expected.join(', ') + '] but DOES carry exactly what this payload installs ['
+          + alt.join(', ') + '] -- that is our own previous install of ' + ((t && t.provider) || '?')
+          + ', which is what this import replaces. ACCEPTED on the alternative expectation.',
+          'color:#7c7');
+        return null;
+      }
+    }
+
     if (missing.length === (expected || []).length && missing.length > 0) {
       return 'none of the job expected bundles [' + expected.join(', ') + '] appear on this page -- either the table has not loaded or this is not the tenant the job describes';
     }
@@ -682,5 +712,5 @@
     'One tenant per call, no batch, no all. Guards: explicit deptId matching BOTH the URL and the ' +
     'modal target field, modal+textarea+button present, payload parseable and version-stamped with ' +
     'ENTITIES plus exactly one provider bundle, LIVE needs liveConfirmed, and an abort flag. ' +
-    'A CLICKED verdict is NOT proof -- verify_tenant_import.ps1 is. BUILD 2026-09-11g -- the read-back check now NORMALISES CRLF to LF before comparing (the DOM does that to textarea.value by spec, so the raw-length compare aborted a perfectly good import: deficit 10,929 == the exact CR count in that build) and verifies bundle names + version stamp rather than a byte count. Earlier: PRESENCE IS NOT OPENNESS: the import modal exists in the DOM while CLOSED (display:none), so the old "modal + textarea present" check read a shut dialog as already-open, never clicked Import JSON, and then read an empty dept-id. That single cause produced BOTH operator errors -- the bogus "ambiguous target field" and then "never populated within 8000ms". openImportModal now tests VISIBILITY, waits for the dept-id to populate, and reports never-appeared / not-visible / never-populated as three distinct failures. findTargetField resolves the measured id #import-dept-id-input. deployFromRepo resolves the provider AND the LIVE status from the repo record, not from the caller.');
+    'A CLICKED verdict is NOT proof -- verify_tenant_import.ps1 is. BUILD 2026-09-18f -- the read-back check now NORMALISES CRLF to LF before comparing (the DOM does that to textarea.value by spec, so the raw-length compare aborted a perfectly good import: deficit 10,929 == the exact CR count in that build) and verifies bundle names + version stamp rather than a byte count. Earlier: PRESENCE IS NOT OPENNESS: the import modal exists in the DOM while CLOSED (display:none), so the old "modal + textarea present" check read a shut dialog as already-open, never clicked Import JSON, and then read an empty dept-id. That single cause produced BOTH operator errors -- the bogus "ambiguous target field" and then "never populated within 8000ms". openImportModal now tests VISIBILITY, waits for the dept-id to populate, and reports never-appeared / not-visible / never-populated as three distinct failures. findTargetField resolves the measured id #import-dept-id-input. deployFromRepo resolves the provider AND the LIVE status from the repo record, not from the caller.');
 })();

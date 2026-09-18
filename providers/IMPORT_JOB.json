@@ -12,9 +12,9 @@
                    "expectBundlesNow is re-checked against the live page before writing; if the tenant changed since this job was cut the row is REFUSED, not overwritten.",
                    "A CLICKED verdict is not proof. verify_tenant_import.ps1 is."
                ],
-    "jobId":  "job-20260918-143900",
-    "createdAt":  "2026-09-18T14:39:00.7190215-04:00",
-    "repoCommit":  "6b8720c5",
+    "jobId":  "job-20260918-152704",
+    "createdAt":  "2026-09-18T15:27:04.4506764-04:00",
+    "repoCommit":  "985498fb",
     "dryRunOnly":  false,
     "forced":  false,
     "targetCount":  1,
@@ -33,8 +33,14 @@
                         "liveConfirmed":  false,
                         "expectBundlesNow":  [
                                                  "ENTITIES",
-                                                 "SHAREDQ_PROBE"
+                                                 "SC_SLED",
+                                                 "RMS"
                                              ],
+                        "acceptBundlesAlso":  [
+                                                  "ENTITIES",
+                                                  "RMS",
+                                                  "SC_SLED"
+                                              ],
                         "expectEmpty":  false,
                         "contentCompared":  false,
                         "willChange":  [

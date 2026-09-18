@@ -90,8 +90,20 @@ $BANNERS = [ordered]@{
     'automation/extension/ui.js'           = 'control panel injected\.\s*BUILD\s+(\S+?)[\s)]'
     'automation/extension/driver.js'       = 'driver ready\.\s*BUILD\s+(\S+?)[\s)]'
     'automation/extension/usx_lib.js'      = 'usx_lib loaded\.\s*BUILD\s+(\S+?)[\s)]'
-    'automation/extension/deploy_probe.js' = 'deploy_probe loaded[^\r\n]*?BUILD\s+(\S+?)[\s)]'
-    'automation/extension/admin_probe.js'  = 'admin_probe[^\r\n]*?BUILD\s+(\S+?)[\s)]'
+    # ⚠️ `[^\r\n]*?` REQUIRES THE BUILD TOKEN ON THE SAME LINE AS THE BANNER TEXT, AND THE TWO
+    # PROBE FILES WRAP THEIRS ACROSS A MULTI-LINE CONCATENATION. So this gate reported
+    # "deploy_probe.js changed but announces no BUILD" while the file had announced one all along
+    # -- and, worse, its stamp sat frozen at 2026-09-11g through every later edit, because a file
+    # the gate reads as unbannered is a file it never checks for staleness and `-Bump` never
+    # rewrites. deploy_probe.js is THE ONLY WRITE PATH in this extension; a stale and a broken copy
+    # of it look identical in the console, which is the exact failure this gate exists to prevent,
+    # occurring inside the gate (ENGINEERING_STANDARD 4.3).
+    # Found 2026-09-18 while fixing the import pre-flight -- the THIRD time Rob has had to raise
+    # extension versioning, and the third time the gate rather than the value was at fault.
+    # `[\s\S]{0,4000}?` is lazy and bounded: it crosses newlines to reach the token in the same
+    # console.log, and cannot wander into an unrelated BUILD mention further down the file.
+    'automation/extension/deploy_probe.js' = 'deploy_probe loaded[\s\S]{0,4000}?BUILD\s+(\S+?)[\s)]'
+    'automation/extension/admin_probe.js'  = 'admin_probe[\s\S]{0,4000}?BUILD\s+(\S+?)[\s)]'
 }
 function Get-FileBuild([string]$text, [string]$rx) {
     if (-not $text) { return $null }

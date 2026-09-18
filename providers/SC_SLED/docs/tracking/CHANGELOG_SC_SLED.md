@@ -6,10 +6,46 @@ Current: **v1.16** | Generated: 2026-09-18
 
 ---
 
-## v1.16 -- 2026-09-18 -- Pipeline rebuild
+## v1.16 -- 2026-09-18 -- ONE CARD PER ENTITY -- Related Hit becomes a Y/N dropdown defaulted Y, and no label says "(optional)"
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:** CARDS 7 -> 5, ONE PER ENTITY. v1.15's second Vehicle card ("WANTED PERSON -- SENT WITH
+            THE PLATE OR VIN SEARCH ABOVE") and second Person card ("... sent with the driver  
+            queries") are gone; their controls moved into the single card on each tab.  
+            Vehicle  3 rows: plate+type+year / VIN+make+year+state / NCIC Image + Related Hit  
+            Person   6 rows: OLN+State+Image / name x4 / DOB+Sex+Race / NCIC Number+Case Number  
+                             / SSN+FBI+Misc / Expand Name+Expand DOB+Related Hit  
+            Person row 1 follows the documented OLN+State+Image 6/3/3 top-row pattern  
+            (BUILD_RULES 11). Every row still sums to 12.  
+         RelatedHitSearchIndicator: 1-char FormInput -> FormSelect YES_NO_UNKNOWN|NCIC with  
+            initialValue 'Y', i.e. the same control as NCIC Image. Metadata gives it Alphabetic  
+            maxLen=1, the same shape as ImageIndicator. Added to combo defaults[] on all five QWA  
+            combinations beside the existing ImageIndicator default.  
+         LABELS: 10 parenthetical qualifiers removed across all five entities -- "(optional)" x8,  
+            "(required)", "(with name)". 11 `# LABEL-OVERRIDE:` tags added so verify_build  
+            CHECK 13 Rule 3 records them as accepted rather than warning every rebuild.  
+            State keeps its routing hint as "State - leave blank for SC" (a dash, not brackets).  
+         CARD TITLES: both co-fire announcements removed. Vehicle is "VEHICLE -- SEARCH BY PLATE,  
+            OR BY VIN"; Person is "PERSON -- SEARCH BY OLN, BY NAME + DOB + SEX, BY NCIC NUMBER,  
+            OR BY NAME + CASE NUMBER".  
+**REASON:** Rob 2026-09-18: "on veh why is it 2 cards?  same with person card  i want to keep it one
+         card if possible  and make related hit y by default and use the saem ncic image dropdown  
+         remove the both queires sent on the card titles everywhere  nothign extra in ()".  
+WHY THE SECOND CARDS WERE SAFE TO REMOVE: they separated nothing. The field pool is per ENTITY  
+         (LIMITATION #26), so controls on two cards of one tab were already one pool -- which is  
+         exactly WHY the co-fire works. Those cards existed only to ANNOUNCE it, and a card  
+         boundary that separates nothing misleads. The co-fire is stated in test_commsys's  
+         CO-FIRE SUMMARY, the test plan's coFire map and the officer-guide banner instead.  
+WHY THE PREFILLS ARE SAFE, MEASURED NOT ASSUMED: neither ImageIndicator nor  
+         RelatedHitSearchIndicator appears in any set[] or any condition anywhere in this  
+         provider -- both are any[]-only on the five QWA combos -- so BUILD_RULES 24 does not  
+         bite and neither can collapse a combination onto a plainer sibling.  
+WHY defaults[] AND NOT JUST THE FORM: CAD ignores form initialValues, so a form-only flip would  
+         leave every CAD-originated wanted-person query still sending nothing for Related Hit.  
+WIRE: <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator> now goes out on the QWA paths.  
+         Nothing else on the wire moved -- this is otherwise layout and labels.  
+GATES: validator 77P/0F/0W/2LIM · enforce 43 PASS / 0 FAIL / 0 WARN · PHASE 1 CLEAN  
+         (query trace 16 built / 0 missing, gate efficacy 13/13 killed, fuzz 8/8 caught)  
+         audit_layout_flow 5 cards / 0 findings (was 7 cards / 1 finding).  
 
 ## v1.15 -- 2026-09-18 -- WANTED PERSON ROLLED ONTO PERSON *AND* VEHICLE -- one transaction, two entities, deliberate CO-FIRE
 
