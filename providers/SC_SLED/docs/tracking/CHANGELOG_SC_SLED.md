@@ -6,15 +6,55 @@ Current: **v1.13** | Generated: 2026-09-18
 
 ---
 
-## v1.13 -- 2026-09-18 -- Pipeline rebuild
+## v1.13 -- 2026-09-18 -- SIX TABS, ONE QIF PER ENTITY -- zero stray checkboxes, and AM is the price
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:** ADMINISTRATIVE MESSAGE REMOVED. Its QIF and its QIDM are gone from the build; the
+            attributes and combinations are KEPT in the script (with the adjudicated  
+            devdoc-vs-metadata disagreement over DestinationCode) so restoring is 2 lines.  
+            Registered in ACCEPTED_DIVERGENCES as devdoc-combo-unbuilt; SQVR marks it [SKIPPED].  
+         WANTED PERSON moved to targetEntity='Other' -- the SIXTH entity, discovered in the  
+            shipping client's own enum on 2026-09-18 and CONFIRMED LIVE the same day.  
+         BOTH v1.12 MERGES UNDONE: Firearm is its own tab again (targetEntity back to Firearm),  
+            Article is its own tab again, Boat is its own tab again. The v1.12 labels  
+            "Article & Firearm" and "Boat & Administrative Message" are gone.  
+         RESULT: 6 forms on 6 DISTINCT entities -- Vehicle / Person / Other(Wanted Person) /  
+            Firearm / Article / Boat. 8 QIDMs, 17 combinations.  
+         SexCode on the Wanted Person card stays on the canonical attributeTypeId='SEX' +  
+            codeTypeProvider='NIBRS' pattern restored at v1.12.  
+**REASON:** Rob 2026-09-18, on the rendered v1.11 form: "wanted person has a firearm button at the
+         button that is greyed out ... that is not acceptable", then "boat has admin message on  
+         it too and admin has boat on it", then the instruction that produced this shape:  
+         "6 tabs  remove admin message and see what the cehckboxes look like".  
+WHY ONE QIF PER ENTITY IS THE WHOLE FIX. Query checkboxes are keyed by ENTITY, not by form --  
+         MEASURED with providers\CHECKBOX_PROBE.json on usx-sc-sled, where two forms sharing one  
+         entity showed ALL FOUR of that entity's QIDMs on BOTH tabs. So any entity carrying two  
+         forms strands a permanently-dead checkbox on each of them. With AM dropped there are  
+         exactly 6 forms for the 6 available entity slots, so no tab can show another form's  
+         query. The stray checkboxes are not merged away -- they are structurally impossible.  
+EVERY REMOVAL LEVER WAS TESTED AND FAILED (2026-09-18, measured not argued):  
+         enabled:false            -> NOT carried by the importer (checkbox still rendered)  
+         order on the form        -> NOT carried (A=2 / B=1 still rendered A first)  
+         a second provider bundle -> does NOT scope a tab (appeared on both)  
+         autoSelect:false         -> renders anyway, merely unticked ("available but unchecked")  
+         admin form<->interface   -> unlinking changed nothing  
+         behaviors block          -> not referenced anywhere in the client  
+         per-form query list      -> does not exist; the whole frontend bundle was read  
+COST, STATED: AdministrativeMessage is devdoc-Basic SUPPORTED and is now unbuilt. That is a  
+         USER-APPROVED SKIP, not an oversight. TO RESTORE: AM on targetEntity='Other' and  
+         WantedPersonQuery back on 'Firearm' -- buys a 7th tab, costs two dead checkboxes on  
+         the Firearm pair.  
 
-## v1.12 -- 2026-09-18 -- Pipeline rebuild
+## v1.12 -- 2026-09-18 -- First attempt at the greyed-checkbox fix -- SUPERSEDED BY v1.13 THE SAME DAY
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:** Merged the Firearm card onto the Article QIF and the Administrative Message card onto
+            the Boat QIF, giving 5 tabs on 5 entities. GunQuery targetEntity Firearm -> Article.  
+            Restored Wanted Person's SexCode to attributeTypeId='SEX' + codeTypeProvider='NIBRS'  
+            once LIMITATION #28 stopped applying (that part SURVIVES into v1.13).  
+**REASON:** Same complaint as v1.13. This version removed the dead checkboxes by REDUCING the form
+         count to the entity count -- correct, but it cost two tabs Rob wanted.  
+WHY IT WAS SUPERSEDED: the sixth entity `Other` was not known when v1.12 was built. Finding it  
+         meant the same cleanliness could be had while giving Firearm, Article and Boat their  
+         own tabs back -- so only ONE form had to go instead of two being merged.  
 
 ## v1.11 -- 2026-09-17 -- THE AM MESSAGE IS A MULTI-LINE BOX -- FormTextarea, and it is LIVE-PROVEN
 

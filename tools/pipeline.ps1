@@ -161,11 +161,80 @@ if (-not $batchMode) {
                 # Rebuild restarts testing: a version bump invalidates prior live logs.
                 # Archive them + reset SQVR/STATUS so all logs line up with the new JSON.
                 $resetOut = & powershell -ExecutionPolicy Bypass -File "$toolDir\reset_test_package.ps1" -Provider $provName 2>&1 | Out-String
-                if ($resetOut -match 'RESET:') {
+                $versionChanged = [bool]($resetOut -match 'RESET:')
+                if ($versionChanged) {
                     Write-Host "  [TESTS] Version changed -- USx Tenant Testing package restarted from Test 1:" -ForegroundColor Yellow
                     $resetOut -split "`n" | Where-Object { $_ -match '^\s+- ' } | ForEach-Object { Write-Host "       $($_.Trim())" -ForegroundColor DarkYellow }
                 } elseif ($resetOut -match 'ALIGNED:') {
                     Write-Host "  [TESTS] Test package already aligned to current version" -ForegroundColor DarkGray
+                }
+
+                # ── RE-CUT THE IMPORT JOB ON A VERSION BUMP ──────────────────────────────────
+                # Rob 2026-09-18: "recut the job  that should be automatic". He had just pressed
+                # RUN THE JOB and been told v1.11 while the repo was on v1.12 -- twice in one day.
+                # A version bump ALREADY re-emits the test plan, the spec plan and the picklist
+                # scope here; leaving providers\IMPORT_JOB.json pointing at the superseded build
+                # was the odd one out, and a stale job is worse than none because the panel states
+                # a version confidently.
+                # THE TENANT IS RESOLVED, NEVER DERIVED FROM THE NAME. `usx-<provider>` is NOT a
+                # reliable transform (NM_NMLETS_OFML lives on usx-nm-nmlets), so this asks the
+                # canonical resolver -- the same `Resolve-TenantIntent` that serve_plans /target
+                # and emit_import_job use -- which tenant records THIS provider as its intent.
+                # REFUSES QUIETLY AND SAYS SO: no recorded tenant, or more than one, prints a NOTE
+                # and cuts nothing. Guessing which tenant to authorise an import against is exactly
+                # the class of error the deploy guards exist to stop.
+                # ⚠️ TWO GUARDS, BOTH LEARNED THE HARD WAY ELSEWHERE IN THIS REPO:
+                #  1. ONLY ON A VERSION BUMP. Re-cutting on every build would churn the file and,
+                #     worse, keep re-authorising an import nobody asked for.
+                #  2. NEVER CLOBBER A PENDING JOB FOR ANOTHER PROVIDER. IMPORT_JOB.json is ONE
+                #     file, so rebuilding provider X would silently discard a job staged for
+                #     provider Y -- exactly the Newark job that has been sitting one click from
+                #     done for days (providers\HELD_TENANT_WORK.md). If the existing job names a
+                #     different provider, this REPORTS and cuts nothing.
+                if ($versionChanged) {
+                try {
+                    . "$toolDir\_tenant_intent.ps1"
+                    $mapPath = Join-Path $toolDir 'config\tenant_map.json'
+                    $jobPath = Join-Path $repoRoot 'providers\IMPORT_JOB.json'
+                    $pendingOther = $null
+                    if (Test-Path $jobPath) {
+                        try {
+                            $pj = Get-Content $jobPath -Raw | ConvertFrom-Json
+                            $pt = @($pj.targets | Where-Object { $_.provider -and $_.provider -ne $provName -and -not $_.done })
+                            if ($pt.Count) { $pendingOther = ($pt | ForEach-Object { "$($_.subdomain)=$($_.provider)" }) -join ', ' }
+                        } catch { }
+                    }
+                    if ($pendingOther) {
+                        Write-Host "  [IMPORT] NOT re-cut: providers\IMPORT_JOB.json holds an UNFINISHED job for another provider ($pendingOther)." -ForegroundColor DarkYellow
+                        Write-Host "           Finish or discard that first, then: tools\emit_import_job.ps1 -DeptId <id>" -ForegroundColor DarkYellow
+                    }
+                    elseif (Test-Path $mapPath) {
+                        $rows = @(Get-Content $mapPath -Raw | ConvertFrom-Json |
+                                  ForEach-Object { $_.PSObject.Properties.Value } |
+                                  ForEach-Object { $_ } |
+                                  Where-Object { $_ -and $_.deptId -and $_.subdomain -like 'usx-*' })
+                        $mine = @()
+                        foreach ($r in $rows) {
+                            $intent = Resolve-TenantIntent -DeptId "$($r.deptId)" -MapPath $mapPath
+                            if ($intent -and $intent.provider -eq $provName) { $mine += $r }
+                        }
+                        if ($mine.Count -eq 1) {
+                            $jobOut = & powershell -ExecutionPolicy Bypass -File "$toolDir\emit_import_job.ps1" -DeptId "$($mine[0].deptId)" 2>&1 | Out-String
+                            $jobLine = @($jobOut -split "`n" | Where-Object { $_ -match '^\s+JOB job-' } | Select-Object -First 1)
+                            if ($jobLine) {
+                                Write-Host "  [IMPORT] job re-cut for $($mine[0].subdomain): $($jobLine[0].Trim())" -ForegroundColor Yellow
+                            } else {
+                                Write-Host "  [IMPORT] NOTE: emit_import_job produced no job for $($mine[0].subdomain) -- nothing to import, or it refused. Run it by hand to see why." -ForegroundColor DarkYellow
+                            }
+                        } elseif ($mine.Count -eq 0) {
+                            Write-Host "  [IMPORT] NOTE: no usx-* tenant records $provName as its intent -- import job NOT cut (nothing guessed)." -ForegroundColor DarkYellow
+                        } else {
+                            Write-Host "  [IMPORT] NOTE: $($mine.Count) tenants record $provName -- refusing to choose. Cut the job by hand with -DeptId." -ForegroundColor DarkYellow
+                        }
+                    }
+                } catch {
+                    Write-Host "  [IMPORT] NOTE: import-job re-cut skipped ($($_.Exception.Message)) -- the build itself is unaffected." -ForegroundColor DarkYellow
+                }
                 }
             } else {
                 StepFail "Build had failures"
