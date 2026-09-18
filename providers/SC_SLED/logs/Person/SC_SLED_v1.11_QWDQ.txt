@@ -1,7 +1,7 @@
 ﻿================================================================
 TEST LOG: SC_SLED Person DriverLicenseQuery
-Combo: DQ_af_ImageIndicator (DQ_af_ImageIndicator (auto))
-Date: 2026-09-18 09:52:44
+Combo: QWDQ (QWDQ (auto))
+Date: 2026-09-18 09:52:45
 Result: PASS
 JSON Version: 1.11
 Entity Fingerprint: 6b2622024d03a6f12c608470909e4eac5c4177ee57b479959b3e2ef46806b96a
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"ImageIndicator":"N","OperatorLicenseNumber":"D999888777"}
+{"BirthDate":"1990-01-15","ImageIndicator":"Y","NameFirst":"JOHN","NameLast":"DOE","SexCode":"Male"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01M2TC99AHDWG8M1MC7B6CC6RZ">
+    <api:Transaction id="01M2TC8K30HPR9T3SRG1KF5PHR">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,9 +36,10 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01M2TC99AHDWG8M1MC7B6CC6RZ</Id>
-            <ImageIndicator>N</ImageIndicator>
-            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+            <Id>01M2TC8K30HPR9T3SRG1KF5PHR</Id>
+            <SexCode>M</SexCode>
+            <BirthDate>01151990</BirthDate>
+            <Name>DOE, JOHN</Name>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -55,7 +56,10 @@ RMS QUERY
 Request:
 {
     "elasticQuery":  {
-                         "dlNumber":  "D999888777"
+                         "lastName":  "DOE",
+                         "firstName":  "JOHN",
+                         "sexAttrId":  "73046851255",
+                         "dateOfBirth":  "1990-01-15"
                      },
     "from":  0,
     "size":  50
@@ -71,12 +75,13 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01M2TC99AHDWG8M1MC7B6CC6RZ
-  ImageIndicator                 N
-  OperatorLicenseNumber          D999888777
+  Id                             01M2TC8K30HPR9T3SRG1KF5PHR
+  SexCode                        M
+  BirthDate                      01151990
+  Name                           DOE, JOHN
 
 NOTES
 -----
-Automated capture (txId 01M2TC99AHDWG8M1MC7B6CC6RZ). kind=any-field; anyField=ImageIndicator; expectedKeyRef=DQ; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01M2TC8K30HPR9T3SRG1KF5PHR). kind=combo; anyField=; expectedKeyRef=QWDQ; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS

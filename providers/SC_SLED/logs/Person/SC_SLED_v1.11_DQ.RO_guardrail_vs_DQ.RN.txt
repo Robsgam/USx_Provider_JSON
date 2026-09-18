@@ -1,7 +1,7 @@
 ﻿================================================================
-TEST LOG: SC_SLED Person DriverLicenseQuery
-Combo: DQ_af_ImageIndicator (DQ_af_ImageIndicator (auto))
-Date: 2026-09-18 09:52:44
+TEST LOG: SC_SLED Person DriverRegistrationQuery
+Combo: DQ.RO_guardrail_vs_DQ.RN (DQ.RO_guardrail_vs_DQ.RN (auto))
+Date: 2026-09-18 09:52:42
 Result: PASS
 JSON Version: 1.11
 Entity Fingerprint: 6b2622024d03a6f12c608470909e4eac5c4177ee57b479959b3e2ef46806b96a
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"ImageIndicator":"N","OperatorLicenseNumber":"D999888777"}
+{"BirthDate":"1990-01-15","ImageIndicator":"Y","NameFirst":"JOHN","NameLast":"DOE","OperatorLicenseNumber":"D999888777"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01M2TC99AHDWG8M1MC7B6CC6RZ">
+    <api:Transaction id="01M2TCA3TXYSX25SBAXBW2D4MS">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -35,9 +35,9 @@ COMMSYS XML
         </Session>
         <Transaction>
           <Request>
-            <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01M2TC99AHDWG8M1MC7B6CC6RZ</Id>
-            <ImageIndicator>N</ImageIndicator>
+            <MessageType>DriverRegistrationQuery</MessageType>
+            <Id>01M2TCA3TXYSX25SBAXBW2D4MS</Id>
+            <ImageIndicator>Y</ImageIndicator>
             <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
           </Request>
         </Transaction>
@@ -55,7 +55,10 @@ RMS QUERY
 Request:
 {
     "elasticQuery":  {
-                         "dlNumber":  "D999888777"
+                         "dlNumber":  "D999888777",
+                         "lastName":  "DOE",
+                         "firstName":  "JOHN",
+                         "dateOfBirth":  "1990-01-15"
                      },
     "from":  0,
     "size":  50
@@ -71,12 +74,12 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01M2TC99AHDWG8M1MC7B6CC6RZ
-  ImageIndicator                 N
+  Id                             01M2TCA3TXYSX25SBAXBW2D4MS
+  ImageIndicator                 Y
   OperatorLicenseNumber          D999888777
 
 NOTES
 -----
-Automated capture (txId 01M2TC99AHDWG8M1MC7B6CC6RZ). kind=any-field; anyField=ImageIndicator; expectedKeyRef=DQ; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01M2TCA3TXYSX25SBAXBW2D4MS). kind=guardrail; anyField=; expectedKeyRef=DQ; firedMessageType=DriverRegistrationQuery. routing=unverified (no expectedKeyRef/combo)
 
 RESULT: PASS

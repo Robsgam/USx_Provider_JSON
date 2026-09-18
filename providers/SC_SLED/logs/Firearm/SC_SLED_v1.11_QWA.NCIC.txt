@@ -1,16 +1,16 @@
 ﻿================================================================
-TEST LOG: SC_SLED Person DriverLicenseQuery
-Combo: DQ_af_ImageIndicator (DQ_af_ImageIndicator (auto))
-Date: 2026-09-18 09:52:44
+TEST LOG: SC_SLED Firearm WantedPersonQuery
+Combo: QWA.NCIC (QWA.NCIC (auto))
+Date: 2026-09-18 09:52:42
 Result: PASS
 JSON Version: 1.11
-Entity Fingerprint: 6b2622024d03a6f12c608470909e4eac5c4177ee57b479959b3e2ef46806b96a
+Entity Fingerprint: eb73cccb645b9792f3e6dbcaa25448b1eeaf6725fa138ac56d905658db3b90c7
 Tier: Full
 ================================================================
 
 QUERY STRING
 ------------
-{"ImageIndicator":"N","OperatorLicenseNumber":"D999888777"}
+{"ImageIndicator":"Y","NCICNumber":"X123456789"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01M2TC99AHDWG8M1MC7B6CC6RZ">
+    <api:Transaction id="01M2TCAJ49VYXMHMBJXG8633WJ">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -35,10 +35,10 @@ COMMSYS XML
         </Session>
         <Transaction>
           <Request>
-            <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01M2TC99AHDWG8M1MC7B6CC6RZ</Id>
-            <ImageIndicator>N</ImageIndicator>
-            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+            <MessageType>WantedPersonQuery</MessageType>
+            <Id>01M2TCAJ49VYXMHMBJXG8633WJ</Id>
+            <ImageIndicator>Y</ImageIndicator>
+            <NCICNumber>X123456789</NCICNumber>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -52,17 +52,7 @@ Not captured
 
 RMS QUERY
 ---------
-Request:
-{
-    "elasticQuery":  {
-                         "dlNumber":  "D999888777"
-                     },
-    "from":  0,
-    "size":  50
-}
-
-Response:
-No results were created
+Not captured
 
 FIELD ANALYSIS
 --------------
@@ -71,12 +61,12 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01M2TC99AHDWG8M1MC7B6CC6RZ
-  ImageIndicator                 N
-  OperatorLicenseNumber          D999888777
+  Id                             01M2TCAJ49VYXMHMBJXG8633WJ
+  ImageIndicator                 Y
+  NCICNumber                     X123456789
 
 NOTES
 -----
-Automated capture (txId 01M2TC99AHDWG8M1MC7B6CC6RZ). kind=any-field; anyField=ImageIndicator; expectedKeyRef=DQ; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01M2TCAJ49VYXMHMBJXG8633WJ). kind=combo; anyField=; expectedKeyRef=QWA.NCIC; firedMessageType=WantedPersonQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS
