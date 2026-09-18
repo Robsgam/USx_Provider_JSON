@@ -41,6 +41,27 @@ $repo  = Split-Path -Parent $PSScriptRoot
 $uiRel = 'automation/extension/ui.js'
 $uiAbs = Join-Path $repo 'automation\extension\ui.js'
 
+# ⚠️ THE CONSOLE BANNER IS NOT THE EXTENSION'S VERSION. THIS GATE WATCHED ONLY BANNERS UNTIL
+# 2026-09-18, AND THAT IS THE THIRD TIME ROB HAS HAD TO SAY THE SAME SENTENCE.
+# 2026-09-16 "next time advance the extnsion version every time you make a change" -> banner gate
+# built. 2026-09-17 "the extension is not advancing the version like i asked" -> per-file banner
+# check added. 2026-09-18 "still no version bump on extension   this is getting tiring havig to
+# rpeat what are global instructions" -- and he was right a third time: manifest.json still read
+# 0.8.0, untouched for weeks, while THIS GATE REPORTED PASS on a bump of three console strings.
+# manifest.json's `version` is what the browser's extensions page shows and what an operator means
+# by "the extension version"; a console banner is an in-page announcement we invented. Both matter
+# and they answer different questions, so BOTH are gated now. A gate that passes while the thing it
+# is named after stands still is the LAW 2 failure happening inside the gate itself.
+$mfRel = 'automation/extension/manifest.json'
+$mfAbs = Join-Path $repo 'automation\extension\manifest.json'
+$MFRX  = '("version"\s*:\s*")([0-9]+\.[0-9]+\.[0-9]+)(")'
+function Get-MfVersion([string]$text) {
+    if (-not $text) { return $null }
+    $m = [regex]::Match($text, $MFRX)
+    if ($m.Success) { return $m.Groups[2].Value }
+    return $null
+}
+
 $lines = New-Object System.Collections.Generic.List[string]
 function Emit([string]$s) { $lines.Add($s) | Out-Null; if (-not $Quiet) { Write-Host $s } }
 function Done([int]$code) {
@@ -120,6 +141,23 @@ if ($Bump) {
         [System.IO.File]::WriteAllText($abs, $txt.Replace($own, $newTok), (New-Object System.Text.UTF8Encoding($false)))
         Emit ("  BUMPED: {0} -> {1}  [{2}]" -f $own, $newTok, $rel)
     }
+
+    # THE PACKAGED VERSION -- the number the browser shows. Patch bump, surgical regex replace so
+    # the manifest's formatting is untouched (a ConvertTo-Json round-trip would reflow the whole
+    # file and bury the one line that changed).
+    if (Test-Path $mfAbs) {
+        $mfTxt = [System.IO.File]::ReadAllText($mfAbs)
+        $mfCur = Get-MfVersion $mfTxt
+        if (-not $mfCur) {
+            Emit '  [WARN] manifest.json has no x.y.z version -- refusing to invent one.'
+        } else {
+            $pp = $mfCur.Split('.')
+            $mfNew = "{0}.{1}.{2}" -f $pp[0], $pp[1], ([int]$pp[2] + 1)
+            $mfOut = [regex]::Replace($mfTxt, $MFRX, ('${1}' + $mfNew + '${3}'), 1)
+            [System.IO.File]::WriteAllText($mfAbs, $mfOut, (New-Object System.Text.UTF8Encoding($false)))
+            Emit ("  BUMPED: {0} -> {1}  [manifest.json -- the version the BROWSER shows]" -f $mfCur, $mfNew)
+        }
+    }
 }
 
 # what changed?
@@ -142,8 +180,15 @@ try {
         if ($headText -match '^fatal:') { $headText = '' }
     } finally { $ErrorActionPreference = $prevEA }
     $extChanged = @($changed | Where-Object { $_ -match '^automation/extension/.*\.js$' })
+    # ANY file under automation/extension/ -- not just .js. A changed content script, HTML page or
+    # icon still ships as a new extension and still needs the browser-visible version to move.
+    $extAny     = @($changed | Where-Object { $_ -match '^automation/extension/' })
     $headTok  = if ($headText) { Get-LiveBuild $headText } else { $null }
     $workTok  = Get-LiveBuild ([System.IO.File]::ReadAllText($uiAbs))
+    $mfHeadTxt = ((& git show ("HEAD:" + $mfRel) 2>&1) | ForEach-Object { "$_" }) -join "`n"
+    if ($mfHeadTxt -match '^fatal:') { $mfHeadTxt = '' }
+    $mfHead = Get-MfVersion $mfHeadTxt
+    $mfWork = if (Test-Path $mfAbs) { Get-MfVersion ([System.IO.File]::ReadAllText($mfAbs)) } else { $null }
 } finally { Pop-Location }
 
 Emit ("  mode          : {0}" -f $(if ($Staged) { 'STAGED vs HEAD' } else { 'working tree vs HEAD' }))
@@ -151,6 +196,30 @@ Emit ("  extension .js changed: {0}" -f $extChanged.Count)
 foreach ($f in $extChanged) { Emit ("      {0}" -f $f) }
 Emit ("  BUILD at HEAD : {0}" -f $(if ($headTok) { $headTok } else { '(none -- no HEAD copy)' }))
 Emit ("  BUILD now     : {0}" -f $(if ($workTok) { $workTok } else { '(none)' }))
+Emit ("  extension files changed (any type): {0}" -f $extAny.Count)
+Emit ("  manifest.json version: HEAD {0} -> now {1}" -f $(if ($mfHead) { $mfHead } else { '(none)' }),
+                                                        $(if ($mfWork) { $mfWork } else { '(none)' }))
+
+# ── THE PACKAGED VERSION. CHECKED FIRST, so no later early-PASS can skip it. ─────────────────────
+# This is the check whose absence let three console-string bumps report PASS while manifest.json
+# sat at 0.8.0. It runs before the "no .js changed" and "no HEAD copy" shortcuts on purpose.
+if ($extAny.Count -gt 0) {
+    if (-not $mfWork) {
+        Emit ''
+        Emit "  [FAIL] $mfRel has no x.y.z version -- the browser-visible extension version cannot be read."
+        Done 1
+    }
+    if ($mfHead -and ($mfWork -ceq $mfHead)) {
+        Emit ''
+        Emit ("  [FAIL] {0} extension file(s) changed but manifest.json version is still '{1}'." -f $extAny.Count, $mfWork)
+        Emit '         THIS IS THE VERSION THE BROWSER SHOWS, and it is what "advance the extension'
+        Emit '         version" means. A console banner is an in-page announcement we invented; the'
+        Emit '         manifest version is the one an operator can check without opening DevTools.'
+        Emit '         FIX:  tools\audit_extension_version.ps1 -Bump'
+        Done 1
+    }
+    Emit ("  [PASS] manifest.json version advanced {0} -> {1}." -f $(if ($mfHead) { $mfHead } else { '(none)' }), $mfWork)
+}
 
 if (-not $workTok) {
     Emit '  [FAIL] no live BUILD token in ui.js. The console banner is the only way an operator can'
