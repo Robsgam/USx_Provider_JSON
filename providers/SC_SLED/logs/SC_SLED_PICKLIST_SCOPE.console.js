@@ -2,7 +2,7 @@
 // Then render each entity form and run its line (one at a time; each downloads one file):
 var scope = {
     "provider":  "SC_SLED",
-    "version":  "1.12",
+    "version":  "1.13",
     "note":  "Paste as scope; render each FORM (tab); __usxScopePicklists(scope, \u0027\u003cTab\u003e\u0027). One download per tab. The tab is the panel\u0027s group label, not necessarily the targetEntity.",
     "fields":  [
                    {
@@ -66,7 +66,7 @@ var scope = {
                        "attributeTypeId":  ""
                    },
                    {
-                       "entity":  "Firearm",
+                       "entity":  "Other",
                        "tab":  "Wanted Person",
                        "qif":  "ENTITY_WantedPerson",
                        "fieldId":  "LicensePlateStateCode",
@@ -76,7 +76,7 @@ var scope = {
                        "attributeTypeId":  ""
                    },
                    {
-                       "entity":  "Firearm",
+                       "entity":  "Other",
                        "tab":  "Wanted Person",
                        "qif":  "ENTITY_WantedPerson",
                        "fieldId":  "VehicleMakeCode",
@@ -86,7 +86,7 @@ var scope = {
                        "attributeTypeId":  "VEHICLE_MAKE"
                    },
                    {
-                       "entity":  "Firearm",
+                       "entity":  "Other",
                        "tab":  "Wanted Person",
                        "qif":  "ENTITY_WantedPerson",
                        "fieldId":  "SexCode",
@@ -96,7 +96,7 @@ var scope = {
                        "attributeTypeId":  "SEX"
                    },
                    {
-                       "entity":  "Firearm",
+                       "entity":  "Other",
                        "tab":  "Wanted Person",
                        "qif":  "ENTITY_WantedPerson",
                        "fieldId":  "raceCode",
@@ -106,12 +106,32 @@ var scope = {
                        "attributeTypeId":  ""
                    },
                    {
-                       "entity":  "Firearm",
+                       "entity":  "Other",
                        "tab":  "Wanted Person",
                        "qif":  "ENTITY_WantedPerson",
                        "fieldId":  "ImageIndicator",
                        "label":  "NCIC Image",
                        "codeTypeCategory":  "YES_NO_UNKNOWN",
+                       "codeTypeSource":  "NCIC",
+                       "attributeTypeId":  ""
+                   },
+                   {
+                       "entity":  "Firearm",
+                       "tab":  "Firearm",
+                       "qif":  "ENTITY_Firearm",
+                       "fieldId":  "GunMake",
+                       "label":  "Make (optional)",
+                       "codeTypeCategory":  "NCIC_FIREARM_MAKE",
+                       "codeTypeSource":  "NCIC",
+                       "attributeTypeId":  ""
+                   },
+                   {
+                       "entity":  "Firearm",
+                       "tab":  "Firearm",
+                       "qif":  "ENTITY_Firearm",
+                       "fieldId":  "GunCaliber",
+                       "label":  "Caliber (optional)",
+                       "codeTypeCategory":  "NCIC_FIREARM_CALIBER",
                        "codeTypeSource":  "NCIC",
                        "attributeTypeId":  ""
                    },
@@ -124,27 +144,7 @@ var scope = {
                        "codeTypeCategory":  "NCIC_ARTICLE_TYPE",
                        "codeTypeSource":  "CA_CLETS",
                        "attributeTypeId":  ""
-                   },
-                   {
-                       "entity":  "Article",
-                       "tab":  "Article",
-                       "qif":  "ENTITY_Article",
-                       "fieldId":  "GunMake",
-                       "label":  "Make (optional)",
-                       "codeTypeCategory":  "NCIC_FIREARM_MAKE",
-                       "codeTypeSource":  "NCIC",
-                       "attributeTypeId":  ""
-                   },
-                   {
-                       "entity":  "Article",
-                       "tab":  "Article",
-                       "qif":  "ENTITY_Article",
-                       "fieldId":  "GunCaliber",
-                       "label":  "Caliber (optional)",
-                       "codeTypeCategory":  "NCIC_FIREARM_CALIBER",
-                       "codeTypeSource":  "NCIC",
-                       "attributeTypeId":  ""
                    }
                ]
 };
-console.log('%c[USx-SCOPE] scope loaded: SC_SLED v1.12 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')\n  __usxScopePicklists(scope, 'Wanted Person')");
+console.log('%c[USx-SCOPE] scope loaded: SC_SLED v1.13 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')\n  __usxScopePicklists(scope, 'Wanted Person')");

@@ -1,31 +1,11 @@
 ﻿SC_SLED METADATA REFERENCE
 ===========================
 Generated: 2026-09-18
-Source: SC_SLED.xml (metadata) + SC_SLED_v1.12.json
-Metadata: 67 total transactions, 9 queries built in JSON
+Source: SC_SLED.xml (metadata) + SC_SLED_v1.13.json
+Metadata: 67 total transactions, 8 queries built in JSON
 
 ================================================================================
-1. AdministrativeMessage (version 4)
-================================================================================
-
-METADATA FIELDS (6):
-  DestinationCode  Alphanumeric  maxLen= 9  Destination ORI
-  DestinationCode2 Alphanumeric  maxLen= 9  Destination ORI
-  DestinationCode3 Alphanumeric  maxLen= 9  Destination ORI
-  DestinationCode4 Alphanumeric  maxLen= 9  Destination ORI
-  DestinationCode5 Alphanumeric  maxLen= 9  Destination ORI
-  FreeText         Alphanumeric  maxLen=501  Message
-
-METADATA COMBINATIONS (1 total):
-  KeyRef      Primary                 Set                                                    Any
-  ------------  ----------------------  -----------------------------------------------------  ------------------------------
-  AM            FreeText                FreeText                                               DestinationCode, Destinatio...
-
-BUILD COVERAGE (1 of 1 built):
-  BUILT   AM             set[FreeText]
-
-================================================================================
-2. ArticleSingleQuery (version 5)
+1. ArticleSingleQuery (version 5)
 ================================================================================
 
 METADATA FIELDS (2):
@@ -41,7 +21,7 @@ BUILD COVERAGE (1 of 1 built):
   BUILT   QA             set[ArticleSerialNumber, ArticleTypeCode]
 
 ================================================================================
-3. BoatQuery (version 7)
+2. BoatQuery (version 7)
 ================================================================================
 
 METADATA FIELDS (3):
@@ -59,7 +39,7 @@ BUILD COVERAGE (2 of 1 built):
   BUILT   QBBQ.R         set[RegistrationNumber]
 
 ================================================================================
-4. DriverLicenseQuery (version 8)
+3. DriverLicenseQuery (version 8)
 ================================================================================
 
 METADATA FIELDS (10):
@@ -85,7 +65,7 @@ BUILD COVERAGE (2 of 2 built):
   BUILT   DQ             set[OperatorLicenseNumber]
 
 ================================================================================
-5. DriverRegistrationQuery (version 7)
+4. DriverRegistrationQuery (version 7)
 ================================================================================
 
 METADATA FIELDS (10):
@@ -111,7 +91,7 @@ BUILD COVERAGE (2 of 2 built):
   BUILT   DQ.RO          set[OperatorLicenseNumber]
 
 ================================================================================
-6. GunQuery (version 4)
+5. GunQuery (version 4)
 ================================================================================
 
 METADATA FIELDS (4):
@@ -129,7 +109,7 @@ BUILD COVERAGE (1 of 1 built):
   BUILT   QG             set[serialNumber]
 
 ================================================================================
-7. VehicleRegistrationQuery (version 6)
+6. VehicleRegistrationQuery (version 6)
 ================================================================================
 
 METADATA FIELDS (11):
@@ -156,7 +136,7 @@ BUILD COVERAGE (2 of 2 built):
   BUILT   QVRQ.V         set[VehicleIdentificationNumber]
 
 ================================================================================
-8. VehicleStolenQuery (version 5)
+7. VehicleStolenQuery (version 5)
 ================================================================================
 
 METADATA FIELDS (4):
@@ -176,7 +156,7 @@ BUILD COVERAGE (2 of 2 built):
   BUILT   QV.P           set[LicensePlateNumber]
 
 ================================================================================
-9. WantedPersonQuery (version 10)
+8. WantedPersonQuery (version 10)
 ================================================================================
 
 METADATA FIELDS (18):
@@ -221,7 +201,6 @@ BUILD SUMMARY
 
   Query                             Metadata  Built  Skip  Coverage
   ----------------------------------  --------  -----  ----  --------
-  AdministrativeMessage                      1      1     0  100% (COMPLETE)
   ArticleSingleQuery                         1      1     0  100% (COMPLETE)
   BoatQuery                                  1      2     0  200%
   DriverLicenseQuery                         2      2     0  100% (COMPLETE)
@@ -231,12 +210,13 @@ BUILD SUMMARY
   VehicleStolenQuery                         2      2     0  100% (COMPLETE)
   WantedPersonQuery                          5      5     0  100% (COMPLETE)
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   17     18     0  106%
+  TOTAL                                   16     17     0  106%
 
 ================================================================================
-ALL UNBUILT TRANSACTIONS (58 of 67 in metadata)
+ALL UNBUILT TRANSACTIONS (59 of 67 in metadata)
 ================================================================================
 
+  AdministrativeMessage                    v4    1 combos
   AOSHitConfirmationResponse               v4    1 combos
   AOSOrionQuery                            v6    3 combos
   CCHCriminalHistoryNcicQHQuery            v7    4 combos

@@ -35,7 +35,7 @@ $repoRoot    = Split-Path (Split-Path $providerDir -Parent) -Parent
 . (Join-Path $repoRoot 'tools\_build_provider_helpers.ps1')
 
 $providerName = 'SC_SLED'
-$Version      = '1.12'
+$Version      = '1.13'
 $currentYear  = (Get-Date).Year.ToString()
 
 Write-Host ''
@@ -418,7 +418,7 @@ $wpCombos = @(
         ) -Defaults $imgDefault
 )
 $wpQuery = Build-Qidm -ProviderName $providerName -Query 'WantedPersonQuery' `
-    -TargetEntity 'Firearm' -QueryLabel 'Wanted Person' `
+    -TargetEntity 'Other' -QueryLabel 'Wanted Person' `
     -Attributes $wpAttrs -Combinations $wpCombos `
     -Description 'WantedPersonQuery -- QWA.NCIC, QWA.OCA, QWA.P, QWA.VM, QWA.N. All five alternatives declare keyRef QWA in metadata, so all five carry synthetic suffixes. Cross-entity: two combos search by vehicle identifiers on the Person entity. Identifier-priority guardrails keep the broad name search behind the unique handles.'
 
@@ -454,7 +454,7 @@ $gunCombos = @(
 # Same declaration-of-record-kind reasoning as $amQuery's host choice: targetEntity is where the
 # transaction is FILED, not a claim that a firearm is an article.
 $gunQuery = Build-Qidm -ProviderName $providerName -Query 'GunQuery' `
-    -TargetEntity 'Article' -QueryLabel 'Firearm' `
+    -TargetEntity 'Firearm' -QueryLabel 'Firearm' `
     -Attributes $gunAttrs -Combinations $gunCombos `
     -Description 'GunQuery -- QG (serial number, with make/model/caliber optional). Single metadata combination. targetEntity=Article since v1.12 so the Firearm card can share the Article tab and leave Wanted Person as the only QIF on Firearm -- see the block above; this removes the permanently-greyed Firearm checkbox from the Wanted Person tab.'
 
@@ -574,12 +574,12 @@ $amCombos = @(
 # field pool, so FreeText typed on a Boat-hosted form lands in the BOAT pool while an Article-hosted
 # QIDM reads the ARTICLE pool -- set[FreeText] would never be satisfied and NOTHING would fire, with
 # no error anywhere. The form and its QIDM must name the same entity.
-$amQuery = Build-Qidm -ProviderName $providerName -Query 'AdministrativeMessage' `
-    -TargetEntity 'Boat' -QueryLabel 'Administrative Message' `
-    -Attributes $amAttrs -Combinations $amCombos `
-    -Description 'AdministrativeMessage -- AM. Free text to up to five destination ORIs; the only non-search transaction SC declares as Basic. v1.1: hosted as a CARD ON THE VEHICLE QIF. Its own entity did NOT render (LIMITATION #46, measured on the first import) -- a correctly-formed sixth targetEntity is silently dropped. It is not a vehicle search; Vehicle is simply the entity with room, and the move to any other of the five is one line. Metadata makes only FreeText mandatory while the devdoc marks DestinationCode mandatory; metadata is field authority, so the destination codes are optional and the label carries the expectation.'
+# ⚠️ THE AdministrativeMessage QIDM IS REMOVED AT v1.13 ALONG WITH ITS FORM -- see the removal note
+# in the layout section. Its attributes and combinations above are DELIBERATELY KEPT: they are the
+# adjudicated record of the devdoc/metadata disagreement over DestinationCode, and restoring the
+# query is then a two-line change rather than a re-derivation.
 
-Write-Host '  QIDMs built: 9 (including AdministrativeMessage -- HYPOTHESIS, see script header)' -ForegroundColor Green
+Write-Host '  QIDMs built: 8 (AdministrativeMessage REMOVED at v1.13 -- user-approved skip)' -ForegroundColor Green
 
 # =====================================================================
 # 10. RMS BUNDLE -- from KB specs. No -KeepSsn (SC WantedPerson carries SSN in the CommSys
@@ -853,17 +853,14 @@ $wpForm = [PSCustomObject]@{
     layout       = $wpLayout
     name         = 'ENTITY_WantedPerson'
     type         = 'QUERYINPUTFORM'
-    targetEntity = 'Firearm'
+    targetEntity = 'Other'
 }
 
 # ---- Firearm ------------------------------------------------------------------------------------
-# ---- Article + Firearm -- ONE QIF, TWO CARDS (v1.12) ---------------------------------------------
-# The Firearm card lives here now. See the $gunQuery block for the measured reason: a tab shows a
-# checkbox for EVERY QIDM on its entity, so two QIFs on one entity always leaves a permanently dead
-# checkbox on each. Both cards on ONE form means both QIDMs are satisfiable from the tab that offers
-# them, and nothing greys out. The two field sets are fully DISJOINT -- QA needs
-# set[ArticleSerialNumber, ArticleTypeCode], QG needs set[serialNumber] -- so neither query can match
-# the other's fill even though LIMITATION #26 makes the pool shared.
+# ---- Article -- ITS OWN TAB AGAIN (v1.13) -------------------------------------------------------
+# v1.12 merged the Firearm card in here to avoid a dead checkbox. v1.13 does not need to: with
+# Administrative Message REMOVED there are exactly 6 forms for the 6 entity slots, so EVERY entity
+# carries exactly ONE QIF and no tab can show another form's checkbox. Article is plain again.
 # BOTH Article fields are mandatory in metadata and there are NO optionals, so both labels say so.
 $artLayout = MakeLayouts @(
     @{
@@ -876,6 +873,18 @@ $artLayout = MakeLayouts @(
             )}
         )
     }
+)
+$articleForm = [PSCustomObject]@{
+    description  = 'Article -- 1 card. QA requires BOTH ArticleSerialNumber and ArticleTypeCode; metadata declares no optionals. Its own tab again at v1.13 (the v1.12 Firearm merge is undone).'
+    label        = 'Article'
+    layout       = $artLayout
+    name         = 'ENTITY_Article'
+    type         = 'QUERYINPUTFORM'
+    targetEntity = 'Article'
+}
+
+# ---- Firearm -- ITS OWN TAB AGAIN (v1.13) -------------------------------------------------------
+$gunLayout = MakeLayouts @(
     @{
         id    = 'CARD_GUN'
         title = 'FIREARM -- BY SERIAL NUMBER'
@@ -889,20 +898,17 @@ $artLayout = MakeLayouts @(
         )
     }
 )
-$articleForm = [PSCustomObject]@{
-    description  = 'Article & Firearm -- 2 cards on ONE QIF (v1.12). QA requires BOTH ArticleSerialNumber and ArticleTypeCode and declares no optionals; QG needs serialNumber with make/model/caliber optional. Merged so that Article is a SINGLE-QIF entity: a tab renders a checkbox for every QIDM on its targetEntity, so two QIFs on one entity always strand a dead checkbox on each (Rob, 2026-09-18, on the Firearm/Wanted Person pair). The field sets are disjoint, so neither query can match the other card''s fill.'
-    label        = 'Article & Firearm'
-    layout       = $artLayout
-    name         = 'ENTITY_Article'
+$firearmForm = [PSCustomObject]@{
+    description  = 'Firearm -- 1 card. QG (serial number; make/model/caliber optional). Sole QIF on the Firearm entity at v1.13, because Wanted Person moved to targetEntity=Other -- so no tab shows another form''s checkbox.'
+    label        = 'Firearm'
+    layout       = $gunLayout
+    name         = 'ENTITY_Firearm'
     type         = 'QUERYINPUTFORM'
-    targetEntity = 'Article'
+    targetEntity = 'Firearm'
 }
 
-# ---- Boat (card only -- the QIF is assembled after the AM card, below) --------------------------
-# v1.12: Boat is now a SINGLE-QIF entity with the Administrative Message card on the same form, so
-# the card is defined here and $boatLayout/$boatForm are built AFTER $amCard. Same reason as
-# Article+Firearm -- see the $gunQuery block.
-$boatCard = @(
+# ---- Boat -- ITS OWN TAB AGAIN (v1.13), the Administrative Message card is gone -----------------
+$boatLayout = MakeLayouts @(
     @{
         id    = 'CARD_BOAT'
         title = 'BOAT -- BY HULL ID, OR BY REGISTRATION NUMBER'
@@ -938,95 +944,26 @@ $boatCard = @(
     }
 )
 
-# ---- ADMINISTRATIVE MESSAGE -- ITS OWN TAB (v1.2) -----------------------------------------------
-# THE VERSION HISTORY OF THIS ONE FORM IS THE WHOLE LESSON:
-#   v1.0  its own QIF with targetEntity='AdministrativeMessage'  -> DID NOT RENDER (LIMITATION #46:
-#         an UNRECOGNISED targetEntity value is silently dropped; 8 candidate names later tested,
-#         all 8 rejected)
-#   v1.1  a second CARD on the Vehicle QIF                        -> rendered, but Rob: "this is
-#         just a card on the veh page.   i want it compeltely seperated"
-#   v1.2  its own QIF again, this time declaring targetEntity='Person' -- A VALUE THE PLATFORM
-#         RECOGNISES -- which gives it its own TAB. CAPABILITY #47, LIVE-PROVEN: tabs are keyed by
-#         QUERYINPUTFORM, not by entity. 8 forms produced 8 tabs, three of them sharing 'Person'.
-#         Evidence: docs\evidence\ENTITY_PROBE_RESULT_2026-09-16.txt
-#
-# !! targetEntity='Article' IS A DECLARATION OF RECORD KIND, NOT A CLAIM THAT THIS SEARCHES FOR AN
-# ARTICLE. It is invisible to the officer -- the TAB reads 'Administrative Message'. The value was
-# chosen on COLLISION RISK alone:
-#   - NOT 'Person': LIMITATION #28 -- a second QIF on an entity BREAKS codeTypeProvider
-#     reverse-lookup for that entity, and SC_SLED's three codeTypeProvider controls (SexCode,
-#     SexCodeDR, raceCode) are ALL on Person. The v1.2 first attempt targeted Person and the
-#     validator FAILED it on exactly this. That is the gate doing its job.
-#   - Article carries NO codeTypeProvider control and is the SMALLEST pool in the build
-#     (1 card / 2 fields / 1 combo), so there is the least to interact with.
-#
-# !! THE FIELD POOL IS SHARED ACROSS QIFs ON ONE ENTITY -- CONFIRMED, not a guess: LIMITATION #26,
-# root-caused in #28 from three FL_FCIC tests against a single-QIF control. LIMITATION #1 then makes
-# the wire a UNION across every matching combination, so a name shared with the host entity could
-# cross-satisfy or over-send.
-#
-# ⚠️ v1.2 SUFFIXED THESE FIELDS (FreeTextAM, DestinationCodeAM...) AND v1.4 TOOK THE SUFFIX BACK OFF.
-# It was never needed, and it cost a BLOCKING gate. Article's own controls are ArticleSerialNumber
-# and ArticleTypeCode -- there is NO name in common with FreeText/DestinationCode1-5, so the pool is
-# already disjoint by construction and the suffix protected against nothing.
-# What it DID do: `audit_devdoc_combinations` compares the devdoc's field names against the
-# combination's SOURCEFIELDS, canonicalised by `Get-CanonicalToken`, which strips the established
-# isolation suffixes `dh$` / `cch$` / `dr$` -- not `am$`. So `freetextam` no longer matched the
-# devdoc's `FreeText` and enforce reported "AdministrativeMessage #1 is devdoc-listed but UNBUILT:
-# mandatory field(s) FreeText, DestinationCode wired nowhere" on a provider that builds it.
-# The alternative fix was adding `am$` to that canonicaliser -- REJECTED: it is shared by a BLOCKING
-# gate across all 21 providers, and `am$` is a far riskier string to strip globally than `dh`/`dr`.
-# Widening a shared canonicaliser to accommodate one provider's unnecessary cosmetic choice is the
-# wrong trade. USE A SUFFIX HERE ONLY IF A REAL COLLISION APPEARS, and add `am$` at the same time.
-$amCard = @(
-    @{
-        id    = 'CARD_AM'
-        title = 'ADMINISTRATIVE MESSAGE -- FREE TEXT TO UP TO FIVE AGENCIES'
-        rows  = @(
-            # v1.11 -- THE MESSAGE IS A MULTI-LINE BOX. Rob: "so you now need to make message
-            # multiline". `Txa` emits resolvedName='FormTextarea' (LOWERCASE 'a' -- exact-match
-            # resolver; the capital-A spelling renders NOTHING), MEASURED on this tenant
-            # 2026-09-17: wraps, grows downward, scrolls, and its value REACHES THE WIRE.
-            # PLATFORM_CONSTRAINTS CAPABILITY #48 -- the slot previously held a LIMITATION saying
-            # no such control existed, which three usage censuses appeared to confirm.
-            #
-            # ⚠️ THIS BUYS WRAP-AND-SCROLL, NOT LINE BREAKS, and the label must not imply
-            # otherwise. Neither Enter nor Shift+Enter inserts a newline -- BOTH SUBMIT THE FORM,
-            # which on an AM means transmitting a half-written message to the ORI it is addressed
-            # to. A pasted newline becomes ~124 SPACES before it even reaches form state, so three
-            # words cost 262 of the 501 characters. The officer cannot produce a break by typing,
-            # which is the only reason the character budget is safe.
-            @{ id = 'ROW_AM_1'; cols = @('12'); fields = @(
-                @{ id = 'FreeText_Input'; node = Txa 'FreeText' 'Message (required, up to 501 characters)' '501' 'ROW_AM_1' }
-            )}
-            @{ id = 'ROW_AM_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'DestinationCode_Input';  node = Inp 'DestinationCode' 'Destination ORI (required)' '9' 'ROW_AM_2' }
-                @{ id = 'DestinationCode2_Input'; node = Inp 'DestinationCode2' 'Destination ORI 2 (optional)' '9' 'ROW_AM_2' }
-                @{ id = 'DestinationCode3_Input'; node = Inp 'DestinationCode3' 'Destination ORI 3 (optional)' '9' 'ROW_AM_2' }
-            )}
-            # 6/6, not 4/4 -- v1.9. `audit_layout_flow` L6: two fields at 4 sum to 8 and leave 4
-            # columns of dead space on the right. Caught as an advisory while doing this layout
-            # pass, so it is fixed here rather than left for a reader to wonder about.
-            @{ id = 'ROW_AM_3'; cols = @('6','6'); fields = @(
-                @{ id = 'DestinationCode4_Input'; node = Inp 'DestinationCode4' 'Destination ORI 4 (optional)' '9' 'ROW_AM_3' }
-                @{ id = 'DestinationCode5_Input'; node = Inp 'DestinationCode5' 'Destination ORI 5 (optional)' '9' 'ROW_AM_3' }
-            )}
-        )
-    }
-)
-# ---- Boat + Administrative Message -- ONE QIF, TWO CARDS (v1.12) --------------------------------
-# AM was its OWN TAB from v1.2 to v1.11 and is now a CARD on the Boat form. That is a REVERSAL of the
-# "i want it compeltely seperated" request, and it is made deliberately because the two cannot both
-# be had: a tab renders a checkbox for every QIDM on its targetEntity, so AM-as-its-own-tab
-# necessarily puts a permanently dead 'Boat' checkbox on it and a dead 'Administrative Message'
-# checkbox on Boat -- which Rob saw and rejected ("boat has admin message on it too and admin has
-# boat on it" / "that is not acceptable"). Separation was traded for live checkboxes, and the tab
-# that was actually asked for TWICE -- Wanted Person -- is the one that KEPT its own tab.
-# The 6 AM field ids (FreeText, DestinationCode1-5) are fully DISJOINT from Boat's 3, so with
-# LIMITATION #26's shared pool neither query can match the other's fill: AM needs set[FreeText],
-# QBBQ.H/.R need set[BoatHullIdNumber]/set[RegistrationNumber].
-# Boat is LAST in the entity order, so this tab stays last -- the placement the v1.8 host move bought.
-$boatLayout = MakeLayouts @($boatCard + $amCard)
+# ---- ADMINISTRATIVE MESSAGE -- REMOVED AT v1.13 ------------------------------------------------
+# Rob, 2026-09-18: "6 tabs  remove admin message and see what the cehckboxes look like".
+# WHY THIS ONE GOES. Checkboxes are keyed by ENTITY -- MEASURED with CHECKBOX_PROBE, not argued --
+# and the entity set is capped at SIX by the client itself (Sm = Object.values(ut) over
+# PERSON/VEHICLE/FIREARM/ARTICLE/BOAT/OTHER). SC_SLED wanted SEVEN forms. Any 7th form doubles an
+# entity, and a doubled entity ALWAYS strands a permanently-dead checkbox on BOTH of its tabs.
+# Nothing in configuration removes it, and every candidate was tested on 2026-09-18:
+#     enabled:false           -> not carried by the importer (checkbox still rendered)
+#     order                   -> not carried (A=2/B=1 still rendered A first)
+#     a second provider bundle-> does not scope a tab (appeared on both)
+#     autoSelect:false        -> renders anyway, merely unticked
+#     admin form<->interface  -> unlinking changed nothing
+# So the choice was SEVEN tabs carrying dead checkboxes, or SIX clean tabs minus one form. AM is
+# the one to drop: it is the only NON-SEARCH transaction in the build, and its tab is exactly where
+# the stray Boat checkbox that started this appeared. The five real entities plus Wanted Person on
+# Other now fill the six slots EXACTLY -- one QIF each, so no tab can show another form's query.
+# WARNING: AM is devdoc-Basic SUPPORTED, so this is a USER-APPROVED SKIP and must be registered or
+# audit_supported_queries CHECK 0 will correctly flag it as unbuilt.
+# TO RESTORE IT: give AM targetEntity=Other and move Wanted Person back onto Firearm -- that trade
+# buys the 7th tab and costs two dead checkboxes on the Firearm pair.
 $boatForm = [PSCustomObject]@{
     description  = 'Boat & Administrative Message -- 2 cards on ONE QIF (v1.12). QBBQ.H (hull) / QBBQ.R (registration number); AM is free text to up to five destination ORIs. The metadata expresses the boat pair as a Choice nested under Set, which the generated METADATA_REFERENCE renders as an EMPTY required set. Merged so Boat is a SINGLE-QIF entity and neither checkbox greys out; AM''s 6 field ids are disjoint from Boat''s 3, so neither query can match the other card''s fill.'
     label        = 'Boat & Administrative Message'
@@ -1096,15 +1033,15 @@ $boatForm = [PSCustomObject]@{
 # the duplication itself is gone: ENTITY_Firearm merged into ENTITY_Article and
 # ENTITY_AdministrativeMessage merged into ENTITY_Boat, which is what removes every greyed checkbox
 # (see $gunQuery). Wanted Person remains its own tab on the Firearm slot.
-$entityOrder = @('Vehicle','Person','Firearm','Article','Boat')
+$entityOrder = @('Vehicle','Person','Other','Firearm','Article','Boat')
 $entitiesBundle = Build-EntitiesBundle `
-    -Configurations @($vehicleForm, $personForm, $wpForm, $articleForm, $boatForm) `
+    -Configurations @($vehicleForm, $personForm, $wpForm, $firearmForm, $articleForm, $boatForm) `
     -DefaultOrder $entityOrder -CadOrder $entityOrder -FrOrder $entityOrder
 
 # =====================================================================
 # 14. ASSEMBLE -- ENTITIES first, then PROVIDER, then RMS.
 # =====================================================================
-$allQidms = @($vehRegQuery, $vehStolenQuery, $dlQuery, $drQuery, $wpQuery, $gunQuery, $artQuery, $boatQuery, $amQuery)
+$allQidms = @($vehRegQuery, $vehStolenQuery, $dlQuery, $drQuery, $wpQuery, $gunQuery, $artQuery, $boatQuery)
 
 $providerBundle = [PSCustomObject]@{
     configurations = @(@($auth, $qmf, $results) + $allQidms)
@@ -1118,7 +1055,7 @@ $bundle = [PSCustomObject]@{
     bundles = @($entitiesBundle, $providerBundle, $rmsBundle)
 }
 
-Write-Host ("  QIDMs: {0}   combinations: {1}   entity forms: 5" -f $allQidms.Count, (@($allQidms | ForEach-Object { $_.combinations })).Count) -ForegroundColor Cyan
+Write-Host ("  QIDMs: {0}   combinations: {1}   entity forms: 6" -f $allQidms.Count, (@($allQidms | ForEach-Object { $_.combinations })).Count) -ForegroundColor Cyan
 
 # --- Output (versioned filename carries the version; NEVER add a top-level version field) ---
 $OUT = Join-Path $providerDir "${providerName}_v${Version}.json"

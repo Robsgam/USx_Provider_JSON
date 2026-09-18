@@ -1,14 +1,14 @@
 ================================================================
   Build Report: SC_SLED
-  Source: SC_SLED_v1.12.json
-  Generated: 2026-09-18 10:31
+  Source: SC_SLED_v1.13.json
+  Generated: 2026-09-18 11:57
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: SC_SLED_v1.12
+ POST-BUILD VERIFICATION: SC_SLED_v1.13
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 9
-  [INFO] CommSys-only: 30 [LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, NameMiddle, NameSuffix, ImageIndicator, SocialSecurityNumber, FBINumber, MiscellaneousNumber, NCICNumber, OriginatingAgencyCaseNumber, LicensePlateStateCode, ExpandedNameSearchCode, ExpandedBirthDateSearchCode, RelatedHitSearchIndicator, serialNumber, GunMake, GunModel, GunCaliber, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber, FreeText, DestinationCode, DestinationCode2, DestinationCode3, DestinationCode4, DestinationCode5]
+  [INFO] CommSys-only: 24 [LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, NameMiddle, NameSuffix, ImageIndicator, SocialSecurityNumber, FBINumber, MiscellaneousNumber, NCICNumber, OriginatingAgencyCaseNumber, LicensePlateStateCode, ExpandedNameSearchCode, ExpandedBirthDateSearchCode, RelatedHitSearchIndicator, serialNumber, GunMake, GunModel, GunCaliber, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber]
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: Reference Pattern Check ---
@@ -37,7 +37,7 @@ POST-BUILD VERIFICATION
   [PASS] All 6 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 8: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (37) (RMS-generic allowed)
+  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (31) (RMS-generic allowed)
 
 --- CHECK 9: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
@@ -53,7 +53,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 13: Form Field Label Hints ---
   [INFO] Field 'raceCode' (any[]-only) label='Race' -- manual label override accepted (Rob 2026-09-17 "race should just say race". CHECK 15)
-  [PASS] All form field labels have required routing hint qualifiers (42 fields scanned)
+  [PASS] All form field labels have required routing hint qualifiers (36 fields scanned)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)

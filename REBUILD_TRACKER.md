@@ -54,7 +54,7 @@ Status table instead (this table's Notes column is intentionally terse).
 | 18 | TN_TIES | v2.6 |  | 73P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 19 | TX_TLETS_CCH | v1.19 |  | 112P/0F/0W/0LIM | 0 | base-6 re-synced to TX_TLETS v4.7 (email handler + FRT=E, QWName removed); lockstep restored; CCH stub, NOT USx-tenant-tested |
 | 20 | CA_CONTRA_COSTA | v2.4 |  | 79P/0F/0W/0LIM | 0 | framework build (CA_CLETS copy + merged metadata); JAWS expanded/unbuilt; NOT USx-tenant-tested |
-| 21 | SC_SLED | v1.12 |  | 79P/0F/0W/2LIM | 0 | **GROUND-UP BUILD 2026-09-14** -- not a galvanization, not a copy. First provider authored with the QIDM helpers. 9 QIDMs / 18 combos / 6 QIFs incl. AdministrativeMessage (HYPOTHESIS). NOT IMPORTED anywhere, NOT USx-tenant-tested; the first import is a real test (Vehicle + Person co-fire, AdminMessage render, NCIC ST-1) |
+| 21 | SC_SLED | v1.13 |  | 76P/0F/0W/2LIM | 0 | **GROUND-UP BUILD 2026-09-14** -- not a galvanization, not a copy. First provider authored with the QIDM helpers. 9 QIDMs / 18 combos / 6 QIFs incl. AdministrativeMessage (HYPOTHESIS). NOT IMPORTED anywhere, NOT USx-tenant-tested; the first import is a real test (Vehicle + Person co-fire, AdminMessage render, NCIC ST-1) |
 
 ---
 

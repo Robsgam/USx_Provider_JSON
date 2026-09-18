@@ -1,7 +1,7 @@
 ==============================================================================
   SUPPORTED QUERY VALIDATION REPORT -- SC_SLED v1.11
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-JSON version: v1.12
+JSON version: v1.13
 Validator: 77 PASS / 0 FAIL / 0 WARN / 2 LIMITATION
   Generated: 2026-09-14        Source: SC_SLED.xml + SC_SLED_DEVDOC.txt
 ==============================================================================
@@ -12,7 +12,7 @@ ENTRY / MODIFY / CANCEL / LOCATE operations, CCH transactions, WMPI and Orion --
 a different product surface, deliberately out of scope. Building them would be
 scope invention, not completeness.
 
-TOTALS: 9 CommSys QIDMs      Total CommSys combos: 18
+TOTALS: 8 CommSys QIDMs      Total CommSys combos: 17
 
   Every marker below is [PENDING]. SC_SLED has NEVER been tenant-tested, so no
   combination has wire evidence. A marker only moves to [PENDING] when a
@@ -96,14 +96,29 @@ FIREARM / ARTICLE / BOAT
 ------------------------------------------------------------------------------
 ADMINISTRATIVE MESSAGE
 ------------------------------------------------------------------------------
-  AdministrativeMessage  (metadata AM)  -- Rob 2026-09-14: "make it its card at the
-                         end. we can alwasy remove it later."
-    [PENDING] AM       set: FreeText
+  AdministrativeMessage  (metadata AM)  -- NOT BUILT as of v1.13. Rob 2026-09-14 had said
+                         "make it its card at the end. we can alwasy remove it later",
+                         and 2026-09-18 he removed it: "6 tabs  remove admin message and
+                         see what the cehckboxes look like".
+    [SKIPPED] AM       set: FreeText
                        any: DestinationCode .. DestinationCode5
+                       Registered in ACCEPTED_DIVERGENCES as devdoc-combo-unbuilt.
 
-  !! STATUS: HYPOTHESIS -- this is the only non-search transaction here and the only
-     entity that is not one of the five standard ones. The first import must confirm
-     the five REAL entities still render with it present. If they do not, remove it.
+  !! WHY IT WENT, AND IT IS A MEASURED TRADE RATHER THAN AN OMISSION. Query checkboxes are
+     keyed by ENTITY -- proven by CHECKBOX_PROBE on this tenant: two forms sharing one
+     entity showed ALL FOUR of that entity's QIDMs on BOTH tabs. The entity set is capped
+     at SIX by the client (Sm = Object.values(ut) over PERSON / VEHICLE / FIREARM /
+     ARTICLE / BOAT / OTHER; OTHER was discovered 2026-09-18 and confirmed live).
+     SC_SLED wanted SEVEN forms, so a 7th must double an entity, and a doubled entity
+     always strands a permanently-dead checkbox on both of its tabs. Every removal lever
+     was tested and failed the same day: enabled:false not carried by the importer, order
+     not carried, a second provider bundle does not scope, autoSelect:false only
+     pre-deselects, admin form-to-interface unlinking had no effect.
+     So: six clean tabs minus one form, and AM is the one to drop -- the only NON-SEARCH
+     transaction here, and the tab where the stray Boat checkbox that started this showed.
+     TO RESTORE: AM on targetEntity=Other, WantedPersonQuery back on Firearm -- buys the
+     7th tab, costs two dead checkboxes on the Firearm pair. Its attributes/combinations
+     are still in the build script, so it is a two-line change.
 
 ------------------------------------------------------------------------------
 DATA-MINED -- WHAT THE STATE RUNS FOR US (devdoc, verbatim)

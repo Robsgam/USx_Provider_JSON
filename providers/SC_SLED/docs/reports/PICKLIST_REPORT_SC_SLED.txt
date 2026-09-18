@@ -1,7 +1,7 @@
 ======================================================================
-  PICKLIST / DROPDOWN REPORT: SC_SLED_v1.12
-  Source: SC_SLED_v1.12.json
-  Generated: 2026-09-18 10:31
+  PICKLIST / DROPDOWN REPORT: SC_SLED_v1.13
+  Source: SC_SLED_v1.13.json
+  Generated: 2026-09-18 11:57
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -10,12 +10,14 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
   Entity: Article
     ArticleTypeCode [Article Type (required)]
       Config: codeTypeCategory=NCIC_ARTICLE_TYPE, codeTypeSource=CA_CLETS
+
+  Entity: Firearm
     GunCaliber [Caliber (optional)]
       Config: codeTypeCategory=NCIC_FIREARM_CALIBER, codeTypeSource=NCIC
     GunMake [Make (optional)]
       Config: codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NCIC
 
-  Entity: Firearm
+  Entity: Other
     ImageIndicator [NCIC Image] (default=Y)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
     LicensePlateStateCode [State]

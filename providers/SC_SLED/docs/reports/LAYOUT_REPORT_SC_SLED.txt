@@ -1,19 +1,20 @@
 ================================================================
   Build Report: SC_SLED
-  Source: SC_SLED_v1.12.json
-  Generated: 2026-09-18 10:31
+  Source: SC_SLED_v1.13.json
+  Generated: 2026-09-18 11:57
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== SC_SLED_v1.12.json ===
-QIFs: 5
+=== SC_SLED_v1.13.json ===
+QIFs: 6
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=4
   Person | entity=Person | qidm= | cards=1 fields=5
-  Wanted Person | entity=Firearm | qidm= | cards=1 fields=15
-  Article & Firearm | entity=Article | qidm= | cards=2 fields=3
-  Boat & Administrative Message | entity=Boat | qidm= | cards=2 fields=8
-QIDMs: 9
+  Wanted Person | entity=Other | qidm= | cards=1 fields=15
+  Firearm | entity=Firearm | qidm= | cards=1 fields=2
+  Article | entity=Article | qidm= | cards=1 fields=1
+  Boat & Administrative Message | entity=Boat | qidm= | cards=1 fields=3
+QIDMs: 8
   SC_SLED_VehicleRegistrationQuery | attrs=7 combos=2 autoSelect=True
   SC_SLED_VehicleStolenQuery | attrs=4 combos=2 autoSelect=True
   SC_SLED_DriverLicenseQuery | attrs=6 combos=2 autoSelect=True
@@ -22,7 +23,6 @@ QIDMs: 9
   SC_SLED_GunQuery | attrs=4 combos=1 autoSelect=True
   SC_SLED_ArticleSingleQuery | attrs=2 combos=1 autoSelect=True
   SC_SLED_BoatQuery | attrs=3 combos=2 autoSelect=True
-  SC_SLED_AdministrativeMessage | attrs=6 combos=1 autoSelect=True
 
 
 LAYOUT DETAIL
@@ -61,7 +61,7 @@ LAYOUT DETAIL
         ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
 
 === Wanted Person ===
-  name=ENTITY_WantedPerson | entity=Firearm | qidm=
+  name=ENTITY_WantedPerson | entity=Other | qidm=
   [default]
     CARD "CARD_WP_ID"
       ROW ROW_WP_N [3 3 3 3]
@@ -92,19 +92,23 @@ LAYOUT DETAIL
         ExpandedBirthDateSearchCode (Text | maxLen=1)
         RelatedHitSearchIndicator (Text | maxLen=1)
 
-=== Article & Firearm ===
-  name=ENTITY_Article | entity=Article | qidm=
+=== Firearm ===
+  name=ENTITY_Firearm | entity=Firearm | qidm=
   [default]
-    CARD "CARD_ART"
-      ROW ROW_ART_1 [6 6]
-        ArticleSerialNumber (Text | maxLen=20)
-        ArticleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
     CARD "CARD_GUN"
       ROW ROW_GUN_1 [3 3 3 3]
         serialNumber (Text | maxLen=11)
         GunMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NCIC)
         GunModel (Text | maxLen=4)
         GunCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NCIC)
+
+=== Article ===
+  name=ENTITY_Article | entity=Article | qidm=
+  [default]
+    CARD "CARD_ART"
+      ROW ROW_ART_1 [6 6]
+        ArticleSerialNumber (Text | maxLen=20)
+        ArticleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
 
 === Boat & Administrative Message ===
   name=ENTITY_Boat | entity=Boat | qidm=
@@ -114,16 +118,6 @@ LAYOUT DETAIL
         BoatHullIdNumber (Text | maxLen=20)
         RegistrationNumber (Text | maxLen=8)
         RegistrationState (Text | maxLen=2)
-    CARD "CARD_AM"
-      ROW ROW_AM_1 [12]
-        FreeText (FormTextarea | maxLen=501)
-      ROW ROW_AM_2 [4 4 4]
-        DestinationCode (Text | maxLen=9)
-        DestinationCode2 (Text | maxLen=9)
-        DestinationCode3 (Text | maxLen=9)
-      ROW ROW_AM_3 [6 6]
-        DestinationCode4 (Text | maxLen=9)
-        DestinationCode5 (Text | maxLen=9)
 
 === RMS QIDMs ===
   RMS Person Search query

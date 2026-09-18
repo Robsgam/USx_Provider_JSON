@@ -3297,6 +3297,29 @@ probe_control_types.ps1 -- WHICH FORM CONTROL TYPES DOES THE PLATFORM ACTUALLY H
   resolvedName, hand-imported to usx-sc-sled (which carries nothing precious), then read
   the rendered card -- the method that established CAPABILITY #47 and LIMITATION #46.
 
+build_checkbox_probe.ps1 -- WHAT CREATES, AND WHAT REMOVES, A QUERY CHECKBOX? (throwaway rig)
+  Rob 2026-09-18: "did we probe the checkbox creation mechnism  were you gusing at naming
+  values". Both answers were uncomfortable -- NO (every claim came from READING the captured
+  federatedSearch bundle, which is static analysis, never measured against a config we
+  controlled) and the names were read-not-invented but the IMPORTER carrying them was pure
+  assumption. Emits providers\CHECKBOX_PROBE.json. NOT a provider (same shape as
+  ENTITY_PROBE.json / MULTILINE_TEST.json / TRANSLATE_TEST.json).
+  Two forms sharing entity `Other`, four QIDMs, two provider bundles, `order` on both forms.
+  RESULT, measured on usx-sc-sled 2026-09-18 -- "2 tabs 4 checkboxes each greyed out",
+  "cb a is first", then after typing in FieldA:
+    Q1 per-entity rule       CONFIRMED by a control that could have failed
+    Q2 enabled:false         NOT carried by the importer -- checkbox still rendered + checked
+    Q3 autoSelect:false      RENDERS, merely unticked -- "available but unchecked"
+    Q4 second provider bundle DOES NOT scope a tab -- appeared on both
+    Q5 order on the form     NOT carried -- A=2/B=1 still rendered A first
+    and CBSecond, whose field is on the OTHER form, stayed greyed after the fill --
+    so GREYED == UNSATISFIABLE-ON-THIS-TAB, which is the real defect class, distinct from
+    the resting grey every checkbox shows on an empty form.
+  A later admin test (unlinking a form from an interface) also changed nothing. Conclusion:
+  entity is the ONLY key, the entity set caps at six, so a 7th tab always doubles an entity
+  and always strands a dead checkbox. Full record: PLATFORM_CONSTRAINTS, the entity entry.
+  Usage: .\build_checkbox_probe.ps1 [-Entity Other] [-OutPath <path>]
+
 build_multiline_test.ps1 -- CAN ANY FORM CONTROL SHOW MORE THAN ONE LINE? (throwaway rig)
   Rob 2026-09-17, after the documentary investigation came back negative: "The probe
   import lets try that". Emits providers\MULTILINE_TEST.json. NOT a provider -- no

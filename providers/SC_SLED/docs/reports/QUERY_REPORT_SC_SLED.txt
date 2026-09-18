@@ -1,14 +1,15 @@
 ================================================================
   Build Report: SC_SLED
-  Source: SC_SLED_v1.12.json
-  Generated: 2026-09-18 10:31
+  Source: SC_SLED_v1.13.json
+  Generated: 2026-09-18 11:57
 ================================================================
 QUERY SIMULATION
 ================
 
+  Seeded form defaults (1): Other.ImageIndicator=Y
 
 ================================================================
-  CommSys Query Simulator -- SC_SLED_v1.12.json
+  CommSys Query Simulator -- SC_SLED_v1.13.json
 ================================================================
 
 --- QIDM: SC_SLED_VehicleRegistrationQuery [Vehicle] ---
@@ -110,45 +111,32 @@ QUERY SIMULATION
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
---- QIDM: SC_SLED_WantedPersonQuery [Firearm] ---
+--- QIDM: SC_SLED_WantedPersonQuery [Other] ---
     Query: WantedPersonQuery  |  Attrs: 18  |  Combos: 5
-
-    [FIRES first-match] QWA.NCIC
-      set: [NCICNumber]
-      any: [ImageIndicator, RelatedHitSearchIndicator] -> matched: [ImageIndicator, RelatedHitSearchIndicator]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
-        <MessageKey>QW</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
-        <NCICNumber>G123456789</NCICNumber>
-        <ImageIndicator>Y</ImageIndicator>
-        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
-      </Transaction>
-    [SKIP] QWA.OCA -- missing set: OriginatingAgencyCaseNumber
+    [SKIP] QWA.NCIC -- missing set: NCICNumber
+    [SKIP] QWA.OCA -- missing set: NameLast, NameFirst, OriginatingAgencyCaseNumber
     [SKIP] QWA.P -- missing set: LicensePlateNumber, LicensePlateStateCode
     [SKIP] QWA.VM -- missing set: VehicleIdentificationNumber, VehicleMakeCode
-    [SKIP] QWA.N -- conditions failed: NCICNumber NOT_EXISTS [value='G123456789']
+    [SKIP] QWA.N -- missing set: NameLast, NameFirst
 
-    >> PLATFORM FIRES: QWA.NCIC (first matching combo)
-    >> UNION POOL (platform serializes): NCICNumber=G123456789, ImageIndicator=Y, RelatedHitSearchIndicator=Y
-       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
-        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
-
---- QIDM: SC_SLED_GunQuery [Article] ---
+--- QIDM: SC_SLED_GunQuery [Firearm] ---
     Query: GunQuery  |  Attrs: 4  |  Combos: 1
 
     [FIRES first-match] QG
       set: [serialNumber]
-      any: [GunMake, GunModel, GunCaliber] -> matched: []
+      any: [GunMake, GunModel, GunCaliber] -> matched: [GunMake, GunModel, GunCaliber]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
         <MessageKey>QG</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
-        <GunSerialNumber>SN12345678</GunSerialNumber>
+        <GunSerialNumber>ABC12345</GunSerialNumber>
+        <GunMake>SMT</GunMake>
+        <GunModel>M&P</GunModel>
+        <GunCaliber>9MM</GunCaliber>
       </Transaction>
 
     >> PLATFORM FIRES: QG (first matching combo)
-    >> UNION POOL (platform serializes): GunSerialNumber=SN12345678
+    >> UNION POOL (platform serializes): GunSerialNumber=ABC12345, GunMake=SMT, GunModel=M&P, GunCaliber=9MM
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
@@ -189,10 +177,6 @@ QUERY SIMULATION
     >> UNION POOL (platform serializes): BoatHullSerialNumber=FL1234AB56H7, State=FL
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
-
---- QIDM: SC_SLED_AdministrativeMessage [Boat] ---
-    Query: AdministrativeMessage  |  Attrs: 6  |  Combos: 1
-    [SKIP] AM -- missing set: FreeText
 
 --- QIDM: RMS Person Search query [Person] ---
     Query: Person  |  Attrs: 7  |  Combos: 4

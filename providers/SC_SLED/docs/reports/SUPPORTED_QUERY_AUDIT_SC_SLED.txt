@@ -2,7 +2,8 @@
   SUPPORTED-QUERY (DEVDOC) AUDIT -- SC_SLED
 ================================================================
 
-[PASS] CHECK 0 transaction-name scope: all 9 built transaction(s) are devdoc-authorized (compared against 9 Basic name(s))
+[PASS] CHECK 0 transaction-name scope: all 8 built transaction(s) are devdoc-authorized (compared against 9 Basic name(s))
+[INFO] CHECK 0 devdoc-Basic but NOT BUILT: AdministrativeMessage -- each must be a documented skip (ACCEPTED_DIVERGENCES / BUILD_NOTES)
 
 Extract STATUS: PROVISIONAL  (PROVISIONAL -- mismatches INFO until devdoc sign-off)
 Devdoc 'Basic Queries Supported' (SC_SLED_DEVDOC.txt, lines 24-333): AdministrativeMessage, ArticleSingleQuery, BoatQuery, DriverLicenseQuery, DriverRegistrationQuery, GunQuery, VehicleRegistrationQuery, VehicleStolenQuery, WantedPersonQuery
@@ -24,6 +25,6 @@ Devdoc 'Basic Queries Supported' (SC_SLED_DEVDOC.txt, lines 24-333): Administrat
 [PASS] combo QA: 'Article | ArticleSerialNumber' is devdoc-supported
 [PASS] combo QBBQ.H: 'Boat | BoatHullSerialNumber' is devdoc-supported
 [PASS] combo QBBQ.R: 'Boat | RegistrationNumber' is devdoc-supported
-[PASS] combo AM: 'Administrative Message | FreeText' is devdoc-supported
+[WARN] supported 'Administrative Message | FreeText' has NO combo in JSON (intentional skip? document it)
 
-RESULTS: 19 PASS / 0 FAIL / 0 WARN (0 INFO)
+RESULTS: 18 PASS / 0 FAIL / 1 WARN (1 INFO)
