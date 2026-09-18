@@ -24,7 +24,7 @@ VEHICLE
   VehicleRegistrationQuery  (metadata QVRQ -- "SC Vehicle Stolen/Reg Inquiry", COMPOUND)
     [PENDING] QVRQ.P   set: LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear
                        any: RegistrationState
-    [PENDING] QVRQ.V   set: VehicleIdentificationNumber
+    [CONFIRMED] QVRQ.V   set: VehicleIdentificationNumber
                        any: RegistrationState, VehicleMakeCode, vehicleYear
                        gate: LicensePlateNumber NOT_EXISTS  (Plate > VIN priority)
 
