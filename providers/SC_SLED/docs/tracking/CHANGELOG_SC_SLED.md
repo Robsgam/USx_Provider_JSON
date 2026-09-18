@@ -51,6 +51,20 @@ TWO GATES SCOPED, NOT SILENCED -- both now name the entity and the evidence:
          verify_build's HARD "VehicleMakeCode MUST be FormSelect" rule exempts `Other` as an  
             [INFO], and the walk is now per-QIF so a hit knows its entity. Proven still failable:  
             planting FormInput on the VEHICLE tab of a replica still FAILs.  
+⚠️ A CORRECTION MADE MID-BUILD, RECORDED BECAUSE IT WOULD HAVE SHIPPED: a first pass "fixed"  
+         the WantedPersonQuery VehicleMakeCode attribute from Size 24 to Size 4, on the strength of a  
+         single `maxLen= 4` row in docs/reference/..._METADATA_REFERENCE.txt. THE RAW XML REFUTES IT.  
+         `VehicleMakeCode` appears 28 times with TWO caps and the size is PER TRANSACTION:  
+             VehicleRegistrationQuery 4 . VehicleStolenQuery 4 . WantedPersonQuery 24  
+         So 24 was right all along and the Vehicle QIDMs' 4 is right too. METADATA_REFERENCE  
+         FLATTENS -- one row per (keyRef, primaryField) -- and cannot express that, which is exactly  
+         why the Source Authority table makes the raw <Field>/<Requirements> the sanctioned read for  
+         a size or mandatory question. Reverted to 24.  
+⚠️ AND audit_metadata CHECK 5 NEVER LOOKS AT THIS FIELD. Proven by planting 24-vs-4 on an  
+         IN-PROVIDER replica (a %TEMP% copy reports "Providers checked: 0" -- no source/ beside it --  
+         and my first attempt did exactly that and proved nothing). CHECK 5 emits verdicts for  
+         Name, OLN, State, hull, article and more, and none for VehicleMakeCode. Recorded, not  
+         fixed here.  
 GATES: validator 75 PASS / 0 FAIL / 0 WARN / 2 LIMITATION (P dropped 77->75: two SexCode/RaceCode  
          attribute checks no longer apply on this shape). Portfolio validator sweep: 0 providers  
          with a FAIL. pipeline COMPLETE.  

@@ -380,6 +380,17 @@ $wpAttrs = @(
     Build-QidmAttribute -Name 'LicensePlateNumber'          -Size 10 -SourceField @('LicensePlateNumber')
     Build-QidmAttribute -Name 'LicensePlateStateCode'       -Size 2  -SourceField @('LicensePlateStateCode')   # v1.3 NO codeTypeProvider -- see wpForm
     Build-QidmAttribute -Name 'VehicleIdentificationNumber' -Size 20 -SourceField @('VehicleIdentificationNumber')
+    # ⚠️ 24 IS CORRECT HERE AND 4 WOULD BE WRONG -- THE SIZE IS PER TRANSACTION, NOT PER FIELD.
+    # `VehicleMakeCode` appears 28 times in SC_SLED.xml with TWO different caps, and which one
+    # applies depends on the transaction (raw <Field> attributes, the sanctioned raw-XML read):
+    #     VehicleRegistrationQuery  maxLength=4      VehicleStolenQuery  maxLength=4
+    #     WantedPersonQuery         maxLength=24     WMPIWantedPersonQuery maxLength=4
+    # So the Vehicle QIDMs above declare 4 and this one declares 24, and they are BOTH right.
+    # A v1.18 edit briefly "fixed" this to 4 on the strength of a single `maxLen= 4` row in
+    # docs/reference/..._METADATA_REFERENCE.txt. THAT FILE FLATTENS -- it emits one row per
+    # (keyRef, primaryField) and cannot express a per-transaction difference, which is precisely
+    # what the Source Authority table warns about and why the raw <Requirements>/<Field> is the
+    # sanctioned exception for a size or mandatory question.
     Build-QidmAttribute -Name 'VehicleMakeCode'             -Size 24 -SourceField @('VehicleMakeCode')
     Build-QidmAttribute -Name 'ImageIndicator'              -Size 1  -SourceField @('ImageIndicator')
     Build-QidmAttribute -Name 'ExpandedNameSearchCode'      -Size 1  -SourceField @('ExpandedNameSearchCode')
@@ -1012,7 +1023,15 @@ $wpLayout = MakeLayouts @(
                 # in the same capture) where the metadata wants a code-manual value. That is PARKED
                 # portfolio-wide by Rob 2026-08-03, so this tab is not diverging from something that
                 # works; it is diverging from something equally broken in a different way.
-                # maxLength 24 = the metadata size for VehicleMakeCode.
+                # maxLength 24 = WantedPersonQuery's OWN cap for this field in the raw XML. The two
+                # Vehicle transactions cap it at 4 and this one at 24; the size is per TRANSACTION.
+                # WHY A TEXT BOX AND NOT THE DROPDOWN, stated in terms of what reaches SC:
+                #     dropdown on a real entity -> PASS_FORD     an attribute code, LIMITATION #38
+                #     dropdown on `Other`       -> 73046859129   a database row id, LIMITATION #50
+                #     text box                  -> what the officer typed
+                # Only the third can carry an NCIC make. The dropdown is not a working thing we are
+                # giving up -- it is broken in two different ways depending on the entity, and one
+                # of those (PASS_FORD, 9 chars) does not even fit the Vehicle transactions' cap of 4.
                 @{ id = 'VehicleMakeCode_Input';             node = Inp 'VehicleMakeCode' 'Vehicle Make' '24' 'ROW_WP_4' }
             )}
             # OLN IS HERE BECAUSE QWA{Name}'s <Any> DEFINES IT, and the validator said so: moving
