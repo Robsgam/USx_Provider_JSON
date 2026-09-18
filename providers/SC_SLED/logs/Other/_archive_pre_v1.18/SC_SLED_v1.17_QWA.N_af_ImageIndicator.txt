@@ -1,7 +1,7 @@
 ﻿================================================================
 TEST LOG: SC_SLED Other WantedPersonQuery
-Combo: QWA.N_af_ExpandedBirthDateSearchCode (QWA.N_af_ExpandedBirthDateSearchCode (auto))
-Date: 2026-09-18 16:44:49
+Combo: QWA.N_af_ImageIndicator (QWA.N_af_ImageIndicator (auto))
+Date: 2026-09-18 18:22:07
 Result: PASS
 JSON Version: 1.17
 Entity Fingerprint: 7947895c9fa70132cd0759df2979a95ff06c96871585020bfb7d2951cde8d9a2
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"ExpandedBirthDateSearchCode":"Y","ImageIndicator":"Y","NameFirst":"JOHN","NameLast":"DOE","RelatedHitSearchIndicator":"Y"}
+{"ImageIndicator":"N","NameFirst":"JOHN","NameLast":"DOE","RelatedHitSearchIndicator":"Y"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01M2V433B8G909VSG5R6H5ZHQ9">
+    <api:Transaction id="01M2V6J8YZHM1HP5DVFD6QWRV7">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,10 +36,9 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>WantedPersonQuery</MessageType>
-            <Id>01M2V433B8G909VSG5R6H5ZHQ9</Id>
+            <Id>01M2V6J8YZHM1HP5DVFD6QWRV7</Id>
             <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
-            <ExpandedBirthDateSearchCode>Y</ExpandedBirthDateSearchCode>
-            <ImageIndicator>Y</ImageIndicator>
+            <ImageIndicator>N</ImageIndicator>
             <Name>DOE, JOHN</Name>
           </Request>
         </Transaction>
@@ -74,14 +73,13 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01M2V433B8G909VSG5R6H5ZHQ9
+  Id                             01M2V6J8YZHM1HP5DVFD6QWRV7
   RelatedHitSearchIndicator      Y
-  ExpandedBirthDateSearchCode    Y
-  ImageIndicator                 Y
+  ImageIndicator                 N
   Name                           DOE, JOHN
 
 NOTES
 -----
-Automated capture (txId 01M2V433B8G909VSG5R6H5ZHQ9). kind=any-field; anyField=ExpandedBirthDateSearchCode; expectedKeyRef=QWA.N; firedMessageType=WantedPersonQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01M2V6J8YZHM1HP5DVFD6QWRV7). kind=any-field; anyField=ImageIndicator; expectedKeyRef=QWA.N; firedMessageType=WantedPersonQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS

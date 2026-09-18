@@ -1,16 +1,16 @@
 ﻿================================================================
-TEST LOG: SC_SLED Other WantedPersonQuery
-Combo: QWA.OCA (QWA.OCA (auto))
-Date: 2026-09-18 16:44:54
+TEST LOG: SC_SLED Vehicle VehicleRegistrationQuery
+Combo: QVRQ.P_cofire_with_T7 (QVRQ.P_cofire_with_T7 (auto))
+Date: 2026-09-18 18:22:17
 Result: PASS
 JSON Version: 1.17
-Entity Fingerprint: 7947895c9fa70132cd0759df2979a95ff06c96871585020bfb7d2951cde8d9a2
+Entity Fingerprint: 19864955ce14bae5d5a9f631259634818a717f32c048fe1eecac2af3f64474da
 Tier: Full
 ================================================================
 
 QUERY STRING
 ------------
-{"ImageIndicator":"Y","NameFirst":"JOHN","NameLast":"DOE","OriginatingAgencyCaseNumber":"SC2026001234","RelatedHitSearchIndicator":"Y"}
+{"LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","VehicleIdentificationNumber":"1HGCM82633A123456"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01M2V3ZYVSQZ60MTRM5D1E1PT2">
+    <api:Transaction id="01M2V6DQ3CWZFR9D0HEQTXKXVG">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -35,12 +35,11 @@ COMMSYS XML
         </Session>
         <Transaction>
           <Request>
-            <MessageType>WantedPersonQuery</MessageType>
-            <Id>01M2V3ZYVSQZ60MTRM5D1E1PT2</Id>
-            <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
-            <OriginatingAgencyCaseNumber>SC2026001234</OriginatingAgencyCaseNumber>
-            <ImageIndicator>Y</ImageIndicator>
-            <Name>DOE, JOHN</Name>
+            <MessageType>VehicleRegistrationQuery</MessageType>
+            <Id>01M2V6DQ3CWZFR9D0HEQTXKXVG</Id>
+            <LicensePlateYear>2026</LicensePlateYear>
+            <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+            <LicensePlateNumber>TEST123</LicensePlateNumber>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -57,8 +56,10 @@ RMS QUERY
 Request:
 {
     "elasticQuery":  {
-                         "lastName":  "DOE",
-                         "firstName":  "JOHN"
+                         "vehicle":  {
+                                         "tag":  "TEST123",
+                                         "vinNumber":  "1HGCM82633A123456"
+                                     }
                      },
     "from":  0,
     "size":  50
@@ -74,14 +75,13 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01M2V3ZYVSQZ60MTRM5D1E1PT2
-  RelatedHitSearchIndicator      Y
-  OriginatingAgencyCaseNumber    SC2026001234
-  ImageIndicator                 Y
-  Name                           DOE, JOHN
+  Id                             01M2V6DQ3CWZFR9D0HEQTXKXVG
+  LicensePlateYear               2026
+  LicensePlateTypeCode           PC
+  LicensePlateNumber             TEST123
 
 NOTES
 -----
-Automated capture (txId 01M2V3ZYVSQZ60MTRM5D1E1PT2). kind=combo; anyField=; expectedKeyRef=QWA.OCA; firedMessageType=WantedPersonQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01M2V6DQ3CWZFR9D0HEQTXKXVG). kind=co-fire; anyField=; expectedKeyRef=QVRQ.P; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS

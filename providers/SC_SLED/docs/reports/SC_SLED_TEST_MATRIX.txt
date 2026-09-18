@@ -1,4 +1,4 @@
-SC_SLED v1.17 -- TEST MATRIX
+SC_SLED v1.18 -- TEST MATRIX
 ==================================================
 Generated: 2026-09-18
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -34,8 +34,8 @@ Other (1 card, 21 fields):
   CARD_WP (WANTED PERSON -- SEARCH BY NCIC NUMBER, BY NAME, BY NAME + CASE NUMBER, BY PLATE, OR BY VIN):
     ROW 1: NCICNumber [Inp 10], OriginatingAgencyCaseNumber [Inp 20]
     ROW 2: NameFirst [Inp 30], NameLast [Inp 30], NameMiddle [Inp 30], NameSuffix [Inp 30]
-    ROW 3: BirthDate [FormDate], SexCode [Sel SEX], raceCode [Sel RACE]
-    ROW 4: LicensePlateNumber [Inp 10], RegistrationState [Sel STATE], VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE]
+    ROW 3: BirthDate [FormDate], SexCode [Sel NIBRS_SEX/NIBRS], raceCode [Sel NIBRS_RACE/NIBRS]
+    ROW 4: LicensePlateNumber [Inp 10], RegistrationState [Sel NJ_NIBRS_STATE/NJ_NIBRS], VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Inp 24]
     ROW 5: OperatorLicenseNumber [Inp 20], SocialSecurityNumber [Inp 9], FBINumber [Inp 9], MiscellaneousNumber [Inp 15]
     ROW 6: ExpandedNameSearchCode [Inp 1], ExpandedBirthDateSearchCode [Inp 1], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], RelatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
@@ -178,4 +178,4 @@ COMBO COVERAGE (17/17):
   ArticleSingleQuery: 1/1 -- T26(Serial)
   BoatQuery: 2/2 -- T10(BQ.H), T12(BQ.R)
 
-IMPORT FILE: SC_SLED_v1.17.json
+IMPORT FILE: SC_SLED_v1.18.json

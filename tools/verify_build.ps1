@@ -365,12 +365,21 @@ function Find-VehicleMakeFields($node) {
     if ($node -is [psobject]) {
         if ($node.props -and $node.props.fieldId -and ($node.props.fieldId -in @('VehicleMakeCode','vehicleMakeCode'))) {
             $rn = if ($node.type -and $node.type.resolvedName) { $node.type.resolvedName } else { '' }
-            $vmFields.Add([pscustomobject]@{ fieldId = $node.props.fieldId; type = $rn }) | Out-Null
+            $vmFields.Add([pscustomobject]@{ fieldId = $node.props.fieldId; type = $rn; ent = $script:VmCurEntity }) | Out-Null
         }
         foreach ($p in $node.PSObject.Properties) { Find-VehicleMakeFields $p.Value }
     }
 }
-if ($entitiesBundle) { Find-VehicleMakeFields $entitiesBundle }
+# Walk PER QIF so each hit knows its targetEntity -- the exemption below is entity-scoped and a
+# bundle-wide recursion cannot tell which form a node came from.
+if ($entitiesBundle) {
+    foreach ($vmCfg in $entitiesBundle.configurations) {
+        if ("$($vmCfg.type)" -ne 'QUERYINPUTFORM') { continue }
+        $script:VmCurEntity = "$($vmCfg.targetEntity)"
+        Find-VehicleMakeFields $vmCfg
+    }
+    $script:VmCurEntity = $null
+}
 # NO -Unique COLLAPSE. The recursion visits all THREE layout variants (default, CAD_DISPATCH,
 # FIRST_RESPONDER), so `Sort-Object fieldId -Unique` kept ONE row per fieldId and whichever variant
 # sorted first decided the verdict. PROVEN by mutation 2026-07-30: with the `default` variant set to
@@ -380,7 +389,22 @@ if ($entitiesBundle) { Find-VehicleMakeFields $entitiesBundle }
 # occurrence on its own; de-duplicate the PASS message only, never the verdict.
 $vmSeenPass = @{}
 foreach ($vm in $vmFields) {
-    if ($vm.type -eq 'FormInput') {
+    # ── ENTITY 'Other' IS EXEMPT, AND ONLY BECAUSE THE DROPDOWN IS MEASURABLY WORSE THERE ──────
+    # The Sel rule is a HARD gate for good reason and stays hard on every real entity. But on
+    # targetEntity='Other' an attributeTypeId control does not resolve at all: measured on
+    # usx-sc-sled 2026-09-18, the same VehicleMakeCode attribute config sent PASS_FORD from the
+    # Vehicle tab and <VehicleMakeCode>73046859129</VehicleMakeCode> -- a database row number --
+    # from the `Other` tab in the SAME capture batch (LIMITATION #50). There is no
+    # codeTypeCategory to fall back to either: a census of every category on every form control
+    # in all 21 providers returns ten and not one is a vehicle make (NCIC_FIREARM_MAKE is
+    # firearm-only per AP #24; VEHICLE_TYPE is body type).
+    # So on `Other` this gate would enforce the WORSE of two bad options. Rob 2026-09-18:
+    # "leave veh make as a free text  no choice".
+    # It is an INFO, not silence -- a non-preferred control must stay visible.
+    if ($vm.type -eq 'FormInput' -and "$($vm.ent)" -eq 'Other') {
+        Info "VehicleMakeCode field '$($vm.fieldId)' is FormInput on targetEntity='Other' -- ACCEPTED. attributeTypeId does not resolve on that entity (LIMITATION #50, wire-measured) and no vehicle-make codeTypeCategory exists, so a Sel there would transmit the platform's internal row id. Operator directive 2026-09-18. The Sel rule remains HARD on every real entity."
+    }
+    elseif ($vm.type -eq 'FormInput') {
         Fail "VehicleMakeCode field '$($vm.fieldId)' is FormInput -- MUST be FormSelect (Sel) with attributeTypeId=VEHICLE_MAKE (CLAUDE.md Code Type Pairings; free-text make breaks the dropdown + QRDM VehicleMakeName lookup)"
     } elseif ($vm.type -eq 'FormSelect') {
         if (-not $vmSeenPass.ContainsKey("$($vm.fieldId)")) {

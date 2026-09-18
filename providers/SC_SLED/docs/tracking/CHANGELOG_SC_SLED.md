@@ -2,9 +2,58 @@
 
 Auto-generated from `SC_SLED_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.17** | Generated: 2026-09-18
+Current: **v1.18** | Generated: 2026-09-18
 
 ---
+
+## v1.18 -- 2026-09-18 -- WANTED PERSON TAB WAS PUTTING DATABASE ROW NUMBERS ON THE WIRE -- coded controls reverted to codeTypeCategory
+
+**CHANGED:** On ENTITY_WantedPerson (targetEntity='Other') the three coded dropdowns move from
+            attributeTypeId back to codeTypeCategory, and their QIDM attributes drop  
+            codeTypeProvider to match:  
+              SexCode   attributeTypeId=SEX   + provider NIBRS  ->  NIBRS_SEX | NIBRS  
+              raceCode  attributeTypeId=RACE  + provider NIBRS  ->  NIBRS_RACE | NIBRS  
+              State     attributeTypeId=STATE + provider NCIC   ->  NJ_NIBRS_STATE | NJ_NIBRS  
+         VehicleMakeCode on that tab becomes a FormInput (24 chars). Rob 2026-09-18:  
+            "leave veh make as a free text  no choice".  
+         The Vehicle tab is UNTOUCHED -- its make dropdown still ships PASS_FORD, which is  
+            LIMITATION #38 and PARKED portfolio-wide. This is an `Other`-only change.  
+**REASON:** MEASURED ON THE WIRE, from the v1.17 sweep captured the same day:
+              <SexCode>73046851255</SexCode>                 expected M  
+              <RaceCode>73046859570</RaceCode>               expected W  
+              <LicensePlateStateCode>73046852196</LicensePlateStateCode>  expected GA  
+              <VehicleMakeCode>73046859129</VehicleMakeCode>  
+         -- the platform's internal numeric row ids, WITH codeTypeProvider correctly set on all  
+         three attributes, so this is NOT AP #1 (a MISSING provider); the provider is present and  
+         ignored. v1.17 had converted these to attributeTypeId on the reasoning that `Other`  
+         hosts ONE QIF so LIMITATION #28 does not apply. #28 is about TWO QIFs on one entity;  
+         this is a different failure that looks identical on the wire.  
+THE CONTROLLED COMPARISON IS IN THE SAME CAPTURE, which is why this is measured and not argued:  
+         VehicleMakeCode has BYTE-IDENTICAL attribute config on the Vehicle tab and on this one,  
+         and sent PASS_FORD there and 73046859129 here. targetEntity is the only variable.  
+AND A POSITIVE CONTROL, so "Other breaks everything" is refuted too: ImageIndicator and  
+         RelatedHitSearchIndicator are codeTypeCategory controls on this SAME tab and came  
+         through correctly as Y/N in the SAME submits. On `Other`: attributeTypeId does NOT  
+         resolve, codeTypeCategory DOES.  -> LIMITATION #50.  
+THE REPLACEMENT PAIRINGS ARE NOT A GUESS. They are what this tab already rendered, read from the  
+         committed capture docs/reference/TENANT_PICKLISTS.json (v1.11): NIBRS_SEX 3 options,  
+         NIBRS_RACE 7 options, NJ_NIBRS_STATE 57 options, all with real code-prefixed labels.  
+         v1.17 changed away from a working configuration; v1.18 changes back.  
+WHY MAKE CANNOT BE A DROPDOWN HERE: it is the only one of the four with NO category to fall back  
+         to. A census of every codeTypeCategory on every form control in all 21 providers  
+         returns ten and not one is a vehicle make (NCIC_FIREARM_MAKE is firearm-only, AP #24;  
+         VEHICLE_TYPE is body type). So the choice on `Other` is a dropdown that ships a row  
+         number or a text box that ships what the officer typed, and QWA.VM makes  
+         VehicleMakeCode MANDATORY -- a wrong value there is an invalid query, not a weaker one.  
+TWO GATES SCOPED, NOT SILENCED -- both now name the entity and the evidence:  
+         validate.ps1 SexCode rule already exempted the multi-QIF fallback; it now also exempts  
+            targetEntity='Other' and says WHICH reason applied.  
+         verify_build's HARD "VehicleMakeCode MUST be FormSelect" rule exempts `Other` as an  
+            [INFO], and the walk is now per-QIF so a hit knows its entity. Proven still failable:  
+            planting FormInput on the VEHICLE tab of a replica still FAILs.  
+GATES: validator 75 PASS / 0 FAIL / 0 WARN / 2 LIMITATION (P dropped 77->75: two SexCode/RaceCode  
+         attribute checks no longer apply on this shape). Portfolio validator sweep: 0 providers  
+         with a FAIL. pipeline COMPLETE.  
 
 ## v1.17 -- 2026-09-18 -- WANTED PERSON BACK TO ONE CONFIG ON ITS OWN TAB (entity `Other`) -- the v1.15 split shipped a query that never reached the wire
 

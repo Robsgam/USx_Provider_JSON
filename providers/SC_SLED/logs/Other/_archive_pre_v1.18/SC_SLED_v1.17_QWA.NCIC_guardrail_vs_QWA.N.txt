@@ -1,0 +1,85 @@
+﻿================================================================
+TEST LOG: SC_SLED Other WantedPersonQuery
+Combo: QWA.NCIC_guardrail_vs_QWA.N (QWA.NCIC_guardrail_vs_QWA.N (auto))
+Date: 2026-09-18 18:22:05
+Result: PASS
+JSON Version: 1.17
+Entity Fingerprint: 7947895c9fa70132cd0759df2979a95ff06c96871585020bfb7d2951cde8d9a2
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"Y","NCICNumber":"X123456789","NameFirst":"JOHN","NameLast":"DOE","RelatedHitSearchIndicator":"Y"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M2V6K3XFXN6P1XDCNATA8JSH">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>WantedPersonQuery</MessageType>
+            <Id>01M2V6K3XFXN6P1XDCNATA8JSH</Id>
+            <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+            <ImageIndicator>Y</ImageIndicator>
+            <NCICNumber>X123456789</NCICNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "lastName":  "DOE",
+                         "firstName":  "JOHN"
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M2V6K3XFXN6P1XDCNATA8JSH
+  RelatedHitSearchIndicator      Y
+  ImageIndicator                 Y
+  NCICNumber                     X123456789
+
+NOTES
+-----
+Automated capture (txId 01M2V6K3XFXN6P1XDCNATA8JSH). kind=guardrail; anyField=; expectedKeyRef=QWA.NCIC; firedMessageType=WantedPersonQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

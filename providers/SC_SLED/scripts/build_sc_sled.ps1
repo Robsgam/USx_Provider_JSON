@@ -35,7 +35,7 @@ $repoRoot    = Split-Path (Split-Path $providerDir -Parent) -Parent
 . (Join-Path $repoRoot 'tools\_build_provider_helpers.ps1')
 
 $providerName = 'SC_SLED'
-$Version      = '1.17'
+$Version      = '1.18'
 $currentYear  = (Get-Date).Year.ToString()
 
 Write-Host ''
@@ -363,8 +363,14 @@ $wpAttrs = @(
         -Rule ([PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ', ' ', ' ') })
     Build-QidmAttribute -Name 'BirthDate' -Size 8 -SourceField @('BirthDate') `
         -Rule ([PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') })
-    Build-QidmAttribute -Name 'SexCode' -Size 1 -SourceField @('SexCode') -CodeTypeProvider 'NIBRS'   # v1.12 RESTORED (AP #2) -- Firearm is single-QIF again, so LIMITATION #28 no longer breaks reverse-lookup
-    Build-QidmAttribute -Name 'RaceCode' -Size 1 -SourceField @('raceCode') -CodeTypeProvider 'NIBRS'   # v1.15: paired with attributeTypeId='RACE' on the control (AP #1). The v1.3 bare form was the LIMITATION #28 fallback for the old two-QIF Wanted Person tab.
+    # NO CodeTypeProvider (v1.18) -- the controls are codeTypeCategory Sels, and the attribute must
+    # match the control or AP #11 fires: a provider here is an attribute-ID reverse-lookup, and a
+    # code-string dropdown has no attribute id to look up. The validator FAILED the first v1.18
+    # build on exactly that, naming both fields -- the gate doing its job in the other direction.
+    # WHY THE CONTROLS CHANGED, in one line: on entity `Other` attributeTypeId does not resolve and
+    # the wire carried <SexCode>73046851255</SexCode>. Full evidence at the ROW_WP_3 control block.
+    Build-QidmAttribute -Name 'SexCode'  -Size 1 -SourceField @('SexCode')
+    Build-QidmAttribute -Name 'RaceCode' -Size 1 -SourceField @('raceCode')
     Build-QidmAttribute -Name 'OperatorLicenseNumber'       -Size 20 -SourceField @('OperatorLicenseNumber')
     Build-QidmAttribute -Name 'SocialSecurityNumber'        -Size 9  -SourceField @('SocialSecurityNumber')
     Build-QidmAttribute -Name 'FBINumber'                   -Size 9  -SourceField @('FBINumber')
@@ -501,14 +507,19 @@ $wpFormAttrs = @($wpAttrs)
 # there. On a dedicated Wanted Person tab that redirection is gone: this form carries its own
 # RegistrationState control, so the attribute reverts to the plain metadata name for BOTH its
 # `name`/`targetField` (the wire contract) and its sourceField.
-# ⚠️ IT STILL NEEDS codeTypeProvider (AP #1), and that has nothing to do with which form it is on.
-# The control is a Sel carrying attributeTypeId='STATE'; an attributeTypeId control whose QIDM
-# attribute has NO codeTypeProvider transmits the platform's internal NUMERIC ROW ID instead of
-# the 2-character state code. The validator FAILED the first v1.15 build on exactly this.
+# ⚠️ NO codeTypeProvider ON THE ATTRIBUTE (v1.18) -- IT MUST MATCH WHAT THE CONTROL IS.
+# v1.15-v1.17 injected codeTypeProvider='NCIC' here because the control was an attributeTypeId
+# Sel, and AP #1 says such a control needs the provider or the wire carries the internal row id.
+# That pairing is still true -- but the CONTROL changed. On entity `Other` attributeTypeId does
+# not resolve at all (measured: <LicensePlateStateCode>73046852196</LicensePlateStateCode> WITH
+# the provider set), so the control is now a codeTypeCategory Sel, and a codeTypeProvider left on
+# the attribute would be reverse-looked-up against a control that has no attributeTypeId to match
+# -- AP #11, the same reason Boat's RegistrationState attribute carries none (see ~line 597).
+# THE ATTRIBUTE AND ITS CONTROL ARE ONE DECISION. Changing one and not the other is how the
+# v1.15 build failed the validator in the first place, in the opposite direction.
 $wpFormAttrs = @($wpFormAttrs | ForEach-Object {
     if ($_.name -eq 'LicensePlateStateCode') {
         $_.sourceField = @('RegistrationState')
-        $_ | Add-Member -NotePropertyName 'codeTypeProvider' -NotePropertyValue 'NCIC' -Force
     }
     $_
 })
@@ -956,20 +967,53 @@ $wpLayout = MakeLayouts @(
                 @{ id = 'NameMiddle_Input'; node = Inp 'NameMiddle' 'Middle Name' '30' 'ROW_WP_2' }
                 @{ id = 'NameSuffix_Input'; node = Inp 'NameSuffix' 'Suffix' '30' 'ROW_WP_2' }
             )}
-            # Sel, not Inp -- see the header note. One QIF on this entity means reverse-lookup
-            # works, so these carry real code values instead of a numeric row id (AP #1).
+            # ⚠️ codeTypeCategory, NOT attributeTypeId -- AND THE WIRE IS WHY (v1.18, measured).
+            # v1.17 built these as `attributeTypeId` + `codeTypeProvider`, reasoning that `Other`
+            # hosts ONE QIF so reverse-lookup is intact (LIMITATION #28 is about TWO QIFs on one
+            # entity). THE TENANT REFUTED IT. Captured wire from the 09-18 sweep, this tab:
+            #     <SexCode>73046851255</SexCode>   <RaceCode>73046859570</RaceCode>
+            #     <LicensePlateStateCode>73046852196</LicensePlateStateCode>
+            # -- the platform's internal numeric row ids, not M / W / GA, with codeTypeProvider
+            # PRESENT on all three attributes. SC cannot read those.
+            # THE CONTROLLED COMPARISON IS IN THE SAME CAPTURE, which is what makes this measured
+            # rather than guessed: `VehicleMakeCode` has byte-identical attribute config on the
+            # Vehicle tab and on this one, and sent `PASS_FORD` there and `73046859129` here. The
+            # only variable is targetEntity. And ImageIndicator / RelatedHitSearchIndicator, which
+            # are codeTypeCategory controls on THIS tab, came through correctly as Y / N in the
+            # same submits. So on `Other`: attributeTypeId does NOT resolve, codeTypeCategory DOES.
+            # THE PAIRINGS BELOW ARE THE ONES THIS TAB ALREADY RENDERED, read from the committed
+            # tenant picklist capture (docs/reference/TENANT_PICKLISTS.json, v1.11):
+            #     SexCode   NIBRS_SEX|NIBRS        3 options   "F - Female / M - Male / U - Unknown"
+            #     raceCode  NIBRS_RACE|NIBRS       7 options   "A - Asian ..."
+            #     State     NJ_NIBRS_STATE|NJ_NIBRS 57 options "AK - Alaska ..."
+            # They are not a guess at a replacement -- they are what was there before I changed it.
             @{ id = 'ROW_WP_3'; cols = @('4','4','4'); fields = @(
                 @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_WP_3' }
-                @{ id = 'SexCode_Input';   node = Sel 'SexCode' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_WP_3' }
-                @{ id = 'raceCode_Input';  node = Sel 'raceCode' 'Race' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_WP_3' }
+                @{ id = 'SexCode_Input';   node = Sel 'SexCode' 'Sex' @{ codeTypeCategory = 'NIBRS_SEX'; codeTypeSource = 'NIBRS' } 'ROW_WP_3' }
+                @{ id = 'raceCode_Input';  node = Sel 'raceCode' 'Race' @{ codeTypeCategory = 'NIBRS_RACE'; codeTypeSource = 'NIBRS' } 'ROW_WP_3' }
             )}
             # The vehicle-identifier paths (QWA.P plate+state, QWA.VM VIN+make). Plate beats VIN by
             # ORDERING in the combination array, not by a condition -- see section 6b.
             @{ id = 'ROW_WP_4'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'LicensePlateNumber_Input';          node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_WP_4' }
-                @{ id = 'RegistrationState_Input';           node = Sel 'RegistrationState' 'State - leave blank for SC' @{ attributeTypeId = 'STATE' } 'ROW_WP_4' }
+                @{ id = 'RegistrationState_Input';           node = Sel 'RegistrationState' 'State - leave blank for SC' @{ codeTypeCategory = 'NJ_NIBRS_STATE'; codeTypeSource = 'NJ_NIBRS' } 'ROW_WP_4' }
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_WP_4' }
-                @{ id = 'VehicleMakeCode_Input';             node = Sel 'VehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE' } 'ROW_WP_4' }
+                # ⚠️ MAKE IS A TYPE-IN ON THIS TAB, AND IT IS THE LEAST-BAD OF THREE BAD OPTIONS.
+                # It is the ONLY one of the four coded fields with NO codeTypeCategory to fall back
+                # to: a census of every codeTypeCategory on every form control in all 21 providers
+                # returns ten categories and not one of them is a vehicle make. NCIC_FIREARM_MAKE is
+                # firearm-only and AP #24 says so explicitly; VEHICLE_TYPE is body type.
+                # So on entity `Other` the choices are (a) keep the dropdown and ship
+                # <VehicleMakeCode>73046859129</VehicleMakeCode>, a database row number, or (b) a
+                # text box carrying what the officer typed. (b) wins: QWA.VM makes VehicleMakeCode
+                # MANDATORY, so a wrong value there is not a degraded search, it is an invalid one.
+                # ⚠️ NOTE THE DROPDOWN IS NOT ACTUALLY CORRECT ANYWHERE -- LIMITATION #38: on a real
+                # entity it sends the raw attribute code (`PASS_FORD`, measured on the Vehicle tab
+                # in the same capture) where the metadata wants a code-manual value. That is PARKED
+                # portfolio-wide by Rob 2026-08-03, so this tab is not diverging from something that
+                # works; it is diverging from something equally broken in a different way.
+                # maxLength 24 = the metadata size for VehicleMakeCode.
+                @{ id = 'VehicleMakeCode_Input';             node = Inp 'VehicleMakeCode' 'Vehicle Make' '24' 'ROW_WP_4' }
             )}
             # OLN IS HERE BECAUSE QWA{Name}'s <Any> DEFINES IT, and the validator said so: moving
             # the query to its own tab left `QWA.N any[] references OperatorLicenseNumber not in

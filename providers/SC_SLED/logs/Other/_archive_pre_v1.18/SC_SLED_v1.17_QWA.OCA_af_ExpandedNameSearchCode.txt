@@ -1,7 +1,7 @@
 ﻿================================================================
 TEST LOG: SC_SLED Other WantedPersonQuery
-Combo: QWA.N_af_FBINumber (QWA.N_af_FBINumber (auto))
-Date: 2026-09-18 16:44:51
+Combo: QWA.OCA_af_ExpandedNameSearchCode (QWA.OCA_af_ExpandedNameSearchCode (auto))
+Date: 2026-09-18 18:22:13
 Result: PASS
 JSON Version: 1.17
 Entity Fingerprint: 7947895c9fa70132cd0759df2979a95ff06c96871585020bfb7d2951cde8d9a2
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"FBINumber":"123456AB1","ImageIndicator":"Y","NameFirst":"JOHN","NameLast":"DOE","RelatedHitSearchIndicator":"Y"}
+{"ExpandedNameSearchCode":"Y","ImageIndicator":"Y","NameFirst":"JOHN","NameLast":"DOE","OriginatingAgencyCaseNumber":"SC2026001234","RelatedHitSearchIndicator":"Y"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01M2V42FR8G0W0QYXZFD5RS1S2">
+    <api:Transaction id="01M2V6FCYW73A1MQ89K6FBCBWZ">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,10 +36,11 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>WantedPersonQuery</MessageType>
-            <Id>01M2V42FR8G0W0QYXZFD5RS1S2</Id>
+            <Id>01M2V6FCYW73A1MQ89K6FBCBWZ</Id>
             <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+            <OriginatingAgencyCaseNumber>SC2026001234</OriginatingAgencyCaseNumber>
             <ImageIndicator>Y</ImageIndicator>
-            <FBINumber>123456AB1</FBINumber>
+            <ExpandedNameSearchCode>Y</ExpandedNameSearchCode>
             <Name>DOE, JOHN</Name>
           </Request>
         </Transaction>
@@ -74,14 +75,15 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01M2V42FR8G0W0QYXZFD5RS1S2
+  Id                             01M2V6FCYW73A1MQ89K6FBCBWZ
   RelatedHitSearchIndicator      Y
+  OriginatingAgencyCaseNumber    SC2026001234
   ImageIndicator                 Y
-  FBINumber                      123456AB1
+  ExpandedNameSearchCode         Y
   Name                           DOE, JOHN
 
 NOTES
 -----
-Automated capture (txId 01M2V42FR8G0W0QYXZFD5RS1S2). kind=any-field; anyField=FBINumber; expectedKeyRef=QWA.N; firedMessageType=WantedPersonQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01M2V6FCYW73A1MQ89K6FBCBWZ). kind=any-field; anyField=ExpandedNameSearchCode; expectedKeyRef=QWA.OCA; firedMessageType=WantedPersonQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS

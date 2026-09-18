@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: SC_SLED
-  Source: SC_SLED_v1.17.json
-  Generated: 2026-09-18 16:12
+  Source: SC_SLED_v1.18.json
+  Generated: 2026-09-18 18:39
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: SC_SLED_v1.17
+ POST-BUILD VERIFICATION: SC_SLED_v1.18
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -31,6 +31,9 @@ POST-BUILD VERIFICATION
 
 --- CHECK 6: Visible-First Mandate ---
   [PASS] VehicleMakeCode field 'VehicleMakeCode' is FormSelect (VEHICLE_MAKE dropdown)
+  [INFO] VehicleMakeCode field 'VehicleMakeCode' is FormInput on targetEntity='Other' -- ACCEPTED. attributeTypeId does not resolve on that entity (LIMITATION #50, wire-measured) and no vehicle-make codeTypeCategory exists, so a Sel there would transmit the platform's internal row id. Operator directive 2026-09-18. The Sel rule remains HARD on every real entity.
+  [INFO] VehicleMakeCode field 'VehicleMakeCode' is FormInput on targetEntity='Other' -- ACCEPTED. attributeTypeId does not resolve on that entity (LIMITATION #50, wire-measured) and no vehicle-make codeTypeCategory exists, so a Sel there would transmit the platform's internal row id. Operator directive 2026-09-18. The Sel rule remains HARD on every real entity.
+  [INFO] VehicleMakeCode field 'VehicleMakeCode' is FormInput on targetEntity='Other' -- ACCEPTED. attributeTypeId does not resolve on that entity (LIMITATION #50, wire-measured) and no vehicle-make codeTypeCategory exists, so a Sel there would transmit the platform's internal row id. Operator directive 2026-09-18. The Sel rule remains HARD on every real entity.
   [PASS] Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard
 
 --- CHECK 7: Synthetic keyRef Documentation ---

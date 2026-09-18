@@ -584,14 +584,33 @@ if ($entitiesBundle) {
                         if ($cfg.targetEntity -and $qifsPerEntity.ContainsKey("$($cfg.targetEntity)")) {
                             $entQifCount = $qifsPerEntity["$($cfg.targetEntity)"]
                         }
-                        $fallbackOk = ($entQifCount -gt 1) -and
+                        # TWO conditions make the fallback correct, not one.
+                        # (a) MULTI-QIF entity -- LIMITATION #28, the long-standing case.
+                        # (b) targetEntity='Other' -- LIMITATION #50, MEASURED on usx-sc-sled
+                        #     2026-09-18: on `Other` an attributeTypeId control does NOT resolve
+                        #     and the wire carried <SexCode>73046851255</SexCode>, the platform's
+                        #     internal row id, WITH codeTypeProvider correctly set. The controlled
+                        #     comparison is in the same capture -- VehicleMakeCode had byte-identical
+                        #     config on the Vehicle tab and on `Other` and sent PASS_FORD there and
+                        #     73046859129 here, so targetEntity is the only variable. Meanwhile the
+                        #     codeTypeCategory controls on that same tab (ImageIndicator,
+                        #     RelatedHitSearchIndicator) sent correct Y/N in the same submits.
+                        # Without (b) this gate demands the pattern that provably breaks, which is
+                        # worse than silence: it would push the next build back onto a wrong wire.
+                        $otherEntity = ("$($cfg.targetEntity)" -eq 'Other')
+                        $fallbackOk = (($entQifCount -gt 1) -or $otherEntity) -and
                                       ($node.props.codeTypeCategory -eq 'NIBRS_SEX') -and
                                       ($node.props.codeTypeSource -eq 'NIBRS')
                         if ($fallbackOk) {
                             # Correct-by-the-authority for this shape. Reported so it is VISIBLE
                             # rather than silently tolerated -- a reader must be able to see that a
                             # non-preferred pattern was chosen, and why.
-                            Write-Info "QIF '$($cfg.name)' SexCode uses the CommSys-only FALLBACK (codeTypeCategory='NIBRS_SEX' + codeTypeSource='NIBRS') -- correct here because targetEntity='$($cfg.targetEntity)' carries $entQifCount QIFs, so LIMITATION #28 breaks the preferred attributeTypeId=SEX + codeTypeProvider=NIBRS reverse-lookup (FIELD_REFERENCE Section 4 fallback). Sends M/F/U; requires no RMS sex filter on this entity"
+                            $why = if ($otherEntity) {
+                                "targetEntity='Other' does NOT resolve attributeTypeId at all (LIMITATION #50, measured on the wire 2026-09-18)"
+                            } else {
+                                "targetEntity='$($cfg.targetEntity)' carries $entQifCount QIFs, so LIMITATION #28 breaks the preferred reverse-lookup"
+                            }
+                            Write-Info "QIF '$($cfg.name)' SexCode uses the CommSys-only FALLBACK (codeTypeCategory='NIBRS_SEX' + codeTypeSource='NIBRS') -- correct here because $why (FIELD_REFERENCE Section 4 fallback). Sends M/F/U; requires no RMS sex filter on this entity"
                         } else {
                             if ($node.props.attributeTypeId -ne 'SEX') {
                                 Write-Warn "QIF '$($cfg.name)' SexCode field missing attributeTypeId='SEX' -- reverse-lookup will not work"

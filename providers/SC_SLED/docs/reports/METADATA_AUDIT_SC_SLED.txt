@@ -1,21 +1,21 @@
 ﻿================================================================
   Build Report: SC_SLED
-  Source: SC_SLED_v1.17.json
-  Generated: 2026-09-18 16:12
+  Source: SC_SLED_v1.18.json
+  Generated: 2026-09-18 18:39
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-09-18 16:12
+ Generated: 2026-09-18 18:39
 ============================================================
 
 ============================================================
  METADATA AUDIT: SC_SLED
 ============================================================
   XML: SC_SLED.xml
-  JSON: SC_SLED_v1.17.json
+  JSON: SC_SLED_v1.18.json
 
 --- CHECK 1: Query Coverage ---
   [PASS] ArticleSingleQuery: in XML and JSON
@@ -245,10 +245,12 @@ METADATA AUDIT
   [PASS] LicensePlateNumber: maxLength 10 matches XML (LicensePlateNumber)
   [PASS] LicensePlateYear: maxLength 4 matches XML (LicensePlateYear)
   [PASS] VehicleIdentificationNumber: maxLength 20 matches XML (VehicleIdentificationNumber)
+  [WARN] VehicleMakeCode: QIF maxLength 24 > XML maxLength 4 (VehicleMakeCode) -- server may reject
   [PASS] vehicleYear: maxLength 4 matches XML (VehicleYear)
   [PASS] LicensePlateNumber: maxLength 10 matches XML (LicensePlateNumber)
   [PASS] RegistrationState: maxLength 2 matches XML (State)
   [PASS] VehicleIdentificationNumber: maxLength 20 matches XML (VehicleIdentificationNumber)
+  [WARN] VehicleMakeCode: QIF maxLength 24 > XML maxLength 4 (VehicleMakeCode) -- server may reject
   [PASS] NameLast: maxLength 30 matches XML (Name)
   [PASS] NameFirst: maxLength 30 matches XML (Name)
   [PASS] NameMiddle: maxLength 30 matches XML (Name)
@@ -260,6 +262,7 @@ METADATA AUDIT
   [PASS] LicensePlateNumber: maxLength 10 matches XML (LicensePlateNumber)
   [PASS] RegistrationState: maxLength 2 matches XML (LicensePlateStateCode)
   [PASS] VehicleIdentificationNumber: maxLength 20 matches XML (VehicleIdentificationNumber)
+  [PASS] VehicleMakeCode: maxLength 24 matches XML (VehicleMakeCode)
   [PASS] OriginatingAgencyCaseNumber: maxLength 20 matches XML (OriginatingAgencyCaseNumber)
   [PASS] NCICNumber: maxLength 10 matches XML (NCICNumber)
   [PASS] ExpandedBirthDateSearchCode: maxLength 1 matches XML (ExpandedBirthDateSearchCode)
@@ -269,6 +272,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 185 PASS / 0 FAIL / 0 WARN
+Total: 186 PASS / 0 FAIL / 2 WARN
 ============================================================
 

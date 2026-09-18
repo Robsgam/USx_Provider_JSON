@@ -1845,3 +1845,72 @@ LIMITATION #49: ONE `query` DISPATCHES ONCE. TWO QIDM CONFIGS SHARING A `query`
   All of them model ONE config at a time; not one asks whether two configs can COEXIST.
   A duplicate-`query` check is cheap and belongs in validate.ps1 -- see the companion
   entry added to BUILD_RULES. Until then, treat a shared `query` as UNBUILDABLE.
+
+================================================================================
+LIMITATION #50: ON targetEntity='Other' AN attributeTypeId CONTROL DOES NOT
+  RESOLVE -- THE WIRE CARRIES THE PLATFORM'S INTERNAL NUMERIC ROW ID.
+  codeTypeCategory DOES resolve there. STATUS: MEASURED ON THE WIRE, with a
+  controlled comparison and a positive control in the same capture batch.
+================================================================================
+
+  THE MEASUREMENT (usx-sc-sled, SC_SLED v1.17 sweep, 2026-09-18). SC_SLED's Wanted
+  Person tab is the only form in the portfolio on entity `Other` (CAPABILITY #47 /
+  LIMITATION #49). Captured request XML from that tab:
+
+      <SexCode>73046851255</SexCode>                  expected M
+      <RaceCode>73046859570</RaceCode>                expected W
+      <LicensePlateStateCode>73046852196</LicensePlateStateCode>   expected GA
+      <VehicleMakeCode>73046859129</VehicleMakeCode>
+
+  All three of the first group are `attributeTypeId` controls WHOSE QIDM ATTRIBUTES
+  CARRY codeTypeProvider. So this is NOT AP #1 (which is about a MISSING provider) --
+  the provider is present and is being ignored.
+
+  ⚠️ THE CONTROLLED COMPARISON IS IN THE SAME CAPTURE, which is what lifts this out
+  of hypothesis. `VehicleMakeCode` has BYTE-IDENTICAL attribute config on the Vehicle
+  tab and on the `Other` tab (attributeTypeId control, no codeTypeProvider):
+      Vehicle tab -> <VehicleMakeCode>PASS_FORD</VehicleMakeCode>
+      Other   tab -> <VehicleMakeCode>73046859129</VehicleMakeCode>
+  Same attribute, same control type, same submit batch. targetEntity is the ONLY
+  variable.
+
+  ⚠️ AND THERE IS A POSITIVE CONTROL, so "Other breaks everything" is refuted too:
+  `ImageIndicator` and `RelatedHitSearchIndicator` are codeTypeCategory
+  (YES_NO_UNKNOWN|NCIC) controls on that SAME tab and came through correctly as
+  Y / N in the SAME submits. So on `Other`:
+      attributeTypeId   -> DOES NOT RESOLVE (numeric row id on the wire)
+      codeTypeCategory  -> RESOLVES (correct code on the wire)
+
+  CORROBORATED FROM A SECOND, INDEPENDENT ARTEFACT: the committed tenant picklist
+  capture (providers/SC_SLED/docs/reference/TENANT_PICKLISTS.json, v1.11) shows this
+  same tab rendering real options off the CATEGORY form --
+      SexCode   NIBRS_SEX|NIBRS         3 options   "F - Female / M - Male / U - Unknown"
+      raceCode  NIBRS_RACE|NIBRS        7 options   "A - Asian ..."
+      State     NJ_NIBRS_STATE|NJ_NIBRS 57 options  "AK - Alaska ..."
+  -- so the fix is not a guess at a replacement, it is what the tab had before v1.17
+  converted it to attributeTypeId on the (wrong) reasoning that a single-QIF entity
+  keeps reverse-lookup intact. LIMITATION #28 is about TWO QIFs on one entity; this
+  is a different failure that happens to look the same on the wire.
+
+  THE RULE. On `Other`, every coded control must use codeTypeCategory + codeTypeSource,
+  and its QIDM attribute must NOT carry codeTypeProvider (a provider there is an
+  attribute-id reverse-lookup and a code-string dropdown has no id to look up -- AP #11;
+  validate.ps1 FAILs on the mismatch, which is how the half-done v1.18 build was caught).
+  validate.ps1's SexCode rule now accepts the fallback on `Other` as well as on a
+  multi-QIF entity, and NAMES which reason applies.
+
+  ⚠️ VEHICLE MAKE HAS NO ESCAPE AND MUST BE A TEXT BOX THERE. A census of every
+  codeTypeCategory on every form control in all 21 providers returns ten categories and
+  not one is a vehicle make: NCIC_FIREARM_MAKE is firearm-only (AP #24 says so
+  explicitly) and VEHICLE_TYPE is body type. So on `Other` the choice is a dropdown that
+  ships a database row number or a type-in that ships what the officer typed. Rob
+  2026-09-18: "leave veh make as a free text  no choice". Note the dropdown is not
+  correct on a real entity either -- LIMITATION #38, it ships the raw attribute code
+  (`PASS_FORD`) and is PARKED portfolio-wide -- so this is not a divergence from
+  something that works.
+
+  WHY IT WAS NOT CAUGHT EARLIER: `Other` was adopted at v1.17 and confirmed to RENDER
+  (CAPABILITY #47) and then to DISPATCH (33/33 rows paired). Both were treated as
+  clearing the way. RESOLUTION IS A THIRD, SEPARATE PROPERTY. That is the same
+  render-vs-dispatch conflation as LIMITATION #49, one layer further down, and it is
+  the second time in one day that "it works" meant "one layer of it works".

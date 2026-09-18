@@ -1,16 +1,16 @@
 ﻿================================================================
-TEST LOG: SC_SLED Vehicle VehicleRegistrationQuery
-Combo: QVRQ.V_af_vehicleYear (QVRQ.V_af_vehicleYear (auto))
-Date: 2026-09-18 16:45:20
+TEST LOG: SC_SLED Other WantedPersonQuery
+Combo: QWA.NCIC_af_RelatedHitSearchIndicator (QWA.NCIC_af_RelatedHitSearchIndicator (auto))
+Date: 2026-09-18 18:22:15
 Result: PASS
 JSON Version: 1.17
-Entity Fingerprint: 19864955ce14bae5d5a9f631259634818a717f32c048fe1eecac2af3f64474da
+Entity Fingerprint: 7947895c9fa70132cd0759df2979a95ff06c96871585020bfb7d2951cde8d9a2
 Tier: Full
 ================================================================
 
 QUERY STRING
 ------------
-{"LicensePlateTypeCode":"PC","LicensePlateYear":"2026","VehicleIdentificationNumber":"1HGCM82633A123456","vehicleYear":"2023"}
+{"ImageIndicator":"Y","NCICNumber":"X123456789","RelatedHitSearchIndicator":"N"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01M2V3WRY6CVAVZZXB646EF6GT">
+    <api:Transaction id="01M2V6F0MJYV0VWVQPR59561NW">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -35,10 +35,11 @@ COMMSYS XML
         </Session>
         <Transaction>
           <Request>
-            <MessageType>VehicleRegistrationQuery</MessageType>
-            <Id>01M2V3WRY6CVAVZZXB646EF6GT</Id>
-            <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
-            <VehicleYear>2023</VehicleYear>
+            <MessageType>WantedPersonQuery</MessageType>
+            <Id>01M2V6F0MJYV0VWVQPR59561NW</Id>
+            <RelatedHitSearchIndicator>N</RelatedHitSearchIndicator>
+            <ImageIndicator>Y</ImageIndicator>
+            <NCICNumber>X123456789</NCICNumber>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -52,19 +53,7 @@ Not captured
 
 RMS QUERY
 ---------
-Request:
-{
-    "elasticQuery":  {
-                         "vehicle":  {
-                                         "vinNumber":  "1HGCM82633A123456"
-                                     }
-                     },
-    "from":  0,
-    "size":  50
-}
-
-Response:
-No results were created
+Not captured
 
 FIELD ANALYSIS
 --------------
@@ -73,12 +62,13 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01M2V3WRY6CVAVZZXB646EF6GT
-  VehicleIdentificationNumber    1HGCM82633A123456
-  VehicleYear                    2023
+  Id                             01M2V6F0MJYV0VWVQPR59561NW
+  RelatedHitSearchIndicator      N
+  ImageIndicator                 Y
+  NCICNumber                     X123456789
 
 NOTES
 -----
-Automated capture (txId 01M2V3WRY6CVAVZZXB646EF6GT). kind=any-field; anyField=vehicleYear; expectedKeyRef=QVRQ.V; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01M2V6F0MJYV0VWVQPR59561NW). kind=any-field; anyField=RelatedHitSearchIndicator; expectedKeyRef=QWA.NCIC; firedMessageType=WantedPersonQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS
