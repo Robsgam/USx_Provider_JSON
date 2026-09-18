@@ -1,4 +1,4 @@
-==============================================================================
+﻿==============================================================================
   SUPPORTED QUERY VALIDATION REPORT -- SC_SLED v1.11
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 JSON version: v1.17
@@ -45,7 +45,7 @@ VEHICLE
 PERSON
 ------------------------------------------------------------------------------
   DriverLicenseQuery  (metadata DQ + QWDQ -- two DISTINCT keyRefs, no suffix invented)
-    [PENDING] QWDQ     set: SexCode, BirthDate, NameLast, NameFirst
+    [CONFIRMED] QWDQ     set: SexCode, BirthDate, NameLast, NameFirst
                        any: OperatorLicenseNumber, RegistrationState
                        "SC Driver Wanted/Reg Inquiry" -- COMPOUND
     [PENDING] DQ       set: OperatorLicenseNumber
@@ -54,7 +54,7 @@ PERSON
                        OLN-without-name fill. TEST IT THAT WAY OR IT IS NOT TESTED.
 
   DriverRegistrationQuery  (metadata DQ x2 -- same transaction as DriverLicenseQuery's DQ)
-    [PENDING] DQ.RN    set: BirthDateDR, NameLastDR, NameFirstDR
+    [CONFIRMED] DQ.RN    set: BirthDateDR, NameLastDR, NameFirstDR
                        any: RegistrationStateDR, SexCodeDR
     [PENDING] DQ.RO    set: OperatorLicenseNumberDR
                        any: ImageIndicatorDR, RegistrationStateDR
@@ -85,8 +85,8 @@ PERSON
      is the same render-vs-dispatch gap that caused this. THE FIRST IMPORT IS THE TEST.
 
     -- all five, on the WANTED PERSON tab (config SC_SLED_WantedPersonQuery, targetEntity Other) --
-    [PENDING] QWA.NCIC set: NCICNumber
-    [PENDING] QWA.OCA  set: NameLast, NameFirst, OriginatingAgencyCaseNumber
+    [CONFIRMED] QWA.NCIC set: NCICNumber
+    [CONFIRMED] QWA.OCA  set: NameLast, NameFirst, OriginatingAgencyCaseNumber
     [PENDING] QWA.P    set: LicensePlateNumber, RegistrationState
                        set[] names the FORM control; the attribute is still LicensePlateStateCode,
                        which is the wire field. This tab now carries its OWN State control, so the
@@ -111,17 +111,17 @@ PERSON
 FIREARM / ARTICLE / BOAT
 ------------------------------------------------------------------------------
   GunQuery  (metadata QG -- "Stolen Gun Inquiry")
-    [PENDING] QG       set: serialNumber        any: GunMake, GunModel, GunCaliber
+    [CONFIRMED] QG       set: serialNumber        any: GunMake, GunModel, GunCaliber
 
   ArticleSingleQuery  (metadata QA -- "Article Inquiry")
-    [PENDING] QA       set: ArticleSerialNumber, ArticleTypeCode
+    [CONFIRMED] QA       set: ArticleSerialNumber, ArticleTypeCode
 
   BoatQuery  (metadata QBBQ -- "SC Boat Stolen/Reg Inquiry", COMPOUND; ONE declared
               combination holding a <Choice> nested under <Set>, i.e. TWO alternatives)
-    [PENDING] QBBQ.H   set: BoatHullIdNumber     any: RegistrationState
+    [CONFIRMED] QBBQ.H   set: BoatHullIdNumber     any: RegistrationState
                        RegistrationNumber is NOT permitted here -- it is the OTHER
                        mandatory alternative of the Choice, not an optional.
-    [PENDING] QBBQ.R   set: RegistrationNumber   any: RegistrationState
+    [CONFIRMED] QBBQ.R   set: RegistrationNumber   any: RegistrationState
                        gate: BoatHullIdNumber NOT_EXISTS  (Hull > Registration)
 
 ------------------------------------------------------------------------------
