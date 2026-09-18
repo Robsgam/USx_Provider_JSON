@@ -731,7 +731,26 @@ foreach ($ent in $entities) {
             # I first assumed a SECOND firing implementation; there is none -- Get-SimFiringKeyRef already
             # delegates to Get-FiringKeyRef. Same walk, wrong input. usx-tooling Step 3: a lookup table
             # must live in the same namespace as the comparison.
-            $simKr = Resolve-ExpectedKeyRef $entQidms $gFills $formDefaultsByEntity[$ent] $null
+            # ⚠️ RESOLVE AGAINST THE LOSER'S OWN QIDM, NOT ENTITY-WIDE (fixed 2026-09-18).
+            # This call omitted $OwnerQidm, so it fell through to the ENTITY-WIDE walk -- and the
+            # next line records `query = $gr.loserQidm.query`. THE QUERY AND THE KEYREF THEREFORE
+            # CAME FROM DIFFERENT QIDMs. SC_SLED v1.18 T19 is the proof:
+            #     query = DriverRegistrationQuery      expectedKeyRef = DQ
+            # `DQ` belongs to DriverLicenseQuery; DriverRegistration's combos are DQ.RN / DQ.RO.
+            # The tenant then produced a perfectly good log named DQ.RO_guardrail_vs_DQ.RN which
+            # could never match the plan's DQ_guardrail_vs_DQ.RN, and audit_log_content reported it
+            # STALE. THE LOG WAS RIGHT AND THE PLAN WAS WRONG -- and the tempting repair was to
+            # archive the log, which would have hidden a real plan defect behind a green gate.
+            # WHY ENTITY-WIDE IS SIMPLY THE WRONG QUESTION HERE: `Get-SimFiringKeyRef` returns the
+            # first match found across ALL of the entity's QIDMs, i.e. it models "one query fires
+            # per entity". The platform fires one combination PER QIDM -- the whole reason
+            # Get-FiringKeyRefForQidm exists (see its header) -- and under co-fire "which query
+            # wins" has no answer because they all go. A guardrail asks the answerable question:
+            # within ONE query, does identifier X beat identifier Y? With OLN and a name both
+            # filled, DriverRegistration fires DQ.RO over DQ.RN, which is exactly the priority the
+            # test is meant to demonstrate.
+            # The other query that fires on the same submit is not lost -- it is `alsoFires`.
+            $simKr = Resolve-ExpectedKeyRef $entQidms $gFills $formDefaultsByEntity[$ent] $null $gr.loserQidm
             if (-not $simKr) { continue }   # nothing fires for this fill -> not a valid guardrail
             $gCandidates.Add([PSCustomObject]@{ query = $gr.loserQidm.query; simKr = $simKr; fills = $gFills; loserKr = $gr.loserKr })
         }

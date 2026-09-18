@@ -101,7 +101,7 @@ foreach ($p in $targets) {
     foreach ($t in $tests) { $e = "$($t.entity)"; if ($e -and $entities -notcontains $e) { $entities += $e } }
 
     $prefix = "${p}_v${ver}_"
-    $tPlanned = 0; $tLogged = 0
+    $tPlanned = 0; $tLogged = 0; $tCoFire = 0
 
     Emit "" $null
     Emit "  $p v$ver -- SWEEP LEDGER          planned  logged   owed" 'Cyan'
@@ -111,12 +111,27 @@ foreach ($p in $targets) {
         $planned = @($tests | Where-Object { "$($_.entity)" -eq $e }).Count
         $entDir  = Join-Path $logsRoot $e
         $logged  = 0
+        $coFire  = 0
         if (Test-Path $entDir) {
-            $logged = @(Get-ChildItem $entDir -Filter '*.txt' -File -Recurse -ErrorAction SilentlyContinue |
-                        Where-Object { $_.FullName -notmatch '[\\/]_archive_' -and $_.Name.StartsWith($prefix) }).Count
+            # NOT `$all` -- PowerShell variable names are CASE-INSENSITIVE, so `$all` IS the script's
+            # own `-All` switch parameter. Assigning an array to it threw
+            # "Cannot convert value System.Object[] to type SwitchParameter" on the first run.
+            $allLogs = @(Get-ChildItem $entDir -Filter '*.txt' -File -Recurse -ErrorAction SilentlyContinue |
+                         Where-Object { $_.FullName -notmatch '[\\/]_archive_' -and $_.Name.StartsWith($prefix) })
+            # ── CO-FIRE LOGS ARE NOT ORPHANS, AND COUNTING THEM AS SUCH INVERTS THIS REPORT ──────
+            # Since the co-fire work (2026-09-18) a co-firing submit is captured as one log PER
+            # WIRE ROW, named `<keyRef>_cofire_with_T<n>`. Those are extra EVIDENCE, not extra
+            # TESTS -- the plan deliberately keeps one test for a co-firing pair. Counting them in
+            # `logged` made SC_SLED's Person read 17 logs against 9 plan tests and print
+            # "ORPHAN LOG(S) ... do NOT read this as complete" over a complete, correct entity.
+            # That is this tool's own vacuous-verdict class in reverse: a false ALARM rather than a
+            # false all-clear, and just as corrosive -- an operator who learns to ignore the red
+            # line will ignore the real one. Counted and shown SEPARATELY.
+            $coFire = @($allLogs | Where-Object { $_.Name -match '_cofire_with_T\d+\.txt$' }).Count
+            $logged = $allLogs.Count - $coFire
         }
         $owed = $planned - $logged
-        $tPlanned += $planned; $tLogged += $logged
+        $tPlanned += $planned; $tLogged += $logged; $tCoFire += $coFire
 
         $mark = ''
         $col  = 'Gray'
@@ -124,7 +139,8 @@ foreach ($p in $targets) {
         elseif ($owed -lt 0) { $mark = "<-- MORE LOGS THAN PLAN TESTS -- investigate"; $col = 'Red'; $anyOwed = $true }
         else { $mark = '' ; $col = 'Green' }
 
-        Emit ("  {0,-24} {1,7} {2,7} {3,6}   {4}" -f $e, $planned, $logged, [Math]::Max($owed,0), $mark) $col
+        $cfNote = if ($coFire -gt 0) { "  (+$coFire co-fire)" } else { '' }
+        Emit ("  {0,-24} {1,7} {2,7} {3,6}   {4}{5}" -f $e, $planned, $logged, [Math]::Max($owed,0), $mark, $cfNote) $col
     }
 
     Emit "  ------------------------------------------------------------" 'DarkGray'
@@ -149,9 +165,17 @@ foreach ($p in $targets) {
             $planned = @($tests | Where-Object { "$($_.entity)" -eq $e }).Count
             $entDir  = Join-Path $logsRoot $e
             $lg = 0
+            # ⚠️ THIS RE-COUNTS AND MUST EXCLUDE CO-FIRE LOGS EXACTLY AS THE TABLE ABOVE DOES.
+            # It is a SECOND, independent count of the same thing -- the original sin of this block
+            # -- and the first co-fire pass fixed only the table, so SC_SLED printed
+            # "5 TEST(S) STILL OWED" one line above "NEXT: ... Vehicle (2)". Two numbers for one
+            # question is worse than either being wrong on its own: the reader cannot tell which to
+            # act on. Kept as a re-count only because the per-entity owed figures are not retained
+            # above; the FILTER is now identical.
             if (Test-Path $entDir) {
                 $lg = @(Get-ChildItem $entDir -Filter '*.txt' -File -Recurse -ErrorAction SilentlyContinue |
-                        Where-Object { $_.FullName -notmatch '[\\/]_archive_' -and $_.Name.StartsWith($prefix) }).Count
+                        Where-Object { $_.FullName -notmatch '[\\/]_archive_' -and $_.Name.StartsWith($prefix) -and
+                                       $_.Name -notmatch '_cofire_with_T\d+\.txt$' }).Count
             }
             if ($planned - $lg -gt 0) { $owedEnts += "$e ($($planned - $lg))" }
         }

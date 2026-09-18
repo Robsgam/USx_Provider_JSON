@@ -498,6 +498,41 @@
   }
   function markSeenAndClear(records) { markSeen(records); saveCaptured([]); }
 
+  // ── "PRESS FETCH AGAIN" MUST STOP BEING THE ANSWER WHEN IT DEMONSTRABLY IS NOT ────────────
+  // Rob, 2026-09-18: "4 failed fetchs for 3 records is a failure". He is right, and it is a TOOL
+  // failure: the 3 rows could never arrive, and the tool advised another press every single time.
+  // WHY THEY WERE UNREACHABLE, and why the tool already had enough to know: the Vehicle group was
+  // driven TWICE (a Send-disabled latency miss on T4), and the earlier run's dex-log rows are
+  // OLDER than the second run's first submission -- the same rows this function's own backlog
+  // filter reported dropping ("8 pre-run backlog row(s) dropped"). Their manifest entries survived
+  // and were chased forever.
+  // THE RULE: a fetch that pairs NOTHING while the SAME entries remain outstanding has made no
+  // progress. One such fetch can be genuine lag. TWO in a row cannot be -- a genuinely late row
+  // would have paired on one of them. At that point say so and name the remedy, instead of
+  // repeating advice the last two presses already disproved.
+  // Keyed on the entry SET, not a bare counter, so an unrelated later batch resets it naturally.
+  const NOPROG_KEY = '__usx_noprogress';
+  function batchSig(list) {
+    return (list || []).map((b) => `${b.entity || '?'}/${b.combo || b.query || '?'}/${b.submittedAt || ''}`).sort().join('|');
+  }
+  function clearNoProgress() { try { localStorage.removeItem(NOPROG_KEY); } catch (e) {} }
+  function noteNoProgress(outstanding) {
+    const sig = batchSig(outstanding);
+    let prev = null;
+    try { prev = JSON.parse(localStorage.getItem(NOPROG_KEY) || 'null'); } catch (e) {}
+    const n = (prev && prev.sig === sig) ? (prev.n + 1) : 1;
+    try { localStorage.setItem(NOPROG_KEY, JSON.stringify({ sig: sig, n: n })); } catch (e) {}
+    if (n < 2) { return; }
+    const names = (outstanding || []).map((b) => `${b.entity || '?'}/${b.combo || b.query || '?'}`);
+    console.error('%c[USx-BULK]', 'color:#c00;font-weight:bold',
+      `STALE MANIFEST -- ${outstanding.length} entr${outstanding.length === 1 ? 'y' : 'ies'} have now survived ${n} fetches with ZERO progress. ` +
+      `They are NOT late; a late row would have paired by now. The usual cause is a group driven TWICE: ` +
+      `the earlier run's dex-log rows are older than the later run's first submission and were dropped as pre-run backlog, ` +
+      `but their manifest entries stayed behind. STOP PRESSING FETCH -- it cannot succeed. ` +
+      `Press RESET QUEUE in the panel to clear them, then re-drive only the tests still owed ` +
+      `(tools\\report_sweep_ledger.ps1 -Provider <NAME> names them).`, names);
+  }
+
   // WATCHER (recommended for batches): you click each row's "View request and return" (a real
   // click -- the app only loads the XML for trusted clicks), and this auto-scrapes the popup,
   // matches it to the driver batch by identifier value, closes it, and accumulates. Click through
@@ -805,6 +840,7 @@
         `NOTHING CAPTURED -- no file downloaded (an empty export is worse than none: the watcher skips it silently). ` +
         `${batch.length} manifest entr${batch.length === 1 ? 'y' : 'ies'} kept for the next fetch. ` +
         `Likely causes: the run has not finished submitting, the rows are not in /queries/search yet, or every row was already captured.`);
+      noteNoProgress(batch);
       return null;
     }
 
@@ -822,7 +858,9 @@
         `PARTIAL CAPTURE: ${added} captured, ${missing.length} of ${batch.length} manifest entr${batch.length === 1 ? 'y' : 'ies'} NOT captured. ` +
         `Those ${missing.length} are KEPT in the manifest -- press Fetch results again in a few seconds and they should pair. ` +
         `Re-run the plan ONLY if a second fetch still misses them.`, names);
+      noteNoProgress(missing);
     } else {
+      clearNoProgress();
       console.log('%c[USx-BULK]', 'color:#0a0;font-weight:bold',
         `done. +${added} new, ${out.length} total, ALL ${batch.length} manifest entries captured -> usx_captured_batch_labeled.json (store + manifest cleared; ids kept for dedup)`);
     }

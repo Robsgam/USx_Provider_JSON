@@ -1,0 +1,74 @@
+﻿================================================================
+TEST LOG: SC_SLED Other WantedPersonQuery
+Combo: QWA.NCIC_af_RelatedHitSearchIndicator (QWA.NCIC_af_RelatedHitSearchIndicator (auto))
+Date: 2026-09-18 19:22:25
+Result: PASS
+JSON Version: 1.18
+Entity Fingerprint: b13d77f0368c15b23c5028d97b3822c0c178f539256cc1e3887875085e34a62b
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"Y","NCICNumber":"X123456789","RelatedHitSearchIndicator":"N"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M2VCJGXQF36GDTX42Q90Z4SE">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>WantedPersonQuery</MessageType>
+            <Id>01M2VCJGXQF36GDTX42Q90Z4SE</Id>
+            <RelatedHitSearchIndicator>N</RelatedHitSearchIndicator>
+            <ImageIndicator>Y</ImageIndicator>
+            <NCICNumber>X123456789</NCICNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M2VCJGXQF36GDTX42Q90Z4SE
+  RelatedHitSearchIndicator      N
+  ImageIndicator                 Y
+  NCICNumber                     X123456789
+
+NOTES
+-----
+Automated capture (txId 01M2VCJGXQF36GDTX42Q90Z4SE). kind=any-field; anyField=RelatedHitSearchIndicator; expectedKeyRef=QWA.NCIC; firedMessageType=WantedPersonQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
