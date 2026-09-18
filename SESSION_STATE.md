@@ -37,84 +37,77 @@ No PASS count is recorded here on purpose: it moves every time a gate is added, 
 absolute number is guaranteed to go stale and teach the next session to distrust this file.
 <!-- END GENERATED -->
 
-**MISSION** -- headline count deliberately NOT restated: it read "13 of 20" and went stale the moment
-SC_SLED became the 21st. **Derive live: `report_mission_status.ps1`.** Owed per that tool 09-14:
-**test 5** (CA_CONTRA_COSTA BLOCKED on Rob's JAWS call; CA_SAN_LUIS_OBISPO, CA_VENTURA, LA_LEMS
-sweep-ready, CA_VENTURA owes a picklist capture; SC_SLED sweep HELD, its IMPORT wanted) and **jira
-2** (CA_CLETS_OCATS DEX-980; CA_eSUN DEX-1312/1313 owes a v3.3 release line). TX_TLETS_CCH PARKED.
-**A never-tested provider is owed a SWEEP, not an import** (Rob 09-09) -- SC_SLED is the EXCEPTION
-twice over. **SDSO LIVE runs eSUN v1.0 vs repo v3.3** -- Rob's call. Handover: `USX_PROJECT_GUIDE.pdf`.
-**ANY PRIOR JSON IS ONE COMMAND:** `get_provider_version.ps1 -Provider <P> -Version <X.Y>` -- 671
-artifacts, byte-exact. RETRIEVAL, not rebuild: re-running an old script does NOT reproduce it.
+**MISSION** -- headline count deliberately NOT restated (it read "13 of 20" and went stale the moment
+SC_SLED became the 21st). Owed per `report_mission_status` 09-14: **test 5** (CA_CONTRA_COSTA BLOCKED
+on Rob's JAWS call; CA_SAN_LUIS_OBISPO / CA_VENTURA / LA_LEMS sweep-ready, CA_VENTURA owes a picklist
+capture) and **jira 2** (CA_CLETS_OCATS DEX-980; CA_eSUN v3.3 release line). TX_TLETS_CCH PARKED.
+**A never-tested provider is owed a SWEEP, not an import** (Rob 09-09). **SDSO LIVE runs eSUN v1.0 vs
+repo v3.3** -- Rob's call. Handover: `USX_PROJECT_GUIDE.pdf`. **ANY PRIOR JSON IS ONE COMMAND:**
+`get_provider_version.ps1 -Provider <P> -Version <X.Y>` -- RETRIEVAL, not rebuild.
 
 ## ⭐ SERVE_PLANS AND THE JOB FILES -- CHECK THIS FIRST
 
 **`serve_plans.ps1` MUST RUN DETACHED** (`-WindowStyle Hidden`; a reboot kills it). **VERIFY BY
-CURLING `/ping /pulljob /job /roster` ON PORT 8477** -- name and start time both lied 09-14; on
+CURLING `/ping /pulljob /job /roster` ON PORT 8477** -- name and start time both lied 09-14, and on
 09-15 I curled the WRONG PORT and got the NO-CONNECT I expected. **Machine pages:** heavy gates ONE
 AT A TIME, never piped through `Select-String` (buffers to 0). **`RUN THE JOB` + `7b` RESCAN are
-PROVEN.** ⚠️ **PANEL COLOURS 09-16:** a pull that got NOTHING reads RED, partial AMBER.
+PROVEN.** ⚠️ Panel colours: a pull that got NOTHING reads RED, partial AMBER.
 
-## SC_SLED v1.10 -- IMPORT IT; DO NOT SWEEP IT (Rob 2026-09-16)
+## SC_SLED v1.11 -- ACTIVE WORK. SWEEP IN FLIGHT: 11 of 65 logged, 54 OWED
 
-✅ v1.9 tab order + layout CONFIRMED on the tenant. v1.10 = **77P/0F/0W/2LIM**. The #28 /
-Sex+Race-dropdown adjudication and the `validate.ps1` fix are CLOSED -- reasoning in the v1.10
-commit body. ⚠️ **OPEN, NEEDS ROB:** the AM's 5 `DestinationCode` optionals are UNMAPPED -- an AM
-DELIVERS to the ORI named. ✅ **STATE DROPDOWN READ 09-17, POPULATED** -- `NJ_NIBRS_STATE|NJ_NIBRS`
-resolves off-NJ; keep the `Sel`. ⚠️ **POPULATED ≠ PROVEN WIRE VALUE** (#38: VEHICLE_MAKE populates
-and ships `CNST_FORD`) and the KB's "sends 2-letter code" was UNCITED -- open, settles with one
-read-only GET, no import (see `FIELD_REFERENCE` NJ_NIBRS_STATE row). ⚠️ **usx-sc-sled CARRIES THE
-MULTILINE PROBE, NOT v1.10**, so **v1.10 must go back**.
-
-## 🟢 THE MULTILINE BOX EXISTS -- `FormTextarea`, LOWERCASE `a` (measured 2026-09-17)
-
-**`CAPABILITY #48`; the slot held a FALSE LIMITATION for six hours** (3 of 4 sources were USAGE
-CENSUSES -- same lesson as `#44`). `FormTextArea` with a capital A does NOTHING: EXACT-MATCH
-resolver, and the validator's duplicate-tag refusal is the only reason both casings got tested. 5
-PROPS dead; `Text` does NOT render (no help-text channel); all 7 tabs rendered, so **an unknown
-`resolvedName` is IGNORED, not FATAL**. ✅ **ROUND 2: IT TRANSMITS (3/3), NEWLINES DIE IN THE
-CONTROL** -- form state holds 0 LF / 247 spaces, so not a serializer fix. **NO KEYBOARD ROUTE TO A
-BREAK: Enter AND Shift+Enter both SUBMIT, paste only**, so the 501-char budget cannot be blown by
-typing. **Wire values are UPPERCASED and a no-rule `FormInput` did it too, CORRECTING `#44`'s
-handler attribution.** Evidence: `docs/evidence/2026-09-17_MULTILINE_*`.
-⚠️ **ADOPT for WRAP-AND-SCROLL, never line breaks.** ⚠️⚠️ **THE REAL AM FINDING IS THE PREMATURE
-SEND** -- Enter transmits a HALF-WRITTEN MESSAGE to the addressed ORI; standard HTML, so it is on
-every `FormInput` too, undocumented until now, likely a PRODUCT ask. Raise that, not box height.
+Vehicle 3/10, Person 7/9, **Wanted Person 0/34**, Firearm 0/5, Article 1/1, Boat 0/5, Admin Msg 0/1.
+`report_sweep_ledger` is the authority -- not a capture's "all entries captured" line.
+⛔ **`enforce -Provider SC_SLED` is BLOCKED on ONE STALE LOG, needs Rob's disposition:**
+`SC_SLED_v1.11_DQ.RO_guardrail_vs_DQ.RN.txt` names a guardrail the plan no longer emits (Person's is
+now T19, expecting `DQ`). **Cause: the v1.11 plan was REGENERATED MID-SWEEP**, and a re-emit inside
+the same version does NOT archive logs the way a version bump does. Archive + re-capture, or keep?
+✅ **WANTED PERSON IS NOW A SELECTABLE TAB** (09-17, Rob asked twice; plans carry `tab`/`qif`) --
+needs extension **BUILD 2026-09-17e**. ⚠️ **NEEDS ROB:** the AM's 5 `DestinationCode` optionals are
+UNMAPPED and an AM DELIVERS to the ORI named. ⚠️ **POPULATED ≠ PROVEN WIRE VALUE** -- the State `Sel`
+renders (keep it) but "sends a 2-letter code" is UNCITED; one read-only GET settles it, no import
+(#38: VEHICLE_MAKE populates and still ships `CNST_FORD`). ⚠️ **CONFIRM WHAT THE TENANT CARRIES
+BEFORE SWEEPING** -- usx-sc-sled last knowingly held the MULTILINE PROBE.
+🟢 **MULTILINE CLOSED**: `FormTextarea` (lowercase `a`) renders AND transmits -- `CAPABILITY #48`,
+adopted here for **wrap-and-scroll, never line breaks**. ⚠️⚠️ **STILL OWED AS A PRODUCT ASK and it is
+the real finding: ENTER SENDS A HALF-WRITTEN AM** to the addressed ORI (Shift+Enter too; standard
+HTML, so every `FormInput` has it). Raise that, not box height.
 
 ## ROB'S CALLS + OPEN FINDINGS -- detail lives in `FINDINGS_REGISTER.md`, do NOT restate it here
 
-- **CA_CONTRA_COSTA JAWS/SuperQuery** -- 4 UNDER / 3 OVER, in its BUILD_NOTES; hold the SWEEP, not the import. **LA_LEMS `QB{reg}` vs `BQ{reg}`** -- in LA's registry, not taken.
-- **194 of 264 registry rows unverifiable** by `audit_registry_currency`; 7 providers at zero checkable rows, and the first row opened by hand there was FALSE.
-- **CA_eSUN v2.2: 2 BUILD_NOTES items OFF the ticket** (the 7 validator FAILs the 53 captures REFUTE; the BirthDate over-permit whose fix collapses owner-name search). **+2 from 09-14, Rob's call: 10 radiobutton-experiment ORPHANS, and it is the ONLY 1 of 15 ALL-PASS providers with no `DEX_TICKET_ARCHIVE.md`** despite a POSTED marker.
-- **LIMITATION #41** (HOME state routes a local plate to NLETS) -- paused pending CommSys; 5 providers owe a picklist capture. **CA_VENTURA hollow toggle** needs a TEST_VALUE_OVERRIDE after its capture. Portfolio 2026-09-14: **21/21 ENFORCED 741P/0F/0W**; the only 4 UNDER / 4 OVER are CA_CONTRA_COSTA, Rob's JAWS call.
+- **CA_CONTRA_COSTA JAWS** 4 UNDER / 3 OVER -- hold the SWEEP, not the import. **LA_LEMS `QB{reg}`/`BQ{reg}`** not taken. **CA_eSUN**: 2 BUILD_NOTES items off-ticket, 10 radiobutton ORPHANS, no `DEX_TICKET_ARCHIVE.md` despite a POSTED marker.
+- **194 of 264 registry rows unverifiable** by `audit_registry_currency` (7 providers at zero checkable rows; the first opened by hand was FALSE). **LIMITATION #41** paused pending CommSys; 5 providers owe a picklist capture, CA_VENTURA also a TEST_VALUE_OVERRIDE.
+- **TX_TLETS** manual reviewed in full 09-17 (`docs/reference/TX_TLETS_TLETS_MANUAL_NOTES.txt`). Owed to CommSys, DOC fixes only: the devdoc FRT bracket on combo #1, and the `RSDWW` MessageKey description.
 
-## DEPLOY LOOP BUILT + PROVEN -- ALL OTHER TENANT WORK HELD (Rob 2026-09-14)
+## DEPLOY LOOP PROVEN -- ALL OTHER TENANT WORK HELD (Rob 2026-09-14)
 
 **RECOVERY RECORD: `providers\HELD_TENANT_WORK.md` -- READ BEFORE RESUMING.** Nothing half-applied;
-one operator click outstanding. Mechanics live in the `usx-deploy` skill. ⚠️ **GUI only** and an
-import **REPLACES** the bundle set. `newarkpd-foundation` runs NJ v4.16 vs ledger v4.17 and stays
-MANUAL (Rob). Still unexplained, worth more than the import: **WHY the 08-20 Newark import did not land.** Held (Rob's): scoping, the batch, Confluence.
+one operator click outstanding; mechanics in the `usx-deploy` skill. ⚠️ **GUI only**, and an import
+**REPLACES** the bundle set. Still unexplained and worth more than the import: **WHY the 08-20 Newark
+import did not land.** Also held (Rob's): scoping, the batch, Confluence.
 
 ## DO NOT RE-RAISE
 
-- `State2`-`State5` multi-state broadcast: OUT OF SCOPE 2026-08-02. OH's `ReasonCode`/`Requestor` =
-  the BMVIMS case. CommSys asks HELD. TX_TLETS_CCH PARKED. DH NOT FROM CAD. TN `RQ01` + name-casing CLOSED 08-24.
-- **A keyRef NEVER reaches the wire, nor does `primaryFieldReference`** -- ask whether the label
-  ships. **`[FLAG:plan-dedupe-vacuous-tests]` DONE**; inflation 2026-09-14: 927 logs / 0 findings.
-- **NY DEMOTED-QUALIFIER CLOSED** ([KILLED] 09-09, 2 fixes REJECTED); **NJ guardrail mutation N/A,
-  not stale**. Both were stale-OWED claims IN THIS FILE that invented work -- **measure before
-  believing this file.** **Jira is HELD, lifts ONE PROVIDER AT A TIME**; no approval carries over.
-- **`hawaii-dle` LIVE on v4.15 vs repo v4.20 = DECISION, NOT A GAP** (Rob 09-15) -- reports will keep
-  flagging it; correct signal. **NEWARK STAYS MANUAL FOREVER.** Dallas ledger row CLOSED 09-15.
+`State2`-`State5` broadcast OUT OF SCOPE 08-02 (the TLETS manual's 5-inquiry max EXPLAINS those
+fields, it does not reopen them). OH `ReasonCode`/`Requestor` = BMVIMS. CommSys asks HELD.
+TX_TLETS_CCH PARKED. DH NOT FROM CAD. TN `RQ01` CLOSED. NY demoted-qualifier [KILLED] 09-09.
+NJ guardrail mutation N/A not stale. `[FLAG:plan-dedupe-vacuous-tests]` DONE. **A keyRef NEVER
+reaches the wire, nor does `primaryFieldReference`.** Jira HELD, lifts ONE PROVIDER AT A TIME.
+`hawaii-dle` v4.15 vs repo v4.20 and `newarkpd-foundation` MANUAL are **DECISIONS, NOT GAPS**.
+⚠️ Several of the above were once stale-OWED claims IN THIS FILE that invented work --
+**measure before believing this file.**
 
 ## RULES I BROKE -- READ BEFORE EDITING
 
-- Durable rules live in `usx-tooling` (6 / 8a): **a registry row suppresses only if its rule name is
-  the string the gate greps**; **validate every probe against a known answer WITH negative controls**;
-  **a `#`-COMMENTED LINE IS NOT A FINDING**; **NEVER verify a produced file with `Test-Path`** (09-17
-  `build_report` died at 13/17, files newer, manifest stale); **REUSE THE PARSER** (ENG-STD 4.4 --
-  `Get-BundleList` knows both bundle shapes; hand-rolling it got 0 nodes from all 66 exports).
-- **A SAME-LOOKING STRUCTURE ELSEWHERE IS A QUESTION, NEVER A PRECEDENT.** **A STANDING RULE IS NOT
-  EVIDENCE**; **AN EXPLANATION IS NOT A MEASUREMENT**; **A GATE THAT MEASURED NOTHING IS NOT A PASS**;
-  **A CENSUS BOUNDS CURRENT USE, NOT THE PLATFORM** (09-17, #48); **MY OWN STATE ROWS GO STALE WITHIN
-  HOURS** -- re-read before citing.
+Durable set lives in `usx-tooling` (6 / 8a). Shortlist: **a registry row suppresses only if its rule
+name is the string the gate greps**; **validate every probe against a known answer WITH negative
+controls**; **a `#`-COMMENTED LINE IS NOT A FINDING**; **never verify a produced file with
+`Test-Path`**; **REUSE THE PARSER**; **never route PowerShell content edits through bash** (mangled
+backticks once commented out a live control). **A SAME-LOOKING STRUCTURE IS A QUESTION, NEVER A
+PRECEDENT**; **A STANDING RULE IS NOT EVIDENCE**; **AN EXPLANATION IS NOT A MEASUREMENT**; **A GATE
+THAT MEASURED NOTHING IS NOT A PASS**; **A CENSUS BOUNDS CURRENT USE, NOT THE PLATFORM** (#48);
+**REACHABLE IS NOT FINDABLE** (Wanted Person ran for weeks while invisible, and I called it fixed
+once already); **MY OWN STATE ROWS GO STALE WITHIN HOURS.**
+⚠️ **`report_mission_status.ps1` IS NOT READ-ONLY** (09-17): it runs `enforce -Provider <P>` for every
+provider, auto-enabling reproducibility, which REWRITES reports/guides/manifests -- one status read
+touched 70 files across 7 providers (content identical, `sourceSha256` unchanged, so timestamp +
+tool-fingerprint churn only, but a PARTIAL sweep leaves 7 manifests ahead of 14). **NOT FIXED.**
