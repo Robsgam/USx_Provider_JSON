@@ -1373,6 +1373,58 @@ LIMITATION #46: A QUERYINPUTFORM WHOSE `targetEntity` IS NOT ONE OF THE FIVE KNO
   -- so the entity is the RMS side's concept, which is consistent with the list coming from the
   data model rather than from a UI choice.
 
+  ⚠️⚠️ **THE FRONTEND SOURCE WAS READ ON 2026-09-18 AND IT NAMES A SIXTH ENTITY: `OTHER`.**
+  Rob: "why can't you create another entity?  why are we stuck with 5?  you are not looking
+  outside the box here" -- and then, after I proposed asking the platform team, "you are giving
+  up  anythign you ask for will be rebuked". Both were right. Every claim above is INFERRED FROM
+  THE OUTSIDE (change a config, look at the page, generalise). The component that decides is the
+  federatedSearch microfrontend, which every tenant page already downloads, and nobody had read it.
+  Captured read-only via the extension's "Capture search frontend JS" button (29 files, 3.67 MB,
+  usx-sc-sled 2026-09-18) and analysed offline. VERBATIM from FederatedSearchProvider:
+
+      ut = {PERSON:"PERSON",VEHICLE:"VEHICLE",FIREARM:"FIREARM",ARTICLE:"ARTICLE",
+            BOAT:"BOAT",OTHER:"OTHER"}                          <- the ENUM. SIX members.
+      Th = {VEHICLE:"Vehicle",PERSON:"Person",FIREARM:"Firearm",
+            ARTICLE:"Article",BOAT:"Boat",OTHER:"Other"}        <- i18n DISPLAY map
+      RC = [ut.PERSON,ut.VEHICLE,ut.FIREARM,ut.ARTICLE,ut.BOAT,ut.OTHER]   <- tab SORT order
+      // which TABS render:
+      G.queryForms?.filter(te => te.enabled && d.includes(te.queryableEntityType))
+      // which CHECKBOXES render:
+      RS(t)= t.filter(e=>e.enabled).map(e=>({name:e.name,
+             queries:(e.queries||[]).filter(n=>n.enabled)...}))
+      // what autoSelect ACTUALLY does -- it only PRE-DESELECTS, it never removes:
+      CS(t)= t.flatMap(e=>(e.queries||[]).filter(n=>n.autoSelect===!1)...)
+      // TAB ORDER: form-level `order` FIRST, entity index second:
+      AC(t)= sortBy(t, e => [ e.order ?? MAX_SAFE_INTEGER, RC.indexOf(e.queryableEntityType) ])
+
+  WHAT THIS CHANGES, and each item is a thing we were doing the hard way:
+   1. **`OTHER` EXISTS.** The eight names the v1.0 probe tried were all INVENTED SINGULARS
+      (Organization, Location, Incident, Property, Case, Address, Message,
+      AdministrativeMessage); the platform's own vocabulary was never tried. An Administrative
+      Message is exactly "not one of the five record types". STATUS: HYPOTHESIS until imported --
+      the client knowing the value is not proof the BACKEND accepts it in `targetEntity`.
+      `providers\ENTITY_PROBE.json` (41P/0F) tests it with the five as controls and
+      AdministrativeMessage as the negative control that must stay ABSENT.
+   2. **THE ENUM VALUES ARE UPPERCASE**, and our Title-Case `targetEntity` works on all five, so
+      the backend normalises. That is why `Other` (not `OTHER`) is the candidate to send.
+      ⚠️ Both casings CANNOT be tested in one import: they collide as case-insensitively
+      duplicate config names and the validator refuses it -- the same inert-test trap the
+      multiline rig hit with FormTextArea/FormTextarea.
+   3. **THE CONFLUENCE SPEC IS WRONG.** "Configuration: QueryInputDataMapping" lists supported
+      values as Person/Vehicle/**Gun**/Boat/Article. The shipping client says **FIREARM**, which
+      is what all 21 of our providers send. Do NOT "correct" the portfolio to `Gun`.
+   4. **`order` IS A QUERY-FORM PROPERTY AND IT CONTROLS TAB ORDER**, sorted BEFORE entity index.
+      We emit it nowhere. SC_SLED's entire host-entity juggling for tab placement -- and the
+      "SAME-ENTITY TABS ARE ALWAYS ADJACENT, so the last tab must sit on the last entity"
+      constraint above -- is a workaround for a field we never used. UNTESTED, but it is in the
+      shipped sort function.
+   5. **THREE FLAGS WE NEVER EMIT**: form-level `enabled`, query-level `enabled`, and
+      `queryableEntityType` (the served name for the form's entity). A query with
+      `enabled:false` is dropped from the checkbox list ENTIRELY -- which is the mechanism behind
+      the admin page's "Remove Providers Interfaces and Queries" setting.
+   6. `autoSelect:false` was NEVER going to remove a checkbox. It only pre-deselects. Every
+      earlier discussion of it as a masking mechanism was aimed at the wrong lever.
+
   OPEN QUESTIONS FOR CRINGER -- this is a platform question the repo cannot answer:
     1. Is `targetEntity` a CLOSED enum? If so, what is the authoritative list?
     2. Is there a registration path for a transaction that yields no record (a message form)?
