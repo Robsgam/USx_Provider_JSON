@@ -5,7 +5,7 @@
 > every number from `portfolio_status.ps1` / `enforce.ps1`, never from memory.
 
 <!-- BEGIN GENERATED: tools\sync_session_state.ps1 -- do not hand-edit below this line -->
-**Last updated:** 2026-09-17 (generated) | **Branch:** `main`
+**Last updated:** 2026-09-18 (generated) | **Branch:** `main`
 
 ## Tenant-test state -- GENERATED, do not hand-edit
 
@@ -27,7 +27,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | NY_NYSPIN_EJUSTICE | v4.27 | NEVER-TESTED -- 65 test(s) owed |
 | OH_LEADS | v2.11 | ALL-PASS (65 logs) |
 | OR_LEDS | v2.6 | ALL-PASS (27 logs) |
-| SC_SLED | v1.11 | PARTIAL -- 55 plan test(s) owed (11 captured) |
+| SC_SLED | v1.11 | PARTIAL -- 55 plan test(s) owed (10 captured) |
 | TN_TIES | v2.6 | ALL-PASS (67 logs) |
 | TX_TLETS | v4.23 | NEVER-TESTED -- 101 test(s) owed |
 | _5 others_ | -- | never tenant-tested: CA_CONTRA_COSTA, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, LA_LEMS, TX_TLETS_CCH |
@@ -53,14 +53,18 @@ CURLING `/ping /pulljob /job /roster` ON PORT 8477** -- name and start time both
 AT A TIME, never piped through `Select-String` (buffers to 0). **`RUN THE JOB` + `7b` RESCAN are
 PROVEN.** ⚠️ Panel colours: a pull that got NOTHING reads RED, partial AMBER.
 
-## SC_SLED v1.11 -- ACTIVE WORK. SWEEP IN FLIGHT: 11 of 65 logged, 54 OWED
+## SC_SLED v1.11 -- ACTIVE WORK. SWEEP IN FLIGHT: 10 of 65 logged, 55 OWED
 
-Vehicle 3/10, Person 7/9, **Wanted Person 0/34**, Firearm 0/5, Article 1/1, Boat 0/5, Admin Msg 0/1.
-`report_sweep_ledger` is the authority -- not a capture's "all entries captured" line.
-⛔ **`enforce -Provider SC_SLED` is BLOCKED on ONE STALE LOG, needs Rob's disposition:**
-`SC_SLED_v1.11_DQ.RO_guardrail_vs_DQ.RN.txt` names a guardrail the plan no longer emits (Person's is
-now T19, expecting `DQ`). **Cause: the v1.11 plan was REGENERATED MID-SWEEP**, and a re-emit inside
-the same version does NOT archive logs the way a version bump does. Archive + re-capture, or keep?
+`report_sweep_ledger` 09-18: Vehicle 3/10, Person 6/9, Firearm 0/39, Article 1/1, Boat 0/6 -- the
+authority over any capture's "all entries captured" line. ⚠️ **Its 39 Firearm FOLDS IN the 34 Wanted
+Person tests** (this section read "Firearm 0/5 + Wanted Person 0/34"). SC_SLED is the ONLY provider
+with >1 QIF on one entity, so entity-bucketing is exactly where a per-entity lookup misattributes --
+UNRESOLVED, do not quote the split as fact. ✅ **STALE GUARDRAIL LOG ARCHIVED** to
+`logs/Person/_archive_stale_plan_reemit/` and `enforce -Provider SC_SLED` is CLEAN; cause was a
+MID-SWEEP plan re-emit, which does NOT archive logs the way a version bump does. Re-capture owed.
+⚠️ **14 captures sit UNINGESTED in Downloads** as `usx_captured_*.unmatched.json` (09-17): 12 Vehicle
+(`QVRQ.V`x4 `QVRQ.P`x2 `QV.P`x4 +2 unresolved), 1 AdminMsg, 1 DriverRegistration -- NONE in any
+committed log (by transactionId). NEEDS ROB: relabel+ingest, or discard and re-drive?
 ✅ **WANTED PERSON IS NOW A SELECTABLE TAB** (09-17, Rob asked twice; plans carry `tab`/`qif`) --
 needs extension **BUILD 2026-09-17e**. ⚠️ **NEEDS ROB:** the AM's 5 `DestinationCode` optionals are
 UNMAPPED and an AM DELIVERS to the ORI named. ⚠️ **POPULATED ≠ PROVEN WIRE VALUE** -- the State `Sel`
@@ -107,7 +111,7 @@ PRECEDENT**; **A STANDING RULE IS NOT EVIDENCE**; **AN EXPLANATION IS NOT A MEAS
 THAT MEASURED NOTHING IS NOT A PASS**; **A CENSUS BOUNDS CURRENT USE, NOT THE PLATFORM** (#48);
 **REACHABLE IS NOT FINDABLE** (Wanted Person ran for weeks while invisible, and I called it fixed
 once already); **MY OWN STATE ROWS GO STALE WITHIN HOURS.**
-⚠️ **`report_mission_status.ps1` IS NOT READ-ONLY** (09-17): it runs `enforce -Provider <P>` for every
-provider, auto-enabling reproducibility, which REWRITES reports/guides/manifests -- one status read
-touched 70 files across 7 providers (content identical, `sourceSha256` unchanged, so timestamp +
-tool-fingerprint churn only, but a PARTIAL sweep leaves 7 manifests ahead of 14). **NOT FIXED.**
+⚠️ **`report_mission_status.ps1` IS NOT READ-ONLY** (09-17): it runs `enforce -Provider <P>` per
+provider, auto-enabling reproducibility, which REWRITES reports/guides/manifests. **STILL NOT FIXED**
+-- but the 7-ahead-of-14 manifest split it left is GONE: a full `enforce` on 09-18 regenerated all
+21 (160 files, 240+/240-, and a filtered diff proved ZERO non-timestamp/fingerprint lines changed).
