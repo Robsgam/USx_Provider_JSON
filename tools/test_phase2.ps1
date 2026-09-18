@@ -185,6 +185,78 @@ if ($jpF) {
     if ($noTest.Count) { Out-Line ("      [NOTE] {0} built combo(s) have NO plan test: {1}" -f $noTest.Count,($noTest -join ', ')) 'Yellow' }
 }
 
+# ── 2b. TENANT PICKLIST COVERAGE -- per TAB, and it BLOCKS. ──────────────────────────
+#
+# Rob, 2026-09-18: "too many holes in this process you need to tighen it up   the tests get
+# updated with every json build   pick ist is part of the test process and needs prompting."
+#
+# The capture was already regenerated on every build (reset_test_package 6c re-emits the
+# SCOPE), but NOTHING EVER ASKED WHETHER IT WAS TAKEN. The only signal was an advisory [NOTE]
+# from audit_picklist_scope at the tail of a 742-line enforce run -- a footnote, not a prompt.
+# SC_SLED was built, swept for two days and imported with ZERO dropdowns captured, and every
+# board read green the whole time.
+#
+# WHY IT BLOCKS RATHER THAN WARNS: an uncaptured dropdown means the test values driven into it
+# were never checked against the options the TENANT actually renders. That is the same class as
+# step [2] FILLABILITY -- a test that cannot fire -- except it fails by SELECTING NOTHING, which
+# looks like a provider defect rather than a data-prep one. Blocking here is what the fillability
+# precedent already established.
+#
+# PER TAB, NOT PER ENTITY. Tabs are keyed by QUERYINPUTFORM (CAPABILITY #47). Reporting this by
+# targetEntity is precisely the bug that hid SC_SLED's Wanted Person dropdowns under "Firearm"
+# and produced a download full of `field not found in DOM`.
+if (-not $PostIngest) {
+    Out-Line ''
+    Out-Line '  [2b] tenant picklist coverage  (per TAB -- an uncaptured dropdown is an unvalidated fill)' 'Cyan'
+    $scopeFile = Join-Path $provDir "logs\${Provider}_PICKLIST_SCOPE.json"
+    if (-not (Test-Path $scopeFile)) {
+        Out-Line "      [FAIL] no PICKLIST_SCOPE.json -- the browser has nothing to enumerate" 'Red'
+        $block += "no picklist scope -- run reset_test_package -Provider $Provider -Force"
+    } else {
+        $scopeObj = Get-Content $scopeFile -Raw | ConvertFrom-Json
+        $scoped   = @($scopeObj.fields)
+        if (-not $scoped.Count) {
+            Out-Line '      [PASS] this provider builds no visible dropdowns -- nothing to capture' 'Green'
+        } else {
+            $capFile = Join-Path $provDir 'docs\reference\TENANT_PICKLISTS.json'
+            $cap = $null
+            if (Test-Path $capFile) { $cap = Get-Content $capFile -Raw | ConvertFrom-Json }
+            $owed = @(); $tabRows = @()
+            foreach ($g in ($scoped | Group-Object { if ($_.tab) { $_.tab } else { $_.entity } } | Sort-Object Name)) {
+                $tabName = "$($g.Name)"
+                $have = 0; $missing = @()
+                foreach ($f in $g.Group) {
+                    $rec = $null
+                    if ($cap -and $cap.entities) {
+                        $entNode = $cap.entities.PSObject.Properties | Where-Object { $_.Name -eq $tabName } | Select-Object -First 1
+                        if ($entNode -and $entNode.Value.fields) {
+                            $fNode = $entNode.Value.fields.PSObject.Properties | Where-Object { $_.Name -eq $f.fieldId } | Select-Object -First 1
+                            if ($fNode) { $rec = $fNode.Value }
+                        }
+                    }
+                    # A record with an error, or with zero options, is NOT a capture. Counting it
+                    # would turn the five `field not found in DOM` rows SC_SLED already carries
+                    # into evidence of coverage -- the exact inversion this step exists to prevent.
+                    if ($rec -and -not $rec.error -and [int]$rec.count -gt 0) { $have++ } else { $missing += "$($f.fieldId)" }
+                }
+                $tabRows += ("      {0,-24} {1}/{2}{3}" -f $tabName, $have, $g.Group.Count,
+                             $(if ($missing.Count) { "   OWED: " + ($missing -join ', ') } else { '' }))
+                if ($missing.Count) { $owed += "$tabName ($($missing.Count))" }
+            }
+            foreach ($r in $tabRows) { Out-Line $r $(if ($r -match 'OWED:') { 'Yellow' } else { 'Green' }) }
+            if ($owed.Count) {
+                Out-Line ("      [FAIL] {0} tab(s) owe a picklist capture: {1}" -f $owed.Count, ($owed -join ', ')) 'Red'
+                Out-Line '             GUI: open the tenant, select that TAB in the USx panel, press "Scope picklists (current entity)".' 'Yellow'
+                Out-Line '             One download per tab; the watcher ingests it. The panel offers the tab only if the' 'Yellow'
+                Out-Line '             plan and scope were emitted on/after 2026-09-18 -- otherwise rebuild first.' 'Yellow'
+                $block += "$($owed.Count) tab(s) owe a tenant picklist capture: $($owed -join ', ') -- test values driven into those dropdowns are unvalidated"
+            } else {
+                Out-Line ("      [PASS] every scoped dropdown has a tenant capture ({0} across {1} tab(s))" -f $scoped.Count, $tabRows.Count) 'Green'
+            }
+        }
+    }
+}
+
 # ── 3. environment (only matters pre-sweep) ──────────────────────────────────────────
 if (-not $PostIngest) {
     Out-Line ''

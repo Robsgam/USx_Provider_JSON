@@ -1,122 +1,150 @@
-﻿// PASTE THIS ENTIRE FILE into the tenant DevTools console (F12 -> Console), press Enter.
+// PASTE THIS ENTIRE FILE into the tenant DevTools console (F12 -> Console), press Enter.
 // Then render each entity form and run its line (one at a time; each downloads one file):
 var scope = {
-    "provider":  "SC_SLED",
-    "version":  "1.11",
-    "note":  "Paste as scope; render each entity form; __usxScopePicklists(scope, \u0027\u003cEntity\u003e\u0027). One download per entity.",
-    "fields":  [
-                   {
-                       "entity":  "Vehicle",
-                       "fieldId":  "LicensePlateTypeCode",
-                       "label":  "Plate Type",
-                       "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE",
-                       "codeTypeSource":  "NCIC",
-                       "attributeTypeId":  ""
-                   },
-                   {
-                       "entity":  "Vehicle",
-                       "fieldId":  "VehicleMakeCode",
-                       "label":  "Vehicle Make",
-                       "codeTypeCategory":  "",
-                       "codeTypeSource":  "",
-                       "attributeTypeId":  "VEHICLE_MAKE"
-                   },
-                   {
-                       "entity":  "Vehicle",
-                       "fieldId":  "RegistrationState",
-                       "label":  "State (leave blank for SC)",
-                       "codeTypeCategory":  "",
-                       "codeTypeSource":  "",
-                       "attributeTypeId":  "STATE"
-                   },
-                   {
-                       "entity":  "Person",
-                       "fieldId":  "RegistrationState",
-                       "label":  "State (leave blank for SC)",
-                       "codeTypeCategory":  "",
-                       "codeTypeSource":  "",
-                       "attributeTypeId":  "STATE"
-                   },
-                   {
-                       "entity":  "Person",
-                       "fieldId":  "SexCode",
-                       "label":  "Sex",
-                       "codeTypeCategory":  "",
-                       "codeTypeSource":  "",
-                       "attributeTypeId":  "SEX"
-                   },
-                   {
-                       "entity":  "Person",
-                       "fieldId":  "ImageIndicator",
-                       "label":  "NCIC Image",
-                       "codeTypeCategory":  "YES_NO_UNKNOWN",
-                       "codeTypeSource":  "NCIC",
-                       "attributeTypeId":  ""
-                   },
-                   {
-                       "entity":  "Firearm",
-                       "fieldId":  "LicensePlateStateCode",
-                       "label":  "State",
-                       "codeTypeCategory":  "NJ_NIBRS_STATE",
-                       "codeTypeSource":  "NJ_NIBRS",
-                       "attributeTypeId":  ""
-                   },
-                   {
-                       "entity":  "Firearm",
-                       "fieldId":  "VehicleMakeCode",
-                       "label":  "Vehicle Make",
-                       "codeTypeCategory":  "",
-                       "codeTypeSource":  "",
-                       "attributeTypeId":  "VEHICLE_MAKE"
-                   },
-                   {
-                       "entity":  "Firearm",
-                       "fieldId":  "SexCode",
-                       "label":  "Sex",
-                       "codeTypeCategory":  "NIBRS_SEX",
-                       "codeTypeSource":  "NIBRS",
-                       "attributeTypeId":  ""
-                   },
-                   {
-                       "entity":  "Firearm",
-                       "fieldId":  "raceCode",
-                       "label":  "Race",
-                       "codeTypeCategory":  "NIBRS_RACE",
-                       "codeTypeSource":  "NIBRS",
-                       "attributeTypeId":  ""
-                   },
-                   {
-                       "entity":  "Firearm",
-                       "fieldId":  "ImageIndicator",
-                       "label":  "NCIC Image",
-                       "codeTypeCategory":  "YES_NO_UNKNOWN",
-                       "codeTypeSource":  "NCIC",
-                       "attributeTypeId":  ""
-                   },
-                   {
-                       "entity":  "Firearm",
-                       "fieldId":  "GunMake",
-                       "label":  "Make (optional)",
-                       "codeTypeCategory":  "NCIC_FIREARM_MAKE",
-                       "codeTypeSource":  "NCIC",
-                       "attributeTypeId":  ""
-                   },
-                   {
-                       "entity":  "Firearm",
-                       "fieldId":  "GunCaliber",
-                       "label":  "Caliber (optional)",
-                       "codeTypeCategory":  "NCIC_FIREARM_CALIBER",
-                       "codeTypeSource":  "NCIC",
-                       "attributeTypeId":  ""
-                   },
-                   {
-                       "entity":  "Article",
-                       "fieldId":  "ArticleTypeCode",
-                       "label":  "Article Type (required)",
-                       "codeTypeCategory":  "NCIC_ARTICLE_TYPE",
-                       "codeTypeSource":  "CA_CLETS",
-                       "attributeTypeId":  ""
-                   }
-               ]
+  "provider": "SC_SLED",
+  "version": "1.11",
+  "note": "Paste as scope; render each FORM (tab); __usxScopePicklists(scope, '<Tab>'). One download per tab. The tab is the panel's group label, not necessarily the targetEntity.",
+  "fields": [
+    {
+      "entity": "Vehicle",
+      "tab": "Vehicle",
+      "qif": "ENTITY_Vehicle",
+      "fieldId": "LicensePlateTypeCode",
+      "label": "Plate Type",
+      "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE",
+      "codeTypeSource": "NCIC",
+      "attributeTypeId": ""
+    },
+    {
+      "entity": "Vehicle",
+      "tab": "Vehicle",
+      "qif": "ENTITY_Vehicle",
+      "fieldId": "VehicleMakeCode",
+      "label": "Vehicle Make",
+      "codeTypeCategory": "",
+      "codeTypeSource": "",
+      "attributeTypeId": "VEHICLE_MAKE"
+    },
+    {
+      "entity": "Vehicle",
+      "tab": "Vehicle",
+      "qif": "ENTITY_Vehicle",
+      "fieldId": "RegistrationState",
+      "label": "State (leave blank for SC)",
+      "codeTypeCategory": "",
+      "codeTypeSource": "",
+      "attributeTypeId": "STATE"
+    },
+    {
+      "entity": "Person",
+      "tab": "Person",
+      "qif": "ENTITY_Person",
+      "fieldId": "RegistrationState",
+      "label": "State (leave blank for SC)",
+      "codeTypeCategory": "",
+      "codeTypeSource": "",
+      "attributeTypeId": "STATE"
+    },
+    {
+      "entity": "Person",
+      "tab": "Person",
+      "qif": "ENTITY_Person",
+      "fieldId": "SexCode",
+      "label": "Sex",
+      "codeTypeCategory": "",
+      "codeTypeSource": "",
+      "attributeTypeId": "SEX"
+    },
+    {
+      "entity": "Person",
+      "tab": "Person",
+      "qif": "ENTITY_Person",
+      "fieldId": "ImageIndicator",
+      "label": "NCIC Image",
+      "codeTypeCategory": "YES_NO_UNKNOWN",
+      "codeTypeSource": "NCIC",
+      "attributeTypeId": ""
+    },
+    {
+      "entity": "Firearm",
+      "tab": "Wanted Person",
+      "qif": "ENTITY_WantedPerson",
+      "fieldId": "LicensePlateStateCode",
+      "label": "State",
+      "codeTypeCategory": "NJ_NIBRS_STATE",
+      "codeTypeSource": "NJ_NIBRS",
+      "attributeTypeId": ""
+    },
+    {
+      "entity": "Firearm",
+      "tab": "Wanted Person",
+      "qif": "ENTITY_WantedPerson",
+      "fieldId": "VehicleMakeCode",
+      "label": "Vehicle Make",
+      "codeTypeCategory": "",
+      "codeTypeSource": "",
+      "attributeTypeId": "VEHICLE_MAKE"
+    },
+    {
+      "entity": "Firearm",
+      "tab": "Wanted Person",
+      "qif": "ENTITY_WantedPerson",
+      "fieldId": "SexCode",
+      "label": "Sex",
+      "codeTypeCategory": "NIBRS_SEX",
+      "codeTypeSource": "NIBRS",
+      "attributeTypeId": ""
+    },
+    {
+      "entity": "Firearm",
+      "tab": "Wanted Person",
+      "qif": "ENTITY_WantedPerson",
+      "fieldId": "raceCode",
+      "label": "Race",
+      "codeTypeCategory": "NIBRS_RACE",
+      "codeTypeSource": "NIBRS",
+      "attributeTypeId": ""
+    },
+    {
+      "entity": "Firearm",
+      "tab": "Wanted Person",
+      "qif": "ENTITY_WantedPerson",
+      "fieldId": "ImageIndicator",
+      "label": "NCIC Image",
+      "codeTypeCategory": "YES_NO_UNKNOWN",
+      "codeTypeSource": "NCIC",
+      "attributeTypeId": ""
+    },
+    {
+      "entity": "Firearm",
+      "tab": "Firearm",
+      "qif": "ENTITY_Firearm",
+      "fieldId": "GunMake",
+      "label": "Make (optional)",
+      "codeTypeCategory": "NCIC_FIREARM_MAKE",
+      "codeTypeSource": "NCIC",
+      "attributeTypeId": ""
+    },
+    {
+      "entity": "Firearm",
+      "tab": "Firearm",
+      "qif": "ENTITY_Firearm",
+      "fieldId": "GunCaliber",
+      "label": "Caliber (optional)",
+      "codeTypeCategory": "NCIC_FIREARM_CALIBER",
+      "codeTypeSource": "NCIC",
+      "attributeTypeId": ""
+    },
+    {
+      "entity": "Article",
+      "tab": "Article",
+      "qif": "ENTITY_Article",
+      "fieldId": "ArticleTypeCode",
+      "label": "Article Type (required)",
+      "codeTypeCategory": "NCIC_ARTICLE_TYPE",
+      "codeTypeSource": "CA_CLETS",
+      "attributeTypeId": ""
+    }
+  ]
 };
-console.log('%c[USx-SCOPE] scope loaded: SC_SLED v1.11 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')");
+console.log('%c[USx-SCOPE] scope loaded: SC_SLED v1.11 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')\n  __usxScopePicklists(scope, 'Wanted Person')");

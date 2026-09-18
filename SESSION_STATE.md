@@ -65,6 +65,9 @@ MID-SWEEP plan re-emit, which does NOT archive logs the way a version bump does.
 ⚠️ **14 captures sit UNINGESTED in Downloads** as `usx_captured_*.unmatched.json` (09-17): 12 Vehicle
 (`QVRQ.V`x4 `QVRQ.P`x2 `QV.P`x4 +2 unresolved), 1 AdminMsg, 1 DriverRegistration -- NONE in any
 committed log (by transactionId). NEEDS ROB: relabel+ingest, or discard and re-drive?
+🔻 **PICKLISTS 9/14 captured 09-18; OWED: the `Wanted Person` TAB (5).** Scope+driver+`test_phase2 [2b]`
+now bucket by TAB -- re-scope from that tab (needs driver **BUILD 2026-09-18a**). Boat/AdminMsg own NO
+dropdowns; nothing owed there.
 ✅ **WANTED PERSON IS NOW A SELECTABLE TAB** (09-17, Rob asked twice; plans carry `tab`/`qif`) --
 needs extension **BUILD 2026-09-17e**. ⚠️ **NEEDS ROB:** the AM's 5 `DestinationCode` optionals are
 UNMAPPED and an AM DELIVERS to the ORI named. ⚠️ **POPULATED ≠ PROVEN WIRE VALUE** -- the State `Sel`

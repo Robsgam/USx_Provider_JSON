@@ -459,8 +459,17 @@
     if (!scope || !Array.isArray(scope.fields)) { console.error('[USx-SCOPE] pass the PICKLIST_SCOPE object: __usxScopePicklists(scope, "Vehicle")'); return; }
     if (!entityFilter) { console.error('[USx-SCOPE] entityFilter required (one entity form at a time)'); return; }
     const CAP = 500;
-    const fields = scope.fields.filter((f) => f.entity === entityFilter);
-    if (!fields.length) { console.warn('[USx-SCOPE] no select fields in scope for', entityFilter); return; }
+    // MATCH THE TAB FIRST, exactly as __usxRunPlan does (`t.tab || t.entity`). Scoping on
+    // `f.entity` alone made SC_SLED's "Wanted Person" unscopeable: its QIF declares
+    // targetEntity='Firearm', so the panel offered a tab the scope had no key for and the
+    // button silently did nothing -- then scoping "Firearm" downloaded 5 `field not found in
+    // DOM` errors, because those 5 controls live on the OTHER form. 2026-09-18.
+    const fields = scope.fields.filter((f) => (f.tab || f.entity) === entityFilter);
+    if (!fields.length) {
+      const groups = [...new Set(scope.fields.map((f) => f.tab || f.entity))];
+      console.warn(`[USx-SCOPE] no select fields in scope for "${entityFilter}". Scope has: ${groups.join(', ')}. If the tab you want is missing, the scope is stale -- rebuild or re-run emit_picklist_scope.ps1.`);
+      return;
+    }
     // Wrong-form guard: scoping Vehicle while the Firearm form is rendered produced a
     // useless all-errors capture (2026-07-02). If NONE of the scope's fields exist in the
     // DOM, the wrong entity form is up -- abort instead of downloading garbage.
@@ -559,9 +568,14 @@
     const notInScope = rendered.filter((id) => !scoped.has(id));
     if (notInScope.length) console.warn('[USx-SCOPE] rendered selects NOT in scope plan:', notInScope);
 
-    const payload = { provider: scope.provider || L.providerFromHost(), version: scope.version || null, entity: entityFilter, capturedAt: new Date().toISOString(), renderedSelectsNotInScope: notInScope, fields: out };
-    L.triggerDownload(`usx_picklists_${payload.provider}_${entityFilter}.json`, payload);
-    console.log('%c[USx-SCOPE]', 'color:#0aa;font-weight:bold', `${entityFilter}: ${out.length} field(s) scoped -> downloaded usx_picklists_${payload.provider}_${entityFilter}.json`);
+    // `entity` stays the TAB the operator picked -- that is the key import_picklists files it
+    // under, and it must match the scope so a re-scope overwrites rather than duplicates.
+    // targetEntity is carried alongside so the capture still says which entity slot it rode in.
+    const targetEntity = (fields[0] && fields[0].entity) || entityFilter;
+    const slug = String(entityFilter).replace(/[^A-Za-z0-9]+/g, '');   // "Wanted Person" -> WantedPerson; a space in a download name invites a rename
+    const payload = { provider: scope.provider || L.providerFromHost(), version: scope.version || null, entity: entityFilter, targetEntity, capturedAt: new Date().toISOString(), renderedSelectsNotInScope: notInScope, fields: out };
+    L.triggerDownload(`usx_picklists_${payload.provider}_${slug}.json`, payload);
+    console.log('%c[USx-SCOPE]', 'color:#0aa;font-weight:bold', `${entityFilter}: ${out.length} field(s) scoped -> downloaded usx_picklists_${payload.provider}_${slug}.json`);
     return payload;
   };
 
@@ -596,6 +610,6 @@
   };
 
   if (location.hash.includes('universal-search')) {
-    console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold', 'driver ready. BUILD 2026-09-17e (RUN FILTER IS A TAB FILTER: __usxRunPlan(plan, group) now matches `t.tab || t.entity`, so "Wanted Person" and "Administrative Message" are runnable groups of their own instead of being buried inside entity "Firearm"/"Boat". The per-test off-form SKIP below still stands and is still the safety net -- it made the wrong selection harmless, but it could not make these tests FINDABLE, which was Rob\'s actual complaint, twice. Earlier: BUILD 2026-09-17d (TEXTAREA FILL: setVal picks HTMLTextAreaElement.prototype for a textarea -- the old hardcoded HTMLInputElement.prototype throws Illegal invocation on one, so SC_SLED v1.11 FormTextarea message field would never have filled and it would have looked like a form defect. RE-ENTRANCY LOCK: a second Run press while a run is in flight is REFUSED, not queued -- two concurrent runs fill the same form on top of each other and every result from both is untrustworthy. MANIFEST TRUTH FIX: a manifest entry is written ONLY when the query actually SENT -- never-sent tests can no longer be labelled onto someone else\'s wire row; run summary now reconciles driven/SENT/NOT-sent; new __usxManifestReset() clears a stale or cross-version manifest and prints what it dropped). __usxRunOne({...}) = one combo; __usxRunPlan(plan,"Vehicle") = whole entity; __usxScopePicklists(scope,"Vehicle") = dump dropdown options. After a submit, run __usxRmsRecon() then __usxRmsRowRecon() to help find the RMS result/error row structure.');
+    console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold', 'driver ready. BUILD 2026-09-18a (SCOPE PICKLISTS IS A TAB FILTER TOO: __usxScopePicklists(scope, group) now matches `f.tab || f.entity`, the same rule __usxRunPlan already used. Pressing Scope on "Wanted Person" did NOTHING before -- the scope was bucketed by targetEntity, so those 5 dropdowns sat under "Firearm" and scoping Firearm downloaded 5 `field not found in DOM` errors. Needs a scope emitted by emit_picklist_scope.ps1 on/after 2026-09-18; an older scope still works and still groups by entity. The download is named from a slug of the tab, and the payload now carries both `entity` (the tab) and `targetEntity`. Earlier: BUILD 2026-09-17e (RUN FILTER IS A TAB FILTER: __usxRunPlan(plan, group) now matches `t.tab || t.entity`, so "Wanted Person" and "Administrative Message" are runnable groups of their own instead of being buried inside entity "Firearm"/"Boat". The per-test off-form SKIP below still stands and is still the safety net -- it made the wrong selection harmless, but it could not make these tests FINDABLE, which was Rob\'s actual complaint, twice. Earlier: BUILD 2026-09-17d (TEXTAREA FILL: setVal picks HTMLTextAreaElement.prototype for a textarea -- the old hardcoded HTMLInputElement.prototype throws Illegal invocation on one, so SC_SLED v1.11 FormTextarea message field would never have filled and it would have looked like a form defect. RE-ENTRANCY LOCK: a second Run press while a run is in flight is REFUSED, not queued -- two concurrent runs fill the same form on top of each other and every result from both is untrustworthy. MANIFEST TRUTH FIX: a manifest entry is written ONLY when the query actually SENT -- never-sent tests can no longer be labelled onto someone else\'s wire row; run summary now reconciles driven/SENT/NOT-sent; new __usxManifestReset() clears a stale or cross-version manifest and prints what it dropped). __usxRunOne({...}) = one combo; __usxRunPlan(plan,"Vehicle") = whole entity; __usxScopePicklists(scope,"Vehicle") = dump dropdown options. After a submit, run __usxRmsRecon() then __usxRmsRowRecon() to help find the RMS result/error row structure.');
   }
 })();
