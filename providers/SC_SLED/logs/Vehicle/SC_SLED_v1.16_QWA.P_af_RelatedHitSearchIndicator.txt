@@ -1,0 +1,91 @@
+﻿================================================================
+TEST LOG: SC_SLED Vehicle WantedPersonQuery
+Combo: QWA.P_af_RelatedHitSearchIndicator (QWA.P_af_RelatedHitSearchIndicator (auto))
+Date: 2026-09-18 15:49:10
+Result: PASS
+JSON Version: 1.16
+Entity Fingerprint: a5519249ea3d9edaa0ab01da70527aa5edc623722ce31a459e3541f8577e56b5
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"Y","LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RegistrationState":"Georgia","RelatedHitSearchIndicator":"N"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M2V0JX0GWBYHJNAF7FQSD3QB">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>WantedPersonQuery</MessageType>
+            <Id>01M2V0JX0GWBYHJNAF7FQSD3QB</Id>
+            <RelatedHitSearchIndicator>N</RelatedHitSearchIndicator>
+            <ImageIndicator>Y</ImageIndicator>
+            <LicensePlateNumber>TEST123</LicensePlateNumber>
+            <LicensePlateStateCode>GA</LicensePlateStateCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "vehicle":  {
+                                         "registrationStateAttrIds":  [
+                                                                          73046852196
+                                                                      ],
+                                         "tag":  "TEST123"
+                                     }
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M2V0JX0GWBYHJNAF7FQSD3QB
+  RelatedHitSearchIndicator      N
+  ImageIndicator                 Y
+  LicensePlateNumber             TEST123
+  LicensePlateStateCode          GA
+
+NOTES
+-----
+Automated capture (txId 01M2V0JX0GWBYHJNAF7FQSD3QB). kind=any-field; anyField=RelatedHitSearchIndicator; expectedKeyRef=QWA.P; firedMessageType=WantedPersonQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
