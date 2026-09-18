@@ -1460,6 +1460,27 @@ CAPABILITY #47 (NOT a limitation): TABS ARE KEYED BY QUERYINPUTFORM, NOT BY ENTI
   duplicates carried distinct labels, so they were distinguishable -- but which property the
   caption comes from was not read back. Verify before relying on a specific caption.
 
+  ⚠️ THE QUERY CHECKBOX LIST IS KEYED BY targetEntity, NOT BY FORM -- THE TWO ARE KEYED
+  DIFFERENTLY, AND THAT IS WHAT LEAKS. Rob, reading the rendered page 2026-09-18: "wanted person
+  has a firearm button at the button that is greyed out." Both SC_SLED QIDMs that declare
+  targetEntity='Firearm' -- WantedPersonQuery and GunQuery -- render their checkbox on BOTH
+  Firearm-slot tabs. On the Wanted Person form, GunQuery's only combination needs `serialNumber`,
+  which is not a control there, so it is PERMANENTLY GREYED.
+  IT IS INERT, NOT DANGEROUS: it cannot fire, because the field it requires does not exist on that
+  form. Nothing in a QIDM says which TAB its checkbox appears on; the only lever is targetEntity,
+  and borrowing that slot is the whole point of the design. `autoSelect=$false` is the obvious
+  lever and is DISQUALIFIED -- zero tenant-proven carriers, and its one tenant-observed outcome is
+  the CA_eSUN failure where Send stayed DISABLED.
+  SO IT IS AN ACCEPTED COST OF A BORROWED ENTITY SLOT, and it is SYMMETRIC AND PREDICTABLE. Expect
+  exactly these four on SC_SLED and treat any OTHER greyed button as new:
+      Wanted Person tab          -> greyed 'Firearm'                (needs serialNumber)
+      Firearm tab                -> greyed 'Wanted Person'          (needs Name / NCIC / plate)
+      Boat tab                   -> greyed 'Administrative Message' (needs FreeText)
+      Administrative Message tab -> greyed 'Boat'                   (needs Hull or Registration)
+  BUDGET FOR IT WHEN CHOOSING A HOST ENTITY: a borrowed slot costs one dead checkbox on each of
+  the two tabs that share it. Hosting on the entity with the FEWEST queries minimises the noise,
+  which is a second reason the Article/Boat end of the portfolio is the right place to borrow.
+
   CONSEQUENCE: a transaction that is not about one of the five subjects -- SC_SLED's
   AdministrativeMessage is the live case -- can have its OWN TAB, which is what Rob asked for
   ("i want it compeltely seperated"). It does not have to be a card bolted onto Vehicle, and
