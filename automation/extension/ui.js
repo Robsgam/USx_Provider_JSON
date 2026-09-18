@@ -1169,7 +1169,7 @@
       function applyPlan(planObj, sourceName) {
         const tests = planObj.tests || planObj;
         const count = Array.isArray(tests) ? tests.length : '?';
-        // GROUP BY TAB, NOT BY ENTITY (BUILD 2026-09-18b). A test's `entity` is its targetEntity,
+        // GROUP BY TAB, NOT BY ENTITY (BUILD 2026-09-18c). A test's `entity` is its targetEntity,
         // and tabs are keyed by QUERYINPUTFORM instead (CAPABILITY #47) -- so on SC_SLED all 34
         // Wanted Person tests hid under "Firearm" and Administrative Message hid under "Boat".
         // They ran, but nothing in this panel ever said their name. `tab` is emitted per test by
@@ -1304,6 +1304,53 @@
       };
       p.appendChild(scopeBtn);
       p.appendChild(scopeStatus);
+
+      // ── CAPTURE THE SEARCH FRONTEND'S OWN SOURCE ──────────────────────────────────────
+      // Rob, 2026-09-18: "lets figure out what triggers the cehckbox to be made so we can
+      // reverse enginer takin git out." Every statement we have about WHY a query checkbox
+      // exists -- and why one is permanently greyed -- is INFERRED FROM THE OUTSIDE: we
+      // changed a config, looked at the page, and generalised. The component that decides
+      // is the federatedSearch microfrontend, which is JavaScript this browser has already
+      // downloaded. Reading it turns "the checkbox list is keyed by targetEntity" from a
+      // model that fits the observations into the actual predicate, and shows whether ANY
+      // config field (autoSelect, order, or something undocumented) can suppress one.
+      // READ-ONLY: same-origin GETs for scripts the page already loaded. No tenant write,
+      // no query sent. The files are downloaded for offline analysis.
+      const srcBtn = el('button', BTN + ';' + BLU, '⬇ Capture search frontend JS (read-only)');
+      const srcStatus = el('div', 'font:11px system-ui;color:#fa0;margin:2px 0;min-height:14px');
+      srcBtn.onclick = async () => {
+        srcStatus.style.color = '#fa0'; srcStatus.textContent = 'collecting script urls…';
+        try {
+          // Both sources, because neither alone is complete: performance entries catch
+          // dynamically-imported chunks that never appear as a <script> tag, and script tags
+          // catch anything loaded before the observer buffer filled.
+          const fromPerf = performance.getEntriesByType('resource').map((e) => e.name);
+          const fromTags = [...document.querySelectorAll('script[src]')].map((s) => s.src);
+          const urls = [...new Set(fromPerf.concat(fromTags))]
+            .filter((u) => /federatedsearch|federated-search/i.test(u) && /\.js(\?|$)/i.test(u));
+          if (!urls.length) {
+            srcStatus.style.color = '#f77';
+            srcStatus.textContent = '✖ no federatedSearch .js found on this page -- open /universal-search first, then click.';
+            return;
+          }
+          const out = [];
+          for (const u of urls) {
+            try {
+              const r = await fetch(u, { credentials: 'include' });
+              const text = await r.text();
+              out.push({ url: u, status: r.status, bytes: text.length, source: text });
+              srcStatus.textContent = `fetched ${out.length}/${urls.length}…`;
+            } catch (e) { out.push({ url: u, error: String(e) }); }
+          }
+          const ok = out.filter((o) => o.source);
+          L.triggerDownload(`usx_searchfe_${location.hostname}_${new Date().toISOString().replace(/[:.]/g,'-')}.json`,
+                            { capturedAt: new Date().toISOString(), host: location.hostname, count: out.length, files: out });
+          srcStatus.style.color = ok.length ? '#7cf' : '#f77';
+          srcStatus.textContent = `${ok.length ? '✔' : '✖'} ${ok.length}/${urls.length} file(s), ${ok.reduce((a,b)=>a+b.bytes,0).toLocaleString()} bytes -> downloaded`;
+        } catch (e) { srcStatus.style.color = '#f77'; srcStatus.textContent = '✖ ' + e.message; }
+      };
+      p.appendChild(srcBtn);
+      p.appendChild(srcStatus);
 
       p.appendChild(el('div', 'margin-top:6px;color:#999;font-size:11px', '0. Run tools\\watch_captures.ps1 + tools\\serve_plans.ps1 once  1. ⟳ Load plan  2. Pick entity  3. Run Plan (or 🔍 Scope)  4. Fetch results'));
 
@@ -1503,5 +1550,5 @@
 
   window.__usxUiTimer = setInterval(tick, 1000);
   tick();
-  console.log('%c[USx-UI]', 'color:#fa0;font-weight:bold', 'control panel injected. BUILD 2026-09-18b -- READ THIS LINE FIRST IF A BUTTON SEEMS MISSING. If the console does not say 2026-09-18b, the extension did not reload and no amount of clicking will help. SCOPE PICKLISTS NOW FOLLOWS THE TAB TOO: pressing it on "Wanted Person" used to do NOTHING, because the SCOPE was bucketed by targetEntity while the dropdown above lists TABS -- so those 5 dropdowns sat under "Firearm" and scoping Firearm downloaded 5 `field not found in DOM` rows. Needs a scope emitted on/after 2026-09-18 (rebuild, or tools\\emit_picklist_scope.ps1); an older scope still works and still groups by entity. Earlier: THE DROPDOWN LISTS TABS, NOT ENTITIES: it is built from each test\'s `tab` (the owning QUERYINPUTFORM) and falls back to `entity`, so SC_SLED finally offers "Wanted Person" (34 tests) and "Administrative Message" as their own selectable runs. They were in the plan and runnable all along -- they were filed under entity "Firearm" and "Boat" respectively (CAPABILITY #47: tabs are keyed by QIF, NOT by targetEntity), so nothing in this panel ever said their name. Requires a plan emitted by emit_test_plan.ps1 on/after 2026-09-17; an older plan still groups by entity rather than breaking. Earlier: BUILD 2026-09-17d -- DEPLOY NOW RE-READS THE JOB FILE ON EVERY CLICK (it used to act on the copy fetched at PAGE LOAD, so a job re-cut while the page sat open was invisible -- that is why RUN THE JOB FOR THIS TENANT appeared broken on SC_SLED: three jobs were cut in one session and the panel held the first). A config pull that got NOTHING now reads RED, partial AMBER. THE READ SIDE IS ONE BUTTON: RUN THE JOB (reads providers\\PULL_JOB.json via serve_plans GET /pulljob and pulls exactly the tenants it names; it RE-FETCHES on every click, so re-cutting the job needs no reload). Refresh tenant list stays beside it because the job is DERIVED from the roster. EVERYTHING ELSE -- 7 census, 7b RESCAN, 6b manual pull, 1/3/4/5/6 -- is behind the MORE TOOLS bar, which is now a bordered amber control rather than grey text, and the panel scrolls (max-height) instead of running off the bottom of the screen. Earlier: BUILD 2026-09-11h (THE JOB IS A BUTTON, not a console command -- Rob: "i will not run commands in the console", a standing GUI-ONLY rule I broke by shipping the runner as __usxJob(). The ad-hoc EXECUTE button is GONE with it: that was the decision-assembled-at-the-keyboard path, so the ONLY write path is now generate a job file, read it, press the button. DEPLOY has NO PROVIDER BOX: the provider comes from serve_plans /target/<deptId> -- the recorded intent, not something typed, because a typo there imports the wrong provider and every guard still passes. The panel STATES the resolved target before anything is clicked, and refuses an unrecorded or scope-excluded tenant while the buttons are still cold. Earlier: the DEPLOY section -- dry-run and execute buttons over deploy_probe.js, the only write path; payload fetched from serve_plans /build/<PROVIDER> so it is the repo artifact byte-for-byte. Adds the Capture-this-page form-element button -- read-only live-DOM capture for measuring the import dialog before automating it. STEP 3 CLEANUP: the admin panel now shows only the standing workflow -- 2 list tenants, 6b pull the configs, 7 census. Buttons 1/3/4/5/6 are HIDDEN behind a collapsed diagnostics toggle, not deleted: their handlers read inputs that would throw if removed, and a deleted code path is how the driver died for five days).');
+  console.log('%c[USx-UI]', 'color:#fa0;font-weight:bold', 'control panel injected. BUILD 2026-09-18c -- READ THIS LINE FIRST IF A BUTTON SEEMS MISSING. If the console does not say 2026-09-18c, the extension did not reload and no amount of clicking will help. SCOPE PICKLISTS NOW FOLLOWS THE TAB TOO: pressing it on "Wanted Person" used to do NOTHING, because the SCOPE was bucketed by targetEntity while the dropdown above lists TABS -- so those 5 dropdowns sat under "Firearm" and scoping Firearm downloaded 5 `field not found in DOM` rows. Needs a scope emitted on/after 2026-09-18 (rebuild, or tools\\emit_picklist_scope.ps1); an older scope still works and still groups by entity. Earlier: THE DROPDOWN LISTS TABS, NOT ENTITIES: it is built from each test\'s `tab` (the owning QUERYINPUTFORM) and falls back to `entity`, so SC_SLED finally offers "Wanted Person" (34 tests) and "Administrative Message" as their own selectable runs. They were in the plan and runnable all along -- they were filed under entity "Firearm" and "Boat" respectively (CAPABILITY #47: tabs are keyed by QIF, NOT by targetEntity), so nothing in this panel ever said their name. Requires a plan emitted by emit_test_plan.ps1 on/after 2026-09-17; an older plan still groups by entity rather than breaking. Earlier: BUILD 2026-09-17d -- DEPLOY NOW RE-READS THE JOB FILE ON EVERY CLICK (it used to act on the copy fetched at PAGE LOAD, so a job re-cut while the page sat open was invisible -- that is why RUN THE JOB FOR THIS TENANT appeared broken on SC_SLED: three jobs were cut in one session and the panel held the first). A config pull that got NOTHING now reads RED, partial AMBER. THE READ SIDE IS ONE BUTTON: RUN THE JOB (reads providers\\PULL_JOB.json via serve_plans GET /pulljob and pulls exactly the tenants it names; it RE-FETCHES on every click, so re-cutting the job needs no reload). Refresh tenant list stays beside it because the job is DERIVED from the roster. EVERYTHING ELSE -- 7 census, 7b RESCAN, 6b manual pull, 1/3/4/5/6 -- is behind the MORE TOOLS bar, which is now a bordered amber control rather than grey text, and the panel scrolls (max-height) instead of running off the bottom of the screen. Earlier: BUILD 2026-09-11h (THE JOB IS A BUTTON, not a console command -- Rob: "i will not run commands in the console", a standing GUI-ONLY rule I broke by shipping the runner as __usxJob(). The ad-hoc EXECUTE button is GONE with it: that was the decision-assembled-at-the-keyboard path, so the ONLY write path is now generate a job file, read it, press the button. DEPLOY has NO PROVIDER BOX: the provider comes from serve_plans /target/<deptId> -- the recorded intent, not something typed, because a typo there imports the wrong provider and every guard still passes. The panel STATES the resolved target before anything is clicked, and refuses an unrecorded or scope-excluded tenant while the buttons are still cold. Earlier: the DEPLOY section -- dry-run and execute buttons over deploy_probe.js, the only write path; payload fetched from serve_plans /build/<PROVIDER> so it is the repo artifact byte-for-byte. Adds the Capture-this-page form-element button -- read-only live-DOM capture for measuring the import dialog before automating it. STEP 3 CLEANUP: the admin panel now shows only the standing workflow -- 2 list tenants, 6b pull the configs, 7 census. Buttons 1/3/4/5/6 are HIDDEN behind a collapsed diagnostics toggle, not deleted: their handlers read inputs that would throw if removed, and a deleted code path is how the driver died for five days).');
 })();
