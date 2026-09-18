@@ -1425,6 +1425,41 @@ LIMITATION #46: A QUERYINPUTFORM WHOSE `targetEntity` IS NOT ONE OF THE FIVE KNO
    6. `autoSelect:false` was NEVER going to remove a checkbox. It only pre-deselects. Every
       earlier discussion of it as a masking mechanism was aimed at the wrong lever.
 
+  ✅ **MEASURED 2026-09-18 -- `CHECKBOX_PROBE` IMPORTED. EVERY CONFIG-SIDE LEVER IS CLOSED.**
+  Two forms sharing entity `Other`, four QIDMs, two provider bundles, `order` on both forms.
+  Rob's read of the rendered page: **"2 tabs 4 checkboxes each greyed out"** and **"cb a is first"**.
+
+    Q1 PER-ENTITY RULE -- CONFIRMED. `CBControl` requires a field that exists ONLY on form A and
+       its checkbox appears on BOTH tabs. The control COULD have failed (absence from tab B would
+       have refuted the whole source-derived model) and it did not.
+    Q2 `enabled:false` -- **DOES NOT SURVIVE OUR IMPORT.** CBDisabled still renders. The client
+       genuinely filters on it (`queries.filter(n=>n.enabled)`) but the value never reaches the
+       client, so the lever is UNREACHABLE FROM THE CONFIG JSON.
+    Q3 `autoSelect:false` -- renders anyway, as predicted. "not selected" is NOT "not present".
+    Q4 A SECOND PROVIDER BUNDLE -- **DOES NOT SCOPE A TAB.** CBSecond, in its own provider bundle
+       with its own AUTH/QMF/QRDM, appears on BOTH tabs. Provider identity is irrelevant to the
+       checkbox list; entity is the only key.
+    Q5 `order` ON THE FORM -- **NOT HONOURED.** Form A carried order=2 and form B order=1, and
+       A still rendered first. Tabs follow `configurations[]` order, not `order`.
+
+  WHY, AND IT WAS ALREADY IN FRONT OF US: a QUERYINPUTFORM config has EXACTLY SIX properties --
+  `description, label, layout, name, type, targetEntity`. Dumped from SC_SLED hours earlier while
+  looking for a query-scoping property, and not connected to this until Q2/Q5 came back negative.
+  `enabled` and `order` exist on the SERVER model the client reads; our import pipeline does not
+  populate them. A field being consumed by the client says NOTHING about the config carrying it --
+  that inference is what made both look like available levers.
+
+  ⚠️ RESTING-GREY vs PERMANENTLY-DEAD ARE NOT THE SAME THING, AND THIS REPO HAS CONFLATED THEM.
+  All four checkboxes read greyed on an EMPTY form -- including the three whose required field is
+  present on that very tab. So "greyed" at rest is the normal state of every checkbox everywhere,
+  and the real defect is narrower: a checkbox that can NEVER activate because its required field
+  is on a different form. UNMEASURED: whether filling the field flips them live. One keystroke on
+  the rig settles it and it changes what the original complaint was even about.
+
+  THE ONE LEVER STILL STANDING is server-side, not config: the admin UI's
+  **"Link forms to interface -- the following query forms can be sent to this interface"**. No
+  import needed to test it.
+
   OPEN QUESTIONS FOR CRINGER -- this is a platform question the repo cannot answer:
     1. Is `targetEntity` a CLOSED enum? If so, what is the authoritative list?
     2. Is there a registration path for a transaction that yields no record (a message form)?
