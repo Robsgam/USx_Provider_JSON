@@ -31,7 +31,7 @@ VEHICLE
   VehicleStolenQuery  (metadata QV -- "Stolen Vehicle Inquiry", NCIC)
     [PENDING] QV.VM    set: VehicleIdentificationNumber, VehicleMakeCode
                        gate: LicensePlateNumber NOT_EXISTS
-    [PENDING] QV.P     set: LicensePlateNumber
+    [CONFIRMED] QV.P     set: LicensePlateNumber
                        any: VehicleIdentificationNumber, RegistrationState, VehicleMakeCode
 
   !! CO-FIRE, MEASURED -- NOT A DEFECT MARKER, A TESTING INSTRUCTION.
