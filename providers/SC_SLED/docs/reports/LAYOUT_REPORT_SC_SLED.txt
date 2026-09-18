@@ -1,15 +1,15 @@
-================================================================
+﻿================================================================
   Build Report: SC_SLED
-  Source: SC_SLED_v1.15.json
-  Generated: 2026-09-18 14:08
+  Source: SC_SLED_v1.16.json
+  Generated: 2026-09-18 15:05
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== SC_SLED_v1.15.json ===
+=== SC_SLED_v1.16.json ===
 QIFs: 5
-  Vehicle | entity=Vehicle | qidm= | cards=2 fields=5
-  Person | entity=Person | qidm= | cards=2 fields=13
+  Vehicle | entity=Vehicle | qidm= | cards=1 fields=4
+  Person | entity=Person | qidm= | cards=1 fields=12
   Firearm | entity=Firearm | qidm= | cards=1 fields=2
   Article | entity=Article | qidm= | cards=1 fields=1
   Boat | entity=Boat | qidm= | cards=1 fields=3
@@ -42,40 +42,38 @@ LAYOUT DETAIL
         VehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE)
         vehicleYear (Text | maxLen=4)
         RegistrationState (Dropdown | attributeTypeId=STATE)
-    CARD "CARD_VEH_WP"
-      ROW ROW_VEH_WP_1 [6 6]
+      ROW ROW_VEH_3 [6 6]
         ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
-        RelatedHitSearchIndicator (Text | maxLen=1)
+        RelatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
 
 === Person ===
   name=ENTITY_Person | entity=Person | qidm=
   [default]
-    CARD "CARD_PER_DL"
-      ROW ROW_DL_1 [6 6]
+    CARD "CARD_PER"
+      ROW ROW_PER_1 [6 3 3]
         OperatorLicenseNumber (Text | maxLen=20)
         RegistrationState (Dropdown | attributeTypeId=STATE)
-      ROW ROW_DL_2 [3 3 3 3]
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
+      ROW ROW_PER_2 [3 3 3 3]
         NameFirst (Text | maxLen=30)
         NameLast (Text | maxLen=30)
         NameMiddle (Text | maxLen=30)
         NameSuffix (Text | maxLen=30)
-      ROW ROW_DL_3 [4 4 4]
+      ROW ROW_PER_3 [4 4 4]
         BirthDate (FormDate)
         SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
-        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
-    CARD "CARD_PER_WP"
-      ROW ROW_WP_1 [6 6]
+        raceCode (Dropdown | attributeTypeId=RACE | codeTypeProvider=NIBRS)
+      ROW ROW_PER_4 [6 6]
         NCICNumber (Text | maxLen=10)
         OriginatingAgencyCaseNumber (Text | maxLen=20)
-      ROW ROW_WP_2 [4 4 4]
-        raceCode (Dropdown | attributeTypeId=RACE | codeTypeProvider=NIBRS)
+      ROW ROW_PER_5 [4 4 4]
         SocialSecurityNumber (Text | maxLen=9)
         FBINumber (Text | maxLen=9)
-      ROW ROW_WP_3 [3 3 3 3]
         MiscellaneousNumber (Text | maxLen=15)
+      ROW ROW_PER_6 [4 4 4]
         ExpandedNameSearchCode (Text | maxLen=1)
         ExpandedBirthDateSearchCode (Text | maxLen=1)
-        RelatedHitSearchIndicator (Text | maxLen=1)
+        RelatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
 
 === Firearm ===
   name=ENTITY_Firearm | entity=Firearm | qidm=

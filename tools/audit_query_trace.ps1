@@ -187,7 +187,30 @@ foreach ($pn in ($targets | Sort-Object)) {
         if (-not $c.combinations -or -not $c.query) { continue }
         if ($c.provider -eq 'RMS' -or "$($c.name)" -match 'RMS') { continue }
         $q = "$($c.query)"
-        if (-not $builtByQuery[$q]) { $builtByQuery[$q] = @(); $qidmByQuery[$q] = $c }
+        # ── ONE `query` CAN LIVE ON TWO CONFIGS, AND THIS TOOK THE FIRST ONE'S ATTRIBUTES ──────
+        # `$qidmByQuery[$q] = $c` recorded whichever config was seen FIRST, and that object is the
+        # ONLY thing Expand-Sf/Resolve-Fid get to translate a metadata field name into a form
+        # fieldId. Fine while a query meant a config; wrong the moment one transaction is split
+        # across entities.
+        # MEASURED on SC_SLED v1.15+: WantedPersonQuery is TWO configs sharing one `query` (Person
+        # QWA.NCIC/OCA/N + Vehicle QWA.P/VM -- checkboxes are keyed by ENTITY, so a Vehicle-tab fill
+        # can never trigger a Person-entity query, which is why it must be two). The Vehicle config
+        # is emitted first and defines NO `Name` attribute, so metadata `Name` resolved to the
+        # literal string, matched neither `NameLast` nor `NameFirst`, and `QWA set[Name]` plus
+        # `QWA set[Name,OriginatingAgencyCaseNumber]` were reported MISSING -- while both are BUILT,
+        # REACHABLE and demonstrably firing in the simulator. A phantom MISSING is worse than a
+        # missed one: it sends the next reader to build a combination that already exists.
+        # The combos themselves were always accumulated across both configs (`+=` below); only the
+        # attribute lookup took the first. So union the attributes and leave both resolvers alone --
+        # they read nothing but `.attributes`, verified before this change.
+        # `.ContainsKey` rather than `-not $builtByQuery[$q]`: identical for the single-config case
+        # (the guard above skips a config with no combinations), and it cannot be fooled by an
+        # emptied array.
+        if (-not $builtByQuery.ContainsKey($q)) {
+            $builtByQuery[$q] = @()
+            $qidmByQuery[$q]  = [pscustomobject]@{ attributes = @() }
+        }
+        $qidmByQuery[$q].attributes = @($qidmByQuery[$q].attributes) + @($c.attributes)
         foreach ($cm in $c.combinations) {
             $kr = if ($cm.keyReference) { "$($cm.keyReference)" } else { "$($cm.keyRef)" }
             # combo defaults[] also make a field always-present

@@ -2,9 +2,14 @@
 
 Auto-generated from `SC_SLED_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.15** | Generated: 2026-09-18
+Current: **v1.16** | Generated: 2026-09-18
 
 ---
+
+## v1.16 -- 2026-09-18 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v1.15 -- 2026-09-18 -- WANTED PERSON ROLLED ONTO PERSON *AND* VEHICLE -- one transaction, two entities, deliberate CO-FIRE
 

@@ -35,7 +35,7 @@ $repoRoot    = Split-Path (Split-Path $providerDir -Parent) -Parent
 . (Join-Path $repoRoot 'tools\_build_provider_helpers.ps1')
 
 $providerName = 'SC_SLED'
-$Version      = '1.15'
+$Version      = '1.16'
 $currentYear  = (Get-Date).Year.ToString()
 
 Write-Host ''
@@ -380,7 +380,18 @@ $wpAttrs = @(
     Build-QidmAttribute -Name 'ExpandedBirthDateSearchCode' -Size 1  -SourceField @('ExpandedBirthDateSearchCode')
     Build-QidmAttribute -Name 'RelatedHitSearchIndicator'   -Size 1  -SourceField @('RelatedHitSearchIndicator')
 )
-$imgDefault = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
+# BOTH Y/N INDICATORS DEFAULT 'Y' ON EVERY CARRYING COMBO -- v1.16, Rob: "make related hit y by
+# default". The form initialValue is NOT sufficient on its own: CAD ignores form initialValues
+# (feedback_cad_defaults_required), so a form-only flip leaves every CAD-originated wanted-person
+# query still sending nothing for Related Hit. The pair has to move together or the two entry
+# points disagree about what was asked.
+# SAFE because neither field is in any set[] or any condition in this provider -- they are
+# any[]-only on all five QWA combos, so a default cannot collapse one combination onto a plainer
+# sibling (BUILD_RULES 24, the AZ_AZDPS DQPN/DQP failure). MEASURED off the emitted JSON, not assumed.
+$imgDefault = @(
+    [PSCustomObject]@{ field = 'ImageIndicator';            value = 'Y' }
+    [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }
+)
 $wpCombos = @(
     # Ordered most-specific first. Identifier priority: NCIC number and OCA are unique handles, so
     # they precede the broad name search; the vehicle paths precede name for the same reason.
@@ -666,13 +677,42 @@ Write-Host '  RMS bundle built from KB specs' -ForegroundColor Green
 #     LABELS ARE THE ONLY HINT MECHANISM THE PLATFORM RENDERS (no helperText, no placeholder), so
 #     each carries one of the canonical hint types: routing alternative, identifier priority,
 #     in-state default, or optional indicator.
+#
+#     v1.16 -- NOTHING IN PARENTHESES, BY DIRECTIVE. Rob 2026-09-18: "remove the both queires sent
+#     on the card titles everywhere  nothign extra in ()". Every "(optional)" / "(required)" /
+#     "(with name)" qualifier is gone from every label on every entity, and the two co-fire
+#     announcements are gone from the card titles.
+#
+#     THAT IS AN OVERRIDE OF A REAL RULE, NOT A TIDY-UP, so it is recorded rather than argued
+#     each rebuild. verify_build CHECK 13 Rule 3 REQUIRES an any[]-only field to carry "(" or " - "
+#     so the officer can tell a required box from an optional one; the tags below are the sanctioned
+#     escape hatch (BUILD_RULES 11 point 8) and downgrade the WARN to an auditable [INFO]. Without
+#     them this is 10 WARNs a rebuild, which is how a real finding gets lost in accepted noise.
+#
+#     STATE IS THE ONE LABEL THAT KEPT ITS HINT, and it is not a parenthesis: "State - leave blank
+#     for SC". Rule 1 makes that hint MANDATORY and it is FUNCTIONAL, not decorative -- blank routes
+#     in-state and a filled value routes out-of-state, so an officer who does not know that cannot
+#     work the form. The dash form satisfies the directive literally (nothing in brackets) and keeps
+#     the routing guidance. Say the word and it becomes a bare "State" plus an override tag.
+#
+# LABEL-OVERRIDE: vehicleYear -- bare by directive (Rob 2026-09-18, nothing in parentheses)
+# LABEL-OVERRIDE: raceCode -- bare by directive (Rob 2026-09-18, nothing in parentheses)
+# LABEL-OVERRIDE: SocialSecurityNumber -- bare by directive (Rob 2026-09-18, nothing in parentheses)
+# LABEL-OVERRIDE: FBINumber -- bare by directive (Rob 2026-09-18, nothing in parentheses)
+# LABEL-OVERRIDE: MiscellaneousNumber -- bare by directive (Rob 2026-09-18, nothing in parentheses)
+# LABEL-OVERRIDE: ExpandedNameSearchCode -- bare by directive (Rob 2026-09-18, nothing in parentheses)
+# LABEL-OVERRIDE: ExpandedBirthDateSearchCode -- bare by directive (Rob 2026-09-18, nothing in parentheses)
+# LABEL-OVERRIDE: RelatedHitSearchIndicator -- bare by directive (Rob 2026-09-18); it is now a Y/N dropdown defaulted Y, so the control itself shows it is pre-answered
+# LABEL-OVERRIDE: GunMake -- bare by directive (Rob 2026-09-18, nothing in parentheses)
+# LABEL-OVERRIDE: GunModel -- bare by directive (Rob 2026-09-18, nothing in parentheses)
+# LABEL-OVERRIDE: GunCaliber -- bare by directive (Rob 2026-09-18, nothing in parentheses)
 # =====================================================================
 
 # ---- Vehicle: VehicleRegistrationQuery + VehicleStolenQuery -------------------------------------
 $vehLayout = MakeLayouts @(
     @{
         id    = 'CARD_VEH'
-        title = 'VEHICLE -- REGISTRATION BY PLATE OR VIN, STOLEN CHECK BY PLATE OR VIN + MAKE'
+        title = 'VEHICLE -- SEARCH BY PLATE, OR BY VIN'
         rows  = @(
             @{ id = 'ROW_VEH_1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
@@ -689,34 +729,38 @@ $vehLayout = MakeLayouts @(
             @{ id = 'ROW_VEH_2'; cols = @('3','3','2','4'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_2' }
                 @{ id = 'VehicleMakeCode_Input';            node = Sel 'VehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE' } 'ROW_VEH_2' }
-                @{ id = 'vehicleYear_Input';                node = Inp 'vehicleYear' 'Vehicle Year (optional)' '4' 'ROW_VEH_2' }
-                @{ id = 'RegistrationState_Input';          node = Sel 'RegistrationState' 'State (leave blank for SC)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_2' }
+                @{ id = 'vehicleYear_Input';                node = Inp 'vehicleYear' 'Vehicle Year' '4' 'ROW_VEH_2' }
+                @{ id = 'RegistrationState_Input';          node = Sel 'RegistrationState' 'State - leave blank for SC' @{ attributeTypeId = 'STATE' } 'ROW_VEH_2' }
             )}
-        )
-    }
-    # ---- WANTED PERSON OPTIONALS ON THE VEHICLE TAB (v1.15) -------------------------------------
-    # QWA.P (plate + state) and QWA.VM (VIN + make) moved onto this entity so a plate or VIN
-    # CO-FIRES the wanted-person check with the registration and stolen checks. Their MANDATORY
-    # fields already exist on the card above -- LicensePlateNumber, VehicleIdentificationNumber,
-    # VehicleMakeCode, and RegistrationState which the QWA attribute LicensePlateStateCode now
-    # feeds from. Only these two OPTIONALS were missing, and without them the officer's value
-    # would have nowhere to go.
-    # NCIC Image is a mandatorily-defaulted field (FIELD_REFERENCE 9 / BUILD_RULES 20b): it must
-    # carry an initialValue or it does not serialize at all. 'Y' matches the portfolio rule, and
-    # it is SAFE to prefill here because it is in no set[] -- it cannot shadow a combination.
-    @{
-        id    = 'CARD_VEH_WP'
-        title = 'WANTED PERSON -- SENT WITH THE PLATE OR VIN SEARCH ABOVE'
-        rows  = @(
-            @{ id = 'ROW_VEH_WP_1'; cols = @('6','6'); fields = @(
-                @{ id = 'ImageIndicator_Input';           node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_VEH_WP_1' }
-                @{ id = 'RelatedHitSearchIndicator_Input'; node = Inp 'RelatedHitSearchIndicator' 'Related Hit (optional)' '1' 'ROW_VEH_WP_1' }
+            # ---- WANTED PERSON OPTIONALS, NOW IN THE SAME CARD (v1.16) --------------------------
+            # v1.15 put these two on a SECOND Vehicle card titled "WANTED PERSON -- SENT WITH THE
+            # PLATE OR VIN SEARCH ABOVE". Rob 2026-09-18: "on veh why is it 2 cards? ... i want to
+            # keep it one card if possible ... remove the both queires sent on the card titles
+            # everywhere". The second card existed only to ANNOUNCE the co-fire, and the co-fire is
+            # already stated in the officer guide banner, the test plan and the simulator -- three
+            # places that are read deliberately, unlike a card title that has to be read every time.
+            # QWA.P (plate + state) and QWA.VM (VIN + make) take their MANDATORY fields from the two
+            # rows above; the pool is per ENTITY (LIMITATION #26), so moving these controls between
+            # cards on the same tab changes nothing on the wire.
+            #
+            # BOTH ARE SAFE TO PREFILL AND THAT WAS MEASURED, NOT ASSUMED: neither ImageIndicator
+            # nor RelatedHitSearchIndicator appears in ANY set[] or ANY condition anywhere in this
+            # provider -- they are any[]-only on the five QWA combos. BUILD_RULES 24 (never prefill a
+            # routing field) therefore does not bite; a prefill here cannot collapse one combination
+            # onto a plainer sibling the way it killed AZ_AZDPS DQPN/DQP.
+            @{ id = 'ROW_VEH_3'; cols = @('6','6'); fields = @(
+                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_VEH_3' }
+                # Rob: "make related hit y by default and use the saem ncic image dropdown". It was a
+                # 1-char FREE-TEXT box, so the officer could type anything and nothing defaulted.
+                # Metadata gives it Alphabetic maxLen=1 -- the SAME shape as ImageIndicator -- so it
+                # takes the same YES_NO_UNKNOWN|NCIC control and the same 'Y'.
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'RelatedHitSearchIndicator' 'Related Hit' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_VEH_3' }
             )}
         )
     }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle -- 1 card. Registration QVRQ.P (plate+type+year) / QVRQ.V (VIN), Stolen QV.P (plate) / QV.VM (VIN+make). Plate>VIN guardrails on both VIN paths. (v1.1 briefly hosted the Administrative Message card here; v1.2 moved it to its own tab per CAPABILITY #47.)'
+    description  = 'Vehicle -- ONE card, 3 rows (v1.16). Three transactions CO-FIRE off it: Registration QVRQ.P plate+type+year / QVRQ.V VIN, Stolen QV.P plate / QV.VM VIN+make, and Wanted Person QWA.P plate+state / QWA.VM VIN+make. Plate>VIN guardrails on both VIN paths. v1.15 announced the wanted-person co-fire on a second card; v1.16 folded it in on Rob directive -- the co-fire is stated in the officer guide, the test plan and the simulator instead.'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'
@@ -730,12 +774,16 @@ $vehicleForm = [PSCustomObject]@{
 # the keyRef DQ; separate controls are what make them independently selectable at all.
 $perLayout = MakeLayouts @(
     @{
-        id    = 'CARD_PER_DL'
-        title = 'DRIVER LICENSE + DRIVER REGISTRATION -- BY OLN, OR BY NAME + DOB + SEX (both queries are sent)'
+        id    = 'CARD_PER'
+        title = 'PERSON -- SEARCH BY OLN, BY NAME + DOB + SEX, BY NCIC NUMBER, OR BY NAME + CASE NUMBER'
         rows  = @(
-            @{ id = 'ROW_DL_1'; cols = @('6','6'); fields = @(
-                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_DL_1' }
-                @{ id = 'RegistrationState_Input';     node = Sel 'RegistrationState' 'State (leave blank for SC)' @{ attributeTypeId = 'STATE' } 'ROW_DL_1' }
+            # OLN + State + NCIC Image on the TOP row at 6/3/3 is the documented Person pattern
+            # (BUILD_RULES 11, PERSON CARDS top-row pattern) -- the primary identifier keeps the
+            # width, the two short codes ride beside it, and OLN is not stranded on its own line.
+            @{ id = 'ROW_PER_1'; cols = @('6','3','3'); fields = @(
+                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_1' }
+                @{ id = 'RegistrationState_Input';     node = Sel 'RegistrationState' 'State - leave blank for SC' @{ attributeTypeId = 'STATE' } 'ROW_PER_1' }
+                @{ id = 'ImageIndicator_Input';        node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_1' }
             )}
             # ⚠️ NAME CONTROLS IN FIRST-LAST-MIDDLE-SUFFIX ORDER -- v1.9, Rob: "person do first last
             # middle suffic on second line ... we need to use that format everythwere". All four
@@ -748,37 +796,25 @@ $perLayout = MakeLayouts @(
             # CONTROLS cannot change that -- the handler reads the attribute, not the layout. Do NOT
             # "make them consistent" by reordering sourceField: that WOULD change the wire, and
             # LAST-first is the format rule every provider in the portfolio is cross-checked against.
-            @{ id = 'ROW_DL_2'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'NameFirst_Input';  node = Inp 'NameFirst' 'First Name' '30' 'ROW_DL_2' }
-                @{ id = 'NameLast_Input';   node = Inp 'NameLast' 'Last Name' '30' 'ROW_DL_2' }
-                @{ id = 'NameMiddle_Input'; node = Inp 'NameMiddle' 'Middle Name' '30' 'ROW_DL_2' }
-                @{ id = 'NameSuffix_Input'; node = Inp 'NameSuffix' 'Suffix' '30' 'ROW_DL_2' }
+            @{ id = 'ROW_PER_2'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'NameFirst_Input';  node = Inp 'NameFirst' 'First Name' '30' 'ROW_PER_2' }
+                @{ id = 'NameLast_Input';   node = Inp 'NameLast' 'Last Name' '30' 'ROW_PER_2' }
+                @{ id = 'NameMiddle_Input'; node = Inp 'NameMiddle' 'Middle Name' '30' 'ROW_PER_2' }
+                @{ id = 'NameSuffix_Input'; node = Inp 'NameSuffix' 'Suffix' '30' 'ROW_PER_2' }
             )}
-            @{ id = 'ROW_DL_3'; cols = @('4','4','4'); fields = @(
-                @{ id = 'BirthDate_Input';      node = Dt  'BirthDate' 'Date of Birth' 'ROW_DL_3' }
-                @{ id = 'SexCode_Input';        node = Sel 'SexCode' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DL_3' }
-                @{ id = 'ImageIndicator_Input'; node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_DL_3' }
-            )}
-        )
-    }
-    # ---- WANTED PERSON, SECOND CARD ON THE PERSON TAB (v1.15) -----------------------------------
-    # The Wanted Person TAB is gone; its person-shaped combos now live here so they CO-FIRE with
-    # Driver License and Driver Registration off the SAME name/DOB/sex/OLN controls above. The
-    # officer types a name once and all three queries go.
-    # ONLY the wanted-person-SPECIFIC fields are repeated here -- name, DOB, sex, OLN and NCIC
-    # Image are shared with the card above, because the field pool is per ENTITY (LIMITATION #26)
-    # and duplicating them would put two boxes on one tab for one value.
-    # NCIC Number and OCA are the two UNIQUE HANDLES: each is a set[] field of its own combination
-    # and each is gated NOT_EXISTS on the name search, so filling one takes priority over a name.
-    @{
-        id    = 'CARD_PER_WP'
-        title = 'WANTED PERSON -- BY NCIC NUMBER, BY CASE NUMBER, OR BY THE NAME ABOVE (sent with the driver queries)'
-        rows  = @(
-            @{ id = 'ROW_WP_1'; cols = @('6','6'); fields = @(
-                @{ id = 'NCICNumber_Input';                  node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_WP_1' }
-                @{ id = 'OriginatingAgencyCaseNumber_Input'; node = Inp 'OriginatingAgencyCaseNumber' 'Case Number (with name)' '20' 'ROW_WP_1' }
-            )}
-            @{ id = 'ROW_WP_2'; cols = @('4','4','4'); fields = @(
+            # ---- WANTED PERSON CONTROLS, NOW IN THE SAME CARD (v1.16) ---------------------------
+            # v1.15 split these onto a second Person card titled "WANTED PERSON -- ... (sent with
+            # the driver queries)". Rob 2026-09-18: "same with person card  i want to keep it one
+            # card if possible ... remove the both queires sent on the card titles everywhere".
+            # Same reasoning as Vehicle: the second card announced the co-fire and nothing else, and
+            # the co-fire is stated where it is actually read. Nothing is duplicated -- name, DOB,
+            # sex, OLN, State and NCIC Image are SHARED with the rows above because the pool is per
+            # ENTITY (LIMITATION #26). That sharing IS the co-fire.
+            # NCIC Number and OCA are the two UNIQUE HANDLES: each is a set[] field of its own
+            # combination and each is gated NOT_EXISTS on the name search, so filling one beats a name.
+            @{ id = 'ROW_PER_3'; cols = @('4','4','4'); fields = @(
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_PER_3' }
+                @{ id = 'SexCode_Input';   node = Sel 'SexCode' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_3' }
                 # attributeTypeId + codeTypeProvider, NOT the codeTypeCategory fallback. The
                 # fallback was correct on the old Wanted Person tab (a two-QIF entity, where
                 # LIMITATION #28 broke reverse-lookup) and is WRONG here: Person carries the RMS
@@ -786,21 +822,29 @@ $perLayout = MakeLayouts @(
                 # control stores the code STRING where RMS expects the attribute ID (AP #11). The
                 # validator caught exactly that on the first v1.15 build. Portfolio standard --
                 # AZ_AZDPS, CA_CLETS, CA_CONTRA_COSTA and CA_VENTURA_COUNTY all pair them this way.
-                @{ id = 'raceCode_Input';             node = Sel 'raceCode' 'Race (optional)' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_WP_2' }
-                @{ id = 'SocialSecurityNumber_Input'; node = Inp 'SocialSecurityNumber' 'SSN (optional)' '9' 'ROW_WP_2' }
-                @{ id = 'FBINumber_Input';            node = Inp 'FBINumber' 'FBI Number (optional)' '9' 'ROW_WP_2' }
+                @{ id = 'raceCode_Input'; node = Sel 'raceCode' 'Race' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_3' }
             )}
-            @{ id = 'ROW_WP_3'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'MiscellaneousNumber_Input';         node = Inp 'MiscellaneousNumber' 'Misc Number (optional)' '15' 'ROW_WP_3' }
-                @{ id = 'ExpandedNameSearchCode_Input';      node = Inp 'ExpandedNameSearchCode' 'Expand Name Search (optional)' '1' 'ROW_WP_3' }
-                @{ id = 'ExpandedBirthDateSearchCode_Input'; node = Inp 'ExpandedBirthDateSearchCode' 'Expand DOB Search (optional)' '1' 'ROW_WP_3' }
-                @{ id = 'RelatedHitSearchIndicator_Input';   node = Inp 'RelatedHitSearchIndicator' 'Related Hit (optional)' '1' 'ROW_WP_3' }
+            @{ id = 'ROW_PER_4'; cols = @('6','6'); fields = @(
+                @{ id = 'NCICNumber_Input';                  node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_PER_4' }
+                @{ id = 'OriginatingAgencyCaseNumber_Input'; node = Inp 'OriginatingAgencyCaseNumber' 'Case Number' '20' 'ROW_PER_4' }
+            )}
+            @{ id = 'ROW_PER_5'; cols = @('4','4','4'); fields = @(
+                @{ id = 'SocialSecurityNumber_Input'; node = Inp 'SocialSecurityNumber' 'SSN' '9' 'ROW_PER_5' }
+                @{ id = 'FBINumber_Input';            node = Inp 'FBINumber' 'FBI Number' '9' 'ROW_PER_5' }
+                @{ id = 'MiscellaneousNumber_Input';  node = Inp 'MiscellaneousNumber' 'Misc Number' '15' 'ROW_PER_5' }
+            )}
+            @{ id = 'ROW_PER_6'; cols = @('4','4','4'); fields = @(
+                @{ id = 'ExpandedNameSearchCode_Input';      node = Inp 'ExpandedNameSearchCode' 'Expand Name Search' '1' 'ROW_PER_6' }
+                @{ id = 'ExpandedBirthDateSearchCode_Input'; node = Inp 'ExpandedBirthDateSearchCode' 'Expand DOB Search' '1' 'ROW_PER_6' }
+                # Same change as the Vehicle tab: free-text 1-char box -> the NCIC Image dropdown
+                # shape, defaulted 'Y'. any[]-only here too, so the prefill cannot shadow a combo.
+                @{ id = 'RelatedHitSearchIndicator_Input';   node = Sel 'RelatedHitSearchIndicator' 'Related Hit' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_6' }
             )}
         )
     }
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person -- ONE card (v1.6). It feeds BOTH DriverLicenseQuery (QWDQ name / DQ OLN) and DriverRegistrationQuery (DQ.RN / DQ.RO), which now CO-FIRE off the same controls on Rob request -- they are the same search and metadata gives both transactions keyRef DQ with identical mandatory sets. v1.5 and earlier isolated them on a second DR-suffixed card with a queriesToDeselect; that card and those fields are gone. Wanted Person is its own TAB (see wpForm). One QIF means Person keeps its codeTypeProvider reverse-lookup intact (LIMITATION #28).'
+    description  = 'Person -- ONE card, 6 rows (v1.16). THREE transactions CO-FIRE off it: DriverLicenseQuery (QWDQ name / DQ OLN), DriverRegistrationQuery (DQ.RN / DQ.RO) and WantedPersonQuery (QWA.NCIC / QWA.OCA / QWA.N). One name entry sends all three, because the field pool is per ENTITY (LIMITATION #26) and nothing is duplicated. v1.5 isolated DL from DR on a second DR-suffixed card; v1.15 gave Wanted Person a second card; v1.16 collapsed both on Rob directive. One QIF means Person keeps its codeTypeProvider reverse-lookup intact (LIMITATION #28).'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'
@@ -871,7 +915,7 @@ $artLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_ART_1'; cols = @('6','6'); fields = @(
                 @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number' '20' 'ROW_ART_1' }
-                @{ id = 'ArticleTypeCode_Input';     node = Sel 'ArticleTypeCode' 'Article Type (required)' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
+                @{ id = 'ArticleTypeCode_Input';     node = Sel 'ArticleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
             )}
         )
     }
@@ -893,9 +937,9 @@ $gunLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'serialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '11' 'ROW_GUN_1' }
-                @{ id = 'GunMake_Input';      node = Sel 'GunMake' 'Make (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
-                @{ id = 'GunModel_Input';     node = Inp 'GunModel' 'Model (optional)' '4' 'ROW_GUN_1' }
-                @{ id = 'GunCaliber_Input';   node = Sel 'GunCaliber' 'Caliber (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
+                @{ id = 'GunMake_Input';      node = Sel 'GunMake' 'Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
+                @{ id = 'GunModel_Input';     node = Inp 'GunModel' 'Model' '4' 'ROW_GUN_1' }
+                @{ id = 'GunCaliber_Input';   node = Sel 'GunCaliber' 'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
             )}
         )
     }
@@ -940,7 +984,7 @@ $boatLayout = MakeLayouts @(
                 # same bump would confound a blank or wrong-coded State on the wire. Restore it in the
                 # next bump, together with the Wanted Person card's Race/Sex/LicensePlateStateCode,
                 # which are type-ins for exactly the same retired reason.
-                @{ id = 'RegistrationState_Input';  node = Inp 'RegistrationState' 'State (leave blank for SC)' '2' 'ROW_BOAT_1' }
+                @{ id = 'RegistrationState_Input';  node = Inp 'RegistrationState' 'State - leave blank for SC' '2' 'ROW_BOAT_1' }
             )}
         )
     }
