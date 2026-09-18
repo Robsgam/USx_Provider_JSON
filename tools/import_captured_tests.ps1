@@ -236,6 +236,22 @@ foreach ($file in $files) {
             # "Hull wins" scenarios simulate to the same expectedKeyRef (2026-07-02).
             $comboLabel = if ($r.guardrailLoser) { "${combo}_guardrail_vs_$($r.guardrailLoser)" } else { "${combo}_guardrail" }
         }
+        # ── CO-FIRE SIBLING: a REAL wire row that no plan test names (added 2026-09-18) ──────
+        # A co-firing submit sends several transactions; emit_test_plan predicts them per test as
+        # `alsoFires` and the driver now writes one manifest entry per row, so these finally have
+        # something to be imported AS. Before that they were reported "unmatched" and discarded --
+        # 30 rows on 2026-09-18, 14 on 09-17 -- and each was the only wire evidence its query fired.
+        #
+        # IT NEEDS ITS OWN SUFFIX OR IT CLOBBERS A REAL TEST. `QV.P` has its own plan test AND is
+        # the co-fire sibling of every `QVRQ.P` submit, so an unsuffixed label would write both to
+        # SC_SLED_v1.17_QV.P.txt and the second would silently overwrite the first -- the exact
+        # NJ v4.8 clobber this suffix block exists to prevent, three lines above.
+        # The suffix names the TEST IT RODE ALONG WITH, so the file says what produced it and two
+        # siblings of different parents cannot collide either.
+        elseif ($testKind -eq 'co-fire') {
+            $parent = if ($r.coFireOf) { "T$($r.coFireOf)" } else { 'submit' }
+            $comboLabel = "${combo}_cofire_with_${parent}"
+        }
         $underFilledNote = if ($r.underFilled) { ' UNDER-FILLED (a form field failed to fill on submit -- verify this combo).' } else { '' }
         $routingNote = if ($routingOk -eq $true) { ' routing=VERIFIED (expected combo set[] on wire)' } elseif ($routingOk -eq $false) { " routing=MISMATCH (wire missing an identifier of expected combo $($r.expectedKeyRef))" } else { ' routing=unverified (no expectedKeyRef/combo)' }
         $note = "Automated capture (txId $($r.transactionId)). kind=${testKind}; anyField=${testAnyField}; expectedKeyRef=$($r.expectedKeyRef); firedMessageType=$fired.$routingNote$underFilledNote"

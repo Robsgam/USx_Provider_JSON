@@ -122,8 +122,17 @@ function Build-CmDefaults($snapshots) {
 # default is noise, not a different test's optional. Dynamic dominant-value defaults
 # ($defaultsByMt) remain the fallback for fields with no declared initialValue (e.g. the
 # platform's home-state prefill on RegistrationState).
-function Test-CmSnapshotMatchesTest($fs, [string]$messageType, $t, $familyFillable, $defaultsByMt, $formDefaults = $null) {
-    if ($messageType -and $messageType -ne $t.query) { return $false }
+# $ExpectQuery -- FOR CO-FIRE SIBLINGS ONLY (added 2026-09-18). A co-firing submit puts several
+# transactions on the wire from ONE fill, so a sibling row carries a DIFFERENT messageType than
+# the test that produced it while carrying that test's fills EXACTLY. Without this the
+# messageType gate below rejects it, relabel cannot assign it, and the row is dropped as
+# unmatched -- which is how 30 real wire rows were discarded on 2026-09-18 and 14 on 09-17.
+# It is a NARROWING, never a widening: the caller must name the exact query it expects, so the
+# gate still runs, just against the sibling's query instead of the parent's. Default $null keeps
+# the original behaviour byte-for-byte for every existing caller.
+function Test-CmSnapshotMatchesTest($fs, [string]$messageType, $t, $familyFillable, $defaultsByMt, $formDefaults = $null, [string]$ExpectQuery = $null) {
+    $wantQuery = if ($ExpectQuery) { $ExpectQuery } else { "$($t.query)" }
+    if ($messageType -and $messageType -ne $wantQuery) { return $false }
     if (-not $fs) { return $false }
     $fills = @($t.fills) | Where-Object { $_ -and $_.fieldId }
     foreach ($fill in $fills) {
@@ -131,7 +140,10 @@ function Test-CmSnapshotMatchesTest($fs, [string]$messageType, $t, $familyFillab
         if (-not $p -or -not (Test-CmValueMatch $fill.value $p.Value)) { return $false }
     }
     $plannedNames = @($fills | ForEach-Object { $_.fieldId.ToUpper() })
-    $fam = $familyFillable[$t.query]; if (-not $fam) { $fam = @{} }
+    # Keyed on the query whose wire row this actually IS -- the sibling's, when one was named.
+    # Using the parent's family here would compare the row against the wrong set of fillable
+    # fields and reject a legitimate sibling on its own optionals.
+    $fam = $familyFillable[$wantQuery]; if (-not $fam) { $fam = @{} }
     $def = $null; if ($messageType) { $def = $defaultsByMt[$messageType] }; if (-not $def) { $def = @{} }
     $fd = @{}
     if ($formDefaults) { foreach ($p in $formDefaults.PSObject.Properties) { $fd[$p.Name.ToUpper()] = $p.Value } }

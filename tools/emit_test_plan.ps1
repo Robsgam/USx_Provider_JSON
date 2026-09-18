@@ -1104,11 +1104,64 @@ if ($coFireByEntity.Keys.Count) {
     }
 }
 
+# ── PER-TEST CO-FIRE: `alsoFires` -- THE FIX FOR STRANDED SURPLUS CAPTURES ────────────────────
+# Rob 2026-09-18: "Cloee the co fire thing."
+#
+# THE GAP. `coFire` above says WHICH ENTITIES co-fire. It does not say, for THIS fill, WHICH
+# queries go out -- and that is the thing the capture pipeline needs. One submit puts N rows on
+# the wire; the driver wrote ONE manifest entry (the test's own expected keyRef); so N-1 rows had
+# no entry to pair with, were reported "unmatched", and were discarded or stranded. Measured:
+# 30 rows unmatched across two files on 2026-09-18, and `relabel_batch` matched 0 of them --
+# CORRECTLY, because there was no plan test to match them to. 14 more were lost the same way on
+# 09-17. Those rows are not noise: each is the ONLY wire evidence that a real query fired.
+#
+# THE FIX IS TO PREDICT THEM, not to tolerate them. For every test, simulate EVERY other
+# auto-selected QIDM on that entity against the same fill and record the (query, keyRef) pairs
+# that fire. The driver then writes one manifest entry per expected row, pairing has an entry for
+# every row, and each sibling is filed under the combination that actually produced it.
+#
+# WHY THIS IS CHEAP AND SAFE: it reuses `Resolve-ExpectedKeyRef` -- the SAME canonical walk that
+# already computes the test's own expectedKeyRef, with the same platform-fed and form-default
+# modelling -- so a sibling can never be predicted by different rules than the primary
+# (ENGINEERING_STANDARD 4.4). It is additive: tests that co-fire nothing get an empty array and
+# every existing consumer is unaffected.
+# ⚠️ autoSelect=false QIDMs are EXCLUDED, same rule as coFire above: the officer must tick those
+# deliberately, so they are not part of what a plain submit sends. Including them would predict
+# rows that never arrive, which is the mirror of the bug being fixed and just as misleading.
+$coFireRows = 0
+foreach ($t in $tests) {
+    # PLAIN ARRAY, NOT List[object]. `@($list)` on a generic List THROWS
+    # "Argument types do not match" under PowerShell 5.1 -- the engine enforce/pipeline actually
+    # use -- and it throws for an EMPTY list too. This file already carries that warning twice and
+    # the first draft of this very block hit it anyway: emit died with a bare ArgumentException
+    # after printing its CO-FIRE lines, so the plan on disk silently stayed at the previous
+    # revision while the console looked like it had worked.
+    $alsoF = @()
+    $ent2  = "$($t.entity)"
+    $sibs  = @($qidms | Where-Object {
+        "$($_.targetEntity)" -eq $ent2 -and $_.autoSelect -ne $false -and "$($_.query)" -ne "$($t.query)"
+    })
+    foreach ($sq in $sibs) {
+        $kr2 = Resolve-ExpectedKeyRef $null $t.fills $formDefaultsByEntity[$ent2] $null $sq
+        if ($kr2) {
+            $alsoF += ,([ordered]@{ query = "$($sq.query)"; keyRef = "$kr2" })
+            $coFireRows++
+        }
+    }
+    $t.alsoFires = $alsoF
+}
+if ($coFireRows -gt 0) {
+    Write-Host ("[INFO] CO-FIRE ROWS: {0} test(s) predict {1} ADDITIONAL wire row(s) beyond their own -- {2} rows expected in total. The capture must pair all of them; a surplus row is NOT an error." -f `
+        (@($tests | Where-Object { @($_.alsoFires).Count -gt 0 }).Count), $coFireRows, ($tests.Count + $coFireRows)) -ForegroundColor Yellow
+}
+
 $plan = [ordered]@{
     provider = $provName
     version  = $version
     tier     = 'Full'
     coFire   = $coFireByEntity
+    expectedWireRows = $tests.Count + $coFireRows
+    alsoFiresNote = 'Each test carries alsoFires[] -- the (query,keyRef) pairs that the SAME submit also sends, simulated against that test fills. The driver writes one manifest entry per expected row, so the capture has something to pair every wire row to. Before this existed the surplus rows were reported unmatched and thrown away, which discarded the only wire evidence those queries ever fired.'
     coFireNote = 'Entities listed in coFire send MORE THAN ONE transaction per submit. A plan test names one expected keyRef, but the wire will carry one row per co-firing query -- so a capture batch legitimately holds MORE rows than tests, and the surplus is not an error.'
     note     = 'Full pass (tiers removed 2026-07-01): every combo + individual any[] per field + all-any[] together + guardrail tests. render/negative are manual one-time checks done at initial provider build only and are NOT part of the recurring test matrix (2026-07-01). The driver auto-submits all four kinds (combo/any-field/any/guardrail, 2026-07-01) -- guardrail fills[] already contains BOTH competing identifier fields, so it captures formState/RMS the same as any other test, no manual popup-capture workaround needed.'
     testCount = $tests.Count

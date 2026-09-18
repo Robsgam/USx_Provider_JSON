@@ -45,6 +45,29 @@ $version = $plan.version
 # keep them all and accept a log matching ANY of them.
 $byLabel = @{}
 foreach ($t in $plan.tests) { $lbl = Get-CmPlanLabel $t; if (-not $byLabel[$lbl]) { $byLabel[$lbl] = @() }; $byLabel[$lbl] += $t }
+# ── CO-FIRE SIBLING LOGS ARE NOT STALE (added 2026-09-18) ──────────────────────────────────
+# A co-firing submit puts several transactions on the wire, and since the alsoFires work each of
+# those rows is imported as its own log named `<keyRef>_cofire_with_T<n>`. That label is not a
+# plan test label, so without this it lands in $byLabel with no candidate and is reported STALE
+# -- a FAIL, on evidence that is perfectly good.
+# IT IS VALIDATED AGAINST ITS PARENT TEST, and that is not a shortcut: the sibling was produced
+# by the SAME submit, so its QUERY STRING is that test's fill-set by construction. Checking it
+# against the parent is checking exactly the right thing -- the content gate asks "does this
+# log's fill match the test that produced it", and the answer is the parent's fills.
+$cfQueryByLabel = @{}
+foreach ($t in $plan.tests) {
+    foreach ($af in @($t.alsoFires)) {
+        if (-not $af -or -not $af.keyRef) { continue }
+        $cfl = "$($af.keyRef)_cofire_with_T$($t.n)"
+        if (-not $byLabel[$cfl]) { $byLabel[$cfl] = @() }
+        $byLabel[$cfl] += $t
+        # The sibling's OWN query. The content check gates on messageType, and a sibling's
+        # messageType is by definition NOT the parent's -- without this it is rejected as a
+        # content mismatch, which is what the first draft did: the label resolved (no longer
+        # STALE) and then failed one line later, a fix that moved the error rather than removing it.
+        $cfQueryByLabel[$cfl] = "$($af.query)"
+    }
+}
 $familyFillable = Build-CmFamilyFillable $plan
 
 # Collect logs + parse snapshots first (defaults need the full population).
@@ -113,7 +136,8 @@ foreach ($p in $parsed) {
         # formDefaults does not carry, and .Value on that throws the same way.
         $fdProp = if ($plan.formDefaults -and $cand.entity) { $plan.formDefaults.PSObject.Properties["$($cand.entity)"] } else { $null }
         $fd = if ($fdProp) { $fdProp.Value } else { $null }
-        if (Test-CmSnapshotMatchesTest $p.Fs $p.MessageType $cand $familyFillable $defaultsByMt $fd) { $t = $cand; break }
+        $expQ = $cfQueryByLabel[$p.Label]   # set only for co-fire sibling labels; $null otherwise
+        if (Test-CmSnapshotMatchesTest $p.Fs $p.MessageType $cand $familyFillable $defaultsByMt $fd -ExpectQuery $expQ) { $t = $cand; break }
     }
     if (-not $t) {
         $mismatch += "$($p.Label): QUERY STRING does not satisfy any plan test with this label"

@@ -236,7 +236,30 @@
         // Store the NORMALIZED fills array (not t.fills) -- PowerShell's ConvertTo-Json collapses
         // a single-element array to a bare object, and idFills() downstream (capture.js) expects
         // a real array; storing the raw plan value here crashed __usxBulkFetch mid-batch.
-        manifest.push({ provider: plan.provider, entity: t.entity, query: t.query, comboKeyRef: t.comboKeyRef, expectedKeyRef: t.expectedKeyRef, tier: t.tier, kind: t.kind, anyField: t.anyField || null, strippedField: t.strippedField || null, strippedValue: t.strippedValue || null, fills: fills, underFilled: !filled, n: t.n, submittedAt: new Date().toISOString() });
+        const submittedAt = new Date().toISOString();
+        manifest.push({ provider: plan.provider, entity: t.entity, query: t.query, comboKeyRef: t.comboKeyRef, expectedKeyRef: t.expectedKeyRef, tier: t.tier, kind: t.kind, anyField: t.anyField || null, strippedField: t.strippedField || null, strippedValue: t.strippedValue || null, fills: fills, underFilled: !filled, n: t.n, submittedAt: submittedAt });
+
+        // ── ONE MANIFEST ENTRY PER WIRE ROW, NOT PER TEST (the co-fire fix) ──────────────────
+        // A co-firing submit puts SEVERAL transactions on the wire and this pushed ONE entry, so
+        // every sibling row had nothing to pair with. capture.js reported them "unmatched" and
+        // they were discarded -- 30 rows on 2026-09-18 and 14 on 09-17, and `relabel_batch`
+        // matched 0 of them, CORRECTLY, because no plan test described them. Each of those rows
+        // was the ONLY wire evidence that a real query fired.
+        // `alsoFires` is computed by emit_test_plan by simulating every other auto-selected QIDM
+        // on the entity against THIS test's fills, using the same canonical firing walk that
+        // produced expectedKeyRef -- so the sibling is predicted by the same rules as the primary.
+        // The entries share `submittedAt` deliberately: capture.js pairs POSITIONALLY per
+        // messageType, and the siblings carry DIFFERENT messageTypes, so one entry per (row,
+        // query) lands in the right bucket with the right ordering.
+        // coFireOf marks them as derived so nothing mistakes a sibling for a planned test when
+        // counting coverage -- the sweep ledger counts TESTS, and these are extra ROWS.
+        (t.alsoFires || []).forEach(af => {
+          if (!af || !af.query) { return; }
+          manifest.push({ provider: plan.provider, entity: t.entity, query: af.query,
+            comboKeyRef: af.keyRef, expectedKeyRef: af.keyRef, tier: t.tier, kind: 'co-fire',
+            anyField: null, strippedField: null, strippedValue: null, fills: fills,
+            underFilled: !filled, n: t.n, coFireOf: t.n, submittedAt: submittedAt });
+        });
       } else {
         notSent.push(`T${t.n} ${t.entity} ${t.comboKeyRef}`);
       }
@@ -256,11 +279,21 @@
     // success-shaped-silence class as an inert gate. manifest.length is now genuinely the send
     // count, but print BOTH numbers anyway so the operator never has to do the subtraction, and
     // name the tests that did not send so a shortfall is visible at the point it happens.
+    // SUBMITS AND ROWS ARE NOW DIFFERENT NUMBERS AND BOTH ARE PRINTED. A co-firing submit writes
+    // one manifest entry per query it sends, so manifest.length is the expected WIRE ROW count
+    // while the SENT count is the number of submits. Collapsing them would either over-report
+    // sends (if row count were used) or under-state what the capture must pair (if send count
+    // were used) -- and "EXPECT EXACTLY n CAPTURES" being wrong by the co-fire factor is precisely
+    // what made two sweeps look broken.
+    const sentCount = manifest.filter(m => !m.coFireOf).length;
+    const coFireCount = manifest.length - sentCount;
     console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold',
-      `plan run complete: ${tests.length} selected, ${tests.length - offForm.length} driven, ${manifest.length} SENT, ` +
+      `plan run complete: ${tests.length} selected, ${tests.length - offForm.length} driven, ${sentCount} SENT, ` +
       `${notSent.length} NOT sent, ${offForm.length} SKIPPED (not on this form). ` +
-      `${manifest.length} manifest entr${manifest.length === 1 ? 'y' : 'ies'} written (never-sent tests are NOT recorded). ` +
-      `Go to /admin/dex-log and run __usxCaptureBatch(). EXPECT EXACTLY ${manifest.length} CAPTURE(S).`, results);
+      `${manifest.length} manifest entr${manifest.length === 1 ? 'y' : 'ies'} written (never-sent tests are NOT recorded)` +
+      `${coFireCount ? ` -- ${sentCount} submit(s) + ${coFireCount} CO-FIRE row(s) those same submits also send` : ''}. ` +
+      `Go to /admin/dex-log and press Fetch results. EXPECT EXACTLY ${manifest.length} CAPTURE(S)` +
+      `${coFireCount ? ', which is MORE than the test count and is correct' : ''}.`, results);
     // NAME THE OTHER TAB. A bare "34 skipped" reads like a defect; the operator needs to know the
     // tests are fine and simply live on a form that is not mounted right now.
     if (offForm.length) {
@@ -610,6 +643,6 @@
   };
 
   if (location.hash.includes('universal-search')) {
-    console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold', 'driver ready. BUILD 2026-09-18g (SCOPE PICKLISTS IS A TAB FILTER TOO: __usxScopePicklists(scope, group) now matches `f.tab || f.entity`, the same rule __usxRunPlan already used. Pressing Scope on "Wanted Person" did NOTHING before -- the scope was bucketed by targetEntity, so those 5 dropdowns sat under "Firearm" and scoping Firearm downloaded 5 `field not found in DOM` errors. Needs a scope emitted by emit_picklist_scope.ps1 on/after 2026-09-18; an older scope still works and still groups by entity. The download is named from a slug of the tab, and the payload now carries both `entity` (the tab) and `targetEntity`. Earlier: BUILD 2026-09-17e (RUN FILTER IS A TAB FILTER: __usxRunPlan(plan, group) now matches `t.tab || t.entity`, so "Wanted Person" and "Administrative Message" are runnable groups of their own instead of being buried inside entity "Firearm"/"Boat". The per-test off-form SKIP below still stands and is still the safety net -- it made the wrong selection harmless, but it could not make these tests FINDABLE, which was Rob\'s actual complaint, twice. Earlier: BUILD 2026-09-17d (TEXTAREA FILL: setVal picks HTMLTextAreaElement.prototype for a textarea -- the old hardcoded HTMLInputElement.prototype throws Illegal invocation on one, so SC_SLED v1.11 FormTextarea message field would never have filled and it would have looked like a form defect. RE-ENTRANCY LOCK: a second Run press while a run is in flight is REFUSED, not queued -- two concurrent runs fill the same form on top of each other and every result from both is untrustworthy. MANIFEST TRUTH FIX: a manifest entry is written ONLY when the query actually SENT -- never-sent tests can no longer be labelled onto someone else\'s wire row; run summary now reconciles driven/SENT/NOT-sent; new __usxManifestReset() clears a stale or cross-version manifest and prints what it dropped). __usxRunOne({...}) = one combo; __usxRunPlan(plan,"Vehicle") = whole entity; __usxScopePicklists(scope,"Vehicle") = dump dropdown options. After a submit, run __usxRmsRecon() then __usxRmsRowRecon() to help find the RMS result/error row structure.');
+    console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold', 'driver ready. BUILD 2026-09-18h (SCOPE PICKLISTS IS A TAB FILTER TOO: __usxScopePicklists(scope, group) now matches `f.tab || f.entity`, the same rule __usxRunPlan already used. Pressing Scope on "Wanted Person" did NOTHING before -- the scope was bucketed by targetEntity, so those 5 dropdowns sat under "Firearm" and scoping Firearm downloaded 5 `field not found in DOM` errors. Needs a scope emitted by emit_picklist_scope.ps1 on/after 2026-09-18; an older scope still works and still groups by entity. The download is named from a slug of the tab, and the payload now carries both `entity` (the tab) and `targetEntity`. Earlier: BUILD 2026-09-17e (RUN FILTER IS A TAB FILTER: __usxRunPlan(plan, group) now matches `t.tab || t.entity`, so "Wanted Person" and "Administrative Message" are runnable groups of their own instead of being buried inside entity "Firearm"/"Boat". The per-test off-form SKIP below still stands and is still the safety net -- it made the wrong selection harmless, but it could not make these tests FINDABLE, which was Rob\'s actual complaint, twice. Earlier: BUILD 2026-09-17d (TEXTAREA FILL: setVal picks HTMLTextAreaElement.prototype for a textarea -- the old hardcoded HTMLInputElement.prototype throws Illegal invocation on one, so SC_SLED v1.11 FormTextarea message field would never have filled and it would have looked like a form defect. RE-ENTRANCY LOCK: a second Run press while a run is in flight is REFUSED, not queued -- two concurrent runs fill the same form on top of each other and every result from both is untrustworthy. MANIFEST TRUTH FIX: a manifest entry is written ONLY when the query actually SENT -- never-sent tests can no longer be labelled onto someone else\'s wire row; run summary now reconciles driven/SENT/NOT-sent; new __usxManifestReset() clears a stale or cross-version manifest and prints what it dropped). __usxRunOne({...}) = one combo; __usxRunPlan(plan,"Vehicle") = whole entity; __usxScopePicklists(scope,"Vehicle") = dump dropdown options. After a submit, run __usxRmsRecon() then __usxRmsRowRecon() to help find the RMS result/error row structure.');
   }
 })();

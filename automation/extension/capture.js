@@ -394,6 +394,12 @@
       provider: m.provider || L.providerFromHost(), entity: m.entity, query: m.query || rec.messageType,
       combo: m.comboKeyRef, tier: m.tier, expectedKeyRef: m.expectedKeyRef,
       kind: m.kind || null, anyField: m.anyField || null,
+      // coFireOf: the test number this row rode along with. import_captured_tests uses it to
+      // suffix the log name (`<keyRef>_cofire_with_T<n>`), WITHOUT which a sibling whose keyRef
+      // also has its own plan test -- QV.P is both -- would overwrite that test's log. Carried
+      // here because a field the manifest holds but this function drops is a field that does not
+      // exist downstream, and that silence is how the whole co-fire class stayed invisible.
+      coFireOf: (m.coFireOf != null ? m.coFireOf : null),
       strippedField: m.strippedField || null, strippedValue: m.strippedValue || null,
       underFilled: m.underFilled || false,
       messageType: rec.messageType, transactionId: rec.transactionId, requestXml: rec.requestXml,

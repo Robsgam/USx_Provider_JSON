@@ -12,6 +12,8 @@
                                    "VehicleStolenQuery"
                                ]
                },
+    "expectedWireRows":  79,
+    "alsoFiresNote":  "Each test carries alsoFires[] -- the (query,keyRef) pairs that the SAME submit also sends, simulated against that test fills. The driver writes one manifest entry per expected row, so the capture has something to pair every wire row to. Before this existed the surplus rows were reported unmatched and thrown away, which discarded the only wire evidence those queries ever fired.",
     "coFireNote":  "Entities listed in coFire send MORE THAN ONE transaction per submit. A plan test names one expected keyRef, but the wire will carry one row per co-firing query -- so a capture batch legitimately holds MORE rows than tests, and the surplus is not an error.",
     "note":  "Full pass (tiers removed 2026-07-01): every combo + individual any[] per field + all-any[] together + guardrail tests. render/negative are manual one-time checks done at initial provider build only and are NOT part of the recurring test matrix (2026-07-01). The driver auto-submits all four kinds (combo/any-field/any/guardrail, 2026-07-01) -- guardrail fills[] already contains BOTH competing identifier fields, so it captures formState/RMS the same as any other test, no manual popup-capture workaround needed.",
     "testCount":  63,
@@ -61,7 +63,13 @@
                                     }
                                 ],
                       "qif":  "ENTITY_Vehicle",
-                      "tab":  "Vehicle"
+                      "tab":  "Vehicle",
+                      "alsoFires":  [
+                                        {
+                                            "query":  "VehicleStolenQuery",
+                                            "keyRef":  "QV.P"
+                                        }
+                                    ]
                   },
                   {
                       "n":  2,
@@ -90,7 +98,13 @@
                                     }
                                 ],
                       "qif":  "ENTITY_Vehicle",
-                      "tab":  "Vehicle"
+                      "tab":  "Vehicle",
+                      "alsoFires":  [
+                                        {
+                                            "query":  "VehicleStolenQuery",
+                                            "keyRef":  "QV.P"
+                                        }
+                                    ]
                   },
                   {
                       "n":  3,
@@ -105,7 +119,10 @@
                                     "value":  "1HGCM82633A123456"
                                 },
                       "qif":  "ENTITY_Vehicle",
-                      "tab":  "Vehicle"
+                      "tab":  "Vehicle",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  4,
@@ -127,7 +144,13 @@
                                     }
                                 ],
                       "qif":  "ENTITY_Vehicle",
-                      "tab":  "Vehicle"
+                      "tab":  "Vehicle",
+                      "alsoFires":  [
+                                        {
+                                            "query":  "VehicleStolenQuery",
+                                            "keyRef":  "QV.VM"
+                                        }
+                                    ]
                   },
                   {
                       "n":  5,
@@ -149,7 +172,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_Vehicle",
-                      "tab":  "Vehicle"
+                      "tab":  "Vehicle",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  6,
@@ -178,7 +204,13 @@
                                     }
                                 ],
                       "qif":  "ENTITY_Vehicle",
-                      "tab":  "Vehicle"
+                      "tab":  "Vehicle",
+                      "alsoFires":  [
+                                        {
+                                            "query":  "VehicleStolenQuery",
+                                            "keyRef":  "QV.VM"
+                                        }
+                                    ]
                   },
                   {
                       "n":  7,
@@ -200,7 +232,13 @@
                                     }
                                 ],
                       "qif":  "ENTITY_Vehicle",
-                      "tab":  "Vehicle"
+                      "tab":  "Vehicle",
+                      "alsoFires":  [
+                                        {
+                                            "query":  "VehicleRegistrationQuery",
+                                            "keyRef":  "QVRQ.P"
+                                        }
+                                    ]
                   },
                   {
                       "n":  8,
@@ -222,7 +260,13 @@
                                     }
                                 ],
                       "qif":  "ENTITY_Vehicle",
-                      "tab":  "Vehicle"
+                      "tab":  "Vehicle",
+                      "alsoFires":  [
+                                        {
+                                            "query":  "VehicleRegistrationQuery",
+                                            "keyRef":  "QVRQ.P"
+                                        }
+                                    ]
                   },
                   {
                       "n":  9,
@@ -251,7 +295,13 @@
                                     }
                                 ],
                       "qif":  "ENTITY_Vehicle",
-                      "tab":  "Vehicle"
+                      "tab":  "Vehicle",
+                      "alsoFires":  [
+                                        {
+                                            "query":  "VehicleRegistrationQuery",
+                                            "keyRef":  "QVRQ.P"
+                                        }
+                                    ]
                   },
                   {
                       "n":  10,
@@ -277,7 +327,13 @@
                                 ],
                       "guardrailLoser":  "QV.VM",
                       "qif":  "ENTITY_Vehicle",
-                      "tab":  "Vehicle"
+                      "tab":  "Vehicle",
+                      "alsoFires":  [
+                                        {
+                                            "query":  "VehicleRegistrationQuery",
+                                            "keyRef":  "QVRQ.P"
+                                        }
+                                    ]
                   },
                   {
                       "n":  11,
@@ -306,7 +362,13 @@
                                     }
                                 ],
                       "qif":  "ENTITY_Person",
-                      "tab":  "Person"
+                      "tab":  "Person",
+                      "alsoFires":  [
+                                        {
+                                            "query":  "DriverRegistrationQuery",
+                                            "keyRef":  "DQ.RN"
+                                        }
+                                    ]
                   },
                   {
                       "n":  12,
@@ -340,7 +402,13 @@
                                     }
                                 ],
                       "qif":  "ENTITY_Person",
-                      "tab":  "Person"
+                      "tab":  "Person",
+                      "alsoFires":  [
+                                        {
+                                            "query":  "DriverRegistrationQuery",
+                                            "keyRef":  "DQ.RO"
+                                        }
+                                    ]
                   },
                   {
                       "n":  13,
@@ -377,7 +445,13 @@
                                     }
                                 ],
                       "qif":  "ENTITY_Person",
-                      "tab":  "Person"
+                      "tab":  "Person",
+                      "alsoFires":  [
+                                        {
+                                            "query":  "DriverRegistrationQuery",
+                                            "keyRef":  "DQ.RO"
+                                        }
+                                    ]
                   },
                   {
                       "n":  14,
@@ -392,7 +466,13 @@
                                     "value":  "D999888777"
                                 },
                       "qif":  "ENTITY_Person",
-                      "tab":  "Person"
+                      "tab":  "Person",
+                      "alsoFires":  [
+                                        {
+                                            "query":  "DriverRegistrationQuery",
+                                            "keyRef":  "DQ.RO"
+                                        }
+                                    ]
                   },
                   {
                       "n":  15,
@@ -414,7 +494,13 @@
                                     }
                                 ],
                       "qif":  "ENTITY_Person",
-                      "tab":  "Person"
+                      "tab":  "Person",
+                      "alsoFires":  [
+                                        {
+                                            "query":  "DriverRegistrationQuery",
+                                            "keyRef":  "DQ.RO"
+                                        }
+                                    ]
                   },
                   {
                       "n":  16,
@@ -439,7 +525,13 @@
                                     }
                                 ],
                       "qif":  "ENTITY_Person",
-                      "tab":  "Person"
+                      "tab":  "Person",
+                      "alsoFires":  [
+                                        {
+                                            "query":  "DriverRegistrationQuery",
+                                            "keyRef":  "DQ.RO"
+                                        }
+                                    ]
                   },
                   {
                       "n":  17,
@@ -464,7 +556,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_Person",
-                      "tab":  "Person"
+                      "tab":  "Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  18,
@@ -497,7 +592,13 @@
                                     }
                                 ],
                       "qif":  "ENTITY_Person",
-                      "tab":  "Person"
+                      "tab":  "Person",
+                      "alsoFires":  [
+                                        {
+                                            "query":  "DriverLicenseQuery",
+                                            "keyRef":  "QWDQ"
+                                        }
+                                    ]
                   },
                   {
                       "n":  19,
@@ -527,7 +628,13 @@
                                 ],
                       "guardrailLoser":  "DQ.RN",
                       "qif":  "ENTITY_Person",
-                      "tab":  "Person"
+                      "tab":  "Person",
+                      "alsoFires":  [
+                                        {
+                                            "query":  "DriverLicenseQuery",
+                                            "keyRef":  "DQ"
+                                        }
+                                    ]
                   },
                   {
                       "n":  20,
@@ -542,7 +649,10 @@
                                     "value":  "X123456789"
                                 },
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  21,
@@ -564,7 +674,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  22,
@@ -586,7 +699,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  23,
@@ -611,7 +727,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  24,
@@ -636,7 +755,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  25,
@@ -666,7 +788,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  26,
@@ -696,7 +821,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  27,
@@ -726,7 +854,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  28,
@@ -763,7 +894,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  29,
@@ -784,7 +918,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  30,
@@ -810,7 +947,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  31,
@@ -836,7 +976,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  32,
@@ -862,7 +1005,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  33,
@@ -888,7 +1034,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  34,
@@ -925,7 +1074,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  35,
@@ -946,7 +1098,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  36,
@@ -972,7 +1127,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  37,
@@ -998,7 +1156,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  38,
@@ -1024,7 +1185,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  39,
@@ -1045,7 +1209,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  40,
@@ -1071,7 +1238,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  41,
@@ -1097,7 +1267,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  42,
@@ -1123,7 +1296,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  43,
@@ -1149,7 +1325,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  44,
@@ -1175,7 +1354,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  45,
@@ -1201,7 +1383,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  46,
@@ -1227,7 +1412,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  47,
@@ -1253,7 +1441,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  48,
@@ -1279,7 +1470,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  49,
@@ -1305,7 +1499,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  50,
@@ -1331,7 +1528,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  51,
@@ -1396,7 +1596,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  52,
@@ -1422,7 +1625,10 @@
                                 ],
                       "guardrailLoser":  "QWA.N",
                       "qif":  "ENTITY_WantedPerson",
-                      "tab":  "Wanted Person"
+                      "tab":  "Wanted Person",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  53,
@@ -1437,7 +1643,10 @@
                                     "value":  "GUN12345"
                                 },
                       "qif":  "ENTITY_Firearm",
-                      "tab":  "Firearm"
+                      "tab":  "Firearm",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  54,
@@ -1459,7 +1668,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_Firearm",
-                      "tab":  "Firearm"
+                      "tab":  "Firearm",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  55,
@@ -1481,7 +1693,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_Firearm",
-                      "tab":  "Firearm"
+                      "tab":  "Firearm",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  56,
@@ -1503,7 +1718,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_Firearm",
-                      "tab":  "Firearm"
+                      "tab":  "Firearm",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  57,
@@ -1532,7 +1750,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_Firearm",
-                      "tab":  "Firearm"
+                      "tab":  "Firearm",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  58,
@@ -1553,7 +1774,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_Article",
-                      "tab":  "Article"
+                      "tab":  "Article",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  59,
@@ -1568,7 +1792,10 @@
                                     "value":  "FL1234AB56H7"
                                 },
                       "qif":  "ENTITY_Boat",
-                      "tab":  "Boat"
+                      "tab":  "Boat",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  60,
@@ -1589,7 +1816,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_Boat",
-                      "tab":  "Boat"
+                      "tab":  "Boat",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  61,
@@ -1604,7 +1834,10 @@
                                     "value":  "FL1234AB"
                                 },
                       "qif":  "ENTITY_Boat",
-                      "tab":  "Boat"
+                      "tab":  "Boat",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  62,
@@ -1625,7 +1858,10 @@
                                     }
                                 ],
                       "qif":  "ENTITY_Boat",
-                      "tab":  "Boat"
+                      "tab":  "Boat",
+                      "alsoFires":  [
+
+                                    ]
                   },
                   {
                       "n":  63,
@@ -1647,7 +1883,10 @@
                                 ],
                       "guardrailLoser":  "QBBQ.R",
                       "qif":  "ENTITY_Boat",
-                      "tab":  "Boat"
+                      "tab":  "Boat",
+                      "alsoFires":  [
+
+                                    ]
                   }
               ]
 }

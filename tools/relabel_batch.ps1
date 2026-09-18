@@ -98,8 +98,58 @@ foreach ($tier in 0, 1, 2) {
     }
 }
 
+# ── TIER 3: CO-FIRE SIBLINGS (added 2026-09-18) ────────────────────────────────────────────
+# The loop above assigns AT MOST ONE record per test -- correct for a normal submit, and the
+# reason a co-firing one loses rows. A single fill can send several transactions, and every row
+# after the first had no test left to claim it, so it fell through to "unmatched" and was
+# DROPPED. That is not a labelling nicety: each of those rows is the only wire evidence that its
+# query fired. Measured 2026-09-18 -- 30 rows across two files, and relabel matched 0 of them,
+# CORRECTLY, because nothing had told it those rows were expected.
+# `alsoFires` (emit_test_plan) now names them per test, simulated with the same canonical firing
+# walk that produces expectedKeyRef, so this pass has an authority to match against rather than
+# a heuristic. It only ever looks at records the first three tiers left UNUSED, so it cannot
+# steal a row from a real test, and it requires BOTH the sibling's messageType AND the parent
+# test's exact fill-set -- the same content check, narrowed rather than loosened.
+$assignedCf = @{}
+foreach ($t in $plan.tests) {
+    foreach ($af in @($t.alsoFires)) {
+        if (-not $af -or -not $af.query) { continue }
+        $fdc = if ($plan.formDefaults) { $plan.formDefaults.PSObject.Properties[$t.entity].Value } else { $null }
+        for ($i = $records.Count - 1; $i -ge 0; $i--) {
+            if ($usedRec[$i]) { continue }
+            if ("$($records[$i].messageType)" -ne "$($af.query)") { continue }
+            if (-not (Test-CmSnapshotMatchesTest $snapshots[$i].fs $records[$i].messageType $t $familyFillable $defaultsByMt $fdc -ExpectQuery "$($af.query)")) { continue }
+            $usedRec[$i] = $true
+            $assignedCf[$i] = [pscustomobject]@{ Test = $t; Af = $af }
+            break
+        }
+    }
+}
+if ($assignedCf.Keys.Count) {
+    Write-Host "[relabel] $($assignedCf.Keys.Count) CO-FIRE sibling row(s) matched -- extra transactions their submit also sent, kept as evidence instead of dropped" -ForegroundColor Cyan
+}
+
 $corrections = 0
 for ($i = 0; $i -lt $records.Count; $i++) {
+    if ($assignedCf.ContainsKey($i)) {
+        # A sibling is labelled from its OWN query/keyRef, not the parent's -- the log must say
+        # which transaction this wire row IS. coFireOf carries the parent so import_captured_tests
+        # can suffix the filename and stop a sibling clobbering a same-keyRef test's own log.
+        $cf = $assignedCf[$i]; $r = $records[$i]
+        $r.entity = $cf.Test.entity; $r.query = "$($cf.Af.query)"; $r.combo = "$($cf.Af.keyRef)"
+        $r | Add-Member -NotePropertyName expectedKeyRef -NotePropertyValue "$($cf.Af.keyRef)" -Force
+        $r | Add-Member -NotePropertyName kind           -NotePropertyValue 'co-fire' -Force
+        $r | Add-Member -NotePropertyName coFireOf       -NotePropertyValue $cf.Test.n -Force
+        $r | Add-Member -NotePropertyName anyField       -NotePropertyValue $null -Force
+        $r | Add-Member -NotePropertyName guardrailLoser -NotePropertyValue $null -Force
+        $r | Add-Member -NotePropertyName strippedField  -NotePropertyValue $null -Force
+        $r | Add-Member -NotePropertyName strippedValue  -NotePropertyValue $null -Force
+        if (-not $r.PSObject.Properties['underFilled']) {
+            $r | Add-Member -NotePropertyName underFilled -NotePropertyValue $false -Force
+        }
+        $r | Add-Member -NotePropertyName contentMatched -NotePropertyValue $true -Force
+        continue
+    }
     if (-not $assigned.ContainsKey($i)) { continue }
     $t = $assigned[$i]; $r = $records[$i]
     # guardrail records have combo=null by design -- reconstruct their old label from
@@ -129,7 +179,11 @@ for ($i = 0; $i -lt $records.Count; $i++) {
     }
     $r | Add-Member -NotePropertyName contentMatched -NotePropertyValue $true -Force
 }
-$unassigned = @(0..($records.Count - 1) | Where-Object { -not $assigned.ContainsKey($_) })
+# A co-fire sibling IS assigned -- to its parent test via $assignedCf -- so it must not be
+# counted here or it would be reported unmatched AND written to the drop sidecar while also
+# being imported. Omitting this was the first draft's bug and it would have looked like the
+# fix had failed.
+$unassigned = @(0..($records.Count - 1) | Where-Object { -not $assigned.ContainsKey($_) -and -not $assignedCf.ContainsKey($_) })
 if ($unassigned.Count) {
     $action = if ($KeepUnmatched) { 'kept (browser label)' } else { 'DROPPED from import (unreliable browser label -- a stale row can re-create a retired log, 2026-07-02)' }
     $lvl = if ($KeepUnmatched) { 'DarkYellow' } else { 'Yellow' }
@@ -144,7 +198,10 @@ if ($unassigned.Count) {
         Write-Host "[relabel] unmatched capture(s) preserved for audit -> $sidecar" -ForegroundColor DarkYellow
     }
 }
-$outRecords = if ($KeepUnmatched) { $records } else { @(0..($records.Count - 1) | Where-Object { $assigned.ContainsKey($_) } | ForEach-Object { $records[$_] }) }
+# Co-fire siblings must SURVIVE to the written batch -- they are the whole point of the pass.
+# Filtering on $assigned alone would relabel them correctly and then throw them away, which is
+# indistinguishable from the bug being fixed.
+$outRecords = if ($KeepUnmatched) { $records } else { @(0..($records.Count - 1) | Where-Object { $assigned.ContainsKey($_) -or $assignedCf.ContainsKey($_) } | ForEach-Object { $records[$_] }) }
 # -InputObject keeps an empty set as literal "[]" -- piping @() emits NOTHING, so the file
 # was never truncated and the import processed the dropped records anyway (2026-07-02).
 ConvertTo-Json -InputObject @($outRecords) -Depth 8 | Set-Content $BatchPath -Encoding utf8
