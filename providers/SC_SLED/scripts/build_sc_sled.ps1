@@ -35,7 +35,7 @@ $repoRoot    = Split-Path (Split-Path $providerDir -Parent) -Parent
 . (Join-Path $repoRoot 'tools\_build_provider_helpers.ps1')
 
 $providerName = 'SC_SLED'
-$Version      = '1.13'
+$Version      = '1.14'
 $currentYear  = (Get-Date).Year.ToString()
 
 Write-Host ''
@@ -965,8 +965,15 @@ $boatLayout = MakeLayouts @(
 # TO RESTORE IT: give AM targetEntity=Other and move Wanted Person back onto Firearm -- that trade
 # buys the 7th tab and costs two dead checkboxes on the Firearm pair.
 $boatForm = [PSCustomObject]@{
-    description  = 'Boat & Administrative Message -- 2 cards on ONE QIF (v1.12). QBBQ.H (hull) / QBBQ.R (registration number); AM is free text to up to five destination ORIs. The metadata expresses the boat pair as a Choice nested under Set, which the generated METADATA_REFERENCE renders as an EMPTY required set. Merged so Boat is a SINGLE-QIF entity and neither checkbox greys out; AM''s 6 field ids are disjoint from Boat''s 3, so neither query can match the other card''s fill.'
-    label        = 'Boat & Administrative Message'
+    # ⚠️ THE LABEL IS WHAT THE OFFICER READS ON THE TAB, AND IT SURVIVED A CARD REMOVAL ONCE.
+    # v1.13 deleted the Administrative Message card from this form but left the v1.12 label saying
+    # "Boat & Administrative Message", so the imported build rendered a tab promising a form that
+    # was no longer there -- Rob, reading the live page: "last tab still says boat and admin
+    # message". Every structural gate passed, because a label is not wired to anything: no
+    # validator, no reachability check and no wiring gate compares a tab caption to the cards
+    # under it. When a card leaves a form, CHANGE THE LABEL IN THE SAME EDIT.
+    description  = 'Boat -- 1 card. QBBQ.H (hull) / QBBQ.R (registration number). The metadata expresses these as a Choice nested under Set, which the generated METADATA_REFERENCE renders as an EMPTY required set. Its own tab again at v1.13: the Administrative Message card that shared this QIF in v1.12 is gone, so Boat is one form on one entity.'
+    label        = 'Boat'
     layout       = $boatLayout
     name         = 'ENTITY_Boat'
     type         = 'QUERYINPUTFORM'

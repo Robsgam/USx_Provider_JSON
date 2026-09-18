@@ -2,6 +2,24 @@
   BUILD NOTES: SC_SLED
   Created: 2026-09-14
 ================================================================
+v1.14  2026-09-18  The Boat tab still ADVERTISED Administrative Message -- a label outlived its card
+  CHANGED: ENTITY_Boat label 'Boat & Administrative Message' -> 'Boat', and its description
+              rewritten to match. NOTHING ELSE. No QIDM, no control, no combination, no wire
+              change -- one caption and one description string.
+  REASON: Rob, reading the imported v1.13 on usx-sc-sled: "last tab still says boat and admin
+           message". v1.13 deleted the AM card from the Boat QIF and I did not change the label
+           with it, so the shipped build rendered a tab promising a form that was not there.
+  WHY NO GATE CAUGHT IT, and this is the part worth keeping: a LABEL IS WIRED TO NOTHING. The
+           validator checks fieldIds and types, reachability checks routing, wiring closure checks
+           that controls reach the wire, layout flow checks card/row shape -- NONE of them compares
+           a tab caption to the cards underneath it. v1.13 passed 44 gates with a caption that
+           advertised a removed feature. The rule that follows: WHEN A CARD LEAVES A FORM, CHANGE
+           THE LABEL IN THE SAME EDIT; it is recorded in the build script beside the label itself.
+  WHY A BUMP AND NOT A FIX TO v1.13: v1.13 was ALREADY IMPORTED to usx-sc-sled when this was
+           found. usx-build 6d -- an imported version is frozen, and a version number describing
+           two different forms is worse than no version, because the wire carries no version and
+           every log captured against it becomes unattributable.
+
 v1.13  2026-09-18  SIX TABS, ONE QIF PER ENTITY -- zero stray checkboxes, and AM is the price
   CHANGED: ADMINISTRATIVE MESSAGE REMOVED. Its QIF and its QIDM are gone from the build; the
               attributes and combinations are KEPT in the script (with the adjudicated
