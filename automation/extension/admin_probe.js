@@ -1070,5 +1070,5 @@
   console.log('[USx-ADMIN] admin_probe v8 -- READ-ONLY (GET only, no import path). '
     + 'Hidden-iframe read (a fetch returns the JS-populated bundle table EMPTY -- that produced 21 confident zeros). '
     + 'Export click is allowlist+denylist gated (Import JSON is refused). '
-    + 'Full census is chunked/abortable and saves per chunk. BUILD 2026-09-18f -- v10 adds runCaptureDialogDl (LIVE-page form-element capture: input/textarea/select, which enumerateControls cannot see; reads document not an iframe, because the import dialog only exists in the operator tab; captures NO field values). v9 CONFIG PULL: button 6b saves one config file per tenant, and versionStrings now lists EVERY version string found (not just the first).');
+    + 'Full census is chunked/abortable and saves per chunk. BUILD 2026-09-18g -- v10 adds runCaptureDialogDl (LIVE-page form-element capture: input/textarea/select, which enumerateControls cannot see; reads document not an iframe, because the import dialog only exists in the operator tab; captures NO field values). v9 CONFIG PULL: button 6b saves one config file per tenant, and versionStrings now lists EVERY version string found (not just the first).');
 })();

@@ -437,7 +437,31 @@ foreach ($qif in $qifs) {
     $qifByEntity[$k] = @($qifByEntity[$k]) + @($qif)
 }
 
-$entityOrder = @('Vehicle','Person','Firearm','Article','Boat')
+# ── TEST NUMBERS MUST FOLLOW THE TAB ORDER THE OPERATOR SEES ───────────────────────────────
+# This was a HARDCODED five-entity list with anything unrecognised appended at the END, so
+# SC_SLED's Wanted Person tab -- the THIRD tab on screen, on entity `Other` -- was numbered
+# T31-T63, after Boat. Rob 2026-09-18: "test numbers on the driver are out of ordwer  wanted
+# should be in the middle of the piclist and middle of the test packe by numbers". He drives the
+# tabs left to right, so a plan that numbers them in a different order means the run log reads
+# T1..T10, T11..T19, then T31..T63, then back to T20..T30. Nothing is broken by it, but the
+# operator cannot tell at a glance whether a block was skipped -- and "is a block missing" is the
+# single question this console output exists to answer.
+#
+# THE JSON ALREADY CARRIES THE ANSWER and nothing read it: the ENTITIES bundle's `order.default`
+# is the authoritative display order (CLAUDE.md "Entity Display Order" -- it must use targetEntity
+# values, and the platform renders the tabs from it). For SC_SLED v1.17 that is
+# Vehicle, Person, Other, Firearm, Article, Boat -- Wanted Person already in the middle.
+# Reading it means the plan can never again disagree with the tabs, on ANY provider, including
+# ones that reorder their entities later.
+# The hardcoded list stays ONLY as the fallback for a JSON with no order array, and entities the
+# order does not mention are still appended rather than dropped -- "found nothing" must not
+# silently become "there is nothing" (ENGINEERING_STANDARD 4.3).
+$entityOrder = @()
+$entBundle = @($json.bundles | Where-Object { "$($_.name)" -eq 'ENTITIES' }) | Select-Object -First 1
+if ($entBundle -and $entBundle.order -and $entBundle.order.default) {
+    $entityOrder = @($entBundle.order.default | Where-Object { $_ })
+}
+if (-not $entityOrder.Count) { $entityOrder = @('Vehicle','Person','Firearm','Article','Boat') }
 $entities = @($qidms | ForEach-Object { $_.targetEntity } | Select-Object -Unique)
 $entities = @($entityOrder | Where-Object { $entities -contains $_ }) + @($entities | Where-Object { $entityOrder -notcontains $_ })
 

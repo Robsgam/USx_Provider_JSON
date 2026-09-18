@@ -23,6 +23,10 @@
                          "Person":  {
                                         "ImageIndicator":  "Y"
                                     },
+                         "Other":  {
+                                       "ImageIndicator":  "Y",
+                                       "RelatedHitSearchIndicator":  "Y"
+                                   },
                          "Firearm":  {
 
                                      },
@@ -31,11 +35,7 @@
                                      },
                          "Boat":  {
 
-                                  },
-                         "Other":  {
-                                       "ImageIndicator":  "Y",
-                                       "RelatedHitSearchIndicator":  "Y"
-                                   }
+                                  }
                      },
     "tests":  [
                   {
@@ -531,231 +531,6 @@
                   },
                   {
                       "n":  20,
-                      "entity":  "Firearm",
-                      "query":  "GunQuery",
-                      "comboKeyRef":  "QG",
-                      "expectedKeyRef":  "QG",
-                      "kind":  "combo",
-                      "tier":  "Full",
-                      "fills":  {
-                                    "fieldId":  "serialNumber",
-                                    "value":  "GUN12345"
-                                },
-                      "qif":  "ENTITY_Firearm",
-                      "tab":  "Firearm"
-                  },
-                  {
-                      "n":  21,
-                      "entity":  "Firearm",
-                      "query":  "GunQuery",
-                      "comboKeyRef":  "QG",
-                      "expectedKeyRef":  "QG",
-                      "kind":  "any-field",
-                      "tier":  "Full",
-                      "anyField":  "GunMake",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "serialNumber",
-                                        "value":  "GUN12345"
-                                    },
-                                    {
-                                        "fieldId":  "GunMake",
-                                        "value":  "IMI"
-                                    }
-                                ],
-                      "qif":  "ENTITY_Firearm",
-                      "tab":  "Firearm"
-                  },
-                  {
-                      "n":  22,
-                      "entity":  "Firearm",
-                      "query":  "GunQuery",
-                      "comboKeyRef":  "QG",
-                      "expectedKeyRef":  "QG",
-                      "kind":  "any-field",
-                      "tier":  "Full",
-                      "anyField":  "GunModel",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "serialNumber",
-                                        "value":  "GUN12345"
-                                    },
-                                    {
-                                        "fieldId":  "GunModel",
-                                        "value":  "TEST"
-                                    }
-                                ],
-                      "qif":  "ENTITY_Firearm",
-                      "tab":  "Firearm"
-                  },
-                  {
-                      "n":  23,
-                      "entity":  "Firearm",
-                      "query":  "GunQuery",
-                      "comboKeyRef":  "QG",
-                      "expectedKeyRef":  "QG",
-                      "kind":  "any-field",
-                      "tier":  "Full",
-                      "anyField":  "GunCaliber",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "serialNumber",
-                                        "value":  "GUN12345"
-                                    },
-                                    {
-                                        "fieldId":  "GunCaliber",
-                                        "value":  "11"
-                                    }
-                                ],
-                      "qif":  "ENTITY_Firearm",
-                      "tab":  "Firearm"
-                  },
-                  {
-                      "n":  24,
-                      "entity":  "Firearm",
-                      "query":  "GunQuery",
-                      "comboKeyRef":  "QG",
-                      "expectedKeyRef":  "QG",
-                      "kind":  "any",
-                      "tier":  "Full",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "serialNumber",
-                                        "value":  "GUN12345"
-                                    },
-                                    {
-                                        "fieldId":  "GunMake",
-                                        "value":  "IMI"
-                                    },
-                                    {
-                                        "fieldId":  "GunModel",
-                                        "value":  "TEST"
-                                    },
-                                    {
-                                        "fieldId":  "GunCaliber",
-                                        "value":  "11"
-                                    }
-                                ],
-                      "qif":  "ENTITY_Firearm",
-                      "tab":  "Firearm"
-                  },
-                  {
-                      "n":  25,
-                      "entity":  "Article",
-                      "query":  "ArticleSingleQuery",
-                      "comboKeyRef":  "QA",
-                      "expectedKeyRef":  "QA",
-                      "kind":  "combo",
-                      "tier":  "Full",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "ArticleSerialNumber",
-                                        "value":  "ART99999"
-                                    },
-                                    {
-                                        "fieldId":  "ArticleTypeCode",
-                                        "value":  "BBICYCL"
-                                    }
-                                ],
-                      "qif":  "ENTITY_Article",
-                      "tab":  "Article"
-                  },
-                  {
-                      "n":  26,
-                      "entity":  "Boat",
-                      "query":  "BoatQuery",
-                      "comboKeyRef":  "QBBQ.H",
-                      "expectedKeyRef":  "QBBQ.H",
-                      "kind":  "combo",
-                      "tier":  "Full",
-                      "fills":  {
-                                    "fieldId":  "BoatHullIdNumber",
-                                    "value":  "FL1234AB56H7"
-                                },
-                      "qif":  "ENTITY_Boat",
-                      "tab":  "Boat"
-                  },
-                  {
-                      "n":  27,
-                      "entity":  "Boat",
-                      "query":  "BoatQuery",
-                      "comboKeyRef":  "QBBQ.H",
-                      "expectedKeyRef":  "QBBQ.H",
-                      "kind":  "any",
-                      "tier":  "Full",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "BoatHullIdNumber",
-                                        "value":  "FL1234AB56H7"
-                                    },
-                                    {
-                                        "fieldId":  "RegistrationState",
-                                        "value":  "GA"
-                                    }
-                                ],
-                      "qif":  "ENTITY_Boat",
-                      "tab":  "Boat"
-                  },
-                  {
-                      "n":  28,
-                      "entity":  "Boat",
-                      "query":  "BoatQuery",
-                      "comboKeyRef":  "QBBQ.R",
-                      "expectedKeyRef":  "QBBQ.R",
-                      "kind":  "combo",
-                      "tier":  "Full",
-                      "fills":  {
-                                    "fieldId":  "RegistrationNumber",
-                                    "value":  "FL1234AB"
-                                },
-                      "qif":  "ENTITY_Boat",
-                      "tab":  "Boat"
-                  },
-                  {
-                      "n":  29,
-                      "entity":  "Boat",
-                      "query":  "BoatQuery",
-                      "comboKeyRef":  "QBBQ.R",
-                      "expectedKeyRef":  "QBBQ.R",
-                      "kind":  "any",
-                      "tier":  "Full",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "RegistrationNumber",
-                                        "value":  "FL1234AB"
-                                    },
-                                    {
-                                        "fieldId":  "RegistrationState",
-                                        "value":  "GA"
-                                    }
-                                ],
-                      "qif":  "ENTITY_Boat",
-                      "tab":  "Boat"
-                  },
-                  {
-                      "n":  30,
-                      "entity":  "Boat",
-                      "query":  "BoatQuery",
-                      "comboKeyRef":  null,
-                      "expectedKeyRef":  "QBBQ.H",
-                      "kind":  "guardrail",
-                      "tier":  "Full",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "BoatHullIdNumber",
-                                        "value":  "FL1234AB56H7"
-                                    },
-                                    {
-                                        "fieldId":  "RegistrationNumber",
-                                        "value":  "FL1234AB"
-                                    }
-                                ],
-                      "guardrailLoser":  "QBBQ.R",
-                      "qif":  "ENTITY_Boat",
-                      "tab":  "Boat"
-                  },
-                  {
-                      "n":  31,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.NCIC",
@@ -770,7 +545,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  32,
+                      "n":  21,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.NCIC",
@@ -792,7 +567,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  33,
+                      "n":  22,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.NCIC",
@@ -814,7 +589,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  34,
+                      "n":  23,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.NCIC",
@@ -839,7 +614,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  35,
+                      "n":  24,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.OCA",
@@ -864,7 +639,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  36,
+                      "n":  25,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.OCA",
@@ -894,7 +669,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  37,
+                      "n":  26,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.OCA",
@@ -924,7 +699,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  38,
+                      "n":  27,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.OCA",
@@ -954,7 +729,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  39,
+                      "n":  28,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.OCA",
@@ -991,7 +766,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  40,
+                      "n":  29,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.P",
@@ -1012,7 +787,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  41,
+                      "n":  30,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.P",
@@ -1038,7 +813,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  42,
+                      "n":  31,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.P",
@@ -1064,7 +839,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  43,
+                      "n":  32,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.P",
@@ -1090,7 +865,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  44,
+                      "n":  33,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.P",
@@ -1116,7 +891,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  45,
+                      "n":  34,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.P",
@@ -1153,7 +928,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  46,
+                      "n":  35,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.VM",
@@ -1174,7 +949,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  47,
+                      "n":  36,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.VM",
@@ -1200,7 +975,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  48,
+                      "n":  37,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.VM",
@@ -1226,7 +1001,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  49,
+                      "n":  38,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.VM",
@@ -1252,7 +1027,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  50,
+                      "n":  39,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.N",
@@ -1273,7 +1048,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  51,
+                      "n":  40,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.N",
@@ -1299,7 +1074,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  52,
+                      "n":  41,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.N",
@@ -1325,7 +1100,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  53,
+                      "n":  42,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.N",
@@ -1351,7 +1126,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  54,
+                      "n":  43,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.N",
@@ -1377,7 +1152,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  55,
+                      "n":  44,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.N",
@@ -1403,7 +1178,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  56,
+                      "n":  45,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.N",
@@ -1429,7 +1204,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  57,
+                      "n":  46,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.N",
@@ -1455,7 +1230,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  58,
+                      "n":  47,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.N",
@@ -1481,7 +1256,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  59,
+                      "n":  48,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.N",
@@ -1507,7 +1282,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  60,
+                      "n":  49,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.N",
@@ -1533,7 +1308,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  61,
+                      "n":  50,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.N",
@@ -1559,7 +1334,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  62,
+                      "n":  51,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  "QWA.N",
@@ -1624,7 +1399,7 @@
                       "tab":  "Wanted Person"
                   },
                   {
-                      "n":  63,
+                      "n":  52,
                       "entity":  "Other",
                       "query":  "WantedPersonQuery",
                       "comboKeyRef":  null,
@@ -1648,6 +1423,231 @@
                       "guardrailLoser":  "QWA.N",
                       "qif":  "ENTITY_WantedPerson",
                       "tab":  "Wanted Person"
+                  },
+                  {
+                      "n":  53,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "QG",
+                      "expectedKeyRef":  "QG",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "serialNumber",
+                                    "value":  "GUN12345"
+                                },
+                      "qif":  "ENTITY_Firearm",
+                      "tab":  "Firearm"
+                  },
+                  {
+                      "n":  54,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "QG",
+                      "expectedKeyRef":  "QG",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "GunMake",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "GunMake",
+                                        "value":  "IMI"
+                                    }
+                                ],
+                      "qif":  "ENTITY_Firearm",
+                      "tab":  "Firearm"
+                  },
+                  {
+                      "n":  55,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "QG",
+                      "expectedKeyRef":  "QG",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "GunModel",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "GunModel",
+                                        "value":  "TEST"
+                                    }
+                                ],
+                      "qif":  "ENTITY_Firearm",
+                      "tab":  "Firearm"
+                  },
+                  {
+                      "n":  56,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "QG",
+                      "expectedKeyRef":  "QG",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "GunCaliber",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "GunCaliber",
+                                        "value":  "11"
+                                    }
+                                ],
+                      "qif":  "ENTITY_Firearm",
+                      "tab":  "Firearm"
+                  },
+                  {
+                      "n":  57,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "QG",
+                      "expectedKeyRef":  "QG",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "GunMake",
+                                        "value":  "IMI"
+                                    },
+                                    {
+                                        "fieldId":  "GunModel",
+                                        "value":  "TEST"
+                                    },
+                                    {
+                                        "fieldId":  "GunCaliber",
+                                        "value":  "11"
+                                    }
+                                ],
+                      "qif":  "ENTITY_Firearm",
+                      "tab":  "Firearm"
+                  },
+                  {
+                      "n":  58,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "QA",
+                      "expectedKeyRef":  "QA",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "ArticleSerialNumber",
+                                        "value":  "ART99999"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleTypeCode",
+                                        "value":  "BBICYCL"
+                                    }
+                                ],
+                      "qif":  "ENTITY_Article",
+                      "tab":  "Article"
+                  },
+                  {
+                      "n":  59,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "QBBQ.H",
+                      "expectedKeyRef":  "QBBQ.H",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "BoatHullIdNumber",
+                                    "value":  "FL1234AB56H7"
+                                },
+                      "qif":  "ENTITY_Boat",
+                      "tab":  "Boat"
+                  },
+                  {
+                      "n":  60,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "QBBQ.H",
+                      "expectedKeyRef":  "QBBQ.H",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ],
+                      "qif":  "ENTITY_Boat",
+                      "tab":  "Boat"
+                  },
+                  {
+                      "n":  61,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "QBBQ.R",
+                      "expectedKeyRef":  "QBBQ.R",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "RegistrationNumber",
+                                    "value":  "FL1234AB"
+                                },
+                      "qif":  "ENTITY_Boat",
+                      "tab":  "Boat"
+                  },
+                  {
+                      "n":  62,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "QBBQ.R",
+                      "expectedKeyRef":  "QBBQ.R",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ],
+                      "qif":  "ENTITY_Boat",
+                      "tab":  "Boat"
+                  },
+                  {
+                      "n":  63,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "QBBQ.H",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    }
+                                ],
+                      "guardrailLoser":  "QBBQ.R",
+                      "qif":  "ENTITY_Boat",
+                      "tab":  "Boat"
                   }
               ]
 }

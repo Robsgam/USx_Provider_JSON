@@ -651,7 +651,11 @@
       const rms = await getRmsPairFor(q.parsedRawQuery);
       fresh.push({ qId: q.id, createdAt: (q.auditMetadata && q.auditMetadata.createdDateUtc) || null, formState: q.parsedRawQuery || null, xml, rmsRequestJson: rms ? rms.requestJson : null, rmsResponse: rms ? rms.response : null });
       have.add(q.id);
-      if (maxNew !== null && fresh.length >= maxNew) { console.log('%c[USx-BULK]', 'color:#fa0', 'maxNew=' + maxNew + ' reached, stopping.'); break; }
+      // A CEILING, NOT A TARGET -- and it says so, because "maxNew=63 reached, stopping" read as
+      // a normal completion while it was actually the reason 8 manifest entries went uncaptured.
+      // The budget counts WIRE ROWS; one submit can produce several (co-fire), so it must never
+      // be set to the test count. See the note at its call site in ui.js.
+      if (maxNew !== null && fresh.length >= maxNew) { console.log('%c[USx-BULK]', 'color:#fa0', 'row budget ' + maxNew + ' reached -- STOPPING EARLY. If manifest entries are reported uncaptured below, this ceiling is why: raise it, do not re-run the plan.'); break; }
       if (fresh.length % 10 === 0) console.log('%c[USx-BULK]', 'color:#fa0', `captured ${fresh.length}...`);
     }
     // Correlate fresh captures to manifest entries, ALWAYS messageType-guarded.

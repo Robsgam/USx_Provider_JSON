@@ -6,10 +6,40 @@ Current: **v1.17** | Generated: 2026-09-18
 
 ---
 
-## v1.17 -- 2026-09-18 -- Pipeline rebuild
+## v1.17 -- 2026-09-18 -- WANTED PERSON BACK TO ONE CONFIG ON ITS OWN TAB (entity `Other`) -- the v1.15 split shipped a query that never reached the wire
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:** WantedPersonQuery is ONE QIDM config again, targetEntity `Other`, carrying all five QWA
+            combinations (QWA.NCIC / QWA.OCA / QWA.P / QWA.VM / QWA.N) on a sixth tab of its own.  
+            The v1.15/v1.16 two-config split across Person and Vehicle is GONE.  
+         SIX forms, SIX DISTINCT entities, one each: Vehicle / Person / Wanted Person / Firearm  
+            / Article / Boat. No entity is doubled, so no tab carries a checkbox it cannot  
+            satisfy -- the greyed-checkbox problem that cost four versions on the Firearm host.  
+         RACE, SEX and STATE are Sel with codeTypeProvider again. On the old two-QIF Firearm host  
+            LIMITATION #28 broke reverse-lookup and all three had to be FormInputs or AP #1 would  
+            have put the platform's internal numeric row id on the wire instead of the code.  
+         OLN control added to the tab -- metadata QWA{Name} <Any> defines OperatorLicenseNumber,  
+            and the move surfaced it as an unresolvable any[] reference. Adding the control keeps  
+            the value; dropping it from any[] would have discarded what the officer typed.  
+         Person and Vehicle lost exactly their wanted-person-only controls (Race, NCIC Number,  
+            Case Number, SSN, FBI, Misc, both Expand codes, Related Hit, Vehicle's NCIC Image).  
+            Left behind they would be DEAD CONTROLS and audit_wiring_closure would have failed.  
+**REASON:** THE SPLIT SILENTLY DROPPED HALF THE QUERY. Two QIDM configs sharing one `query` both
+         render a selectable checkbox and ONLY ONE DISPATCHES (LIMITATION #49). Measured on  
+         usx-sc-sled 2026-09-18: 21 Person wanted-person fills all reported SENT, the wire  
+         carried nine WantedPersonQuery rows and every one was VEHICLE-shaped, and three capture  
+         passes over 134 dex-log rows ended "0/18 / NOTHING CAPTURED". Rob confirmed by hand --  
+         NCIC Number alone on the Person tab: "it lits up  i hit send but it never shows in the  
+         log". SHAREDQ_PROBE had "proven" the shape, but it only proved RENDERING; it never  
+         submitted. Renaming one `query` is not available: it is transmitted as <MessageType>.  
+         Rob's call from three costed options: its own tab on `Other`, accepting the loss of the  
+         co-fire in exchange for certainty.  
+TENANT-CONFIRMED THE SAME DAY: the driver ran T20-T52 on the Wanted Person tab, 33 submitted /  
+         33 SENT, and the capture paired "WantedPersonQuery 33/33". A QIDM on entity `Other`  
+         DISPATCHES -- previously unknown, and the reason this version was treated as a  
+         hypothesis until the import rather than assumed.  
+WIRE: unchanged per combination. The five QWA combinations carry the same attributes and  
+         targetFields; only which FORM feeds them moved. QWA.P's LicensePlateStateCode now  
+         sources from this tab's own RegistrationState instead of the Vehicle tab's.  
 
 ## v1.16 -- 2026-09-18 -- ONE CARD PER ENTITY -- Related Hit becomes a Y/N dropdown defaulted Y, and no label says "(optional)"
 
