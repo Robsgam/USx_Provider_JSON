@@ -663,7 +663,38 @@ foreach ($qidm in $qidms) {
             Write-Host "       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;" -ForegroundColor DarkGray
             Write-Host "        if this exceeds the first-match combo's fields, the platform OVER-SENDS)" -ForegroundColor DarkGray
         }
+        # CO-FIRE LEDGER. Recorded per ENTITY because that is the unit the officer experiences:
+        # one fill on one tab, N transactions on the wire.
+        if (-not $script:coFire) { $script:coFire = @{} }
+        $ent = "$($qidm.targetEntity)"
+        if (-not $script:coFire.ContainsKey($ent)) { $script:coFire[$ent] = @() }
+        $script:coFire[$ent] += ("{0} [{1}]" -f $qidm.query, $firstMatch)
     }
+}
+
+# ── CO-FIRE SUMMARY ──────────────────────────────────────────────────────────────────────────
+# Rob 2026-09-18, on the SC_SLED Wanted Person roll-in: "be sure your simulator and test script
+# and userguide is updated and mentiosn teh cofire nature".
+# The per-QIDM output above already showed every query that fires, but it never SAID they fire
+# TOGETHER -- a reader had to notice that three separate blocks all printed PLATFORM FIRES for one
+# set of form values. Co-firing is now a deliberate design choice on several providers, not an
+# accident, so it gets stated instead of inferred. One line per entity, and it names the
+# transactions, because "3 queries" without their names cannot be checked against a wire log.
+if ($script:coFire -and $script:coFire.Keys.Count) {
+    Write-Host ""
+    Write-Host "================================================================" -ForegroundColor Cyan
+    Write-Host "  CO-FIRE SUMMARY -- what ONE fill on ONE tab actually sends" -ForegroundColor Cyan
+    Write-Host "================================================================" -ForegroundColor Cyan
+    foreach ($ent in ($script:coFire.Keys | Sort-Object)) {
+        $qs = @($script:coFire[$ent])
+        if ($qs.Count -gt 1) {
+            Write-Host ("  {0,-10} {1} QUERIES CO-FIRE: {2}" -f $ent, $qs.Count, ($qs -join '  +  ')) -ForegroundColor Yellow
+        } else {
+            Write-Host ("  {0,-10} 1 query: {1}" -f $ent, $qs[0]) -ForegroundColor Gray
+        }
+    }
+    Write-Host "  Each co-firing query is a SEPARATE transaction on the wire with its own" -ForegroundColor DarkGray
+    Write-Host "  MessageType -- not one request carrying extra fields." -ForegroundColor DarkGray
 }
 
 # ── Save reference file ──

@@ -35,7 +35,7 @@ $repoRoot    = Split-Path (Split-Path $providerDir -Parent) -Parent
 . (Join-Path $repoRoot 'tools\_build_provider_helpers.ps1')
 
 $providerName = 'SC_SLED'
-$Version      = '1.14'
+$Version      = '1.15'
 $currentYear  = (Get-Date).Year.ToString()
 
 Write-Host ''
@@ -364,7 +364,7 @@ $wpAttrs = @(
     Build-QidmAttribute -Name 'BirthDate' -Size 8 -SourceField @('BirthDate') `
         -Rule ([PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') })
     Build-QidmAttribute -Name 'SexCode' -Size 1 -SourceField @('SexCode') -CodeTypeProvider 'NIBRS'   # v1.12 RESTORED (AP #2) -- Firearm is single-QIF again, so LIMITATION #28 no longer breaks reverse-lookup
-    Build-QidmAttribute -Name 'RaceCode' -Size 1 -SourceField @('raceCode')   # v1.3 NO codeTypeProvider -- see wpForm
+    Build-QidmAttribute -Name 'RaceCode' -Size 1 -SourceField @('raceCode') -CodeTypeProvider 'NIBRS'   # v1.15: paired with attributeTypeId='RACE' on the control (AP #1). The v1.3 bare form was the LIMITATION #28 fallback for the old two-QIF Wanted Person tab.
     Build-QidmAttribute -Name 'OperatorLicenseNumber'       -Size 20 -SourceField @('OperatorLicenseNumber')
     Build-QidmAttribute -Name 'SocialSecurityNumber'        -Size 9  -SourceField @('SocialSecurityNumber')
     Build-QidmAttribute -Name 'FBINumber'                   -Size 9  -SourceField @('FBINumber')
@@ -417,10 +417,78 @@ $wpCombos = @(
             [PSCustomObject]@{ field = @('OriginatingAgencyCaseNumber'); operator = 'NOT_EXISTS' }
         ) -Defaults $imgDefault
 )
+# =====================================================================
+# 6b. THE WANTED PERSON SPLIT (v1.15) -- ONE TRANSACTION, TWO ENTITIES, SO IT CO-FIRES
+#
+# Rob 2026-09-18: "the wanted person query will need to cofire with person queires and vehicle
+# queires were appropriate. so no longer will the wanted person tab exist but we will roll the
+# wanted person query onto to each tab  veh on veh and person on person relative to the required
+# and ioptional fields in the combinations."
+#
+# WHY TWO QIDMs AND NOT ONE. A QIDM has exactly ONE targetEntity, and CHECKBOXES ARE KEYED BY
+# ENTITY -- measured with CHECKBOX_PROBE, not inferred. So a plate typed on the Vehicle tab can
+# NEVER trigger a Person-entity query. The person-shaped combos and the vehicle-shaped ones have
+# to be separate configurations.
+#
+# WHY BOTH KEEP query='WantedPersonQuery'. THE WIRE CARRIES `query` AS <MessageType> -- read from
+# a real capture, not assumed:  <MessageType>WantedPersonQuery</MessageType>
+# Inventing a second query name would put that invented string on the wire and SC would reject it.
+# `name` MUST differ instead, because a duplicate config name is a SILENT OVERWRITE at import.
+#
+# AND THAT COMBINATION WAS PROVEN BEFORE IT WAS BUILT. providers\SHAREDQ_PROBE.json put two QIDMs
+# with one shared `query` on Person and Vehicle, each with a control QIDM beside it so a null
+# result would be readable. Rob, after importing: "on person typing in personkey both checkboxes
+# lit up  same with veh". So the platform keys on (query, entity) -- both configs survive, both
+# render, both activate. Had it keyed on `query` alone, one would have been dropped SILENTLY with
+# every structural gate green, which is exactly why this was probed rather than attempted.
+#
+# THE CO-FIRE IS THE POINT, not a side effect: a name on the Person tab now fires DriverLicense +
+# DriverRegistration + WantedPerson together, and a plate on the Vehicle tab fires
+# VehicleRegistration + VehicleStolen + WantedPerson together.
+# =====================================================================
+$wpPersonAttrs = @($wpAttrs | Where-Object { $_.name -notin @('LicensePlateNumber','LicensePlateStateCode','VehicleIdentificationNumber','VehicleMakeCode') })
+$wpVehAttrs    = @($wpAttrs | Where-Object { $_.name -in     @('LicensePlateNumber','LicensePlateStateCode','VehicleIdentificationNumber','VehicleMakeCode','ImageIndicator','RelatedHitSearchIndicator') })
+
+# ⚠️ THE VEHICLE FORM ALREADY HAS A STATE CONTROL AND IT IS CALLED RegistrationState.
+# QWA.P's metadata field is LicensePlateStateCode. Adding a SECOND state box to the Vehicle tab
+# would be a duplicate control for one value -- two boxes, one meaning, and whichever the officer
+# missed would silently change which combo fires. So the ATTRIBUTE keeps its metadata name (that
+# is the wire contract, targetField) and its sourceField points at the control that already
+# exists. set[]/any[] hold SOURCEFIELDS, so they name RegistrationState.
+# ⚠️ AND IT NEEDS codeTypeProvider THE MOMENT IT POINTS THERE (AP #1). The Vehicle form's
+# RegistrationState is a Sel carrying attributeTypeId='STATE'; an attributeTypeId control whose
+# QIDM attribute has NO codeTypeProvider sends the platform's internal NUMERIC ROW ID instead of
+# the 2-character state code. The validator FAILED the first v1.15 build on exactly this, which is
+# the gate earning its keep -- the wire would have carried a number SC cannot read.
+$wpVehAttrs = @($wpVehAttrs | ForEach-Object {
+    if ($_.name -eq 'LicensePlateStateCode') {
+        $_.sourceField = @('RegistrationState')
+        $_ | Add-Member -NotePropertyName 'codeTypeProvider' -NotePropertyValue 'NCIC' -Force
+    }
+    $_
+})
+
+$wpPersonCombos = @($wpCombos | Where-Object { $_.keyReference -in @('QWA.NCIC','QWA.OCA','QWA.N') })
+$wpVehCombos    = @($wpCombos | Where-Object { $_.keyReference -in @('QWA.P','QWA.VM') } | ForEach-Object {
+    $_.requirements.set = @($_.requirements.set | ForEach-Object { if ($_ -eq 'LicensePlateStateCode') { 'RegistrationState' } else { $_ } })
+    $_.requirements.any = @($_.requirements.any | ForEach-Object { if ($_ -eq 'LicensePlateStateCode') { 'RegistrationState' } else { $_ } })
+    $_
+})
+
 $wpQuery = Build-Qidm -ProviderName $providerName -Query 'WantedPersonQuery' `
-    -TargetEntity 'Other' -QueryLabel 'Wanted Person' `
-    -Attributes $wpAttrs -Combinations $wpCombos `
-    -Description 'WantedPersonQuery -- QWA.NCIC, QWA.OCA, QWA.P, QWA.VM, QWA.N. All five alternatives declare keyRef QWA in metadata, so all five carry synthetic suffixes. Cross-entity: two combos search by vehicle identifiers on the Person entity. Identifier-priority guardrails keep the broad name search behind the unique handles.'
+    -TargetEntity 'Person' -QueryLabel 'Wanted Person' `
+    -Attributes $wpPersonAttrs -Combinations $wpPersonCombos `
+    -Description 'WantedPersonQuery (PERSON half) -- QWA.NCIC, QWA.OCA, QWA.N. Lives on the Person entity since v1.15 so it CO-FIRES with DriverLicenseQuery and DriverRegistrationQuery off the same name/OLN controls: one name fill sends all three. The vehicle-identifier combos QWA.P and QWA.VM are the same transaction on the Vehicle entity -- see wpVehQuery. Identifier-priority guardrails keep the broad name search behind the unique handles (NCIC number, OCA).'
+
+$wpVehQuery = Build-Qidm -ProviderName $providerName -Query 'WantedPersonQuery' `
+    -TargetEntity 'Vehicle' -QueryLabel 'Wanted Person' `
+    -Attributes $wpVehAttrs -Combinations $wpVehCombos `
+    -Description 'WantedPersonQuery (VEHICLE half) -- QWA.P (plate + state) and QWA.VM (VIN + make). SAME `query` as the Person half, so the wire MessageType is identical; only `name` and `targetEntity` differ. Lives on Vehicle so a plate or VIN CO-FIRES the stolen/registration checks and the wanted-person check together. LicensePlateStateCode maps to the Vehicle form''s existing RegistrationState control rather than adding a second state box.'
+# THE NAME SUFFIX IS THE ONLY WAY TO HAVE BOTH. Build-Qidm derives name from query on purpose --
+# a passed name can disagree with `query`, and audit_sqvr_integrity plus the log-attribution gates
+# key off it -- so the suffix is applied here, deliberately and visibly, rather than by teaching
+# the shared helper to take an arbitrary name.
+$wpVehQuery.name = "$($wpVehQuery.name)_Veh"
 
 # =====================================================================
 # 7. FIREARM -- GunQuery       Metadata: QG GunSerialNumber [Make, Model, Caliber]
@@ -579,7 +647,7 @@ $amCombos = @(
 # adjudicated record of the devdoc/metadata disagreement over DestinationCode, and restoring the
 # query is then a two-line change rather than a re-derivation.
 
-Write-Host '  QIDMs built: 8 (AdministrativeMessage REMOVED at v1.13 -- user-approved skip)' -ForegroundColor Green
+Write-Host '  QIDMs built: 9 (WantedPersonQuery is TWO configs sharing one query -- Person + Vehicle, v1.15)' -ForegroundColor Green
 
 # =====================================================================
 # 10. RMS BUNDLE -- from KB specs. No -KeepSsn (SC WantedPerson carries SSN in the CommSys
@@ -626,12 +694,26 @@ $vehLayout = MakeLayouts @(
             )}
         )
     }
-    # ---- v1.2: THE AM CARD IS GONE FROM VEHICLE. IT HAS ITS OWN TAB AGAIN. ----------------------
-    # CAPABILITY #47 (LIVE-PROVEN 2026-09-16): TABS ARE KEYED BY QUERYINPUTFORM, NOT BY ENTITY.
-    # Measured -- 8 forms produced 8 tabs, three of them sharing targetEntity='Person'. So the
-    # v1.1 compromise of bolting an administrative message onto the Vehicle search was unnecessary.
-    # Rob: "i want it compeltely seperated" -- now achievable, see the AM form below.
-    # The block that used to sit here is deleted rather than commented out.
+    # ---- WANTED PERSON OPTIONALS ON THE VEHICLE TAB (v1.15) -------------------------------------
+    # QWA.P (plate + state) and QWA.VM (VIN + make) moved onto this entity so a plate or VIN
+    # CO-FIRES the wanted-person check with the registration and stolen checks. Their MANDATORY
+    # fields already exist on the card above -- LicensePlateNumber, VehicleIdentificationNumber,
+    # VehicleMakeCode, and RegistrationState which the QWA attribute LicensePlateStateCode now
+    # feeds from. Only these two OPTIONALS were missing, and without them the officer's value
+    # would have nowhere to go.
+    # NCIC Image is a mandatorily-defaulted field (FIELD_REFERENCE 9 / BUILD_RULES 20b): it must
+    # carry an initialValue or it does not serialize at all. 'Y' matches the portfolio rule, and
+    # it is SAFE to prefill here because it is in no set[] -- it cannot shadow a combination.
+    @{
+        id    = 'CARD_VEH_WP'
+        title = 'WANTED PERSON -- SENT WITH THE PLATE OR VIN SEARCH ABOVE'
+        rows  = @(
+            @{ id = 'ROW_VEH_WP_1'; cols = @('6','6'); fields = @(
+                @{ id = 'ImageIndicator_Input';           node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_VEH_WP_1' }
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Inp 'RelatedHitSearchIndicator' 'Related Hit (optional)' '1' 'ROW_VEH_WP_1' }
+            )}
+        )
+    }
 )
 $vehicleForm = [PSCustomObject]@{
     description  = 'Vehicle -- 1 card. Registration QVRQ.P (plate+type+year) / QVRQ.V (VIN), Stolen QV.P (plate) / QV.VM (VIN+make). Plate>VIN guardrails on both VIN paths. (v1.1 briefly hosted the Administrative Message card here; v1.2 moved it to its own tab per CAPABILITY #47.)'
@@ -676,6 +758,43 @@ $perLayout = MakeLayouts @(
                 @{ id = 'BirthDate_Input';      node = Dt  'BirthDate' 'Date of Birth' 'ROW_DL_3' }
                 @{ id = 'SexCode_Input';        node = Sel 'SexCode' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DL_3' }
                 @{ id = 'ImageIndicator_Input'; node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_DL_3' }
+            )}
+        )
+    }
+    # ---- WANTED PERSON, SECOND CARD ON THE PERSON TAB (v1.15) -----------------------------------
+    # The Wanted Person TAB is gone; its person-shaped combos now live here so they CO-FIRE with
+    # Driver License and Driver Registration off the SAME name/DOB/sex/OLN controls above. The
+    # officer types a name once and all three queries go.
+    # ONLY the wanted-person-SPECIFIC fields are repeated here -- name, DOB, sex, OLN and NCIC
+    # Image are shared with the card above, because the field pool is per ENTITY (LIMITATION #26)
+    # and duplicating them would put two boxes on one tab for one value.
+    # NCIC Number and OCA are the two UNIQUE HANDLES: each is a set[] field of its own combination
+    # and each is gated NOT_EXISTS on the name search, so filling one takes priority over a name.
+    @{
+        id    = 'CARD_PER_WP'
+        title = 'WANTED PERSON -- BY NCIC NUMBER, BY CASE NUMBER, OR BY THE NAME ABOVE (sent with the driver queries)'
+        rows  = @(
+            @{ id = 'ROW_WP_1'; cols = @('6','6'); fields = @(
+                @{ id = 'NCICNumber_Input';                  node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_WP_1' }
+                @{ id = 'OriginatingAgencyCaseNumber_Input'; node = Inp 'OriginatingAgencyCaseNumber' 'Case Number (with name)' '20' 'ROW_WP_1' }
+            )}
+            @{ id = 'ROW_WP_2'; cols = @('4','4','4'); fields = @(
+                # attributeTypeId + codeTypeProvider, NOT the codeTypeCategory fallback. The
+                # fallback was correct on the old Wanted Person tab (a two-QIF entity, where
+                # LIMITATION #28 broke reverse-lookup) and is WRONG here: Person carries the RMS
+                # Person QIDM, whose `race` attribute is useAttributeId=true, so a category-based
+                # control stores the code STRING where RMS expects the attribute ID (AP #11). The
+                # validator caught exactly that on the first v1.15 build. Portfolio standard --
+                # AZ_AZDPS, CA_CLETS, CA_CONTRA_COSTA and CA_VENTURA_COUNTY all pair them this way.
+                @{ id = 'raceCode_Input';             node = Sel 'raceCode' 'Race (optional)' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_WP_2' }
+                @{ id = 'SocialSecurityNumber_Input'; node = Inp 'SocialSecurityNumber' 'SSN (optional)' '9' 'ROW_WP_2' }
+                @{ id = 'FBINumber_Input';            node = Inp 'FBINumber' 'FBI Number (optional)' '9' 'ROW_WP_2' }
+            )}
+            @{ id = 'ROW_WP_3'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'MiscellaneousNumber_Input';         node = Inp 'MiscellaneousNumber' 'Misc Number (optional)' '15' 'ROW_WP_3' }
+                @{ id = 'ExpandedNameSearchCode_Input';      node = Inp 'ExpandedNameSearchCode' 'Expand Name Search (optional)' '1' 'ROW_WP_3' }
+                @{ id = 'ExpandedBirthDateSearchCode_Input'; node = Inp 'ExpandedBirthDateSearchCode' 'Expand DOB Search (optional)' '1' 'ROW_WP_3' }
+                @{ id = 'RelatedHitSearchIndicator_Input';   node = Inp 'RelatedHitSearchIndicator' 'Related Hit (optional)' '1' 'ROW_WP_3' }
             )}
         )
     }
@@ -724,137 +843,20 @@ $personForm = [PSCustomObject]@{
 # that gives DriverHistory its DH-suffixed set.
 # Field ids are deliberately NOT suffixed: pools are per-ENTITY and Firearm shares none of these
 # names, so the QIDM sourceFields need no change.
-$wpLayout = MakeLayouts @(
-    @{
-        id    = 'CARD_WP_ID'
-        title = 'WANTED PERSON -- BY NCIC NUMBER, CASE NUMBER, NAME, OR VEHICLE'
-        rows  = @(
-            # ROW ORDER, Rob 2026-09-17: "wanted rows should start with frist name  plate oln ncic ssn
-            # and expanded name" -- six rows, each named by its LEADING field, so the sequence below
-            # is his list read top to bottom. Plus "do tope line in first last middel suffix format"
-            # and "second line put oln as first fiedl then make the oln line 3rd row".
-            # (v1.6 had ordered these name-first / DOB-second / NCIC-third; this supersedes it.)
-            #
-            # ⚠️ SEQUENCE AND WIDTHS ONLY. Every fieldId, maxLength and node id is unchanged, so no
-            # QIDM attribute, combination, set[]/any[] or wire value moves. The name CONTROLS are in
-            # First-Last-Middle-Suffix order per "we need to use that format everythwere", while the
-            # composite Name attribute keeps sourceField @('NameLast','NameFirst','NameMiddle',
-            # 'NameSuffix') feeding FormatStringRuleHandler -- the wire stays `LAST, FIRST MIDDLE
-            # SUFFIX`, which is the authoritative ConnectCIC format. Layout order cannot change it.
-            @{ id = 'ROW_WP_N'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'WPNameFirst_Input';  node = Inp 'NameFirst' 'First Name' '30' 'ROW_WP_N' }
-                @{ id = 'WPNameLast_Input';   node = Inp 'NameLast' 'Last Name' '30' 'ROW_WP_N' }
-                @{ id = 'WPNameMiddle_Input'; node = Inp 'NameMiddle' 'Middle (optional)' '30' 'ROW_WP_N' }
-                @{ id = 'WPNameSuffix_Input'; node = Inp 'NameSuffix' 'Suffix (optional)' '10' 'ROW_WP_N' }
-            )}
-            # ⚠️ PLATE STATE IS A DROPDOWN AS OF v1.10 AND IT IS A **HYPOTHESIS**, UNLIKE SEX AND RACE.
-            # Rob: "plate state should be state and use the drop down". Label is now plain 'State'.
-            #
-            # Same control-side mechanism as Sex/Race above -- `codeTypeCategory` on the control, so
-            # LIMITATION #28's reverse-lookup breakage is irrelevant -- and the pairing is from the
-            # authority: FIELD_REFERENCE Section 3, `NJ_NIBRS_STATE | NJ_NIBRS`, "NJ/NY state list.
-            # Sends 2-letter code. NCIC gives empty dropdown." A 2-letter code is exactly what SC
-            # wants here, so the mechanism fits.
-            #
-            # WHY THIS ONE IS NOT SETTLED, stated rather than buried:
-            #   * ZERO CARRIERS. All 69 state dropdowns in the portfolio use attributeTypeId='STATE';
-            #     not one uses a control-side state category. Measured, not assumed.
-            #   * The source is named NJ_NIBRS and the table calls it an "NJ/NY state list". Whether
-            #     an NJ_NIBRS source RESOLVES on a non-NJ tenant is UNVERIFIABLE FROM THIS REPO --
-            #     CLAUDE.md records exactly that open question for VEHICLE_BODY_STYLE|NJ_NIBRS.
-            #   * FAILURE MODE IF IT DOES NOT RESOLVE: an EMPTY dropdown, which is a REGRESSION --
-            #     today an officer can type 'SC'; an empty list lets them enter nothing at all.
-            # STATUS: HYPOTHESIS. It is loud, not silent: DISCRIMINATING TEST is to open the Wanted
-            # Person tab after the next import and see whether the State list has options. If empty,
-            # revert this ONE control to `Inp ... '2'` with the 2-letter hint in the label -- that is
-            # the v1.9 shape and it worked.
-            #
-            # Widths: Plate 3->4 and State 3->2 (the label shrank from 'Plate State -- type the
-            # 2-letter code' to 'State'), VIN 3, Make 3. VIN also displays narrower per Rob.
-            @{ id = 'ROW_WP_5'; cols = @('4','2','3','3'); fields = @(
-                @{ id = 'WP_LicensePlateNumber_Input';    node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_WP_5' }
-                @{ id = 'LicensePlateStateCode_Input';    node = Sel 'LicensePlateStateCode' 'State' @{ codeTypeCategory = 'NJ_NIBRS_STATE'; codeTypeSource = 'NJ_NIBRS' } 'ROW_WP_5' }
-                @{ id = 'WP_VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_WP_5' }
-                @{ id = 'WP_VehicleMakeCode_Input';       node = Sel 'VehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE' } 'ROW_WP_5' }
-            )}
-            # ⚠️ SEX AND RACE ARE DROPDOWNS AGAIN AS OF v1.10, AND THE v1.3 TYPE-IN TRADE IS RETIRED.
-            # Rob: "sex should just say sex and race should just say race" -- the labels only read
-            # cleanly if the control supplies the values, so this is the dropdown question again.
-            #
-            # v1.3 made both type-ins because this card sits on a TWO-QIF entity and LIMITATION #28
-            # breaks `codeTypeProvider` reverse-lookup there, which AP #1 turns into an internal
-            # numeric row id on the wire. THAT REASONING WAS RIGHT ABOUT ONE MECHANISM AND BLIND TO
-            # THE OTHER. #28 only breaks the attributeTypeId + codeTypeProvider *reverse-lookup*
-            # pattern. A control carrying its OWN `codeTypeCategory`/`codeTypeSource` resolves its
-            # list locally and the SELECTED CODE is what reaches the wire -- no reverse-lookup is
-            # involved, so #28 has nothing to break. That is exactly why this provider's GunMake,
-            # GunCaliber and ArticleTypeCode dropdowns work on their own two-QIF entities.
-            #
-            # BOTH PAIRINGS ARE FROM THE AUTHORITY, NOT GUESSED (FIELD_REFERENCE Section 3 table):
-            #   NIBRS_RACE | NIBRS -- "Sends W/B/I/A/U etc." Confirmed NY v1.12. BUILT AND
-            #     TENANT-PROVEN by MD_METERS (ALL-PASS, 47 logs) and LA_LEMS, both with NO
-            #     codeTypeProvider and NO attributeTypeId on the QIDM attribute -- the shape copied
-            #     here verbatim. AP #3 forbids attributeTypeId=RACE, so this is also the only
-            #     correct way to build a race dropdown at all.
-            #   NIBRS_SEX | NIBRS -- "Sends M/F/U to CommSys. Use ONLY if RMS sex filtering is not
-            #     needed (CommSys-only case)." THAT CONDITION IS SATISFIED HERE AND IT WAS CHECKED:
-            #     `Build-RmsBundle` emits RMS QIDMs for Vehicle and Person ONLY, and this card is on
-            #     targetEntity='Firearm', so no RMS sex filter is fed by these controls and the
-            #     NJ v3.22/v3.29 RMS-400 failure mode (useAttributeId + a string -> array wrap)
-            #     cannot arise. The Person tab keeps the full attributeTypeId=SEX +
-            #     codeTypeProvider=NIBRS pattern, which is correct there: Person is single-QIF AND
-            #     does feed RMS.
-            #   ⚠️ FIELD_REFERENCE's fallback prose says to "keep codeTypeProvider=NIBRS" alongside
-            #     the category. NOT DONE, deliberately: ZERO providers build that combination, MD
-            #     and LA both ship the category with a bare attribute, and a codeTypeProvider on a
-            #     control that already yields a code string is the shape validate.ps1 watches for
-            #     (AP #11). Built precedent beat the prose; if a wire capture ever shows a missing
-            #     tag here, that line is the first thing to revisit.
-            @{ id = 'ROW_WP_2'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'WPOperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN (optional)' '20' 'ROW_WP_2' }
-                @{ id = 'WPBirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth (optional)' 'ROW_WP_2' }
-                # LABEL-OVERRIDE: raceCode -- Rob 2026-09-17 "race should just say race". CHECK 15
-                #   Rule 3 wants an '(optional)' qualifier on an any[]-only field and raceCode is
-                #   any[]-only on QWA.N. The qualifier is now REDUNDANT rather than merely unwanted:
-                #   this became a DROPDOWN in the same change, so an officer who selects nothing has
-                #   sent nothing and the control's own emptiness says 'optional' better than the
-                #   label did. Note SexCode needs no override -- it is in QWDQ's set[] on
-                #   DriverLicenseQuery, so it is not an any[]-only field and Rule 3 never applied.
-                # v1.12 -- BACK TO THE CANONICAL PATTERN. The codeTypeCategory fallback here was the
-                # LIMITATION #28 workaround for a two-QIF Firearm entity; Firearm is single-QIF again
-                # (Wanted Person is its only form), so reverse-lookup works and the validator says so
-                # in three WARNs. Race is deliberately NOT converted with it: the code-type table
-                # forbids attributeTypeId=RACE (NCIC gives an empty dropdown), so NIBRS_RACE +
-                # NIBRS remains correct there and the validator agrees by not flagging it.
-                @{ id = 'WPSexCode_Input';   node = Sel 'SexCode' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_WP_2' }
-                @{ id = 'raceCode_Input';    node = Sel 'raceCode' 'Race' @{ codeTypeCategory = 'NIBRS_RACE'; codeTypeSource = 'NIBRS' } 'ROW_WP_2' }
-            )}
-            @{ id = 'ROW_WP_1'; cols = @('6','6'); fields = @(
-                @{ id = 'NCICNumber_Input';                  node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_WP_1' }
-                @{ id = 'OriginatingAgencyCaseNumber_Input';  node = Inp 'OriginatingAgencyCaseNumber' 'Originating Agency Case Number (with last name)' '20' 'ROW_WP_1' }
-            )}
-            @{ id = 'ROW_WP_3'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'SocialSecurityNumber_Input'; node = Inp 'SocialSecurityNumber' 'SSN (optional)' '9' 'ROW_WP_3' }
-                @{ id = 'FBINumber_Input';            node = Inp 'FBINumber' 'FBI Number (optional)' '9' 'ROW_WP_3' }
-                @{ id = 'MiscellaneousNumber_Input';  node = Inp 'MiscellaneousNumber' 'Miscellaneous Number (optional)' '15' 'ROW_WP_3' }
-                @{ id = 'WPImageIndicator_Input';     node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_WP_3' }
-            )}
-            @{ id = 'ROW_WP_4'; cols = @('4','4','4'); fields = @(
-                @{ id = 'ExpandedNameSearchCode_Input';      node = Inp 'ExpandedNameSearchCode' 'Expanded Name Search (optional)' '1' 'ROW_WP_4' }
-                @{ id = 'ExpandedBirthDateSearchCode_Input'; node = Inp 'ExpandedBirthDateSearchCode' 'Expanded DOB Search (optional)' '1' 'ROW_WP_4' }
-                @{ id = 'RelatedHitSearchIndicator_Input';   node = Inp 'RelatedHitSearchIndicator' 'Related Hit Search (optional)' '1' 'ROW_WP_4' }
-            )}
-        )
-    }
-)
-$wpForm = [PSCustomObject]@{
-    description  = 'Wanted Person -- ITS OWN TAB (v1.3), moved off Person on request. QWA.NCIC / .OCA / .P / .VM / .N. Declares targetEntity=Firearm because tabs are keyed by QUERYINPUTFORM not by entity (CAPABILITY #47), and Firearm is the single-combo host whose field ids are fully DISJOINT from this card. Self-contained: it carries its OWN Name/DOB/Sex/OLN/Image controls, because the name-based combos could not reach the Driver License cards once this left Person. Race, Sex and Plate State are TYPE-IN boxes rather than dropdowns -- on a two-QIF entity LIMITATION #28 breaks codeTypeProvider reverse-lookup and the platform would send an internal numeric id instead of the code.'
-    label        = 'Wanted Person'
-    layout       = $wpLayout
-    name         = 'ENTITY_WantedPerson'
-    type         = 'QUERYINPUTFORM'
-    targetEntity = 'Other'
-}
+# ---- THE WANTED PERSON FORM IS GONE (v1.15) ----------------------------------------------------
+# Rob 2026-09-18: "no longer will the wanted person tab exist but we will roll the wanted person
+# query onto to each tab  veh on veh and person on person relative to the required and ioptional
+# fields in the combinations."
+# Its controls did not disappear -- they MOVED to the tabs that already own those fields:
+#   person-shaped (NCIC Number, Case Number, Race, SSN, FBI, Misc, the two Expand codes,
+#                  Related Hit)  -> CARD_PER_WP on the Person tab
+#   vehicle-shaped (NCIC Image, Related Hit)  -> CARD_VEH_WP on the Vehicle tab
+# Name / DOB / Sex / OLN / plate / VIN / make / state are NOT repeated: the field pool is per
+# ENTITY (LIMITATION #26), so the controls already on those tabs feed the QWA combinations
+# directly. That sharing is exactly what produces the CO-FIRE Rob asked for -- one name fill
+# satisfies DriverLicense, DriverRegistration AND WantedPerson at once.
+# The QIDM split that makes this legal is in section 6b; it was PROVEN with SHAREDQ_PROBE before
+# being built, because a same-query/two-entity config could have been silently dropped.
 
 # ---- Firearm ------------------------------------------------------------------------------------
 # ---- Article -- ITS OWN TAB AGAIN (v1.13) -------------------------------------------------------
@@ -1040,15 +1042,15 @@ $boatForm = [PSCustomObject]@{
 # the duplication itself is gone: ENTITY_Firearm merged into ENTITY_Article and
 # ENTITY_AdministrativeMessage merged into ENTITY_Boat, which is what removes every greyed checkbox
 # (see $gunQuery). Wanted Person remains its own tab on the Firearm slot.
-$entityOrder = @('Vehicle','Person','Other','Firearm','Article','Boat')
+$entityOrder = @('Vehicle','Person','Firearm','Article','Boat')
 $entitiesBundle = Build-EntitiesBundle `
-    -Configurations @($vehicleForm, $personForm, $wpForm, $firearmForm, $articleForm, $boatForm) `
+    -Configurations @($vehicleForm, $personForm, $firearmForm, $articleForm, $boatForm) `
     -DefaultOrder $entityOrder -CadOrder $entityOrder -FrOrder $entityOrder
 
 # =====================================================================
 # 14. ASSEMBLE -- ENTITIES first, then PROVIDER, then RMS.
 # =====================================================================
-$allQidms = @($vehRegQuery, $vehStolenQuery, $dlQuery, $drQuery, $wpQuery, $gunQuery, $artQuery, $boatQuery)
+$allQidms = @($vehRegQuery, $vehStolenQuery, $wpVehQuery, $dlQuery, $drQuery, $wpQuery, $gunQuery, $artQuery, $boatQuery)
 
 $providerBundle = [PSCustomObject]@{
     configurations = @(@($auth, $qmf, $results) + $allQidms)
@@ -1062,7 +1064,7 @@ $bundle = [PSCustomObject]@{
     bundles = @($entitiesBundle, $providerBundle, $rmsBundle)
 }
 
-Write-Host ("  QIDMs: {0}   combinations: {1}   entity forms: 6" -f $allQidms.Count, (@($allQidms | ForEach-Object { $_.combinations })).Count) -ForegroundColor Cyan
+Write-Host ("  QIDMs: {0}   combinations: {1}   entity forms: 5" -f $allQidms.Count, (@($allQidms | ForEach-Object { $_.combinations })).Count) -ForegroundColor Cyan
 
 # --- Output (versioned filename carries the version; NEVER add a top-level version field) ---
 $OUT = Join-Path $providerDir "${providerName}_v${Version}.json"

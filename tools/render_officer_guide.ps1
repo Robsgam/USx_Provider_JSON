@@ -283,6 +283,25 @@ foreach ($ent in $order) {
     if (-not $entQidms) { continue }
     [void]$sb.AppendLine("<section class='entity'><h2>$(Esc $ent)</h2>")
 
+    # ── CO-FIRE BANNER ────────────────────────────────────────────────────────────────────────
+    # Rob 2026-09-18, on the SC_SLED Wanted Person roll-in: "be sure your simulator and test
+    # script and userguide is updated and mentiosn teh cofire nature".
+    # THIS IS THE ONE AUDIENCE THAT CANNOT READ THE CONFIG. The sheet used to list each query as
+    # though the officer picks one, when on several providers a single fill sends two, three or
+    # four separate transactions -- Vehicle Registration AND Vehicle Stolen AND Wanted Person off
+    # one plate. An officer who does not know that cannot reconcile what came back, and cannot
+    # tell a slow response from a query they never meant to send.
+    # Only auto-selected queries are counted: autoSelect=false means the officer ticks it
+    # deliberately, so it is not part of what happens by default. That distinction is MEASURED
+    # (CHECKBOX_PROBE, 2026-09-18: autoSelect=false renders "available but unchecked").
+    $autoQ = @($entQidms | Where-Object { $_.autoSelect -ne $false })
+    if ($autoQ.Count -gt 1) {
+        $names = @($autoQ | ForEach-Object { if ($_.queryLabel) { [string]$_.queryLabel } else { (Prettify (([string]$_.query) -replace 'Query$','')) } })
+        [void]$sb.AppendLine("<p class='cofire'><strong>These $($autoQ.Count) searches are sent together.</strong> " +
+            "One set of details on this tab submits <strong>$(Esc ($names -join ' + '))</strong> as separate enquiries, " +
+            "so expect a response for each. Fields below are listed per search &mdash; you only need the required fields of the one you are running.</p>")
+    }
+
     foreach ($q in $entQidms) {
         $qlabel = if ($q.queryLabel) { [string]$q.queryLabel } else { (Prettify (([string]$q.query) -replace 'Query$','')) }
 
@@ -637,6 +656,7 @@ table.legend .pre { font-family:Consolas,'Courier New',monospace; font-size:10px
                     font-style:normal; }
 section.entity { margin: 0 0 7px; page-break-inside: avoid; }
 h2 { font-size: 10.5pt; background:#1f3b57; color:#fff; padding:3px 7px; border-radius:3px; margin: 7px 0 3px; }
+p.cofire { font-size: 8.5pt; margin: 3px 0 5px; padding: 4px 7px; border-left: 3px solid #134DD1; background: #eef3fb; color:#24364E; }
 table.qt { width:100%; border-collapse:collapse; table-layout:fixed; margin: 0 0 5px; }
 table.qt caption { caption-side: top; text-align:left; font-weight:600; color:#1f3b57; font-size:9pt; padding:2px 0 1px; }
 table.qt th, table.qt td { border:1px solid #cdd8e3; padding:2px 5px; text-align:left; vertical-align:top; overflow-wrap:break-word; }

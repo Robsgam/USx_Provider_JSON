@@ -1,15 +1,14 @@
 ================================================================
   Build Report: SC_SLED
-  Source: SC_SLED_v1.14.json
-  Generated: 2026-09-18 12:53
+  Source: SC_SLED_v1.15.json
+  Generated: 2026-09-18 14:08
 ================================================================
 QUERY SIMULATION
 ================
 
-  Seeded form defaults (1): Other.ImageIndicator=Y
 
 ================================================================
-  CommSys Query Simulator -- SC_SLED_v1.14.json
+  CommSys Query Simulator -- SC_SLED_v1.15.json
 ================================================================
 
 --- QIDM: SC_SLED_VehicleRegistrationQuery [Vehicle] ---
@@ -53,6 +52,44 @@ QUERY SIMULATION
 
     >> PLATFORM FIRES: QV.P (first matching combo)
     >> UNION POOL (platform serializes): LicensePlateNumber=ABC1234, VehicleIdentificationNumber=1HGCM82633A123456, VehicleMakeCode=FORD, State=NJ
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
+--- QIDM: SC_SLED_WantedPersonQuery_Veh [Vehicle] ---
+    Query: WantedPersonQuery  |  Attrs: 6  |  Combos: 2
+
+    [FIRES first-match] QWA.P
+      set: [LicensePlateNumber, RegistrationState]
+      any: [VehicleIdentificationNumber, VehicleMakeCode, ImageIndicator, RelatedHitSearchIndicator] -> matched: [VehicleIdentificationNumber, VehicleMakeCode, ImageIndicator, RelatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QW</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateStateCode>NJ</LicensePlateStateCode>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <ImageIndicator>Y</ImageIndicator>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+      </Transaction>
+
+    [FIRES shadowed -- first match above wins] QWA.VM
+      set: [VehicleIdentificationNumber, VehicleMakeCode]
+      any: [LicensePlateNumber, RegistrationState, ImageIndicator, RelatedHitSearchIndicator] -> matched: [LicensePlateNumber, RegistrationState, ImageIndicator, RelatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QW</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateStateCode>NJ</LicensePlateStateCode>
+        <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+        <VehicleMakeCode>FORD</VehicleMakeCode>
+        <ImageIndicator>Y</ImageIndicator>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+      </Transaction>
+
+    >> PLATFORM FIRES: QWA.P (first matching combo)
+    >> UNION POOL (platform serializes): LicensePlateNumber=ABC1234, LicensePlateStateCode=NJ, VehicleIdentificationNumber=1HGCM82633A123456, VehicleMakeCode=FORD, ImageIndicator=Y, RelatedHitSearchIndicator=Y
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
@@ -111,13 +148,27 @@ QUERY SIMULATION
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
---- QIDM: SC_SLED_WantedPersonQuery [Other] ---
-    Query: WantedPersonQuery  |  Attrs: 18  |  Combos: 5
-    [SKIP] QWA.NCIC -- missing set: NCICNumber
-    [SKIP] QWA.OCA -- missing set: NameLast, NameFirst, OriginatingAgencyCaseNumber
-    [SKIP] QWA.P -- missing set: LicensePlateNumber, LicensePlateStateCode
-    [SKIP] QWA.VM -- missing set: VehicleIdentificationNumber, VehicleMakeCode
-    [SKIP] QWA.N -- missing set: NameLast, NameFirst
+--- QIDM: SC_SLED_WantedPersonQuery [Person] ---
+    Query: WantedPersonQuery  |  Attrs: 14  |  Combos: 3
+
+    [FIRES first-match] QWA.NCIC
+      set: [NCICNumber]
+      any: [ImageIndicator, RelatedHitSearchIndicator] -> matched: [ImageIndicator, RelatedHitSearchIndicator]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QW</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <NCICNumber>W123456789</NCICNumber>
+        <ImageIndicator>Y</ImageIndicator>
+        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+      </Transaction>
+    [SKIP] QWA.OCA -- missing set: OriginatingAgencyCaseNumber
+    [SKIP] QWA.N -- conditions failed: NCICNumber NOT_EXISTS [value='W123456789']
+
+    >> PLATFORM FIRES: QWA.NCIC (first matching combo)
+    >> UNION POOL (platform serializes): NCICNumber=W123456789, ImageIndicator=Y, RelatedHitSearchIndicator=Y
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: SC_SLED_GunQuery [Firearm] ---
     Query: GunQuery  |  Attrs: 4  |  Combos: 1
@@ -229,6 +280,17 @@ QUERY SIMULATION
     >> UNION POOL (platform serializes): vehicle.vinNumber=1HGCM82633A123456, vehicle.tag=ABC1234, vehicle.registrationStateAttrIds=NJ
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
+================================================================
+  CO-FIRE SUMMARY -- what ONE fill on ONE tab actually sends
+================================================================
+  Article    1 query: ArticleSingleQuery [QA]
+  Boat       1 query: BoatQuery [QBBQ.H]
+  Firearm    1 query: GunQuery [QG]
+  Person     4 QUERIES CO-FIRE: DriverLicenseQuery [QWDQ]  +  DriverRegistrationQuery [DQ.RO]  +  WantedPersonQuery [QWA.NCIC]  +  Person [firstNameLastNameDriversLicenseNumber]
+  Vehicle    4 QUERIES CO-FIRE: VehicleRegistrationQuery [QVRQ.P]  +  VehicleStolenQuery [QV.P]  +  WantedPersonQuery [QWA.P]  +  Vehicle [vehicleIdentificationNumber]
+  Each co-firing query is a SEPARATE transaction on the wire with its own
+  MessageType -- not one request carrying extra fields.
 
 ================================================================
   Filter: -Entity <name>  -Combo <keyRef>

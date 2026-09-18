@@ -1,14 +1,14 @@
 ================================================================
   Build Report: SC_SLED
-  Source: SC_SLED_v1.14.json
-  Generated: 2026-09-18 12:53
+  Source: SC_SLED_v1.15.json
+  Generated: 2026-09-18 14:08
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: SC_SLED_v1.14
+ POST-BUILD VERIFICATION: SC_SLED_v1.15
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 9
-  [INFO] CommSys-only: 24 [LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, NameMiddle, NameSuffix, ImageIndicator, SocialSecurityNumber, FBINumber, MiscellaneousNumber, NCICNumber, OriginatingAgencyCaseNumber, LicensePlateStateCode, ExpandedNameSearchCode, ExpandedBirthDateSearchCode, RelatedHitSearchIndicator, serialNumber, GunMake, GunModel, GunCaliber, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber]
+  [INFO] CommSys-only: 23 [LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, ImageIndicator, RelatedHitSearchIndicator, NameMiddle, NameSuffix, SocialSecurityNumber, FBINumber, MiscellaneousNumber, NCICNumber, OriginatingAgencyCaseNumber, ExpandedNameSearchCode, ExpandedBirthDateSearchCode, serialNumber, GunMake, GunModel, GunCaliber, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber]
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: Reference Pattern Check ---
@@ -34,10 +34,10 @@ POST-BUILD VERIFICATION
   [PASS] Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard
 
 --- CHECK 7: Synthetic keyRef Documentation ---
-  [PASS] All 6 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
+  [PASS] All 7 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 8: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (31) (RMS-generic allowed)
+  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (30) (RMS-generic allowed)
 
 --- CHECK 9: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
@@ -52,8 +52,7 @@ POST-BUILD VERIFICATION
   [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
 --- CHECK 13: Form Field Label Hints ---
-  [INFO] Field 'raceCode' (any[]-only) label='Race' -- manual label override accepted (Rob 2026-09-17 "race should just say race". CHECK 15)
-  [PASS] All form field labels have required routing hint qualifiers (36 fields scanned)
+  [PASS] All form field labels have required routing hint qualifiers (35 fields scanned)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)

@@ -1057,10 +1057,35 @@ foreach ($t in $tests) {
 $tabCensus = @($tests | Group-Object { $_.tab } | Sort-Object Name | ForEach-Object { "$($_.Name)=$($_.Count)" })
 Write-Host "[INFO] driver groups (tab=count): $($tabCensus -join ', ')" -ForegroundColor Cyan
 
+# ── CO-FIRE MAP ───────────────────────────────────────────────────────────────────────────────
+# Rob 2026-09-18, on the SC_SLED Wanted Person roll-in: "be sure your simulator and test script
+# and userguide is updated and mentiosn teh cofire nature".
+# WHY THE PLAN NEEDS IT AND NOT JUST THE HUMAN DOCS: a plan test names ONE expected keyRef, but on
+# a co-firing entity one submit puts SEVERAL transactions on the wire. That is the exact shape
+# that stranded 14 SC_SLED captures earlier today -- more wire rows than plan tests, the surplus
+# dropped as "unmatched" because nothing told the pipeline to expect them. Recording which queries
+# share an entity makes the expectation explicit in the artifact the driver and the capture
+# reconciliation both read, instead of leaving it to be rediscovered from a mismatch.
+# Only autoSelect!=false counts: autoSelect=false is ticked deliberately by the officer, so it is
+# not part of the default send (MEASURED -- CHECKBOX_PROBE 2026-09-18: it renders "available but
+# unchecked", it is not removed).
+$coFireByEntity = [ordered]@{}
+foreach ($grp in ($qidms | Where-Object { $_.targetEntity } | Group-Object { "$($_.targetEntity)" } | Sort-Object Name)) {
+    $auto = @($grp.Group | Where-Object { $_.autoSelect -ne $false } | ForEach-Object { "$($_.query)" } | Select-Object -Unique)
+    if ($auto.Count -gt 1) { $coFireByEntity[$grp.Name] = $auto }
+}
+if ($coFireByEntity.Keys.Count) {
+    foreach ($k in $coFireByEntity.Keys) {
+        Write-Host ("[INFO] CO-FIRE {0}: one submit sends {1} -- {2}" -f $k, $coFireByEntity[$k].Count, ($coFireByEntity[$k] -join ' + ')) -ForegroundColor Yellow
+    }
+}
+
 $plan = [ordered]@{
     provider = $provName
     version  = $version
     tier     = 'Full'
+    coFire   = $coFireByEntity
+    coFireNote = 'Entities listed in coFire send MORE THAN ONE transaction per submit. A plan test names one expected keyRef, but the wire will carry one row per co-firing query -- so a capture batch legitimately holds MORE rows than tests, and the surplus is not an error.'
     note     = 'Full pass (tiers removed 2026-07-01): every combo + individual any[] per field + all-any[] together + guardrail tests. render/negative are manual one-time checks done at initial provider build only and are NOT part of the recurring test matrix (2026-07-01). The driver auto-submits all four kinds (combo/any-field/any/guardrail, 2026-07-01) -- guardrail fills[] already contains BOTH competing identifier fields, so it captures formState/RMS the same as any other test, no manual popup-capture workaround needed.'
     testCount = $tests.Count
     formDefaults = $formDefaultsByEntity

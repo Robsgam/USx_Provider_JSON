@@ -1,7 +1,7 @@
 ==============================================================================
   SUPPORTED QUERY VALIDATION REPORT -- SC_SLED v1.11
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-JSON version: v1.14
+JSON version: v1.15
 Validator: 77 PASS / 0 FAIL / 0 WARN / 2 LIMITATION
   Generated: 2026-09-14        Source: SC_SLED.xml + SC_SLED_DEVDOC.txt
 ==============================================================================
@@ -12,7 +12,7 @@ ENTRY / MODIFY / CANCEL / LOCATE operations, CCH transactions, WMPI and Orion --
 a different product surface, deliberately out of scope. Building them would be
 scope invention, not completeness.
 
-TOTALS: 8 CommSys QIDMs      Total CommSys combos: 17
+TOTALS: 9 CommSys QIDMs      Total CommSys combos: 17   (WantedPersonQuery is TWO configs sharing one query -- Person + Vehicle, v1.15)
 
   Every marker below is [PENDING]. SC_SLED has NEVER been tenant-tested, so no
   combination has wire evidence. A marker only moves to [PENDING] when a
@@ -63,12 +63,27 @@ PERSON
                        DL card. Cards kept separate by Rob's call 2026-09-14.
 
   WantedPersonQuery  (metadata QWA x5 -- all five synthetic)
+  !! SPLIT ACROSS TWO ENTITIES AT v1.15, AND IT IS ONE TRANSACTION, NOT TWO. There is no Wanted
+     Person tab any more (Rob 2026-09-18). The person-shaped combos ride the PERSON tab and the
+     vehicle-shaped ones ride the VEHICLE tab, so each CO-FIRES with the searches already there.
+     Two QIDM configs, SAME `query` (the wire sends it as <MessageType>WantedPersonQuery>), names
+     differing only by a _Veh suffix because a duplicate config name is a silent overwrite.
+     That same-query/two-entity shape was PROVEN with SHAREDQ_PROBE before being built.
+
+    -- on PERSON (config SC_SLED_WantedPersonQuery) --
     [PENDING] QWA.NCIC set: NCICNumber
     [PENDING] QWA.OCA  set: NameLast, NameFirst, OriginatingAgencyCaseNumber
-    [PENDING] QWA.P    set: LicensePlateNumber, LicensePlateStateCode
+    [PENDING] QWA.N    set: NameLast, NameFirst
+                       NCIC number and OCA are gated NOT_EXISTS on the name search, so a unique
+                       handle always beats a name.
+
+    -- on VEHICLE (config SC_SLED_WantedPersonQuery_Veh) --
+    [PENDING] QWA.P    set: LicensePlateNumber, RegistrationState
+                       set[] names the FORM control. The attribute is still LicensePlateStateCode
+                       (that is the wire field); it feeds from the Vehicle tab's existing State
+                       control rather than a second state box being added for one value.
     [PENDING] QWA.VM   set: VehicleIdentificationNumber, VehicleMakeCode
                        Plate > VIN comes from ORDERING (QWA.P is ahead), not a gate.
-    [PENDING] QWA.N    set: NameLast, NameFirst
                        gate: NCICNumber NOT_EXISTS, OriginatingAgencyCaseNumber NOT_EXISTS
 
   !! CO-FIRE, MEASURED: a Name+Sex+BirthDate fill satisfies QWDQ *and* QWA.N (shared

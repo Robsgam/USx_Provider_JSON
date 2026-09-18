@@ -2,6 +2,55 @@
   BUILD NOTES: SC_SLED
   Created: 2026-09-14
 ================================================================
+v1.15  2026-09-18  WANTED PERSON ROLLED ONTO PERSON *AND* VEHICLE -- one transaction, two entities, deliberate CO-FIRE
+  CHANGED: THE WANTED PERSON TAB IS GONE. WantedPersonQuery is now TWO QIDM configs sharing one
+              `query`, so it co-fires with the searches already on each tab:
+                SC_SLED_WantedPersonQuery      targetEntity=Person   QWA.NCIC / QWA.OCA / QWA.N
+                SC_SLED_WantedPersonQuery_Veh  targetEntity=Vehicle  QWA.P / QWA.VM
+           CONTROLS MOVED, NOT DUPLICATED. Person gained a second card (NCIC Number, Case Number,
+              Race, SSN, FBI, Misc, both Expand codes, Related Hit); Vehicle gained NCIC Image and
+              Related Hit. Name / DOB / Sex / OLN / plate / VIN / make / state are NOT repeated --
+              the field pool is per ENTITY (LIMITATION #26), so the controls already on those tabs
+              feed the QWA combinations. THAT SHARING IS WHAT PRODUCES THE CO-FIRE.
+           QWA.P's LicensePlateStateCode attribute feeds from the Vehicle tab's existing
+              RegistrationState control instead of a second state box. Attribute name and
+              targetField are unchanged, so the wire still carries <LicensePlateStateCode>.
+           5 tabs, one QIF per entity: Vehicle / Person / Firearm / Article / Boat.
+           9 QIDMs, 17 combinations.
+  REASON: Rob 2026-09-18: "the wanted person query will need to cofire with person queires and
+           vehicle queires were appropriate. so no longer will the wanted person tab exist but we
+           will roll the wanted person query onto to each tab veh on veh and person on person
+           relative to the required and ioptional fields in the combinations."
+  WHY TWO CONFIGS AND NOT ONE, and why the same `query`:
+           - a QIDM has ONE targetEntity and CHECKBOXES ARE KEYED BY ENTITY (measured,
+             CHECKBOX_PROBE), so a Vehicle-tab fill can never trigger a Person-entity query;
+           - the wire carries `query` as <MessageType> (read from a real capture), so inventing a
+             second query name would put that string on the wire and SC would reject it;
+           - `name` must differ or the second config is a SILENT OVERWRITE at import.
+           PROVEN BEFORE BUILT: providers\SHAREDQ_PROBE.json put one query on two entities with a
+           control QIDM beside each. Rob: "on person typing in personkey both checkboxes lit up
+           same with veh". The platform keys on (query, entity). Had it keyed on query alone, one
+           config would have died silently with every gate green.
+  CO-FIRE IS NOW STATED IN ALL THREE PLACES Rob asked for, not left to be inferred:
+           - test_commsys.ps1 prints a CO-FIRE SUMMARY naming the transactions per entity
+             (Person 4, Vehicle 4 -- including the RMS query, which also rides along);
+           - the TEST PLAN carries a `coFire` map + note: a capture batch legitimately holds MORE
+             wire rows than tests, which is exactly what stranded 14 captures on 2026-09-17;
+           - the OFFICER GUIDE shows a banner per tab: "These 3 searches are sent together."
+  TWO VALIDATOR FAILS ON THE FIRST BUILD, BOTH REAL, BOTH FIXED:
+           - LicensePlateStateCode pointed at an attributeTypeId='STATE' control with no
+             codeTypeProvider -> would have sent the internal numeric row id (AP #1). Now NCIC.
+           - raceCode arrived on Person still using the codeTypeCategory fallback from the old
+             two-QIF Wanted Person tab. Person carries the RMS Person QIDM whose race attribute is
+             useAttributeId=true, so that stores the code string where RMS expects the id (AP #11).
+             Now attributeTypeId='RACE' + codeTypeProvider='NIBRS', the portfolio standard.
+  ONE SHARED-GATE FIX THIS EXPOSED: audit_devdoc_combinations recovered a query name by stripping
+           the provider prefix off the CONFIG NAME, so _Veh bucketed under a phantom query and
+           three built-and-firing combinations read as UNBUILT. It now reads the `query` PROPERTY
+           (the authority -- it is what the wire carries) and maps a combination's form-control
+           names through to their attribute/targetField, because the devdoc names WIRE fields
+           while combinations name FORM controls. Swept: 21 providers, 0 FAIL.
+
 v1.14  2026-09-18  The Boat tab still ADVERTISED Administrative Message -- a label outlived its card
   CHANGED: ENTITY_Boat label 'Boat & Administrative Message' -> 'Boat', and its description
               rewritten to match. NOTHING ELSE. No QIDM, no control, no combination, no wire

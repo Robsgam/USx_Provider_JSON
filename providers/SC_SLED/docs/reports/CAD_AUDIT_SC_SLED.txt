@@ -1,14 +1,14 @@
 ================================================================
   Build Report: SC_SLED
-  Source: SC_SLED_v1.14.json
-  Generated: 2026-09-18 12:53
+  Source: SC_SLED_v1.15.json
+  Generated: 2026-09-18 14:08
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: SC_SLED_v1.14
+ CAD AUDIT: SC_SLED_v1.15
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -20,7 +20,7 @@ CAD AUDIT
     [PASS] vehicleMakeCode: in QIF as 'VehicleMakeCode' (PascalCase USx fieldIds)
     [PASS] vehicleYear: in QIF and CAD list
     [PASS] registrationState: in QIF as 'RegistrationState' (PascalCase USx fieldIds)
-    [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] imageIndicator: in QIF as 'ImageIndicator' (PascalCase USx fieldIds)
     [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameLast: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -30,6 +30,7 @@ CAD AUDIT
     [INFO] addressCity: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] addressStreetNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] licensePlateColorCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] RelatedHitSearchIndicator: in QIF, not in CAD list (provider-specific)
   Person:
     [PASS] operatorLicenseNumber: in QIF as 'OperatorLicenseNumber' (PascalCase USx fieldIds)
     [PASS] nameFirst: in QIF as 'NameFirst' (PascalCase USx fieldIds)
@@ -38,13 +39,13 @@ CAD AUDIT
     [PASS] nameSuffix: in QIF as 'NameSuffix' (PascalCase USx fieldIds)
     [PASS] birthDate: in QIF as 'BirthDate' (PascalCase USx fieldIds)
     [PASS] sexCode: in QIF as 'SexCode' (PascalCase USx fieldIds)
-    [INFO] raceCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] raceCode: in QIF and CAD list
     [PASS] imageIndicator: in QIF as 'ImageIndicator' (PascalCase USx fieldIds)
     [PASS] registrationState: in QIF as 'RegistrationState' (PascalCase USx fieldIds)
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] socialSecurityNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] relatedHitSearchIndicator: in QIF as 'RelatedHitSearchIndicator' (PascalCase USx fieldIds)
+    [PASS] socialSecurityNumber: in QIF as 'SocialSecurityNumber' (PascalCase USx fieldIds)
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] addressCity: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] addressState: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -57,6 +58,12 @@ CAD AUDIT
     [INFO] driverHistoryPurposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] hairColor: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] height: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] NCICNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] OriginatingAgencyCaseNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] FBINumber: in QIF, not in CAD list (provider-specific)
+    [INFO] MiscellaneousNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] ExpandedNameSearchCode: in QIF, not in CAD list (provider-specific)
+    [INFO] ExpandedBirthDateSearchCode: in QIF, not in CAD list (provider-specific)
   Firearm:
     [PASS] serialNumber: in QIF and CAD list
     [INFO] firearmMake: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -126,6 +133,7 @@ CAD AUDIT
 --- CHECK 4: QIDM sourceField Case Alignment ---
     [PASS] QIDM 'SC_SLED_VehicleRegistrationQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'SC_SLED_VehicleStolenQuery': all sourceFields match QIF fieldIds (case-sensitive)
+    [PASS] QIDM 'SC_SLED_WantedPersonQuery_Veh': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'SC_SLED_DriverLicenseQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'SC_SLED_DriverRegistrationQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'SC_SLED_WantedPersonQuery': all sourceFields match QIF fieldIds (case-sensitive)
@@ -138,14 +146,14 @@ CAD AUDIT
     [PASS] QIDM 'SC_SLED_VehicleRegistrationQuery' combo QVRQ.V -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'SC_SLED_VehicleStolenQuery' combo QV.VM -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'SC_SLED_VehicleStolenQuery' combo QV.P -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'SC_SLED_WantedPersonQuery_Veh' combo QWA.P -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'SC_SLED_WantedPersonQuery_Veh' combo QWA.VM -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'SC_SLED_DriverLicenseQuery' combo QWDQ -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'SC_SLED_DriverLicenseQuery' combo DQ -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'SC_SLED_DriverRegistrationQuery' combo DQ.RN -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'SC_SLED_DriverRegistrationQuery' combo DQ.RO -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'SC_SLED_WantedPersonQuery' combo QWA.NCIC -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'SC_SLED_WantedPersonQuery' combo QWA.OCA -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'SC_SLED_WantedPersonQuery' combo QWA.P -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'SC_SLED_WantedPersonQuery' combo QWA.VM -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'SC_SLED_WantedPersonQuery' combo QWA.N -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'SC_SLED_GunQuery' combo QG -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'SC_SLED_ArticleSingleQuery' combo QA -- defaults cover all initialValue any[] fields
@@ -158,6 +166,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 65 PASS / 0 FAIL / 0 WARN / 63 INFO
+Total: 70 PASS / 0 FAIL / 0 WARN / 66 INFO
 
 

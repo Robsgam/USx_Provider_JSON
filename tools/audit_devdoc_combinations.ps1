@@ -372,8 +372,20 @@ function Invoke-One([string]$jsonPath, [string]$provName, [string]$provDir) {
         foreach ($c in $b.configurations) {
             if (-not $c.combinations) { continue }
             if ($c.name -match '^RMS' -or $c.name -match 'Results$') { continue }
-            # QIDM name is "<PROVIDER>_<TransactionQuery>"; recover the query name
-            $q = $c.name -replace "^$([regex]::Escape($provName))_",''
+            # THE `query` PROPERTY IS THE AUTHORITY, NOT THE CONFIG NAME (fixed 2026-09-18).
+            # This used to recover the query by stripping the provider prefix off `name`, on the
+            # convention that a QIDM is named "<PROVIDER>_<TransactionQuery>". That convention
+            # broke the first time ONE transaction was split across TWO entities: SC_SLED v1.15
+            # puts WantedPersonQuery on Person AND on Vehicle (checkboxes are keyed by entity, so
+            # the person-shaped and vehicle-shaped combos cannot share a config), and the second
+            # config MUST carry a different `name` or it is a silent overwrite at import -- while
+            # both MUST keep the same `query`, because the wire sends it as <MessageType>.
+            # Name-derivation bucketed SC_SLED_WantedPersonQuery_Veh under a phantom query
+            # "WantedPersonQuery_Veh", so the vehicle fields never joined the real query's wired
+            # set and the gate reported three devdoc combinations as UNBUILT that are built and
+            # firing. `query` is what the platform routes on and what the wire carries; `name` is
+            # a uniqueness key. Read the authority, fall back to the convention only when absent.
+            $q = if ($c.query) { "$($c.query)" } else { $c.name -replace "^$([regex]::Escape($provName))_",'' }
             # !! THE FOURTH PLACE THIS SUFFIX WAS ASSUMED, and the decisive one: SC_SLED's
             # AdministrativeMessage was dropped from the BUILT side too, so fixing only the devdoc
             # parser changed nothing -- the comparison needs both sides to see it.
@@ -385,10 +397,38 @@ function Invoke-One([string]$jsonPath, [string]$provName, [string]$provDir) {
             if (-not $built.ContainsKey($q)) {
                 $built[$q] = [pscustomobject]@{ Wired = (New-Object 'System.Collections.Generic.HashSet[string]'); Sets = @() }
             }
+            # THE DEVDOC NAMES WIRE FIELDS; A COMBINATION NAMES FORM CONTROLS. Those are two
+            # namespaces, and they only look like one because a control is USUALLY named after
+            # its attribute. When they diverge the comparison silently misses (added 2026-09-18).
+            # SC_SLED v1.15: the Vehicle tab already had a state control called RegistrationState,
+            # so QWA.P's LicensePlateStateCode attribute was pointed at it rather than adding a
+            # SECOND state box for one value. The attribute -- and therefore the WIRE -- is still
+            # LicensePlateStateCode, but set[] now reads RegistrationState, and the gate called a
+            # built-and-firing combination UNBUILT.
+            # ⚠️ SCOPED THROUGH THE COMBINATION ON PURPOSE. An attribute is counted ONLY when a
+            # combination actually references one of its sourceFields -- never merely because the
+            # attribute exists. Adding every attribute name would let a field read as "wired" with
+            # no combination able to send it, which converts this gate from a check into a
+            # rubber stamp (usx-tooling Step 6: a widening that suppresses a real finding looks
+            # exactly like a clean run).
+            $attrBySource = @{}
+            foreach ($a in @($c.attributes)) {
+                foreach ($sf in @($a.sourceField)) {
+                    if ($sf) { $attrBySource["$sf"] = $a }
+                }
+            }
+            function Add-WiredFor([string]$field, $bucket) {
+                $bucket.Add((Get-CanonicalToken $field)) | Out-Null
+                $a = $attrBySource["$field"]
+                if ($a) {
+                    if ($a.name)        { $bucket.Add((Get-CanonicalToken "$($a.name)"))        | Out-Null }
+                    if ($a.targetField) { $bucket.Add((Get-CanonicalToken "$($a.targetField)")) | Out-Null }
+                }
+            }
             foreach ($cm in $c.combinations) {
                 $s = @()
-                foreach ($f in @($cm.requirements.set)) { if ($f) { $t2 = Get-CanonicalToken $f; $built[$q].Wired.Add($t2) | Out-Null; $s += $t2 } }
-                foreach ($f in @($cm.requirements.any)) { if ($f) { $built[$q].Wired.Add((Get-CanonicalToken $f)) | Out-Null } }
+                foreach ($f in @($cm.requirements.set)) { if ($f) { Add-WiredFor "$f" $built[$q].Wired; $s += (Get-CanonicalToken $f) } }
+                foreach ($f in @($cm.requirements.any)) { if ($f) { Add-WiredFor "$f" $built[$q].Wired } }
                 $built[$q].Sets += ,@($s | Sort-Object -Unique)
             }
         }
