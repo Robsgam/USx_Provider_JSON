@@ -1,25 +1,25 @@
 ﻿================================================================
   Build Report: SC_SLED
-  Source: SC_SLED_v1.16.json
-  Generated: 2026-09-18 15:05
+  Source: SC_SLED_v1.17.json
+  Generated: 2026-09-18 16:12
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== SC_SLED_v1.16.json ===
-QIFs: 5
+=== SC_SLED_v1.17.json ===
+QIFs: 6
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=4
-  Person | entity=Person | qidm= | cards=1 fields=12
+  Person | entity=Person | qidm= | cards=1 fields=5
+  Wanted Person | entity=Other | qidm= | cards=1 fields=14
   Firearm | entity=Firearm | qidm= | cards=1 fields=2
   Article | entity=Article | qidm= | cards=1 fields=1
   Boat | entity=Boat | qidm= | cards=1 fields=3
-QIDMs: 9
+QIDMs: 8
   SC_SLED_VehicleRegistrationQuery | attrs=7 combos=2 autoSelect=True
   SC_SLED_VehicleStolenQuery | attrs=4 combos=2 autoSelect=True
-  SC_SLED_WantedPersonQuery_Veh | attrs=6 combos=2 autoSelect=True
   SC_SLED_DriverLicenseQuery | attrs=6 combos=2 autoSelect=True
   SC_SLED_DriverRegistrationQuery | attrs=6 combos=2 autoSelect=True
-  SC_SLED_WantedPersonQuery | attrs=14 combos=3 autoSelect=True
+  SC_SLED_WantedPersonQuery | attrs=18 combos=5 autoSelect=True
   SC_SLED_GunQuery | attrs=4 combos=1 autoSelect=True
   SC_SLED_ArticleSingleQuery | attrs=2 combos=1 autoSelect=True
   SC_SLED_BoatQuery | attrs=3 combos=2 autoSelect=True
@@ -42,9 +42,6 @@ LAYOUT DETAIL
         VehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE)
         vehicleYear (Text | maxLen=4)
         RegistrationState (Dropdown | attributeTypeId=STATE)
-      ROW ROW_VEH_3 [6 6]
-        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
-        RelatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
 
 === Person ===
   name=ENTITY_Person | entity=Person | qidm=
@@ -59,20 +56,40 @@ LAYOUT DETAIL
         NameLast (Text | maxLen=30)
         NameMiddle (Text | maxLen=30)
         NameSuffix (Text | maxLen=30)
-      ROW ROW_PER_3 [4 4 4]
+      ROW ROW_PER_3 [6 6]
+        BirthDate (FormDate)
+        SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+
+=== Wanted Person ===
+  name=ENTITY_WantedPerson | entity=Other | qidm=
+  [default]
+    CARD "CARD_WP"
+      ROW ROW_WP_1 [6 6]
+        NCICNumber (Text | maxLen=10)
+        OriginatingAgencyCaseNumber (Text | maxLen=20)
+      ROW ROW_WP_2 [3 3 3 3]
+        NameFirst (Text | maxLen=30)
+        NameLast (Text | maxLen=30)
+        NameMiddle (Text | maxLen=30)
+        NameSuffix (Text | maxLen=30)
+      ROW ROW_WP_3 [4 4 4]
         BirthDate (FormDate)
         SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
         raceCode (Dropdown | attributeTypeId=RACE | codeTypeProvider=NIBRS)
-      ROW ROW_PER_4 [6 6]
-        NCICNumber (Text | maxLen=10)
-        OriginatingAgencyCaseNumber (Text | maxLen=20)
-      ROW ROW_PER_5 [4 4 4]
+      ROW ROW_WP_4 [3 3 3 3]
+        LicensePlateNumber (Text | maxLen=10)
+        RegistrationState (Dropdown | attributeTypeId=STATE)
+        VehicleIdentificationNumber (Text | maxLen=20)
+        VehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE)
+      ROW ROW_WP_5 [3 3 3 3]
+        OperatorLicenseNumber (Text | maxLen=20)
         SocialSecurityNumber (Text | maxLen=9)
         FBINumber (Text | maxLen=9)
         MiscellaneousNumber (Text | maxLen=15)
-      ROW ROW_PER_6 [4 4 4]
+      ROW ROW_WP_6 [3 3 3 3]
         ExpandedNameSearchCode (Text | maxLen=1)
         ExpandedBirthDateSearchCode (Text | maxLen=1)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
         RelatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
 
 === Firearm ===

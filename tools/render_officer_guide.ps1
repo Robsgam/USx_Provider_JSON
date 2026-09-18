@@ -23,6 +23,14 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+# The CANONICAL firing walk, for the co-fire enumeration further down. Dot-sourced rather than
+# re-derived: ENGINEERING_STANDARD 4.4 (never re-implement an existing parser), and this file has
+# no business owning a second opinion about which combination fires -- test_commsys,
+# run_test_matrix and emit_test_plan all read the same one, and audit_simulator_parity exists to
+# keep them agreeing. Omitting this is what broke the first v1.17 build with
+# "Get-FiringKeyRefForQidm is not recognized" -- loudly, at build time, which is the right failure.
+. "$PSScriptRoot\_sim_helpers.ps1"
+
 # =====================================================================================
 #  MARK43 BRANDING -- sourced from Confluence "Brand Resources" (Marketing space,
 #  page 4462313473, brand refresh August 2024), NOT from memory:
@@ -294,12 +302,91 @@ foreach ($ent in $order) {
     # Only auto-selected queries are counted: autoSelect=false means the officer ticks it
     # deliberately, so it is not part of what happens by default. That distinction is MEASURED
     # (CHECKBOX_PROBE, 2026-09-18: autoSelect=false renders "available but unchecked").
+    # ⚠️ "THESE 3 SEARCHES ARE SENT TOGETHER" WAS A LUMPED CLAIM, AND ON SC_SLED IT WAS FALSE FOR
+    # SEVERAL FILLS. Rob 2026-09-18: "i thinkthe sc user guide needs to enumerate the cofires on
+    # person and veh  lumps the cofire combos together".
+    # WHICH queries co-fire depends on WHAT YOU FILL, because each query has its own mandatory set:
+    #   an IN-STATE plate (State blank) does NOT satisfy QWA.P, so NO wanted check goes out;
+    #   an OLN-only person search sends Driver License + Driver Registration and NO wanted check
+    #     (QWDQ needs the full name triple and QWA defines no OLN-mandatory branch -- SC's design);
+    #   a VIN with no Make fires registration ALONE.
+    # A banner that says "3 are sent together" over all of those tells the officer to expect
+    # responses that will never arrive, and hides the two cases where a wanted check is silently
+    # NOT performed -- which is the one thing on this sheet with officer-safety weight.
+    # So it is now ENUMERATED: one row per distinct fill shape, computed rather than described.
     $autoQ = @($entQidms | Where-Object { $_.autoSelect -ne $false })
     if ($autoQ.Count -gt 1) {
         $names = @($autoQ | ForEach-Object { if ($_.queryLabel) { [string]$_.queryLabel } else { (Prettify (([string]$_.query) -replace 'Query$','')) } })
-        [void]$sb.AppendLine("<p class='cofire'><strong>These $($autoQ.Count) searches are sent together.</strong> " +
-            "One set of details on this tab submits <strong>$(Esc ($names -join ' + '))</strong> as separate enquiries, " +
-            "so expect a response for each. Fields below are listed per search &mdash; you only need the required fields of the one you are running.</p>")
+        [void]$sb.AppendLine("<p class='cofire'><strong>More than one search is sent from this tab.</strong> " +
+            "Depending on what you fill, up to $($autoQ.Count) separate enquiries go out at once &mdash; " +
+            "$(Esc ($names -join ', ')) &mdash; and you get a response for each. " +
+            "<strong>The table below says exactly which.</strong></p>")
+
+        # ── COMPUTED, NOT DESCRIBED ────────────────────────────────────────────────────────────
+        # Uses the SHARED firing walk (_sim_helpers Get-FiringKeyRefForQidm), never a re-derivation
+        # -- ENGINEERING_STANDARD 4.4, and the per-QIDM variant specifically, because first-match is
+        # PER QIDM and the entity-wide Get-FiringKeyRef cannot express a co-fire at all (it returns
+        # the first match found anywhere, which is precisely the conflation that once dropped two
+        # real combos from the test plan).
+        # Candidate fills = each combination's own set[] plus every form prefill, since a prefilled
+        # control is always present on a real submit. Identical outcomes are collapsed so the table
+        # lists SHAPES an officer recognises, not one row per combination.
+        $entLower = ([string]$ent).ToLower()
+        $prefills = @{}
+        foreach ($vk in $valueOf.Keys) {
+            if ($vk -like "$entLower|*") { $prefills[$vk.Split('|')[1]] = $valueOf[$vk] }
+        }
+        $seen = @{}
+        $cfRows = [System.Text.StringBuilder]::new()
+        $cfCount = 0
+        foreach ($q in $autoQ) {
+            foreach ($c in @($q.combinations)) {
+                $setF = @(); if ($c.requirements -and $c.requirements.set) { $setF = @($c.requirements.set | Where-Object { $_ }) }
+                if (-not $setF.Count) { continue }
+                # Build the fill: the combination's mandatory fields, resolved to the FORM controls
+                # that feed them, plus the prefills. Attribute -> sourceField, because a combination
+                # may name either (composite Name -> NameLast/NameFirst is the case that matters).
+                $fd = @{}
+                foreach ($pk in $prefills.Keys) { $fd[$pk] = $prefills[$pk] }
+                $amap = Get-AttrMap $q
+                foreach ($f in $setF) {
+                    $fd["$f"] = 'X'
+                    if ($amap.ContainsKey("$f")) { foreach ($sf in @($amap["$f"])) { if ($sf) { $fd["$sf"] = 'X' } } }
+                }
+                # Who fires on this fill?
+                $fired = @()
+                foreach ($q2 in $autoQ) {
+                    $kr = Get-FiringKeyRefForQidm $q2 $fd
+                    if ($kr) {
+                        $l2 = if ($q2.queryLabel) { [string]$q2.queryLabel } else { (Prettify (([string]$q2.query) -replace 'Query$','')) }
+                        $fired += "$l2"
+                    }
+                }
+                $fired = @($fired | Select-Object -Unique)
+                if (-not $fired.Count) { continue }
+                # Describe the fill in the officer's own vocabulary -- the CONTROL labels, not the
+                # attribute names, and without the prefills (they are already on the form).
+                $fillLabels = @($setF | ForEach-Object { FieldName "$_" $ent } | Select-Object -Unique)
+                $key = ($fillLabels -join '|') + '=>' + ($fired -join '|')
+                if ($seen.ContainsKey($key)) { continue }
+                $seen[$key] = $true
+                $cfCount++
+                # The row that matters most is the one where something is NOT sent. Name it.
+                $absent = @($names | Where-Object { $fired -notcontains $_ })
+                $note = ''
+                if ($absent.Count) {
+                    $note = "<div class='cfnot'>no " + (Esc ($absent -join ', ')) + " on this fill</div>"
+                }
+                [void]$cfRows.AppendLine("<tr><td class='sb'>$(Esc ($fillLabels -join ', '))</td>" +
+                    "<td class='cfq'><strong>$($fired.Count)</strong> &mdash; $(Esc ($fired -join ' + '))$note</td></tr>")
+            }
+        }
+        if ($cfCount -gt 0) {
+            [void]$sb.AppendLine("<table class='qt cf'><caption>What gets sent, by what you fill</caption>" +
+                "<thead><tr><th class='sb'>If you fill</th><th>Enquiries sent</th></tr></thead><tbody>")
+            [void]$sb.Append($cfRows.ToString())
+            [void]$sb.AppendLine("</tbody></table>")
+        }
     }
 
     foreach ($q in $entQidms) {

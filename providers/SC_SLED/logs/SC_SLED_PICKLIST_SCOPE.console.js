@@ -2,7 +2,7 @@
 // Then render each entity form and run its line (one at a time; each downloads one file):
 var scope = {
     "provider":  "SC_SLED",
-    "version":  "1.16",
+    "version":  "1.17",
     "note":  "Paste as scope; render each FORM (tab); __usxScopePicklists(scope, \u0027\u003cTab\u003e\u0027). One download per tab. The tab is the panel\u0027s group label, not necessarily the targetEntity.",
     "fields":  [
                    {
@@ -36,26 +36,6 @@ var scope = {
                        "attributeTypeId":  "STATE"
                    },
                    {
-                       "entity":  "Vehicle",
-                       "tab":  "Vehicle",
-                       "qif":  "ENTITY_Vehicle",
-                       "fieldId":  "ImageIndicator",
-                       "label":  "NCIC Image",
-                       "codeTypeCategory":  "YES_NO_UNKNOWN",
-                       "codeTypeSource":  "NCIC",
-                       "attributeTypeId":  ""
-                   },
-                   {
-                       "entity":  "Vehicle",
-                       "tab":  "Vehicle",
-                       "qif":  "ENTITY_Vehicle",
-                       "fieldId":  "RelatedHitSearchIndicator",
-                       "label":  "Related Hit",
-                       "codeTypeCategory":  "YES_NO_UNKNOWN",
-                       "codeTypeSource":  "NCIC",
-                       "attributeTypeId":  ""
-                   },
-                   {
                        "entity":  "Person",
                        "tab":  "Person",
                        "qif":  "ENTITY_Person",
@@ -86,9 +66,19 @@ var scope = {
                        "attributeTypeId":  "SEX"
                    },
                    {
-                       "entity":  "Person",
-                       "tab":  "Person",
-                       "qif":  "ENTITY_Person",
+                       "entity":  "Other",
+                       "tab":  "Wanted Person",
+                       "qif":  "ENTITY_WantedPerson",
+                       "fieldId":  "SexCode",
+                       "label":  "Sex",
+                       "codeTypeCategory":  "",
+                       "codeTypeSource":  "",
+                       "attributeTypeId":  "SEX"
+                   },
+                   {
+                       "entity":  "Other",
+                       "tab":  "Wanted Person",
+                       "qif":  "ENTITY_WantedPerson",
                        "fieldId":  "raceCode",
                        "label":  "Race",
                        "codeTypeCategory":  "",
@@ -96,9 +86,39 @@ var scope = {
                        "attributeTypeId":  "RACE"
                    },
                    {
-                       "entity":  "Person",
-                       "tab":  "Person",
-                       "qif":  "ENTITY_Person",
+                       "entity":  "Other",
+                       "tab":  "Wanted Person",
+                       "qif":  "ENTITY_WantedPerson",
+                       "fieldId":  "RegistrationState",
+                       "label":  "State - leave blank for SC",
+                       "codeTypeCategory":  "",
+                       "codeTypeSource":  "",
+                       "attributeTypeId":  "STATE"
+                   },
+                   {
+                       "entity":  "Other",
+                       "tab":  "Wanted Person",
+                       "qif":  "ENTITY_WantedPerson",
+                       "fieldId":  "VehicleMakeCode",
+                       "label":  "Vehicle Make",
+                       "codeTypeCategory":  "",
+                       "codeTypeSource":  "",
+                       "attributeTypeId":  "VEHICLE_MAKE"
+                   },
+                   {
+                       "entity":  "Other",
+                       "tab":  "Wanted Person",
+                       "qif":  "ENTITY_WantedPerson",
+                       "fieldId":  "ImageIndicator",
+                       "label":  "NCIC Image",
+                       "codeTypeCategory":  "YES_NO_UNKNOWN",
+                       "codeTypeSource":  "NCIC",
+                       "attributeTypeId":  ""
+                   },
+                   {
+                       "entity":  "Other",
+                       "tab":  "Wanted Person",
+                       "qif":  "ENTITY_WantedPerson",
                        "fieldId":  "RelatedHitSearchIndicator",
                        "label":  "Related Hit",
                        "codeTypeCategory":  "YES_NO_UNKNOWN",
@@ -137,4 +157,4 @@ var scope = {
                    }
                ]
 };
-console.log('%c[USx-SCOPE] scope loaded: SC_SLED v1.16 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')");
+console.log('%c[USx-SCOPE] scope loaded: SC_SLED v1.17 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')\n  __usxScopePicklists(scope, 'Wanted Person')");

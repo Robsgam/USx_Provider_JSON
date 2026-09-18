@@ -1780,3 +1780,68 @@ CAPABILITY #48 (NOT a limitation -- this slot HELD A FALSE LIMITATION FOR SIX HO
                               appears in NEITHER Confluence doc. Almost certainly
                               from the radiobutton experiment (`FormRadioGroup` is
                               likewise ours-never-built, 5 nodes). Undocumented.
+
+================================================================================
+LIMITATION #49: ONE `query` DISPATCHES ONCE. TWO QIDM CONFIGS SHARING A `query`
+  BOTH RENDER A CHECKBOX, BOTH TICK, AND ONLY ONE OF THEM EVER REACHES THE WIRE.
+  STATUS: LIVE-MEASURED on usx-sc-sled 2026-09-18, twice, by two independent routes.
+================================================================================
+
+  THE CLAIM. If two QUERYINPUTDATAMAPPING configs carry the same `query` value on
+  DIFFERENT `targetEntity` values, the platform renders a query checkbox on BOTH tabs
+  and lets the officer select either -- but on submit only ONE config dispatches.
+  The other sends NOTHING, silently, with no error anywhere.
+
+  ⚠️ RENDERING IS NOT DISPATCH, AND CONFLATING THEM IS EXACTLY HOW THIS SHIPPED.
+  `SHAREDQ_PROBE` (tools\build_sharedquery_probe.ps1) was built on 2026-09-18 to test
+  precisely this, and it was read wrong. It put one shared `query` on two entities with
+  a uniquely-named CONTROL query per entity, and the observation was Rob's:
+      "on person typing in personkey both checkboxes lit up  same with veh"
+  BOTH CHECKBOXES LIGHTING UP IS A RENDERING RESULT. It says the client builds its
+  checkbox list per (query, entity). It says NOTHING about what the submit handler does,
+  and the probe never submitted. That gap was not noticed, "the platform keys on
+  (query, entity)" was recorded as PROVEN, and SC_SLED v1.15/v1.16 were built on it.
+
+  HOW IT WAS CAUGHT -- by a tenant sweep, not by any gate:
+  SC_SLED v1.16 split `WantedPersonQuery` across two configs sharing that one `query`:
+      SC_SLED_WantedPersonQuery      targetEntity=Person   QWA.NCIC / QWA.OCA / QWA.N
+      SC_SLED_WantedPersonQuery_Veh  targetEntity=Vehicle  QWA.P / QWA.VM
+  The 59-test sweep drove 21 Person wanted-person fills. All 21 reported SENT. Then:
+    - THREE capture passes over 134 dex-log rows never paired 18 of them. The final pass
+      printed `late-row wait done: 0/18` and `NOTHING CAPTURED`. Not a timing problem.
+    - The one batch that did download held NINE `WantedPersonQuery` wire rows and ALL NINE
+      were VEHICLE-shaped (LicensePlateNumber / VehicleIdentificationNumber /
+      VehicleMakeCode). NOT ONE carried Name, NCICNumber or OriginatingAgencyCaseNumber.
+    - The SAME Person submits DID produce DriverLicenseQuery and DriverRegistrationQuery
+      rows, so the submits worked and the tab worked. Only the shared-query half vanished.
+  CONFIRMED BY HAND, which is what makes this MEASURED rather than inferred (Rob, same
+  day): on the Person tab, NCIC Number alone -- "that works it lits up  i hit send but it
+  never shows in the log". Checkbox present, selectable, submitted, no wire row.
+
+  WHICH ONE WINS: the one emitted EARLIER in the bundle. The Vehicle config sits at
+  configuration index 5 and the Person one at index 8, and Vehicle is the one that fires
+  -- consistent with a query->config map built first-wins. NOT independently varied yet;
+  the discriminating test is to swap the emission order and re-import.
+
+  ⚠️ RENAMING THE SECOND CONFIG'S `query` IS NOT A FREE FIX -- `query` GOES ON THE WIRE.
+  MEASURED from a captured request the same day:
+      <MessageType>WantedPersonQuery</MessageType>
+  matching the config's `query` exactly. So an invented query name ships that string to
+  the state as the transaction type. Whether CommSys accepts a provider-specific name is
+  a QUESTION FOR COMMSYS, not something to try on a tenant -- though note the portfolio
+  already carries provider-prefixed query names (NY's `NyNyspinDriverLicenseNameQuery`),
+  so the set of acceptable MessageTypes is plainly per-provider rather than universal.
+
+  WHAT TO DO INSTEAD. One transaction = ONE config. If it must be reachable from two
+  tabs, either (a) give it its OWN form on its OWN entity -- `Other` is real and
+  live-confirmed, see CAPABILITY #47 -- and accept that the officer enters the details
+  there, or (b) host the single config on ONE entity and add the other entity's
+  identifier CONTROLS to that form (cross-entity fields are established practice;
+  CA_CLETS puts Name on Vehicle/Gun/Boat).
+
+  ⚠️ NO GATE CATCHES THIS AND THAT IS THE REAL LESSON. Every structural check passed:
+  validator 77P/0F/0W, enforce 44 PASS, PHASE 1 CLEAN, reachability 15/15, gate efficacy
+  13/13 killed, fuzz 8/8. The simulator cheerfully reported "Person 4 QUERIES CO-FIRE".
+  All of them model ONE config at a time; not one asks whether two configs can COEXIST.
+  A duplicate-`query` check is cheap and belongs in validate.ps1 -- see the companion
+  entry added to BUILD_RULES. Until then, treat a shared `query` as UNBUILDABLE.

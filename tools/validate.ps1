@@ -2027,6 +2027,45 @@ foreach ($q in $qidms) {
     $entityQidms[$e] += $q
 }
 
+# ── ONE `query` DISPATCHES ONCE -- LIMITATION #49 (added 2026-09-18) ────────────────────────
+# Two QIDM configs sharing one `query` on different entities BOTH render a checkbox, BOTH tick,
+# and only ONE ever reaches the wire. The other sends nothing, silently, with no error anywhere.
+#
+# THIS IS A FAIL AND NOT A WARN because it is UNDETECTABLE DOWNSTREAM. Nothing in the repo can
+# see it: every other gate models ONE config at a time, so validator 77P/0F/0W, enforce 44 PASS,
+# PHASE 1 CLEAN, reachability 15/15, gate efficacy 13/13 and fuzz 8/8 were ALL green on the build
+# that shipped it, and test_commsys cheerfully printed "Person 4 QUERIES CO-FIRE" for a query that
+# was never sent. It took a 59-test tenant sweep, three capture passes and a hand submit to find.
+#
+# MEASURED, NOT REASONED (usx-sc-sled, 2026-09-18): SC_SLED v1.16 split WantedPersonQuery across
+# a Person config and a Vehicle config sharing that `query`. 21 Person wanted-person fills all
+# reported SENT; the wire carried NINE WantedPersonQuery rows and every one was VEHICLE-shaped.
+# Rob, submitting an NCIC Number by hand on the Person tab: "that works it lits up  i hit send
+# but it never shows in the log". The earlier SHAREDQ_PROBE "proved" the opposite -- it proved
+# RENDERING, never submitted, and was read as proving dispatch.
+#
+# The fix is never to rename one `query`: it goes on the wire as <MessageType> (measured the same
+# day). One transaction = one config; put it on its own entity (`Other` is real, CAPABILITY #47)
+# or host it on one entity with the other entity's identifier controls added.
+$queryOwners = @{}
+foreach ($q in $qidms) {
+    $qn = "$($q.query)"
+    if (-not $qn) { continue }
+    if (-not $queryOwners.ContainsKey($qn)) { $queryOwners[$qn] = @() }
+    $queryOwners[$qn] += $q
+}
+foreach ($qn in $queryOwners.Keys) {
+    $owners = @($queryOwners[$qn])
+    if ($owners.Count -le 1) { continue }
+    $desc = ($owners | ForEach-Object { "$($_.name) [targetEntity=$($_.targetEntity)]" }) -join ' + '
+    Write-Fail ("QUERY '$qn' is declared by $($owners.Count) QIDM configs -- $desc. ONLY ONE WILL " +
+                "EVER DISPATCH (LIMITATION #49, live-measured on usx-sc-sled 2026-09-18): both render " +
+                "a selectable checkbox and the later one silently sends NOTHING. Renaming one is NOT " +
+                "the fix -- `query` is transmitted as <MessageType>. Give the transaction ONE config: " +
+                "its own entity/form (see CAPABILITY #47, `Other` is live-confirmed), or one entity " +
+                "carrying the other's identifier controls.")
+}
+
 foreach ($entity in $entityQidms.Keys) {
     $eqidms = $entityQidms[$entity]
 

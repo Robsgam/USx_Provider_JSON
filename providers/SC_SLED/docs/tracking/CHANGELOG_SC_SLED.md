@@ -2,9 +2,14 @@
 
 Auto-generated from `SC_SLED_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.16** | Generated: 2026-09-18
+Current: **v1.17** | Generated: 2026-09-18
 
 ---
+
+## v1.17 -- 2026-09-18 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v1.16 -- 2026-09-18 -- ONE CARD PER ENTITY -- Related Hit becomes a Y/N dropdown defaulted Y, and no label says "(optional)"
 

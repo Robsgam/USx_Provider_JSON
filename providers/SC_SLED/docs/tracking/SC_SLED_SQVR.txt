@@ -1,7 +1,7 @@
-﻿==============================================================================
+==============================================================================
   SUPPORTED QUERY VALIDATION REPORT -- SC_SLED v1.11
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-JSON version: v1.16
+JSON version: v1.17
 Validator: 77 PASS / 0 FAIL / 0 WARN / 2 LIMITATION
   Generated: 2026-09-14        Source: SC_SLED.xml + SC_SLED_DEVDOC.txt
 ==============================================================================
@@ -12,7 +12,7 @@ ENTRY / MODIFY / CANCEL / LOCATE operations, CCH transactions, WMPI and Orion --
 a different product surface, deliberately out of scope. Building them would be
 scope invention, not completeness.
 
-TOTALS: 9 CommSys QIDMs      Total CommSys combos: 17   (WantedPersonQuery is TWO configs sharing one query -- Person + Vehicle, v1.15)
+TOTALS: 8 CommSys QIDMs      Total CommSys combos: 17   (v1.17 -- WantedPersonQuery is ONE config again, on its own tab)
 
   Every marker below is [PENDING]. SC_SLED has NEVER been tenant-tested, so no
   combination has wire evidence. A marker only moves to [PENDING] when a
@@ -22,16 +22,16 @@ TOTALS: 9 CommSys QIDMs      Total CommSys combos: 17   (WantedPersonQuery is TW
 VEHICLE
 ------------------------------------------------------------------------------
   VehicleRegistrationQuery  (metadata QVRQ -- "SC Vehicle Stolen/Reg Inquiry", COMPOUND)
-    [CONFIRMED] QVRQ.P   set: LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear
+    [PENDING] QVRQ.P   set: LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear
                        any: RegistrationState
-    [CONFIRMED] QVRQ.V   set: VehicleIdentificationNumber
+    [PENDING] QVRQ.V   set: VehicleIdentificationNumber
                        any: RegistrationState, VehicleMakeCode, vehicleYear
                        gate: LicensePlateNumber NOT_EXISTS  (Plate > VIN priority)
 
   VehicleStolenQuery  (metadata QV -- "Stolen Vehicle Inquiry", NCIC)
     [PENDING] QV.VM    set: VehicleIdentificationNumber, VehicleMakeCode
                        gate: LicensePlateNumber NOT_EXISTS
-    [CONFIRMED] QV.P     set: LicensePlateNumber
+    [PENDING] QV.P     set: LicensePlateNumber
                        any: VehicleIdentificationNumber, RegistrationState, VehicleMakeCode
 
   !! CO-FIRE, MEASURED -- NOT A DEFECT MARKER, A TESTING INSTRUCTION.
@@ -45,7 +45,7 @@ VEHICLE
 PERSON
 ------------------------------------------------------------------------------
   DriverLicenseQuery  (metadata DQ + QWDQ -- two DISTINCT keyRefs, no suffix invented)
-    [CONFIRMED] QWDQ     set: SexCode, BirthDate, NameLast, NameFirst
+    [PENDING] QWDQ     set: SexCode, BirthDate, NameLast, NameFirst
                        any: OperatorLicenseNumber, RegistrationState
                        "SC Driver Wanted/Reg Inquiry" -- COMPOUND
     [PENDING] DQ       set: OperatorLicenseNumber
@@ -54,7 +54,7 @@ PERSON
                        OLN-without-name fill. TEST IT THAT WAY OR IT IS NOT TESTED.
 
   DriverRegistrationQuery  (metadata DQ x2 -- same transaction as DriverLicenseQuery's DQ)
-    [CONFIRMED] DQ.RN    set: BirthDateDR, NameLastDR, NameFirstDR
+    [PENDING] DQ.RN    set: BirthDateDR, NameLastDR, NameFirstDR
                        any: RegistrationStateDR, SexCodeDR
     [PENDING] DQ.RO    set: OperatorLicenseNumberDR
                        any: ImageIndicatorDR, RegistrationStateDR
@@ -63,31 +63,47 @@ PERSON
                        DL card. Cards kept separate by Rob's call 2026-09-14.
 
   WantedPersonQuery  (metadata QWA x5 -- all five synthetic)
-  !! SPLIT ACROSS TWO ENTITIES AT v1.15, AND IT IS ONE TRANSACTION, NOT TWO. There is no Wanted
-     Person tab any more (Rob 2026-09-18). The person-shaped combos ride the PERSON tab and the
-     vehicle-shaped ones ride the VEHICLE tab, so each CO-FIRES with the searches already there.
-     Two QIDM configs, SAME `query` (the wire sends it as <MessageType>WantedPersonQuery>), names
-     differing only by a _Veh suffix because a duplicate config name is a silent overwrite.
-     That same-query/two-entity shape was PROVEN with SHAREDQ_PROBE before being built.
+  !! ONE CONFIG, ITS OWN TAB, ON ENTITY `Other` (v1.17) -- AND THE PREVIOUS ANSWER SHIPPED A
+     QUERY THAT NEVER REACHED THE WIRE. v1.15/v1.16 split these five combinations across a Person
+     config and a Vehicle config SHARING one `query`, to make them co-fire. Both rendered a
+     selectable checkbox; only the VEHICLE one dispatched. The Person half sent NOTHING, silently,
+     for three versions, while the validator, enforce, PHASE 1, reachability, gate efficacy and
+     fuzz were all green and the simulator printed "Person 4 QUERIES CO-FIRE".
+     MEASURED 2026-09-18 on usx-sc-sled: a 59-test sweep drove 21 Person wanted-person fills, all
+     reporting SENT; the wire carried NINE WantedPersonQuery rows and every one was VEHICLE-shaped
+     (plate/VIN/make) -- not one with Name, NCICNumber or OCA. Three capture passes over 134
+     dex-log rows ended `late-row wait done: 0/18` / `NOTHING CAPTURED`. Confirmed by hand: NCIC
+     Number alone on the Person tab -- "it lits up  i hit send but it never shows in the log".
+     Recorded as LIMITATION #49; validate.ps1 now FAILS on a duplicate `query`.
+     The earlier note here said the shape "was PROVEN with SHAREDQ_PROBE". It was not: that probe
+     proved both configs RENDER, never submitted, and said nothing about DISPATCH.
+     Rob's call, given three costed options: its own tab on `Other` -- the sixth entity, so six
+     forms hold six distinct entities and no tab carries a dead checkbox. THE COST IS THE CO-FIRE:
+     the officer enters the details on this tab. Renaming one `query` was not available -- it is
+     transmitted as <MessageType>.
+     ⚠️ `Other` is live-confirmed to RENDER. Whether a QIDM on it DISPATCHES is UNTESTED, and that
+     is the same render-vs-dispatch gap that caused this. THE FIRST IMPORT IS THE TEST.
 
-    -- on PERSON (config SC_SLED_WantedPersonQuery) --
+    -- all five, on the WANTED PERSON tab (config SC_SLED_WantedPersonQuery, targetEntity Other) --
     [PENDING] QWA.NCIC set: NCICNumber
     [PENDING] QWA.OCA  set: NameLast, NameFirst, OriginatingAgencyCaseNumber
-    [PENDING] QWA.N    set: NameLast, NameFirst
-                       NCIC number and OCA are gated NOT_EXISTS on the name search, so a unique
-                       handle always beats a name.
-
-    -- on VEHICLE (config SC_SLED_WantedPersonQuery_Veh) --
-    [CONFIRMED] QWA.P    set: LicensePlateNumber, RegistrationState
-                       set[] names the FORM control. The attribute is still LicensePlateStateCode
-                       (that is the wire field); it feeds from the Vehicle tab's existing State
-                       control rather than a second state box being added for one value.
+    [PENDING] QWA.P    set: LicensePlateNumber, RegistrationState
+                       set[] names the FORM control; the attribute is still LicensePlateStateCode,
+                       which is the wire field. This tab now carries its OWN State control, so the
+                       v1.15 redirection onto the Vehicle tab's box is gone.
     [PENDING] QWA.VM   set: VehicleIdentificationNumber, VehicleMakeCode
                        Plate > VIN comes from ORDERING (QWA.P is ahead), not a gate.
                        gate: NCICNumber NOT_EXISTS, OriginatingAgencyCaseNumber NOT_EXISTS
+    [PENDING] QWA.N    set: NameLast, NameFirst
+                       NCIC number and OCA are gated NOT_EXISTS here, so a unique handle always
+                       beats a name. OperatorLicenseNumber is an OPTIONAL on this branch (metadata
+                       QWA{Name} <Any>) and the tab carries a box for it -- but no QWA combination
+                       makes OLN mandatory, so an OLN alone still fires nothing.
 
-  !! CO-FIRE, MEASURED: a Name+Sex+BirthDate fill satisfies QWDQ *and* QWA.N (shared
-     unsuffixed pool), so the wanted check goes out twice. Capture both.
+  !! RACE, SEX AND STATE ARE REAL DROPDOWNS AGAIN. When this tab was hosted on the Firearm entity
+     (v1.3-v1.11) it was a TWO-QIF entity, which breaks codeTypeProvider reverse-lookup
+     (LIMITATION #28), so all three had to be free-text or AP #1 would have put the platform's
+     internal numeric row id on the wire. `Other` hosts one form, so they are Sel again.
   !! AN OLN-ONLY SEARCH GETS NO WANTED CHECK. QWDQ needs the full name triple and QWA
      defines no OLN-mandatory branch. That is SC's design; it is not a gap to close.
 
@@ -95,17 +111,17 @@ PERSON
 FIREARM / ARTICLE / BOAT
 ------------------------------------------------------------------------------
   GunQuery  (metadata QG -- "Stolen Gun Inquiry")
-    [CONFIRMED] QG       set: serialNumber        any: GunMake, GunModel, GunCaliber
+    [PENDING] QG       set: serialNumber        any: GunMake, GunModel, GunCaliber
 
   ArticleSingleQuery  (metadata QA -- "Article Inquiry")
-    [CONFIRMED] QA       set: ArticleSerialNumber, ArticleTypeCode
+    [PENDING] QA       set: ArticleSerialNumber, ArticleTypeCode
 
   BoatQuery  (metadata QBBQ -- "SC Boat Stolen/Reg Inquiry", COMPOUND; ONE declared
               combination holding a <Choice> nested under <Set>, i.e. TWO alternatives)
-    [CONFIRMED] QBBQ.H   set: BoatHullIdNumber     any: RegistrationState
+    [PENDING] QBBQ.H   set: BoatHullIdNumber     any: RegistrationState
                        RegistrationNumber is NOT permitted here -- it is the OTHER
                        mandatory alternative of the Choice, not an optional.
-    [CONFIRMED] QBBQ.R   set: RegistrationNumber   any: RegistrationState
+    [PENDING] QBBQ.R   set: RegistrationNumber   any: RegistrationState
                        gate: BoatHullIdNumber NOT_EXISTS  (Hull > Registration)
 
 ------------------------------------------------------------------------------
