@@ -1398,8 +1398,33 @@ foreach ($bundle in $providerBundles) {
             }
             $expectedEntity = $queryEntityMap[$cfg.query]
             if ($expectedEntity -and $cfg.targetEntity -ne $expectedEntity) {
-                Write-Warn "QIDM '$($cfg.name)' query='$($cfg.query)' targets '$($cfg.targetEntity)' -- expected '$expectedEntity'"
-                Write-Host "    [FIX] Change targetEntity from '$($cfg.targetEntity)' to '$expectedEntity', or verify query='$($cfg.query)' is correct for this entity" -ForegroundColor Cyan
+                # ⚠️ THIS WAS A NAME-CONVENTION CHECK AND IT IS NOW A WIRING CHECK (2026-09-18).
+                # The map encodes the usual host for each query, which held while every provider ran
+                # ONE QIF PER ENTITY. It is not a platform rule: targetEntity declares WHERE A
+                # TRANSACTION IS FILED, and a provider with more forms than the five legal entities
+                # must deliberately file some elsewhere. SC_SLED v1.12 files GunQuery under Article
+                # so the Firearm card can share the Article tab -- which is what removes the
+                # permanently-greyed Firearm checkbox from the Wanted Person tab (a tab shows a
+                # checkbox for EVERY QIDM on its entity, so two QIFs on one entity always strand a
+                # dead one). Warning there would be telling a correct build to re-create the defect.
+                # THE QUESTION WORTH ASKING IS WHETHER THE HOST IS WIRED, NOT WHETHER IT IS USUAL:
+                # are this QIDM's mandatory fields actually present on a form of the entity it
+                # claims? If yes the placement is deliberate and functional; if no, the QIDM is
+                # filed where the officer cannot reach it, which is a REAL defect and still WARNs.
+                $hostIds = $allFieldIds[$cfg.targetEntity]
+                $setFields = @()
+                foreach ($combo in @($cfg.combinations)) {
+                    foreach ($f in @($combo.requirements.set)) { if ($f) { $setFields += "$f" } }
+                }
+                $setFields = @($setFields | Select-Object -Unique)
+                $missingOnHost = @()
+                if ($hostIds) { $missingOnHost = @($setFields | Where-Object { -not $hostIds.Contains($_) }) }
+                if ($hostIds -and $setFields.Count -and -not $missingOnHost.Count) {
+                    Write-Pass "QIDM '$($cfg.name)' hosted on '$($cfg.targetEntity)' rather than the usual '$expectedEntity' -- DELIBERATE and WIRED (all $($setFields.Count) set[] field(s) are on that entity's form)"; Inc-Pass
+                } else {
+                    Write-Warn "QIDM '$($cfg.name)' query='$($cfg.query)' targets '$($cfg.targetEntity)' -- expected '$expectedEntity', and its set[] field(s) are NOT all on that entity's form$(if ($missingOnHost.Count) { ": $($missingOnHost -join ', ')" })"
+                    Write-Host "    [FIX] Either change targetEntity to '$expectedEntity', or put this query's set[] controls on a QUERYINPUTFORM whose targetEntity is '$($cfg.targetEntity)'. Hosting a QIDM on an entity that carries none of its fields makes it unreachable from the form." -ForegroundColor Cyan
+                }
             }
         }
         if (-not $cfg.description) { Write-Warn "QIDM '$($cfg.name)' missing description property"; Write-Host "    [FIX] In build script: add description property to QIDM '$($cfg.name)' (e.g. descriptive text of what this QIDM does)" -ForegroundColor Cyan }

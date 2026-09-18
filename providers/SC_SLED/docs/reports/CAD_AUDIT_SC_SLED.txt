@@ -1,14 +1,14 @@
-﻿================================================================
+================================================================
   Build Report: SC_SLED
-  Source: SC_SLED_v1.11.json
-  Generated: 2026-09-17 19:44
+  Source: SC_SLED_v1.12.json
+  Generated: 2026-09-18 10:31
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: SC_SLED_v1.11
+ CAD AUDIT: SC_SLED_v1.12
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -58,10 +58,10 @@ CAD AUDIT
     [INFO] hairColor: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] height: in CAD list, not in QIF (CAD sends it but form doesn't have it)
   Firearm:
-    [PASS] serialNumber: in QIF and CAD list
+    [INFO] serialNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] firearmMake: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] gunCaliber: in QIF as 'GunCaliber' (PascalCase USx fieldIds)
-    [PASS] gunModel: in QIF as 'GunModel' (PascalCase USx fieldIds)
+    [INFO] gunCaliber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] gunModel: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] gunTypeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] imageIndicator: in QIF as 'ImageIndicator' (PascalCase USx fieldIds)
     [PASS] nameFirst: in QIF as 'NameFirst' (PascalCase USx fieldIds)
@@ -88,9 +88,8 @@ CAD AUDIT
     [INFO] MiscellaneousNumber: in QIF, not in CAD list (provider-specific)
     [INFO] ExpandedNameSearchCode: in QIF, not in CAD list (provider-specific)
     [INFO] ExpandedBirthDateSearchCode: in QIF, not in CAD list (provider-specific)
-    [INFO] GunMake: in QIF, not in CAD list (provider-specific)
   Article:
-    [INFO] serialNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] serialNumber: in QIF and CAD list
     [PASS] articleTypeCode: in QIF as 'ArticleTypeCode' (PascalCase USx fieldIds)
     [INFO] articleBrand: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] articleCategory: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -104,6 +103,9 @@ CAD AUDIT
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] ArticleSerialNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] GunMake: in QIF, not in CAD list (provider-specific)
+    [INFO] GunModel: in QIF, not in CAD list (provider-specific)
+    [INFO] GunCaliber: in QIF, not in CAD list (provider-specific)
   Boat:
     [PASS] boatHullIdNumber: in QIF as 'BoatHullIdNumber' (PascalCase USx fieldIds)
     [PASS] registrationNumber: in QIF as 'RegistrationNumber' (PascalCase USx fieldIds)
@@ -180,6 +182,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 74 PASS / 0 FAIL / 0 WARN / 76 INFO
+Total: 72 PASS / 0 FAIL / 0 WARN / 80 INFO
 
 

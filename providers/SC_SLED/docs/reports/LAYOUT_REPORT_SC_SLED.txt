@@ -1,20 +1,18 @@
-﻿================================================================
+================================================================
   Build Report: SC_SLED
-  Source: SC_SLED_v1.11.json
-  Generated: 2026-09-17 14:05
+  Source: SC_SLED_v1.12.json
+  Generated: 2026-09-18 10:31
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== SC_SLED_v1.11.json ===
-QIFs: 7
+=== SC_SLED_v1.12.json ===
+QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=4
   Person | entity=Person | qidm= | cards=1 fields=5
   Wanted Person | entity=Firearm | qidm= | cards=1 fields=15
-  Firearm | entity=Firearm | qidm= | cards=1 fields=2
-  Article | entity=Article | qidm= | cards=1 fields=1
-  Boat | entity=Boat | qidm= | cards=1 fields=3
-  Administrative Message | entity=Boat | qidm= | cards=1 fields=5
+  Article & Firearm | entity=Article | qidm= | cards=2 fields=3
+  Boat & Administrative Message | entity=Boat | qidm= | cards=2 fields=8
 QIDMs: 9
   SC_SLED_VehicleRegistrationQuery | attrs=7 combos=2 autoSelect=True
   SC_SLED_VehicleStolenQuery | attrs=4 combos=2 autoSelect=True
@@ -79,7 +77,7 @@ LAYOUT DETAIL
       ROW ROW_WP_2 [3 3 3 3]
         OperatorLicenseNumber (Text | maxLen=20)
         BirthDate (FormDate)
-        SexCode (Dropdown | codeTypeCategory=NIBRS_SEX | codeTypeSource=NIBRS)
+        SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
         raceCode (Dropdown | codeTypeCategory=NIBRS_RACE | codeTypeSource=NIBRS)
       ROW ROW_WP_1 [6 6]
         NCICNumber (Text | maxLen=10)
@@ -94,9 +92,13 @@ LAYOUT DETAIL
         ExpandedBirthDateSearchCode (Text | maxLen=1)
         RelatedHitSearchIndicator (Text | maxLen=1)
 
-=== Firearm ===
-  name=ENTITY_Firearm | entity=Firearm | qidm=
+=== Article & Firearm ===
+  name=ENTITY_Article | entity=Article | qidm=
   [default]
+    CARD "CARD_ART"
+      ROW ROW_ART_1 [6 6]
+        ArticleSerialNumber (Text | maxLen=20)
+        ArticleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
     CARD "CARD_GUN"
       ROW ROW_GUN_1 [3 3 3 3]
         serialNumber (Text | maxLen=11)
@@ -104,15 +106,7 @@ LAYOUT DETAIL
         GunModel (Text | maxLen=4)
         GunCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NCIC)
 
-=== Article ===
-  name=ENTITY_Article | entity=Article | qidm=
-  [default]
-    CARD "CARD_ART"
-      ROW ROW_ART_1 [6 6]
-        ArticleSerialNumber (Text | maxLen=20)
-        ArticleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
-
-=== Boat ===
+=== Boat & Administrative Message ===
   name=ENTITY_Boat | entity=Boat | qidm=
   [default]
     CARD "CARD_BOAT"
@@ -120,10 +114,6 @@ LAYOUT DETAIL
         BoatHullIdNumber (Text | maxLen=20)
         RegistrationNumber (Text | maxLen=8)
         RegistrationState (Text | maxLen=2)
-
-=== Administrative Message ===
-  name=ENTITY_AdministrativeMessage | entity=Boat | qidm=
-  [default]
     CARD "CARD_AM"
       ROW ROW_AM_1 [12]
         FreeText (FormTextarea | maxLen=501)

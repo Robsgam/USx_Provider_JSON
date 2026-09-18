@@ -2,9 +2,14 @@
 
 Auto-generated from `SC_SLED_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.11** | Generated: 2026-09-17
+Current: **v1.12** | Generated: 2026-09-18
 
 ---
+
+## v1.12 -- 2026-09-18 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v1.11 -- 2026-09-17 -- THE AM MESSAGE IS A MULTI-LINE BOX -- FormTextarea, and it is LIVE-PROVEN
 

@@ -27,7 +27,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | NY_NYSPIN_EJUSTICE | v4.27 | NEVER-TESTED -- 65 test(s) owed |
 | OH_LEADS | v2.11 | ALL-PASS (65 logs) |
 | OR_LEDS | v2.6 | ALL-PASS (27 logs) |
-| SC_SLED | v1.11 | PARTIAL -- 55 plan test(s) owed (10 captured) |
+| SC_SLED | v1.12 | NEVER-TESTED -- 65 test(s) owed |
 | TN_TIES | v2.6 | ALL-PASS (67 logs) |
 | TX_TLETS | v4.23 | NEVER-TESTED -- 101 test(s) owed |
 | _5 others_ | -- | never tenant-tested: CA_CONTRA_COSTA, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, LA_LEMS, TX_TLETS_CCH |

@@ -35,7 +35,7 @@ $repoRoot    = Split-Path (Split-Path $providerDir -Parent) -Parent
 . (Join-Path $repoRoot 'tools\_build_provider_helpers.ps1')
 
 $providerName = 'SC_SLED'
-$Version      = '1.11'
+$Version      = '1.12'
 $currentYear  = (Get-Date).Year.ToString()
 
 Write-Host ''
@@ -363,7 +363,7 @@ $wpAttrs = @(
         -Rule ([PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ', ' ', ' ') })
     Build-QidmAttribute -Name 'BirthDate' -Size 8 -SourceField @('BirthDate') `
         -Rule ([PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') })
-    Build-QidmAttribute -Name 'SexCode' -Size 1 -SourceField @('SexCode')   # v1.3 NO codeTypeProvider -- see wpForm
+    Build-QidmAttribute -Name 'SexCode' -Size 1 -SourceField @('SexCode') -CodeTypeProvider 'NIBRS'   # v1.12 RESTORED (AP #2) -- Firearm is single-QIF again, so LIMITATION #28 no longer breaks reverse-lookup
     Build-QidmAttribute -Name 'RaceCode' -Size 1 -SourceField @('raceCode')   # v1.3 NO codeTypeProvider -- see wpForm
     Build-QidmAttribute -Name 'OperatorLicenseNumber'       -Size 20 -SourceField @('OperatorLicenseNumber')
     Build-QidmAttribute -Name 'SocialSecurityNumber'        -Size 9  -SourceField @('SocialSecurityNumber')
@@ -435,10 +435,28 @@ $gunCombos = @(
     Build-QidmCombo -KeyReference 'QG' -PrimaryFieldReference 'GunSerialNumber' `
         -Set @('serialNumber') -Any @('GunMake','GunModel','GunCaliber')
 )
+# !! targetEntity='Article' SINCE v1.12, AND IT IS THE FIX FOR THE GREYED CHECKBOX.
+# Rob, 2026-09-18, reading the rendered page: "wanted person has a firearm button at the button that
+# is greyed out" ... "that is not acceptable". MEASURED CAUSE: the query CHECKBOX LIST is keyed by
+# targetEntity while TABS are keyed by QUERYINPUTFORM (CAPABILITY #47) -- two different keys. So every
+# QIDM on an entity renders its checkbox on EVERY tab of that entity, and one of them is always
+# unsatisfiable when the two forms are disjoint. WantedPersonQuery and GunQuery both sat on Firearm,
+# so each appeared, permanently dead, on the other's tab; Rob confirmed the same on Boat/Admin Message
+# ("boat has admin message on it too and admin has boat on it").
+# THE RULE IS EXACT: zero greyed checkboxes <=> ONE QIF PER ENTITY <=> at most 5 tabs. Two QIFs on one
+# entity can never both be clean -- each would have to carry the other's controls, and then both
+# queries fire from both tabs, which is worse than a dead checkbox.
+# So the Firearm CARD moved onto the Article QIF and this QIDM moved with it, leaving Wanted Person
+# as the sole QIF on Firearm -- which is the tab Rob asked for twice and it keeps its own name,
+# because the tab CAPTION comes from `label`, not targetEntity (measured 2026-09-18: this build
+# renders a tab called "Wanted Person" off targetEntity='Firearm', which settles the question
+# CAPABILITY #47 recorded as UNMEASURED).
+# Same declaration-of-record-kind reasoning as $amQuery's host choice: targetEntity is where the
+# transaction is FILED, not a claim that a firearm is an article.
 $gunQuery = Build-Qidm -ProviderName $providerName -Query 'GunQuery' `
-    -TargetEntity 'Firearm' -QueryLabel 'Firearm' `
+    -TargetEntity 'Article' -QueryLabel 'Firearm' `
     -Attributes $gunAttrs -Combinations $gunCombos `
-    -Description 'GunQuery -- QG (serial number, with make/model/caliber optional). Single metadata combination.'
+    -Description 'GunQuery -- QG (serial number, with make/model/caliber optional). Single metadata combination. targetEntity=Article since v1.12 so the Firearm card can share the Article tab and leave Wanted Person as the only QIF on Firearm -- see the block above; this removes the permanently-greyed Firearm checkbox from the Wanted Person tab.'
 
 # =====================================================================
 # 8. ARTICLE -- ArticleSingleQuery
@@ -802,7 +820,13 @@ $wpLayout = MakeLayouts @(
                 #   sent nothing and the control's own emptiness says 'optional' better than the
                 #   label did. Note SexCode needs no override -- it is in QWDQ's set[] on
                 #   DriverLicenseQuery, so it is not an any[]-only field and Rule 3 never applied.
-                @{ id = 'WPSexCode_Input';   node = Sel 'SexCode' 'Sex' @{ codeTypeCategory = 'NIBRS_SEX'; codeTypeSource = 'NIBRS' } 'ROW_WP_2' }
+                # v1.12 -- BACK TO THE CANONICAL PATTERN. The codeTypeCategory fallback here was the
+                # LIMITATION #28 workaround for a two-QIF Firearm entity; Firearm is single-QIF again
+                # (Wanted Person is its only form), so reverse-lookup works and the validator says so
+                # in three WARNs. Race is deliberately NOT converted with it: the code-type table
+                # forbids attributeTypeId=RACE (NCIC gives an empty dropdown), so NIBRS_RACE +
+                # NIBRS remains correct there and the validator agrees by not flagging it.
+                @{ id = 'WPSexCode_Input';   node = Sel 'SexCode' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_WP_2' }
                 @{ id = 'raceCode_Input';    node = Sel 'raceCode' 'Race' @{ codeTypeCategory = 'NIBRS_RACE'; codeTypeSource = 'NIBRS' } 'ROW_WP_2' }
             )}
             @{ id = 'ROW_WP_1'; cols = @('6','6'); fields = @(
@@ -833,7 +857,25 @@ $wpForm = [PSCustomObject]@{
 }
 
 # ---- Firearm ------------------------------------------------------------------------------------
-$gunLayout = MakeLayouts @(
+# ---- Article + Firearm -- ONE QIF, TWO CARDS (v1.12) ---------------------------------------------
+# The Firearm card lives here now. See the $gunQuery block for the measured reason: a tab shows a
+# checkbox for EVERY QIDM on its entity, so two QIFs on one entity always leaves a permanently dead
+# checkbox on each. Both cards on ONE form means both QIDMs are satisfiable from the tab that offers
+# them, and nothing greys out. The two field sets are fully DISJOINT -- QA needs
+# set[ArticleSerialNumber, ArticleTypeCode], QG needs set[serialNumber] -- so neither query can match
+# the other's fill even though LIMITATION #26 makes the pool shared.
+# BOTH Article fields are mandatory in metadata and there are NO optionals, so both labels say so.
+$artLayout = MakeLayouts @(
+    @{
+        id    = 'CARD_ART'
+        title = 'ARTICLE -- SERIAL NUMBER AND TYPE ARE BOTH REQUIRED'
+        rows  = @(
+            @{ id = 'ROW_ART_1'; cols = @('6','6'); fields = @(
+                @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number' '20' 'ROW_ART_1' }
+                @{ id = 'ArticleTypeCode_Input';     node = Sel 'ArticleTypeCode' 'Article Type (required)' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
+            )}
+        )
+    }
     @{
         id    = 'CARD_GUN'
         title = 'FIREARM -- BY SERIAL NUMBER'
@@ -847,40 +889,20 @@ $gunLayout = MakeLayouts @(
         )
     }
 )
-$firearmForm = [PSCustomObject]@{
-    description  = 'Firearm -- 1 card. QG (serial number; make/model/caliber optional).'
-    label        = 'Firearm'
-    layout       = $gunLayout
-    name         = 'ENTITY_Firearm'
-    type         = 'QUERYINPUTFORM'
-    targetEntity = 'Firearm'
-}
-
-# ---- Article ------------------------------------------------------------------------------------
-# BOTH fields are mandatory in metadata and there are NO optionals, so both labels say so.
-$artLayout = MakeLayouts @(
-    @{
-        id    = 'CARD_ART'
-        title = 'ARTICLE -- SERIAL NUMBER AND TYPE ARE BOTH REQUIRED'
-        rows  = @(
-            @{ id = 'ROW_ART_1'; cols = @('6','6'); fields = @(
-                @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number' '20' 'ROW_ART_1' }
-                @{ id = 'ArticleTypeCode_Input';     node = Sel 'ArticleTypeCode' 'Article Type (required)' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
-            )}
-        )
-    }
-)
 $articleForm = [PSCustomObject]@{
-    description  = 'Article -- 1 card. QA requires BOTH ArticleSerialNumber and ArticleTypeCode; metadata declares no optionals.'
-    label        = 'Article'
+    description  = 'Article & Firearm -- 2 cards on ONE QIF (v1.12). QA requires BOTH ArticleSerialNumber and ArticleTypeCode and declares no optionals; QG needs serialNumber with make/model/caliber optional. Merged so that Article is a SINGLE-QIF entity: a tab renders a checkbox for every QIDM on its targetEntity, so two QIFs on one entity always strand a dead checkbox on each (Rob, 2026-09-18, on the Firearm/Wanted Person pair). The field sets are disjoint, so neither query can match the other card''s fill.'
+    label        = 'Article & Firearm'
     layout       = $artLayout
     name         = 'ENTITY_Article'
     type         = 'QUERYINPUTFORM'
     targetEntity = 'Article'
 }
 
-# ---- Boat ---------------------------------------------------------------------------------------
-$boatLayout = MakeLayouts @(
+# ---- Boat (card only -- the QIF is assembled after the AM card, below) --------------------------
+# v1.12: Boat is now a SINGLE-QIF entity with the Administrative Message card on the same form, so
+# the card is defined here and $boatLayout/$boatForm are built AFTER $amCard. Same reason as
+# Article+Firearm -- see the $gunQuery block.
+$boatCard = @(
     @{
         id    = 'CARD_BOAT'
         title = 'BOAT -- BY HULL ID, OR BY REGISTRATION NUMBER'
@@ -902,19 +924,19 @@ $boatLayout = MakeLayouts @(
                 # QBBQ.H and QBBQ.R, so it is a pure optional and NOT a routing discriminator -- no
                 # BUILD_RULES 24 exposure -- and the label already told the officer to leave it blank
                 # in state. Same trade the Wanted Person card took at v1.3 for LicensePlateStateCode.
+                # ⚠️ v1.12 RE-OPENS THE DROPDOWN OPTION AND DELIBERATELY DOES NOT TAKE IT. Boat is a
+                # SINGLE-QIF entity again, so LIMITATION #28 no longer applies and this could go back
+                # to `Sel ... attributeTypeId='STATE'` + `-CodeTypeProvider 'NCIC'`. It is left as a
+                # type-in in THIS bump on the script's own one-change-per-import rule: the structural
+                # fix is what the next import has to prove, and a control that changed TYPE in the
+                # same bump would confound a blank or wrong-coded State on the wire. Restore it in the
+                # next bump, together with the Wanted Person card's Race/Sex/LicensePlateStateCode,
+                # which are type-ins for exactly the same retired reason.
                 @{ id = 'RegistrationState_Input';  node = Inp 'RegistrationState' 'State (leave blank for SC)' '2' 'ROW_BOAT_1' }
             )}
         )
     }
 )
-$boatForm = [PSCustomObject]@{
-    description  = 'Boat -- 1 card. QBBQ.H (hull) / QBBQ.R (registration number). The metadata expresses these as a Choice nested under Set, which the generated METADATA_REFERENCE renders as an EMPTY required set.'
-    label        = 'Boat'
-    layout       = $boatLayout
-    name         = 'ENTITY_Boat'
-    type         = 'QUERYINPUTFORM'
-    targetEntity = 'Boat'
-}
 
 # ---- ADMINISTRATIVE MESSAGE -- ITS OWN TAB (v1.2) -----------------------------------------------
 # THE VERSION HISTORY OF THIS ONE FORM IS THE WHOLE LESSON:
@@ -956,7 +978,7 @@ $boatForm = [PSCustomObject]@{
 # gate across all 21 providers, and `am$` is a far riskier string to strip globally than `dh`/`dr`.
 # Widening a shared canonicaliser to accommodate one provider's unnecessary cosmetic choice is the
 # wrong trade. USE A SUFFIX HERE ONLY IF A REAL COLLISION APPEARS, and add `am$` at the same time.
-$amLayout = MakeLayouts @(
+$amCard = @(
     @{
         id    = 'CARD_AM'
         title = 'ADMINISTRATIVE MESSAGE -- FREE TEXT TO UP TO FIVE AGENCIES'
@@ -992,11 +1014,24 @@ $amLayout = MakeLayouts @(
         )
     }
 )
-$amForm = [PSCustomObject]@{
-    description  = 'Administrative Message -- ITS OWN TAB (v1.2), hosted on targetEntity=Boat since v1.8. Tabs are keyed by QUERYINPUTFORM, not by entity (CAPABILITY #47), and the entity is chosen PURELY to place the tab: same-entity tabs always render ADJACENT and in configurations[] order, so the LAST tab must sit on the LAST entity. It was on Article through v1.7 and rendered 6th, ahead of Boat -- see the TAB ORDER block. targetEntity=Boat is not a claim this searches for a boat. Its 6 field ids (FreeText, DestinationCode1-5) are fully DISJOINT from ENTITY_Boat''s 3 (BoatHullIdNumber, RegistrationNumber, RegistrationState), which matters because LIMITATION #26 makes the field pool SHARED across every QIF on one entity and LIMITATION #1 makes a shared pool an over-send risk. Neither query can match the other''s fill: AM needs set[FreeText], QBBQ.H/.R need set[BoatHullIdNumber]/set[RegistrationNumber].'
-    label        = 'Administrative Message'
-    layout       = $amLayout
-    name         = 'ENTITY_AdministrativeMessage'
+# ---- Boat + Administrative Message -- ONE QIF, TWO CARDS (v1.12) --------------------------------
+# AM was its OWN TAB from v1.2 to v1.11 and is now a CARD on the Boat form. That is a REVERSAL of the
+# "i want it compeltely seperated" request, and it is made deliberately because the two cannot both
+# be had: a tab renders a checkbox for every QIDM on its targetEntity, so AM-as-its-own-tab
+# necessarily puts a permanently dead 'Boat' checkbox on it and a dead 'Administrative Message'
+# checkbox on Boat -- which Rob saw and rejected ("boat has admin message on it too and admin has
+# boat on it" / "that is not acceptable"). Separation was traded for live checkboxes, and the tab
+# that was actually asked for TWICE -- Wanted Person -- is the one that KEPT its own tab.
+# The 6 AM field ids (FreeText, DestinationCode1-5) are fully DISJOINT from Boat's 3, so with
+# LIMITATION #26's shared pool neither query can match the other's fill: AM needs set[FreeText],
+# QBBQ.H/.R need set[BoatHullIdNumber]/set[RegistrationNumber].
+# Boat is LAST in the entity order, so this tab stays last -- the placement the v1.8 host move bought.
+$boatLayout = MakeLayouts @($boatCard + $amCard)
+$boatForm = [PSCustomObject]@{
+    description  = 'Boat & Administrative Message -- 2 cards on ONE QIF (v1.12). QBBQ.H (hull) / QBBQ.R (registration number); AM is free text to up to five destination ORIs. The metadata expresses the boat pair as a Choice nested under Set, which the generated METADATA_REFERENCE renders as an EMPTY required set. Merged so Boat is a SINGLE-QIF entity and neither checkbox greys out; AM''s 6 field ids are disjoint from Boat''s 3, so neither query can match the other card''s fill.'
+    label        = 'Boat & Administrative Message'
+    layout       = $boatLayout
+    name         = 'ENTITY_Boat'
     type         = 'QUERYINPUTFORM'
     targetEntity = 'Boat'
 }
@@ -1008,6 +1043,15 @@ $amForm = [PSCustomObject]@{
 #     CAPABILITY #47 measured working (the probe listed Person four times and got four tabs).
 #     AM goes LAST so the five familiar tabs keep their established positions.
 # =====================================================================
+# ⚠️ THE BLOCK BELOW IS HISTORY AS OF v1.12 -- ITS MECHANICS ARE STILL TRUE, ITS LAYOUT IS NOT.
+# It documents the SEVEN-tab arrangement (two QIFs each on Firearm and Boat). v1.12 merged those
+# doubled slots into single QIFs to kill the greyed checkboxes, so there are now FIVE tabs, one per
+# entity, and rules 1-3 no longer bind anything: with one form per entity the order array alone
+# fixes the order. Rob's requested SEQUENCE is preserved as far as the merge allows --
+# Vehicle, Person, Wanted Person, Article(+Firearm), Boat(+Administrative Message) -- with Firearm
+# and Administrative Message now CARDS inside the last two tabs rather than tabs of their own.
+# Kept verbatim because the three measured facts in it are what any future multi-QIF work must obey.
+#
 # TAB ORDER, Rob 2026-09-16: "veh per wanted person firearm articel boat admin mesage  in that order".
 #
 # ⚠️ MEASURED ON THE RENDERED TENANT AT v1.7, 2026-09-16 -- THE HYPOTHESIS THAT USED TO BE HERE IS
@@ -1048,9 +1092,13 @@ $amForm = [PSCustomObject]@{
 # ⚠️ THE DUPLICATE ENTRIES ARE KEPT DELIBERATELY. They are inert by rule 1, and trimming this to the
 # 5 unique entities in the SAME bump would be two experiments at once: if tabs then went missing,
 # nothing would say whether the host move or the trimmed array caused it. One change per import.
-$entityOrder = @('Vehicle','Person','Firearm','Firearm','Article','Boat','Boat')
+# v1.12 -- FIVE FORMS, FIVE DISTINCT ENTITIES, ONE QIF EACH. The duplicate entries are GONE because
+# the duplication itself is gone: ENTITY_Firearm merged into ENTITY_Article and
+# ENTITY_AdministrativeMessage merged into ENTITY_Boat, which is what removes every greyed checkbox
+# (see $gunQuery). Wanted Person remains its own tab on the Firearm slot.
+$entityOrder = @('Vehicle','Person','Firearm','Article','Boat')
 $entitiesBundle = Build-EntitiesBundle `
-    -Configurations @($vehicleForm, $personForm, $wpForm, $firearmForm, $articleForm, $boatForm, $amForm) `
+    -Configurations @($vehicleForm, $personForm, $wpForm, $articleForm, $boatForm) `
     -DefaultOrder $entityOrder -CadOrder $entityOrder -FrOrder $entityOrder
 
 # =====================================================================
@@ -1070,7 +1118,7 @@ $bundle = [PSCustomObject]@{
     bundles = @($entitiesBundle, $providerBundle, $rmsBundle)
 }
 
-Write-Host ("  QIDMs: {0}   combinations: {1}   entity forms: 6" -f $allQidms.Count, (@($allQidms | ForEach-Object { $_.combinations })).Count) -ForegroundColor Cyan
+Write-Host ("  QIDMs: {0}   combinations: {1}   entity forms: 5" -f $allQidms.Count, (@($allQidms | ForEach-Object { $_.combinations })).Count) -ForegroundColor Cyan
 
 # --- Output (versioned filename carries the version; NEVER add a top-level version field) ---
 $OUT = Join-Path $providerDir "${providerName}_v${Version}.json"

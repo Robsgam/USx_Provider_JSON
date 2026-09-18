@@ -1,14 +1,14 @@
-﻿================================================================
+================================================================
   Build Report: SC_SLED
-  Source: SC_SLED_v1.11.json
-  Generated: 2026-09-17 14:05
+  Source: SC_SLED_v1.12.json
+  Generated: 2026-09-18 10:31
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- SC_SLED_v1.11.json
+  CommSys Query Simulator -- SC_SLED_v1.12.json
 ================================================================
 
 --- QIDM: SC_SLED_VehicleRegistrationQuery [Vehicle] ---
@@ -134,24 +134,21 @@ QUERY SIMULATION
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
---- QIDM: SC_SLED_GunQuery [Firearm] ---
+--- QIDM: SC_SLED_GunQuery [Article] ---
     Query: GunQuery  |  Attrs: 4  |  Combos: 1
 
     [FIRES first-match] QG
       set: [serialNumber]
-      any: [GunMake, GunModel, GunCaliber] -> matched: [GunMake, GunModel, GunCaliber]
+      any: [GunMake, GunModel, GunCaliber] -> matched: []
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
         <MessageKey>QG</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
-        <GunSerialNumber>ABC12345</GunSerialNumber>
-        <GunMake>SMT</GunMake>
-        <GunModel>M&P</GunModel>
-        <GunCaliber>9MM</GunCaliber>
+        <GunSerialNumber>SN12345678</GunSerialNumber>
       </Transaction>
 
     >> PLATFORM FIRES: QG (first matching combo)
-    >> UNION POOL (platform serializes): GunSerialNumber=ABC12345, GunMake=SMT, GunModel=M&P, GunCaliber=9MM
+    >> UNION POOL (platform serializes): GunSerialNumber=SN12345678
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
