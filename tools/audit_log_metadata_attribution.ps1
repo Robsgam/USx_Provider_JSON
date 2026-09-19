@@ -245,7 +245,7 @@ foreach ($p in $targets) {
             $pStrip++; $totStrip++
             continue
         }
-        $named = $stem -replace '_guardrail_vs_.*$', '' -replace '_af_.*$', '' -replace '_any$', ''
+        $named = $stem -replace '_cofire_with_T[0-9]+$', '' -replace '_guardrail_vs_.*$', '' -replace '_af_.*$', '' -replace '_any$', ''
         if (-not $labelOf.ContainsKey("$mt|$named")) {
             # BLOCKING, and it was a NOTE in the first draft -- which is exactly how the LAW 2
             # mutation SURVIVED. A plate-wire log renamed to a VIN combo landed here instead of in

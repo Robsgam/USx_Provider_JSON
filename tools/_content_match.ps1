@@ -41,7 +41,24 @@ function Test-CmValueMatch($fillVal, $display) {
     if ($script:CmStateNames[$f] -eq $d) { return $true }
     if ($f -eq 'M' -and $d -eq 'MALE') { return $true }
     if ($d.StartsWith($f)) { return $true }
-    if ($f.StartsWith('CNST_') -and $d -eq $f.Substring(5)) { return $true }
+    # ── ATTRIBUTE CODE vs DISPLAY CODE: <FAMILY>_<CODE> MATCHES A BARE <CODE> ──────────────────
+    # A VEHICLE_MAKE option is `PASS_FORD - FORD`. The PLAN fills the attribute code the picklist
+    # capture recorded (`PASS_FORD`), the WIRE carries that same `PASS_FORD` (LIMITATION #38), but
+    # the dex-log FIELD MAP -- which is what this function is handed -- records the bare display
+    # code `FORD`. Two namespaces for one selection, and the comparison spans them.
+    # THIS RULE ALREADY EXISTED, HARDCODED TO ONE FAMILY: `$f.StartsWith('CNST_')`. Somebody hit
+    # this with a construction-equipment make and patched that single prefix. The families are
+    # open-ended -- PASS_ (passenger), TRCK_ (truck), CNST_ -- so the narrow version silently
+    # failed on the very next one.
+    # MEASURED on SC_SLED v1.18, 2026-09-18, and it cost a full re-drive to find: FIVE Vehicle
+    # tests (T4/T6/T8/T9/T10 -- every one that fills VehicleMakeCode) were driven THREE TIMES, all
+    # reported SENT, and never produced a log. The ledger stayed at Vehicle 5/10 across all three
+    # sweeps. They were UNCAPTURABLE BY CONSTRUCTION: plan `PASS_FORD` could never equal captured
+    # `FORD`, so no amount of re-running would have helped. The console said nothing was wrong.
+    # Generalised to any single leading FAMILY_ segment. Deliberately NOT a bare "contains" or
+    # suffix test -- it requires the plan value to be exactly FAMILY + '_' + the captured value,
+    # so `FORD` cannot match `PASS_FORDX` or an unrelated code that happens to end the same way.
+    if ($f -match '^[A-Z0-9]+_(.+)$' -and $d -eq $Matches[1]) { return $true }
     return $false
 }
 

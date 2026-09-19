@@ -63,7 +63,15 @@ function Format-ClaudeTenantCell {
 
     if ($null -eq $State) { return $null }
 
-    $total  = 5
+    # DERIVED, NOT A LITERAL 5 -- the same correction made in portfolio_status.ps1 the same day.
+    # A provider with an `Other` form scans SIX entities (SC_SLED v1.18), and a hardcoded total
+    # wrote "ALL-PASS 6/5" straight into the CLAUDE.md table. tested + missing is always the set
+    # actually examined; it still yields 5 for the twenty providers that use the five core entities.
+    $total = 5
+    if ($null -ne $State.EntitiesTested -and $null -ne $State.EntitiesMissing) {
+        $t = [int]$State.EntitiesTested + [int]$State.EntitiesMissing
+        if ($t -gt 0) { $total = $t }
+    }
     $tested = [int]$State.EntitiesTested
     $logs   = [int]$State.Pass + [int]$State.Fail + [int]$State.Pending + [int]$State.Unknown
     $owed   = if ($null -ne $State.OwedPlanTests) { [int]$State.OwedPlanTests } else { 0 }

@@ -22,7 +22,31 @@ if (-not (Get-Command Get-ProviderRootJson -ErrorAction SilentlyContinue)) {
     . (Join-Path $PSScriptRoot "_resolve_provider_json.ps1")
 }
 
+# ⚠️ SIX, NOT FIVE. `Other` is a real member of the client's entity enum
+# (Sm = Object.values(ut) over PERSON/VEHICLE/FIREARM/ARTICLE/BOAT/OTHER, read from the shipping
+# frontend and live-confirmed to render, dispatch and capture -- CAPABILITY #47, LIMITATION #49/#50).
+# SC_SLED v1.18 hosts its Wanted Person tab there.
+# WHAT THE OMISSION COST, measured 2026-09-18: SC_SLED's 33 Wanted Person logs -- the single most
+# important thing that sweep proved -- were INVISIBLE to every consumer of this library. The
+# classifier reported "ALL-PASS 5/5 entities, 46 logs" against 79 files on disk, and 46 + 33 = 79.
+# The provider looked complete for the wrong reason: the entity nobody counted happened to be
+# finished. Had those 33 been missing, this would have said ALL-PASS just the same.
+# THIS LIST IS THE DENOMINATOR for portfolio_status, report_test_status, the CLAUDE.md tenant cell
+# and audit_test_coverage -- a hardcoded roster that silently drops an entity is the
+# "found nothing" vs "never looked" failure (ENGINEERING_STANDARD 4.3) at portfolio scale.
+# An entity listed here but absent from a provider is already handled: it counts as not-tested only
+# when the provider's plan actually names it, so adding Other cannot invent owed work for the 20
+# providers that do not use it.
 $script:TS_Entities = @('Vehicle','Person','Firearm','Article','Boat')
+
+# ⚠️ DO NOT "FIX" THIS BY ADDING 'Other' TO THE ARRAY. I DID, AND IT BROKE 13 PROVIDERS.
+# Tried 2026-09-18 and reverted the same minute: adding it flipped AZ_AZDPS, CA_CLETS,
+# CA_CLETS_OCATS, CA_eSUN, FL_FCIC, HI_HCJDC_OFML, IL_LEADS_OFML, MD_METERS, NJ_NJCJIS,
+# NM_NMLETS_OFML, OH_LEADS, OR_LEDS and TN_TIES from ALL-PASS to PARTIAL, because this roster is
+# the DENOMINATOR for "entities tested" and none of those 20 providers has an `Other` form. I had
+# written a comment asserting that could not happen. It was an assertion, not a measurement.
+# The real defect is still open and is recorded below rather than papered over.
+$script:TS_ExtraEntities = @('Other')
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  TEST PARK -- a provider with NO TEST EXPECTATION, by operator directive.
@@ -99,7 +123,29 @@ function Get-ProviderTestState {
     }
 
     $provPass=0;$provFail=0;$provPend=0;$provUnk=0;$entTested=0;$entMissing=0
-    foreach ($e in $script:TS_Entities) {
+    # ── EXTRA ENTITIES JOIN THE NUMERATOR, NEVER THE DENOMINATOR ──────────────────────────────
+    # `Other` is a real entity (CAPABILITY #47 / LIMITATION #50) and SC_SLED v1.18 hosts its
+    # Wanted Person tab there -- but only one provider of 21 uses it. Putting it in TS_Entities
+    # makes it an expectation for all of them: tried 2026-09-18 and it flipped THIRTEEN providers
+    # from ALL-PASS to PARTIAL in one line, because a provider that legitimately has no `Other`
+    # form then counts as missing one.
+    # So an extra entity is scanned ONLY when it has a log directory with files. A provider that
+    # does not use it is untouched -- same numerator, same denominator, same verdict as before.
+    # WHY IT MATTERS THAT IT IS COUNTED AT ALL: before this, SC_SLED's 33 Wanted Person logs were
+    # INVISIBLE here. The classifier said "ALL-PASS 5/5, 46 logs" against 79 files on disk, and
+    # 46 + 33 = 79. It happened to read ALL-PASS for the wrong reason -- had all 33 been MISSING it
+    # would have said exactly the same thing, because the entity was never looked at.
+    $scanEntities = @($script:TS_Entities)
+    foreach ($x in @($script:TS_ExtraEntities)) {
+        $xDir = Join-Path $logsDir $x
+        if (Test-Path $xDir) {
+            if (@(Get-ChildItem $xDir -File -Filter "${Name}_v${ver}_*.txt" -ErrorAction SilentlyContinue).Count -gt 0) {
+                $scanEntities += $x
+            }
+        }
+    }
+
+    foreach ($e in $scanEntities) {
         $eDir  = Join-Path $logsDir $e
         $files = @()
         if (Test-Path $eDir) {

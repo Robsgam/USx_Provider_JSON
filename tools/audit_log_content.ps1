@@ -148,7 +148,16 @@ foreach ($p in $parsed) {
     # BOTH OLN and CII -- "not all ids on the wire" was the wrong rule). Losers must be
     # ABSENT from the XML; winner ids must be PRESENT. Values are matched inside element
     # text (Name serializes as "DOE, JOHN", so exact >VALUE< never matches NameLast=DOE).
-    if ($t.kind -eq 'guardrail') {
+    # ⚠️ NOT ON A CO-FIRE SIBLING OF A GUARDRAIL TEST. The guardrail check asserts that the
+    # WINNER's identifiers are on the wire -- a statement about the guardrail query's OWN row. A
+    # co-fire sibling is a DIFFERENT query's row from the same submit, with its own combination and
+    # its own required fields, so measuring it against the parent's winner asks the wrong question.
+    # MEASURED on SC_SLED v1.18: QVRQ.P_cofire_with_T10 failed with "winning identifier(s) missing
+    # from the wire: VehicleIdentificationNumber". T10 is the Vehicle guardrail (QV.P beats QV.VM);
+    # the sibling row is VehicleRegistrationQuery's QVRQ.P, which has no reason to carry a VIN.
+    # The row is correct; the check was pointed at it by mistake. Its content is still verified by
+    # the fill comparison above, and its combo attribution by audit_log_combo_attribution (79/79).
+    if ($t.kind -eq 'guardrail' -and -not $cfQueryByLabel.ContainsKey($p.Label)) {
         $idRe = '(?i)(Number$|^operatorLicense|^nameLast|Serial|Hull|^registrationNumber)'
         $gIds = @($t.fills) | Where-Object { $_ -and $_.fieldId -match $idRe }
         # Scope the winner lookup to the guardrail test's OWN entity: some providers reuse a keyRef

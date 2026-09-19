@@ -55,7 +55,10 @@ foreach ($pd in $provDirs) {
         switch ($ts.State) {
             'NOT-TRACKED'  { "not on track" }
             'NEVER-TESTED' { "NEVER 0/5" }
-            default        { "{0} {1}/5 ({2})" -f $ts.State, $ts.EntitiesTested, $totalLogs }
+            # DENOMINATOR IS DERIVED, NOT A LITERAL 5. SC_SLED scans SIX entities because it has an
+            # Other form (CAPABILITY #47), and a hardcoded 5 printed "ALL-PASS 6/5" -- a number that
+            # is its own bug report. tested + missing is always the set actually examined.
+            default        { "{0} {1}/{2} ({3})" -f $ts.State, $ts.EntitiesTested, ($ts.EntitiesTested + $ts.EntitiesMissing), $totalLogs }
         }
     }
 

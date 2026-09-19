@@ -112,7 +112,7 @@ foreach ($lf in $logFiles) {
 
     $claimRaw = $mCombo.Groups[1].Value
     # strip harness suffixes to recover the base keyRef
-    $claim = $claimRaw -replace '_guardrail_vs_.*$','' -replace '_af_.*$','' -replace '_strip_.*$','' -replace '_any$',''
+    $claim = $claimRaw -replace '_cofire_with_T[0-9]+$','' -replace '_guardrail_vs_.*$','' -replace '_af_.*$','' -replace '_strip_.*$','' -replace '_any$',''
 
     try { $fillObj = $mFill.Groups[1].Value | ConvertFrom-Json } catch { $skipped++; continue }
     $fill = @{}
