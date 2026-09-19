@@ -64,7 +64,31 @@ not a defect, and must never be listed as owed work.
      version appears somewhere in this file" as evidence (every DEX_TICKET.md names its own current
      version, so that check could not fail). Format, exactly:
          POSTED: v<X.Y> comment <id> <YYYY-MM-DD>                                                -->
-(no POSTED marker — nothing has been posted, and nothing may be until the hold lifts)
+POSTED: v1.18 comment 821482 2026-09-19
+
+**Hold LIFTED for SC_SLED by Rob, 2026-09-19** ("post it"), after the drafts were shown and
+approved. The lift is for THIS PROVIDER ONLY — the portfolio-wide hold of 2026-07-31 stands for
+every other provider, and one approval never carries to the next (JIRA_COMMENT_TEMPLATE: "DRAFT AND
+WAIT ... every provider, every time").
+
+Two comments posted, which is the template's two-shapes-per-ticket rule, not a duplicate:
+  - **821482** — the v1.18 RELEASE LINE. Four fixed sections; supersedes nothing (initial post).
+  - **821483** — the VERSION HISTORY anchor (v1.0 → v1.18, wire-affecting changes marked, cosmetic
+    runs collapsed). Carries no metrics by design and ends by pointing at 821482, so it can never
+    be mistaken for current state — that separation is what stopped tickets accumulating mutually
+    exclusive log counts.
+
+⚠️ NEITHER COMMENT CARRIES TENANT, ATTACHMENT OR CATALOG DETAIL. That is barred from tickets
+(Rob 2026-08-03) and lives in `providers/IMPORT_LEDGER.md` instead. Nor do they use internal
+vocabulary — no keyRefs, no `codeTypeCategory`, no LIMITATION numbers: the ticket is a release
+announcement for PM/engineering, and the limitations' system of record is
+`knowledge-base/PLATFORM_CONSTRAINTS.txt`.
+
+⚠️ THE NUMBERS IN 821482 CAME FROM A TOOL RUN MINUTES BEFORE POSTING, and getting them required
+fixing the tool first: `report_test_status` was printing five entity rows summing to 46 above a
+total of `PASS=79`, with a `6/5` denominator, because its render loop iterated a hardcoded five
+entities while the totals already counted `Other`. Drafting from it unfixed would have published a
+five-entity split omitting all 33 Wanted Person logs — on a ticket, where it is irreversible.
 
 ## What the release line will have to say — v1.18
 

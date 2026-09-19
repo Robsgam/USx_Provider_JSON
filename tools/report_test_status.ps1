@@ -56,7 +56,19 @@ foreach ($pd in $provDirs) {
     Emit ""
     Emit ("{0,-22} current v{1}" -f $name, $ver)
 
-    foreach ($e in $Entities) {
+    # ── RENDER THE ENTITIES THIS PROVIDER ACTUALLY HAS, NOT A FIXED FIVE ──────────────────────
+    # $Entities is the core five. A provider with an `Other` form (SC_SLED v1.18, Wanted Person)
+    # gets a sixth key in PerEntity, and iterating the fixed list DROPPED IT FROM THE PRINTOUT
+    # while its logs still counted in the totals -- so this tool showed five rows summing to 46
+    # above a total of PASS=79, and a "6/5" denominator. Three numbers on one screen that cannot
+    # all be right is worse than any one of them being wrong.
+    # It matters beyond cosmetics: JIRA_COMMENT_TEMPLATE names THIS TOOL as the source for the
+    # counts and entity split that go on a DEX ticket. A release comment drafted from this output
+    # would have omitted the 33 Wanted Person logs and published a five-entity split.
+    $renderEntities = @($Entities)
+    foreach ($k in $ts.PerEntity.Keys) { if ($renderEntities -notcontains $k) { $renderEntities += $k } }
+
+    foreach ($e in $renderEntities) {
         $pe = $ts.PerEntity[$e]
         if ($pe.Count -eq 0) {
             Emit ("    {0,-9} 0 logs @ v{1}   <-- NOT TESTED at current version" -f $e, $ver)
@@ -66,8 +78,9 @@ foreach ($pd in $provDirs) {
         Emit ("    {0,-9} {1,3} logs -> PASS={2} FAIL={3} PENDING={4} UNKNOWN={5}{6}" -f $e,$pe.Count,$pe.Pass,$pe.Fail,$pe.Pend,$pe.Unk,$flag)
     }
 
+    # Denominator DERIVED (tested + missing), not $Entities.Count -- the fixed five printed "6/5".
     Emit ("    => {0}: {1}/{2} entities tested, PASS={3} FAIL={4} PENDING={5} UNKNOWN={6}" -f `
-          $ts.State, $ts.EntitiesTested, $Entities.Count, $ts.Pass, $ts.Fail, $ts.Pending, $ts.Unknown)
+          $ts.State, $ts.EntitiesTested, ($ts.EntitiesTested + $ts.EntitiesMissing), $ts.Pass, $ts.Fail, $ts.Pending, $ts.Unknown)
     $summary.Add([pscustomobject]@{ Provider=$name; Version=$ver; State=$ts.State; Parked=[bool]$ts.Parked })
 }
 
